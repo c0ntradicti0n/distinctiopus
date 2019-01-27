@@ -1,0 +1,9 @@
+1	For	_	ADP	IN	_	3	prep	_	_
+2	these	_	DET	DT	_	1	pobj	_	_
+3	are	_	VERB	VBP	_	3	ROOT	_	_
+4	the	_	DET	DT	_	5	det	_	_
+5	subjects	_	NOUN	NNS	_	3	attr	_	_
+6	of	_	ADP	IN	_	5	prep	_	_
+7	all	_	DET	DT	_	8	det	_	_
+8	such	_	ADJ	JJ	_	6	pobj	_	_
+9	.	_	PUNCT	.	_	3	punct	_	_

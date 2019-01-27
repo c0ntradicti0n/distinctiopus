@@ -1,0 +1,10 @@
+6	of	of	ADP	IN	_	5	prep	835-6	_
+7	the	the	DET	DT	_	8	det	835-7	_
+8	word	word	NOUN	NN	_	6	pobj	835-8	_
+9	Opposite	opposite	PROPN	NNP	_	8	appos	835-9	_
+10	with	with	ADP	IN	_	2	prep	835-10	_
+11	reference	reference	NOUN	NN	_	10	pobj	835-11	_
+12	to	to	ADP	IN	_	11	prep	835-12	_
+13	correlatives	correlative	NOUN	NNS	_	12	pobj	835-13	_
+14	is	be	VERB	VBZ	_	15	auxpass	835-14	_
+15	afforded	afford	VERB	VBN	_	15	ROOT	835-15	_

@@ -1,0 +1,17 @@
+1	Nor	_	CCONJ	CC	_	2	cc	_	_
+2	is	_	VERB	VBZ	_	2	ROOT	_	_
+3	there	_	ADV	EX	_	2	expl	_	_
+4	anything	_	NOUN	NN	_	2	attr	_	_
+5	which	_	ADJ	WDT	_	6	nsubj	_	_
+6	is	_	VERB	VBZ	_	4	relcl	_	_
+7	qualified	_	ADJ	JJ	_	6	acomp	_	_
+8	in	_	ADP	IN	_	7	prep	_	_
+9	contrary	_	ADJ	JJ	_	10	amod	_	_
+10	ways	_	NOUN	NNS	_	8	pobj	_	_
+11	at	_	ADP	IN	_	7	prep	_	_
+12	one	_	NUM	CD	_	11	pobj	_	_
+13	and	_	CCONJ	CC	_	12	cc	_	_
+14	the	_	DET	DT	_	16	det	_	_
+15	same	_	ADJ	JJ	_	16	amod	_	_
+16	time	_	NOUN	NN	_	12	conj	_	_
+17	.	_	PUNCT	.	_	2	punct	_	_

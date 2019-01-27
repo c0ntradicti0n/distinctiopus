@@ -1,0 +1,21 @@
+1	It	-PRON-	PRON	PRP	_	2	nsubj	400-136	_
+2	is	be	VERB	VBZ	_	11	ccomp	400-137	_
+3	these	these	DET	DT	_	2	attr	400-138	_
+4	that	that	ADP	IN	_	7	dobj	400-139	_
+5	we	-PRON-	PRON	PRP	_	7	nsubj	400-140	out of the margins,out of the margins,400->[9:10]
+6	actually	actually	ADV	RB	_	7	advmod	400-141	_
+7	possess	possess	VERB	VBP	_	2	ccomp	400-142	_
+8	,	,	PUNCT	,	_	11	punct	400-143	_
+9	we	-PRON-	PRON	PRP	_	11	nsubjpass	400-144	out of the margins,out of the margins,400->[5:6]
+10	are	be	VERB	VBP	_	11	auxpass	400-145	_
+11	called	call	VERB	VBN	_	11	ROOT	400-146	_
+12	experts	expert	NOUN	NNS	_	11	oprd	400-147	_
+13	because	because	ADP	IN	_	15	mark	400-148	_
+14	we	-PRON-	PRON	PRP	_	15	nsubj	400-149	_
+15	possess	possess	VERB	VBP	_	11	advcl	400-150	_
+16	knowledge	knowledge	NOUN	NN	_	15	dobj	400-151	_
+17	in	in	ADP	IN	_	16	prep	400-152	_
+18	some	some	DET	DT	_	20	det	400-153	_
+19	particular	particular	ADJ	JJ	_	20	amod	400-154	_
+20	branch	branch	NOUN	NN	_	17	pobj	400-155	_
+21	.	.	PUNCT	.	_	11	punct	400-156	_

@@ -1,0 +1,10 @@
+6	that	that	ADP	IN	_	16	mark	875-6	_
+7	each	each	DET	DT	_	16	nsubj	875-7	_
+8	of	of	ADP	IN	_	7	prep	875-8	_
+9	a	a	DET	DT	_	10	det	875-9	_
+10	pair	pair	NOUN	NN	_	8	pobj	875-10	_
+11	of	of	ADP	IN	_	10	prep	875-11	_
+12	opposites	opposite	NOUN	NNS	_	11	pobj	875-12	_
+13	of	of	ADP	IN	_	12	prep	875-13	_
+14	this	this	DET	DT	_	15	det	875-14	_
+15	type	type	NOUN	NN	_	13	pobj	875-15	_

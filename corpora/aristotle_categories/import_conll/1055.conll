@@ -1,0 +1,10 @@
+6	are	be	VERB	VBP	_	6	ROOT	1055-6	_
+7	Simultaneous	simultaneous	ADJ	JJ	_	6	acomp	1055-7	_
+8	in	in	ADP	IN	_	7	prep	1055-8	_
+9	point	point	NOUN	NN	_	8	pobj	1055-9	_
+10	of	of	ADP	IN	_	9	prep	1055-10	_
+11	nature	nature	NOUN	NN	_	10	pobj	1055-11	_
+12	,	,	PUNCT	,	_	6	punct	1055-12	_
+13	the	the	DET	DT	_	14	det	1055-13	_
+14	being	being	NOUN	NN	_	19	nsubj	1055-14	_
+15	of	of	ADP	IN	_	14	prep	1055-15	_

@@ -1,0 +1,7 @@
+1	But	but	CCONJ	CC	_	3	cc	451-192	_
+2	this	this	DET	DT	_	3	nsubj	451-193	_
+3	is	be	VERB	VBZ	_	3	ROOT	451-194	_
+4	not	not	ADV	RB	_	3	neg	451-195	_
+5	the	the	DET	DT	_	6	det	451-196	_
+6	case	case	NOUN	NN	_	3	attr	451-197	_
+7	.	.	PUNCT	.	_	3	punct	451-198	_

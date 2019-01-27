@@ -1,0 +1,9 @@
+1	He	_	PRON	PRP	_	3	nsubjpass	_	_
+2	is	_	VERB	VBZ	_	3	auxpass	_	_
+3	said	_	VERB	VBN	_	3	ROOT	_	_
+4	rather	_	ADV	RB	_	8	advmod	_	_
+5	to	_	PART	TO	_	8	aux	_	_
+6	have	_	VERB	VB	_	8	aux	_	_
+7	been	_	VERB	VBN	_	8	auxpass	_	_
+8	affected	_	VERB	VBN	_	3	xcomp	_	_
+9	.	_	PUNCT	.	_	3	punct	_	_

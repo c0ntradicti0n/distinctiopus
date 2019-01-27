@@ -1,0 +1,9 @@
+1	Part	_	NOUN	NN	_	3	nmod	_	_
+2	6	_	NUM	CD	_	3	nummod	_	_
+3	Quantity	_	NOUN	NN	_	4	nsubj	_	_
+4	is	_	VERB	VBZ	_	4	ROOT	_	_
+5	either	_	CCONJ	CC	_	6	preconj	_	_
+6	discrete	_	ADJ	JJ	_	4	acomp	_	_
+7	or	_	CCONJ	CC	_	6	cc	_	_
+8	continuous	_	ADJ	JJ	_	6	conj	_	_
+9	.	_	PUNCT	.	_	4	punct	_	_

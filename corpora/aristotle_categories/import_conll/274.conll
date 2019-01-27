@@ -1,0 +1,12 @@
+1	Thus	thus	ADV	RB	_	8	advmod	274-268	_
+2	,	,	PUNCT	,	_	8	punct	274-269	_
+3	the	the	DET	DT	_	4	det	274-270	_
+4	annihilation	annihilation	NOUN	NN	_	8	nsubj	274-271	_
+5	of	of	ADP	IN	_	4	prep	274-272	_
+6	the	the	DET	DT	_	7	det	274-273	_
+7	perceptible	perceptible	NOUN	NN	_	5	pobj	274-274	_
+8	involves	involve	VERB	VBZ	_	8	ROOT	274-275	_
+9	that	that	DET	DT	_	8	dobj	274-276	_
+10	of	of	ADP	IN	_	9	prep	274-277	_
+11	perception	perception	NOUN	NN	_	10	pobj	274-278	_
+12	.	.	PUNCT	.	_	8	punct	274-279	_

@@ -1,0 +1,15 @@
+1	Moreover	moreover	ADV	RB	_	11	advmod	190-147	_
+2	,	,	PUNCT	,	_	11	punct	190-148	_
+3	if	if	ADP	IN	_	5	mark	190-149	_
+4	these	these	DET	DT	_	5	nsubj	190-150	190->[8:9],190->[10:11],190->[14:15]
+5	were	be	VERB	VBD	_	11	advcl	190-151	_
+6	contraries	contrary	NOUN	NNS	_	5	attr	190-152	_
+7	,	,	PUNCT	,	_	11	punct	190-153	_
+8	they	-PRON-	PRON	PRP	_	11	nsubj	190-154	190->[4:5],190->[10:11],190->[14:15]
+9	would	would	VERB	MD	_	11	aux	190-155	_
+10	themselves	-PRON-	PRON	PRP	_	11	nsubj	190-156	190->[4:5],190->[8:9],190->[14:15]
+11	be	be	VERB	VB	_	11	ROOT	190-157	_
+12	contrary	contrary	ADJ	JJ	_	11	acomp	190-158	_
+13	to	to	ADP	IN	_	12	prep	190-159	_
+14	themselves	-PRON-	PRON	PRP	_	13	pobj	190-160	190->[4:5],190->[8:9],190->[10:11]
+15	.	.	PUNCT	.	_	11	punct	190-161	_

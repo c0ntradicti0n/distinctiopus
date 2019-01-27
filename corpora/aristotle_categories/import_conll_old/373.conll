@@ -1,0 +1,15 @@
+1	Red	_	ADJ	JJ	_	12	nsubj	_	_
+2	,	_	PUNCT	,	_	1	punct	_	_
+3	yellow	_	ADJ	JJ	_	1	conj	_	_
+4	,	_	PUNCT	,	_	3	punct	_	_
+5	and	_	CCONJ	CC	_	3	cc	_	_
+6	such	_	ADJ	JJ	_	7	amod	_	_
+7	colours	_	NOUN	NNS	_	3	conj	_	_
+8	,	_	PUNCT	,	_	1	punct	_	_
+9	though	_	ADP	IN	_	12	mark	_	_
+10	qualities	_	NOUN	NNS	_	12	nsubj	_	_
+11	,	_	PUNCT	,	_	12	punct	_	_
+12	have	_	VERB	VBP	_	12	ROOT	_	_
+13	no	_	DET	DT	_	14	det	_	_
+14	contraries	_	NOUN	NNS	_	12	dobj	_	_
+15	.	_	PUNCT	.	_	12	punct	_	_

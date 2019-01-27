@@ -1,0 +1,11 @@
+1	Thus	_	ADV	RB	_	6	advmod	_	_
+2	,	_	PUNCT	,	_	6	punct	_	_
+3	such	_	ADJ	JJ	_	4	amod	_	_
+4	conditions	_	NOUN	NNS	_	6	nsubjpass	_	_
+5	are	_	VERB	VBP	_	6	auxpass	_	_
+6	called	_	VERB	VBN	_	6	ROOT	_	_
+7	affections	_	NOUN	NNS	_	6	oprd	_	_
+8	,	_	PUNCT	,	_	7	punct	_	_
+9	not	_	ADV	RB	_	7	neg	_	_
+10	qualities	_	NOUN	NNS	_	7	appos	_	_
+11	.	_	PUNCT	.	_	6	punct	_	_

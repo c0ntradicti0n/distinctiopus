@@ -1,0 +1,9 @@
+1	In	in	ADP	IN	_	5	prep	506-378	_
+2	this	this	DET	DT	_	3	det	506-379	_
+3	sense	sense	NOUN	NN	_	1	pobj	506-380	_
+4	One	one	NUM	CD	_	5	nsubj	506-381	_
+5	is	be	VERB	VBZ	_	5	ROOT	506-382	_
+6	Prior	prior	ADV	RB	_	5	acomp	506-383	_
+7	to	to	ADP	IN	_	6	prep	506-384	_
+8	Two	two	NUM	CD	_	7	pobj	506-385	_
+9	.	.	PUNCT	.	_	5	punct	506-386	_

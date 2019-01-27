@@ -1,0 +1,10 @@
+1	No	no	DET	DT	_	2	det	229-317	_
+2	term	term	NOUN	NN	_	2	ROOT	229-318	_
+3	such	such	ADJ	JJ	_	4	amod	229-319	_
+4	as	as	ADP	IN	_	2	prep	229-320	_
+5	Double	double	ADJ	JJ	_	6	amod	229-321	_
+6	admits	admit	NOUN	NNS	_	4	pobj	229-322	_
+7	of	of	ADP	IN	_	6	prep	229-323	_
+8	this	this	DET	DT	_	9	det	229-324	_
+9	modification	modification	NOUN	NN	_	7	pobj	229-325	_
+10	.	.	PUNCT	.	_	2	punct	229-326	_

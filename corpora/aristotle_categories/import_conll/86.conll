@@ -1,0 +1,16 @@
+1	For	for	ADP	IN	_	11	prep	86-267	_
+2	all	all	DET	DT	_	11	nsubjpass	86-268	_
+3	that	that	ADJ	WDT	_	5	nsubjpass	86-269	_
+4	is	be	VERB	VBZ	_	5	auxpass	86-270	_
+5	predicated	predicate	VERB	VBN	_	2	relcl	86-271	_
+6	of	of	ADP	IN	_	5	prep	86-272	_
+7	the	the	DET	DT	_	8	det	86-273	_
+8	predicate	predicate	NOUN	NN	_	6	pobj	86-274	_
+9	will	will	VERB	MD	_	11	aux	86-275	_
+10	be	be	VERB	VB	_	11	auxpass	86-276	_
+11	predicated	predicate	VERB	VBN	_	11	ROOT	86-277	_
+12	also	also	ADV	RB	_	11	advmod	86-278	_
+13	of	of	ADP	IN	_	12	prep	86-279	_
+14	the	the	DET	DT	_	15	det	86-280	_
+15	subject	subject	NOUN	NN	_	13	pobj	86-281	_
+16	.	.	PUNCT	.	_	11	punct	86-282	_

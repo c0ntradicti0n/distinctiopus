@@ -1,0 +1,331 @@
+strict digraph "" {
+	graph [bb="0,0,750.79,1908.6",
+		rankdir=LR,
+		splines=curved,
+		style=filled
+	];
+	node [label="\N"];
+	center0	 [fillcolor="#ECFEE8",
+		height=0.5,
+		kind=center,
+		label="let's distinguish:",
+		pos="67.594,984.54",
+		rank=0,
+		style=filled,
+		width=1.8776];
+	5	 [fillcolor="#9FFFF5",
+		height=2.2195,
+		kind=predicate,
+		label="Things are said to
+be named
+Derivatively , which
+derive their name
+from some other name
+, but differ from it
+in termination .",
+		pos="274.43,1527.5",
+		rank=1,
+		style=filled,
+		width=2.7891];
+	center0 -> 5	 [kind=exclusion,
+		pos="e,213.98,1463.4 69.617,1002.7 102.56,1297.4 109.79,1347.1 207.13,1455.8",
+		xlabel="side of distinction",
+		xlp="65.228,1291.5"];
+	3	 [fillcolor="#9FFFF5",
+		height=2.5142,
+		kind=predicate,
+		label="On the other hand ,
+things are said to
+be named Univocally
+which have both the
+name and the
+definition answering
+to the name in
+\
+common .",
+		pos="274.43,984.54",
+		rank=1,
+		style=filled,
+		width=2.632];
+	center0 -> 3	 [kind=exclusion,
+		pos="e,179.66,988.56 132.78,989.35 142.96,989.48 154.51,989.33 169.38,988.89",
+		xlabel="side of distinction",
+		xlp="107.05,996.73"];
+	0	 [fillcolor="#9FFFF5",
+		height=2.5142,
+		kind=predicate,
+		label="Things are said to
+be named Equivocally
+when , though they
+have a common name ,
+the definition
+corresponding with
+the name differs \
+for
+each .",
+		pos="274.43,407.54",
+		rank=1,
+		style=filled,
+		width=2.8677];
+	center0 -> 0	 [kind=exclusion,
+		pos="e,209.68,478.29 69.026,966.4 93.49,656.86 99.369,604.9 203.04,485.86",
+		xlabel="side of distinction",
+		xlp="57.332,647.19"];
+	correl37	 [fillcolor="#EF6F6C",
+		height=2.2195,
+		kind=correl,
+		label="Things are said to
+be named
+Derivatively , which
+derive their name
+from some other name
+, but differ from it
+in termination .",
+		pos="514.07,1735.5",
+		rank=2,
+		style=filled,
+		width=2.7891];
+	5 -> correl37	 [pos="e,424.36,1699.1 325.51,1596.6 365.11,1649.2 388.2,1675.5 415.67,1693.7",
+		xlabel="correlating part",
+		xlp="333.16,1650.6"];
+	contra33	 [fillcolor="#465775",
+		height=1.041,
+		kind=contra,
+		label="Things which derive
+their name from some
+other name",
+		pos="514.07,1600.5",
+		rank=2,
+		style=filled,
+		width=2.7302];
+	5 -> contra33	 [pos="e,416.67,1605.9 351.03,1579.8 372.58,1593 389.19,1600.6 406.77,1604.3",
+		xlabel="dintradicting part",
+		xlp="429.5,1589"];
+	subjectarg110	 [fillcolor="#5B6C5D",
+		height=0.5,
+		kind=subject,
+		label=which,
+		pos="514.07,1527.5",
+		rank=2,
+		style=filled,
+		width=0.9027];
+	5 -> subjectarg110	 [pos="e,487.79,1538.2 366.69,1559.8 403.04,1568.1 427.35,1562.1 478.32,1542",
+		xlabel=subject,
+		xlp="410.26,1551.3"];
+	6	 [fillcolor="#59C9A5",
+		height=2.2195,
+		kind=example,
+		label="Thus , the
+grammarian derives
+his name from the
+word Grammar , and
+the courageous man
+from the word
+Courage .",
+		pos="514.07,1411.5",
+		rank=2,
+		style=filled,
+		width=2.5927];
+	5 -> 6	 [pos="e,450.82,1470.6 374.41,1517.8 397.78,1511.3 416.86,1499.7 443.19,1477.3",
+		xlabel=example,
+		xlp="438.99,1506.1"];
+	correl22	 [fillcolor="#EF6F6C",
+		height=1.041,
+		kind=correl,
+		label="On the other hand
+things are said to
+be named Univocally",
+		pos="514.07,1276.5",
+		rank=2,
+		style=filled,
+		width=2.632];
+	3 -> correl22	 [pos="e,466.72,1243.9 322.29,1063.3 388.4,1171.2 411.75,1202.4 458.65,1237.9",
+		xlabel="correlating part",
+		xlp="355.68,1170.2"];
+	correl24	 [fillcolor="#EF6F6C",
+		height=2.5142,
+		kind=correl,
+		label="On the other hand ,
+things are said to
+be named Univocally
+which have both the
+name and the
+definition answering
+to the name in
+\
+common .",
+		pos="514.07,1130.5",
+		rank=2,
+		style=filled,
+		width=2.632];
+	3 -> correl24	 [pos="e,422.71,1106.3 343.04,1047.5 373.4,1074.5 393.96,1090.8 413.68,1101.7",
+		xlabel="correlating part",
+		xlp="340.42,1088.2"];
+	contra23	 [fillcolor="#465775",
+		height=1.041,
+		kind=contra,
+		label="which have both the
+name answering to
+the name in common",
+		pos="514.07,984.54",
+		rank=2,
+		style=filled,
+		width=2.632];
+	3 -> contra23	 [pos="e,439.5,1007.9 367.15,1003.3 393.87,1007.9 412.57,1009.8 429.29,1008.8",
+		xlabel="dintradicting part",
+		xlp="355.92,1000.8"];
+	subjectarg66	 [fillcolor="#5B6C5D",
+		height=0.5,
+		kind=subject,
+		label=things,
+		pos="514.07,911.54",
+		rank=2,
+		style=filled,
+		width=0.9027];
+	3 -> subjectarg66	 [pos="e,487.04,921.81 365.75,959.58 425.6,943.05 448.07,936.14 477.6,925.31",
+		xlabel=subject,
+		xlp="413.57,932.8"];
+	4	 [fillcolor="#59C9A5",
+		height=4.5766,
+		kind=example,
+		label="A man and an ox are
+both Animal , and
+these are univocally
+so named , inasmuch
+as not only the name
+, but also the
+definition , \
+is the
+same in both cases ,
+for if a man should
+state in what sense
+each is an animal ,
+the statement in the
+one case would be
+identical \
+with that
+in the other .",
+		pos="514.07,710.54",
+		rank=2,
+		style=filled,
+		width=2.6124];
+	3 -> 4	 [pos="e,427.83,776.38 326.5,908.4 370.74,844.16 396.29,809.27 420.64,783.7",
+		xlabel=example,
+		xlp="357.54,824.04"];
+	correl2	 [fillcolor="#EF6F6C",
+		height=0.74639,
+		kind=correl,
+		label="Things are said to
+be named Equivocally",
+		pos="514.07,500.54",
+		rank=2,
+		style=filled,
+		width=2.7302];
+	0 -> correl2	 [pos="e,483.34,474.84 377.76,409.89 408.02,416.42 431.83,432.51 475.55,468.41",
+		xlabel="correlating part",
+		xlp="392.52,429.14"];
+	contra4	 [fillcolor="#465775",
+		height=1.3356,
+		kind=contra,
+		label="when the definition
+corresponding with
+the name differs for
+each",
+		pos="514.07,407.54",
+		rank=2,
+		style=filled,
+		width=2.4552];
+	0 -> contra4	 [pos="e,441.64,379.71 370.65,374.42 392.1,370.06 409.66,370.86 431.83,376.83",
+		xlabel="dintradicting part",
+		xlp="359.52,364.61"];
+	subjectarg6	 [fillcolor="#5B6C5D",
+		height=0.5,
+		kind=subject,
+		label=Things,
+		pos="514.07,323.54",
+		rank=2,
+		style=filled,
+		width=0.97491];
+	0 -> subjectarg6	 [pos="e,479.13,321.08 354.11,349.45 395.57,322.49 419.02,318.06 469.1,320.52",
+		xlabel=subject,
+		xlp="433.6,315.22"];
+	1	 [fillcolor="#59C9A5",
+		height=3.9873,
+		kind=example,
+		label="Thus , a real man
+and a figure in a
+picture can both lay
+claim to the name
+Animal , yet these
+are equivocally so
+named , for , though
+\
+they have a common
+name , the
+definition
+corresponding with
+the name differs for
+each .",
+		pos="514.07,143.54",
+		rank=2,
+		style=filled,
+		width=2.5731];
+	0 -> 1	 [pos="e,427.11,194.19 323.28,327.45 365.99,258.44 389.68,225.24 419.08,200.61",
+		xlabel=example,
+		xlp="352.68,239.87"];
+	correl24:e -> correl37:e	 [constraint=false,
+		pos="e,615.07,1735.5 609.07,1130.5 671.48,1531.1 672.52,1537.7 617.89,1725.9",
+		style=dotted,
+		xlabel="compared with",
+		xlp="616.37,1500.4"];
+	contra23:e -> contra33:e	 [constraint=false,
+		pos="e,612.07,1600.5 609.07,984.54 687.04,1382.1 688.22,1388.1 615.48,1591",
+		style=dotted,
+		xlabel="compared with",
+		xlp="709.79,1353.3"];
+	correl2:e -> correl22:e	 [constraint=false,
+		pos="e,609.07,1276.5 612.07,500.54 760.38,849.74 761.5,852.38 612.51,1267",
+		style=dotted,
+		xlabel="compared with",
+		xlp="680.71,892.45"];
+	contra4:e -> contra23:e	 [constraint=false,
+		pos="e,609.07,984.54 603.07,407.54 692.57,618.65 693.38,620.56 611.34,974.77",
+		style=dotted,
+		xlabel="compared with",
+		xlp="708.35,696.34"];
+	center1	 [fillcolor="#ECFEE8",
+		height=0.5,
+		kind=center,
+		label="let's distinguish:",
+		pos="67.594,1860.5",
+		rank=0,
+		style=filled,
+		width=1.8776];
+	7	 [fillcolor="#9FFFF5",
+		height=1.3356,
+		kind=predicate,
+		label="Part 2 Forms of
+speech are either
+simple or composite
+.",
+		pos="274.43,1860.5",
+		rank=1,
+		style=filled,
+		width=2.5142];
+	center1 -> 7	 [kind=exclusion,
+		pos="e,197.8,1886.2 104.25,1875.9 139.55,1890 159.11,1894.2 188.05,1888.4",
+		xlabel="side of distinction",
+		xlp="100.75,1897.3"];
+	subjectarg131	 [fillcolor="#5B6C5D",
+		height=0.74639,
+		kind=subject,
+		label="Part 2 Forms of
+speech",
+		pos="514.07,1860.5",
+		rank=2,
+		style=filled,
+		width=2.0231];
+	7 -> subjectarg131	 [pos="e,464.22,1880.3 348.73,1888.2 388.79,1900.5 411.74,1899.1 454.73,1883.8",
+		xlabel=subject,
+		xlp="387.97,1888.3"];
+}

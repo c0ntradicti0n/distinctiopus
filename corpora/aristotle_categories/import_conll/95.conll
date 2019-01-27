@@ -1,0 +1,11 @@
+1	Another	another	DET	DT	_	2	det	95-313	_
+2	mark	mark	NOUN	NN	_	5	nsubj	95-314	_
+3	of	of	ADP	IN	_	2	prep	95-315	_
+4	substance	substance	NOUN	NN	_	3	pobj	95-316	_
+5	is	be	VERB	VBZ	_	5	ROOT	95-317	_
+6	that	that	ADP	IN	_	8	mark	95-318	_
+7	it	-PRON-	PRON	PRP	_	8	nsubj	95-319	_
+8	has	have	VERB	VBZ	_	5	ccomp	95-320	_
+9	no	no	DET	DT	_	10	det	95-321	_
+10	contrary	contrary	NOUN	NN	_	8	dobj	95-322	_
+11	.	.	PUNCT	.	_	5	punct	95-323	_

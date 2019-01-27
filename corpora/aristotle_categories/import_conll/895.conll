@@ -1,0 +1,8 @@
+6	denied	deny	VERB	VBN	_	4	conj	895-6	_
+7	is	be	VERB	VBZ	_	7	ROOT	895-7	_
+8	not	not	ADV	RB	_	7	neg	895-8	_
+9	itself	-PRON-	PRON	PRP	_	7	attr	895-9	_
+10	affirmation	affirmation	NOUN	NN	_	7	attr	895-10	_
+11	or	or	CCONJ	CC	_	10	cc	895-11	_
+12	denial	denial	NOUN	NN	_	10	conj	895-12	_
+13	.	.	PUNCT	.	_	7	punct	895-13	_

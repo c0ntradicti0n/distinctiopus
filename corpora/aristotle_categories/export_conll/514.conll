@@ -1,0 +1,12 @@
+1	Besides	_	ADP	IN	_	9	prep	_	_
+2	these	_	DET	DT	_	3	det	_	_
+3	senses	_	NOUN	NNS	_	1	pobj	_	_
+4	of	_	ADP	IN	_	3	prep	_	_
+5	the	_	DET	DT	_	6	det	_	_
+6	word	_	NOUN	NN	_	4	pobj	_	_
+7	,	_	PUNCT	,	_	9	punct	_	_
+8	there	_	ADV	EX	_	9	expl	_	_
+9	is	_	VERB	VBZ	_	9	ROOT	_	_
+10	a	_	DET	DT	_	11	det	_	_
+11	fourth	_	ADJ	JJ	_	9	attr	_	_
+12	.	_	PUNCT	.	_	9	punct	_	_

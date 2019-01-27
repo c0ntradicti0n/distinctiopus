@@ -1,0 +1,17 @@
+1	Which	which	ADJ	WDT	_	2	nsubj	495-316	_
+2	is	be	VERB	VBZ	_	6	ccomp	495-317	_
+3	a	a	DET	DT	_	4	det	495-318	_
+4	good	good	ADJ	JJ	_	2	attr	495-319	_
+5	,	,	PUNCT	,	_	6	punct	495-320	_
+6	is	be	VERB	VBZ	_	6	ROOT	495-321	_
+7	equally	equally	ADV	RB	_	6	advmod	495-322	_
+8	the	the	DET	DT	_	9	det	495-323	_
+9	contrary	contrary	NOUN	NN	_	6	attr	495-324	_
+10	of	of	ADP	IN	_	9	prep	495-325	_
+11	the	the	DET	DT	_	12	det	495-326	_
+12	one	one	NUM	CD	_	10	pobj	495-327	_
+13	and	and	CCONJ	CC	_	10	cc	495-328	_
+14	of	of	ADP	IN	_	10	conj	495-329	_
+15	the	the	DET	DT	_	16	det	495-330	_
+16	other	other	ADJ	JJ	_	14	pobj	495-331	_
+17	.	.	PUNCT	.	_	6	punct	495-332	_

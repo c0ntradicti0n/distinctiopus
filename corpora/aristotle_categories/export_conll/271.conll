@@ -1,0 +1,15 @@
+1	For	_	ADP	IN	_	3	prep	_	_
+2	perception	_	NOUN	NN	_	1	pobj	_	_
+3	implies	_	VERB	VBZ	_	3	ROOT	_	_
+4	a	_	DET	DT	_	5	det	_	_
+5	body	_	NOUN	NN	_	6	nsubj	_	_
+6	perceived	_	VERB	VBN	_	3	ccomp	_	_
+7	and	_	CCONJ	CC	_	6	cc	_	_
+8	a	_	DET	DT	_	9	det	_	_
+9	body	_	NOUN	NN	_	6	conj	_	_
+10	in	_	ADP	IN	_	13	prep	_	_
+11	which	_	ADJ	WDT	_	10	pobj	_	_
+12	perception	_	NOUN	NN	_	13	nsubj	_	_
+13	takes	_	VERB	VBZ	_	9	relcl	_	_
+14	place	_	NOUN	NN	_	13	dobj	_	_
+15	.	_	PUNCT	.	_	3	punct	_	_

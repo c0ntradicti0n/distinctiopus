@@ -1,0 +1,10 @@
+1	All	_	DET	DT	_	2	det	_	_
+2	substance	_	NOUN	NN	_	3	nsubj	_	_
+3	appears	_	VERB	VBZ	_	3	ROOT	_	_
+4	to	_	PART	TO	_	5	aux	_	_
+5	signify	_	VERB	VB	_	3	xcomp	_	_
+6	that	_	ADP	IN	_	8	mark	_	_
+7	which	_	ADJ	WDT	_	8	nsubj	_	_
+8	is	_	VERB	VBZ	_	5	ccomp	_	_
+9	individual	_	ADJ	JJ	_	8	acomp	_	_
+10	.	_	PUNCT	.	_	3	punct	_	_

@@ -1,0 +1,11 @@
+1	This	this	DET	DT	_	2	nsubj	44-273	_
+2	becomes	become	VERB	VBZ	_	2	ROOT	44-274	_
+3	evident	evident	ADJ	JJ	_	2	acomp	44-275	_
+4	by	by	ADP	IN	_	2	prep	44-276	_
+5	reference	reference	NOUN	NN	_	4	pobj	44-277	_
+6	to	to	ADP	IN	_	5	prep	44-278	_
+7	particular	particular	ADJ	JJ	_	8	amod	44-279	_
+8	instances	instance	NOUN	NNS	_	6	pobj	44-280	_
+9	which	which	ADJ	WDT	_	10	nsubj	44-281	_
+10	occur	occur	VERB	VBP	_	8	relcl	44-282	_
+11	.	.	PUNCT	.	_	2	punct	44-283	_

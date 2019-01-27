@@ -1,0 +1,14 @@
+1	In	in	ADP	IN	_	8	prep	395-306	_
+2	practically	practically	ADV	RB	_	5	advmod	395-307	_
+3	all	all	DET	DT	_	5	det	395-308	_
+4	such	such	ADJ	JJ	_	5	amod	395-309	_
+5	cases	case	NOUN	NNS	_	1	pobj	395-310	_
+6	the	the	DET	DT	_	7	det	395-311	_
+7	genus	genus	NOUN	NN	_	8	nsubj	395-312	_
+8	is	be	VERB	VBZ	_	8	ROOT	395-313	_
+9	relative	relative	ADJ	JJ	_	8	acomp	395-314	_
+10	,	,	PUNCT	,	_	8	punct	395-315	_
+11	the	the	DET	DT	_	12	det	395-316	_
+12	individual	individual	NOUN	NN	_	7	appos	395-317	_
+13	not	not	ADV	RB	_	8	neg	395-318	_
+14	.	.	PUNCT	.	_	8	punct	395-319	_

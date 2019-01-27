@@ -1,0 +1,10 @@
+6	are	be	VERB	VBP	_	7	auxpass	1075-6	_
+7	said	say	VERB	VBN	_	7	ROOT	1075-7	_
+8	to	to	PART	TO	_	9	aux	1075-8	_
+9	be	be	VERB	VB	_	7	xcomp	1075-9	_
+10	Simultaneous	simultaneous	ADJ	JJ	_	9	acomp	1075-10	_
+11	in	in	ADP	IN	_	10	prep	1075-11	_
+12	nature	nature	NOUN	NN	_	11	pobj	1075-12	_
+13	,	,	PUNCT	,	_	9	punct	1075-13	_
+14	the	the	DET	DT	_	15	det	1075-14	_
+15	being	being	NOUN	NN	_	20	nsubj	1075-15	_

@@ -1,0 +1,9 @@
+1	Correlatives	correlative	NOUN	NNS	_	3	nsubjpass	258-547	_
+2	are	be	VERB	VBP	_	3	auxpass	258-548	_
+3	thought	think	VERB	VBN	_	3	ROOT	258-549	_
+4	to	to	PART	TO	_	5	aux	258-550	_
+5	come	come	VERB	VB	_	3	xcomp	258-551	_
+6	into	into	ADP	IN	_	5	prep	258-552	_
+7	existence	existence	NOUN	NN	_	6	pobj	258-553	_
+8	simultaneously	simultaneously	ADV	RB	_	5	advmod	258-554	_
+9	.	.	PUNCT	.	_	3	punct	258-555	_

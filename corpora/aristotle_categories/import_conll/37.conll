@@ -1,0 +1,11 @@
+1	For	for	ADP	IN	_	6	prep	37-394	_
+2	instance	instance	NOUN	NN	_	1	pobj	37-395	_
+3	,	,	PUNCT	,	_	6	punct	37-396	_
+4	Man	man	PROPN	NNP	_	6	nsubjpass	37-397	35->[4:7],37->[8:11],38->[22:23],38->[32:33]
+5	is	be	VERB	VBZ	_	6	auxpass	37-398	_
+6	predicted	predict	VERB	VBN	_	6	ROOT	37-399	_
+7	of	of	ADP	IN	_	6	prep	37-400	_
+8	the	the	DET	DT	_	10	det	37-401	35->[4:7],37->[4:5],38->[22:23],38->[32:33]
+9	individual	individual	ADJ	JJ	_	10	amod	37-402	35->[4:7],37->[4:5],38->[22:23],38->[32:33]
+10	man	man	NOUN	NN	_	7	pobj	37-403	35->[4:7],37->[4:5],38->[22:23],38->[32:33]
+11	.	.	PUNCT	.	_	6	punct	37-404	_

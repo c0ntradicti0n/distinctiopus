@@ -1,0 +1,10 @@
+1	It	-PRON-	PRON	PRP	_	2	nsubj	519-314	_
+2	is	be	VERB	VBZ	_	2	ROOT	519-315	_
+3	plain	plain	ADJ	JJ	_	2	acomp	519-316	_
+4	that	that	ADP	IN	_	6	mark	519-317	_
+5	there	there	ADV	EX	_	6	expl	519-318	_
+6	are	be	VERB	VBP	_	2	ccomp	519-319	_
+7	instances	instance	NOUN	NNS	_	6	attr	519-320	_
+8	of	of	ADP	IN	_	7	prep	519-321	_
+9	this	this	DET	DT	_	8	pobj	519-322	_
+10	.	.	PUNCT	.	_	2	punct	519-323	_

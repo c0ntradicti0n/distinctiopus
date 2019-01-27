@@ -1,0 +1,13 @@
+1	All	all	DET	DT	_	2	det	246-395	_
+2	relatives	relative	NOUN	NNS	_	10	nsubj	246-396	_
+3	,	,	PUNCT	,	_	10	punct	246-397	_
+4	then	then	ADV	RB	_	10	advmod	246-398	_
+5	,	,	PUNCT	,	_	10	punct	246-399	_
+6	if	if	ADP	IN	_	8	mark	246-400	_
+7	properly	properly	ADV	RB	_	8	advmod	246-401	_
+8	defined	define	VERB	VBN	_	10	advcl	246-402	_
+9	,	,	PUNCT	,	_	10	punct	246-403	_
+10	have	have	VERB	VBP	_	10	ROOT	246-404	_
+11	a	a	DET	DT	_	12	det	246-405	_
+12	correlative	correlative	NOUN	NN	_	10	dobj	246-406	_
+13	.	.	PUNCT	.	_	10	punct	246-407	_

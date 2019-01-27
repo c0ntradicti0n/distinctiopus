@@ -1,0 +1,26 @@
+1	Honey	honey	PROPN	NNP	_	3	nsubjpass	328-422	out of the margins,out of the margins
+2	is	be	VERB	VBZ	_	3	auxpass	328-423	_
+3	called	call	VERB	VBN	_	13	ccomp	328-424	_
+4	sweet	sweet	ADJ	JJ	_	3	oprd	328-425	_
+5	because	because	ADP	IN	_	7	mark	328-426	_
+6	it	-PRON-	PRON	PRP	_	7	nsubj	328-427	_
+7	contains	contain	VERB	VBZ	_	3	advcl	328-428	_
+8	sweetness	sweetness	NOUN	NN	_	7	dobj	328-429	_
+9	,	,	PUNCT	,	_	13	punct	328-430	_
+10	the	the	DET	DT	_	11	det	328-431	328->[16:17]
+11	body	body	NOUN	NN	_	13	nsubjpass	328-432	328->[16:17]
+12	is	be	VERB	VBZ	_	13	auxpass	328-433	_
+13	called	call	VERB	VBN	_	13	ROOT	328-434	_
+14	white	white	ADJ	JJ	_	13	oprd	328-435	_
+15	because	because	ADP	IN	_	17	mark	328-436	_
+16	it	-PRON-	PRON	PRP	_	17	nsubj	328-437	328->[10:12]
+17	contains	contain	VERB	VBZ	_	13	advcl	328-438	_
+18	whiteness	whiteness	NOUN	NN	_	17	dobj	328-439	_
+19	,	,	PUNCT	,	_	17	punct	328-440	_
+20	and	and	CCONJ	CC	_	17	cc	328-441	_
+21	so	so	ADV	RB	_	22	advmod	328-442	_
+22	in	in	ADP	IN	_	17	conj	328-443	_
+23	all	all	DET	DT	_	25	det	328-444	_
+24	other	other	ADJ	JJ	_	25	amod	328-445	_
+25	cases	case	NOUN	NNS	_	22	pobj	328-446	_
+26	.	.	PUNCT	.	_	13	punct	328-447	_

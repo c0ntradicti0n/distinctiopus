@@ -1,0 +1,10 @@
+1	This	this	DET	DT	_	5	nsubj	372-226	_
+2	,	,	PUNCT	,	_	5	punct	372-227	_
+3	however	however	ADV	RB	_	5	advmod	372-228	_
+4	,	,	PUNCT	,	_	5	punct	372-229	_
+5	is	be	VERB	VBZ	_	5	ROOT	372-230	_
+6	not	not	ADV	RB	_	5	neg	372-231	_
+7	always	always	ADV	RB	_	5	advmod	372-232	_
+8	the	the	DET	DT	_	9	det	372-233	_
+9	case	case	NOUN	NN	_	5	attr	372-234	_
+10	.	.	PUNCT	.	_	5	punct	372-235	_

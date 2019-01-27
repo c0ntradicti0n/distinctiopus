@@ -1,0 +1,15 @@
+1	That	that	DET	DT	_	9	nsubjpass	513-204	_
+2	which	which	ADJ	WDT	_	3	nsubj	513-205	_
+3	is	be	VERB	VBZ	_	1	relcl	513-206	_
+4	better	good	ADJ	JJR	_	3	acomp	513-207	_
+5	and	and	CCONJ	CC	_	4	cc	513-208	_
+6	more	more	ADV	RBR	_	7	advmod	513-209	_
+7	honourable	honourable	ADJ	JJ	_	4	conj	513-210	_
+8	is	be	VERB	VBZ	_	9	auxpass	513-211	_
+9	said	say	VERB	VBN	_	9	ROOT	513-212	_
+10	to	to	PART	TO	_	11	aux	513-213	_
+11	have	have	VERB	VB	_	9	xcomp	513-214	_
+12	a	a	DET	DT	_	14	det	513-215	_
+13	natural	natural	ADJ	JJ	_	14	amod	513-216	_
+14	priority	priority	NOUN	NN	_	11	dobj	513-217	_
+15	.	.	PUNCT	.	_	9	punct	513-218	_

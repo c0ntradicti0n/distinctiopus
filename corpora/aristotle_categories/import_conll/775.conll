@@ -1,0 +1,10 @@
+6	,	,	PUNCT	,	_	8	punct	775-6	_
+7	it	-PRON-	PRON	PRP	_	8	nsubj	775-7	_
+8	is	be	VERB	VBZ	_	8	ROOT	775-8	_
+9	an	an	DET	DT	_	11	det	775-9	_
+10	incontrovertible	incontrovertible	ADJ	JJ	_	11	amod	775-10	_
+11	fact	fact	NOUN	NN	_	8	attr	775-11	_
+12	that	that	ADP	IN	_	22	mark	775-12	_
+13	the	the	DET	DT	_	14	det	775-13	_
+14	things	thing	NOUN	NNS	_	22	nsubjpass	775-14	_
+15	which	which	ADJ	WDT	_	16	nsubj	775-15	_

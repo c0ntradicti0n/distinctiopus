@@ -1,0 +1,10 @@
+1	So	_	ADV	RB	_	3	advmod	_	_
+2	it	_	PRON	PRP	_	3	nsubj	_	_
+3	is	_	VERB	VBZ	_	3	ROOT	_	_
+4	with	_	ADP	IN	_	3	prep	_	_
+5	everything	_	NOUN	NN	_	4	pobj	_	_
+6	else	_	ADV	RB	_	5	advmod	_	_
+7	of	_	ADP	IN	_	6	prep	_	_
+8	this	_	DET	DT	_	9	det	_	_
+9	kind	_	NOUN	NN	_	7	pobj	_	_
+10	.	_	PUNCT	.	_	3	punct	_	_

@@ -1,0 +1,17 @@
+1	Again	again	ADV	RB	_	9	advmod	201-171	_
+2	,	,	PUNCT	,	_	9	punct	201-172	_
+3	one	one	NUM	CD	_	4	nummod	201-173	_
+4	period	period	NOUN	NN	_	9	nsubjpass	201-174	_
+5	of	of	ADP	IN	_	4	prep	201-175	_
+6	time	time	NOUN	NN	_	5	pobj	201-176	_
+7	is	be	VERB	VBZ	_	9	auxpass	201-177	_
+8	not	not	ADV	RB	_	9	neg	201-178	_
+9	said	say	VERB	VBN	_	9	ROOT	201-179	_
+10	to	to	PART	TO	_	11	aux	201-180	_
+11	be	be	VERB	VB	_	9	xcomp	201-181	_
+12	more	more	ADV	RBR	_	13	advmod	201-182	_
+13	truly	truly	ADV	RB	_	14	amod	201-183	_
+14	time	time	NOUN	NN	_	11	attr	201-184	_
+15	than	than	ADP	IN	_	14	prep	201-185	_
+16	another	another	DET	DT	_	15	pobj	201-186	_
+17	.	.	PUNCT	.	_	9	punct	201-187	_

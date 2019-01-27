@@ -1,0 +1,10 @@
+1	So	so	ADV	RB	_	3	advmod	213-207	_
+2	it	-PRON-	PRON	PRP	_	3	nsubj	213-208	_
+3	is	be	VERB	VBZ	_	3	ROOT	213-209	_
+4	with	with	ADP	IN	_	3	prep	213-210	_
+5	everything	everything	NOUN	NN	_	4	pobj	213-211	_
+6	else	else	ADV	RB	_	5	advmod	213-212	_
+7	of	of	ADP	IN	_	5	prep	213-213	_
+8	this	this	DET	DT	_	9	det	213-214	_
+9	kind	kind	NOUN	NN	_	7	pobj	213-215	_
+10	.	.	PUNCT	.	_	3	punct	213-216	_

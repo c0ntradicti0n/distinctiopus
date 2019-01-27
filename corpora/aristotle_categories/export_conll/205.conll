@@ -1,0 +1,13 @@
+1	Each	_	DET	DT	_	7	nsubjpass	_	_
+2	of	_	ADP	IN	_	1	prep	_	_
+3	the	_	DET	DT	_	5	det	_	_
+4	aforesaid	_	ADJ	JJ	_	5	amod	_	_
+5	quantities	_	NOUN	NNS	_	2	pobj	_	_
+6	is	_	VERB	VBZ	_	7	auxpass	_	_
+7	said	_	VERB	VBN	_	7	ROOT	_	_
+8	to	_	PART	TO	_	9	aux	_	_
+9	be	_	VERB	VB	_	7	xcomp	_	_
+10	equal	_	ADJ	JJ	_	9	acomp	_	_
+11	or	_	CCONJ	CC	_	10	cc	_	_
+12	unequal	_	ADJ	JJ	_	10	conj	_	_
+13	.	_	PUNCT	.	_	7	punct	_	_

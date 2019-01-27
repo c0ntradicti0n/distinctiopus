@@ -1,0 +1,9 @@
+1	Sight	sight	NOUN	NN	_	4	nsubjpass	452-199	_
+2	is	be	VERB	VBZ	_	4	auxpass	452-200	_
+3	not	not	ADV	RB	_	4	neg	452-201	_
+4	called	call	VERB	VBN	_	4	ROOT	452-202	_
+5	the	the	DET	DT	_	6	det	452-203	_
+6	sight	sight	NOUN	NN	_	4	oprd	452-204	_
+7	of	of	ADP	IN	_	6	prep	452-205	_
+8	blindness	blindness	NOUN	NN	_	7	pobj	452-206	_
+9	.	.	PUNCT	.	_	4	punct	452-207	_

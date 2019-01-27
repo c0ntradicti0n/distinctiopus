@@ -1,0 +1,16 @@
+1	Thus	thus	ADV	RB	_	14	advmod	312-162	_
+2	,	,	PUNCT	,	_	14	punct	312-163	_
+3	heat	heat	NOUN	NN	_	14	nsubj	312-164	_
+4	,	,	PUNCT	,	_	3	punct	312-165	_
+5	cold	cold	ADJ	JJ	_	3	conj	312-166	_
+6	,	,	PUNCT	,	_	5	punct	312-167	_
+7	disease	disease	NOUN	NN	_	5	conj	312-168	_
+8	,	,	PUNCT	,	_	7	punct	312-169	_
+9	health	health	NOUN	NN	_	7	conj	312-170	_
+10	,	,	PUNCT	,	_	9	punct	312-171	_
+11	and	and	CCONJ	CC	_	9	cc	312-172	_
+12	so	so	ADV	RB	_	13	advmod	312-173	_
+13	on	on	ADV	RB	_	9	conj	312-174	_
+14	are	be	VERB	VBP	_	14	ROOT	312-175	_
+15	dispositions	disposition	NOUN	NNS	_	14	attr	312-176	_
+16	.	.	PUNCT	.	_	14	punct	312-177	_

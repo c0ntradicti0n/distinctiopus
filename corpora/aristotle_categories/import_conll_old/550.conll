@@ -1,0 +1,10 @@
+1	Speaking	_	VERB	VBG	_	5	advcl	_	_
+2	generally	_	ADV	RB	_	1	advmod	_	_
+3	,	_	PUNCT	,	_	5	punct	_	_
+4	rest	_	NOUN	NN	_	5	nsubj	_	_
+5	is	_	VERB	VBZ	_	5	ROOT	_	_
+6	the	_	DET	DT	_	7	det	_	_
+7	contrary	_	NOUN	NN	_	5	attr	_	_
+8	of	_	ADP	IN	_	7	prep	_	_
+9	motion	_	NOUN	NN	_	8	pobj	_	_
+10	.	_	PUNCT	.	_	5	punct	_	_

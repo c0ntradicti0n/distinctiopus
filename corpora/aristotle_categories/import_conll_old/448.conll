@@ -1,0 +1,13 @@
+1	By	_	ADP	IN	_	4	prep	_	_
+2	Affirmation	_	NOUN	NN	_	1	pobj	_	_
+3	we	_	PRON	PRP	_	4	nsubj	_	_
+4	mean	_	VERB	VBP	_	4	ROOT	_	_
+5	an	_	DET	DT	_	7	det	_	_
+6	affirmative	_	ADJ	JJ	_	7	amod	_	_
+7	proposition	_	NOUN	NN	_	4	dobj	_	_
+8	,	_	PUNCT	,	_	4	punct	_	_
+9	by	_	ADP	IN	_	4	prep	_	_
+10	Denial	_	PROPN	NNP	_	9	pobj	_	_
+11	a	_	DET	DT	_	12	det	_	_
+12	negative	_	NOUN	NN	_	10	amod	_	_
+13	.	_	PUNCT	.	_	4	punct	_	_

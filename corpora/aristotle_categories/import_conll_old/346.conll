@@ -1,0 +1,13 @@
+1	In	_	ADP	IN	_	5	prep	_	_
+2	like	_	ADJ	JJ	_	5	prep	_	_
+3	manner	_	NOUN	NN	_	2	pobj	_	_
+4	there	_	ADV	EX	_	5	expl	_	_
+5	are	_	VERB	VBP	_	5	ROOT	_	_
+6	affective	_	ADJ	JJ	_	7	amod	_	_
+7	qualities	_	NOUN	NNS	_	5	attr	_	_
+8	and	_	CCONJ	CC	_	7	cc	_	_
+9	affections	_	NOUN	NNS	_	7	conj	_	_
+10	of	_	ADP	IN	_	9	prep	_	_
+11	the	_	DET	DT	_	12	det	_	_
+12	soul	_	NOUN	NN	_	10	pobj	_	_
+13	.	_	PUNCT	.	_	5	punct	_	_

@@ -1,0 +1,12 @@
+1	So	so	ADV	RB	_	3	advmod	217-280	_
+2	it	-PRON-	PRON	PRP	_	3	nsubj	217-281	_
+3	is	be	VERB	VBZ	_	3	ROOT	217-282	_
+4	with	with	ADP	IN	_	3	prep	217-283	_
+5	all	all	DET	DT	_	7	det	217-284	_
+6	other	other	ADJ	JJ	_	7	amod	217-285	_
+7	relatives	relative	NOUN	NNS	_	4	pobj	217-286	_
+8	that	that	ADJ	WDT	_	11	nsubjpass	217-287	_
+9	have	have	VERB	VBP	_	11	aux	217-288	_
+10	been	be	VERB	VBN	_	11	auxpass	217-289	_
+11	mentioned	mention	VERB	VBN	_	7	relcl	217-290	_
+12	.	.	PUNCT	.	_	3	punct	217-291	_

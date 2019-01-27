@@ -1,0 +1,8 @@
+1	They	-PRON-	PRON	PRP	_	3	nsubj	816-8	815->[3:4]
+2	also	also	ADV	RB	_	3	advmod	816-9	_
+3	admit	admit	VERB	VBP	_	3	ROOT	816-10	_
+4	of	of	ADP	IN	_	3	prep	816-11	_
+5	variation	variation	NOUN	NN	_	4	pobj	816-12	_
+6	of	of	ADP	IN	_	5	prep	816-13	_
+7	degree	degree	NOUN	NN	_	6	pobj	816-14	_
+8	,	,	PUNCT	,	_	3	punct	816-15	_

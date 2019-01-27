@@ -1,0 +1,11 @@
+1	Though	_	ADP	IN	_	3	mark	_	_
+2	this	_	DET	DT	_	3	nsubj	_	_
+3	is	_	VERB	VBZ	_	9	advcl	_	_
+4	generally	_	ADV	RB	_	3	advmod	_	_
+5	the	_	DET	DT	_	6	det	_	_
+6	case	_	NOUN	NN	_	3	attr	_	_
+7	,	_	PUNCT	,	_	9	punct	_	_
+8	there	_	ADV	EX	_	9	expl	_	_
+9	are	_	VERB	VBP	_	9	ROOT	_	_
+10	exceptions	_	NOUN	NNS	_	9	attr	_	_
+11	.	_	PUNCT	.	_	9	punct	_	_

@@ -1,0 +1,15 @@
+1	Moreover	moreover	ADV	RB	_	4	advmod	454-297	_
+2	,	,	PUNCT	,	_	4	punct	454-298	_
+3	we	-PRON-	PRON	PRP	_	4	nsubj	454-299	453->[73:74],457->[1:2]
+4	cited	cite	VERB	VBD	_	4	ROOT	454-300	_
+5	health	health	NOUN	NN	_	4	dobj	454-301	_
+6	and	and	CCONJ	CC	_	5	cc	454-302	_
+7	disease	disease	NOUN	NN	_	5	conj	454-303	_
+8	,	,	PUNCT	,	_	5	punct	454-304	_
+9	odd	odd	ADJ	JJ	_	5	amod	454-305	_
+10	and	and	CCONJ	CC	_	9	cc	454-306	_
+11	even	even	ADV	RB	_	9	conj	454-307	_
+12	,	,	PUNCT	,	_	5	punct	454-308	_
+13	as	as	ADP	IN	_	4	prep	454-309	_
+14	instances	instance	NOUN	NNS	_	13	pobj	454-310	_
+15	.	.	PUNCT	.	_	4	punct	454-311	_

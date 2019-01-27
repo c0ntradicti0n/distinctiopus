@@ -1,0 +1,10 @@
+1	This	this	DET	DT	_	2	nsubj	165-336	166->[3:4],166->[23:24]
+2	holds	hold	VERB	VBZ	_	2	ROOT	165-337	_
+3	good	good	ADJ	JJ	_	2	dobj	165-338	_
+4	also	also	ADV	RB	_	2	advmod	165-339	_
+5	in	in	ADP	IN	_	2	prep	165-340	_
+6	the	the	DET	DT	_	7	det	165-341	_
+7	case	case	NOUN	NN	_	5	pobj	165-342	_
+8	of	of	ADP	IN	_	7	prep	165-343	_
+9	speech	speech	NOUN	NN	_	8	pobj	165-344	_
+10	.	.	PUNCT	.	_	2	punct	165-345	_

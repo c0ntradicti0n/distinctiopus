@@ -1,0 +1,12 @@
+1	So	_	ADV	RB	_	3	advmod	_	_
+2	it	_	PRON	PRP	_	3	nsubj	_	_
+3	is	_	VERB	VBZ	_	3	ROOT	_	_
+4	with	_	ADP	IN	_	3	prep	_	_
+5	all	_	DET	DT	_	7	det	_	_
+6	other	_	ADJ	JJ	_	7	amod	_	_
+7	relatives	_	NOUN	NNS	_	4	pobj	_	_
+8	that	_	ADJ	WDT	_	11	nsubjpass	_	_
+9	have	_	VERB	VBP	_	11	aux	_	_
+10	been	_	VERB	VBN	_	11	auxpass	_	_
+11	mentioned	_	VERB	VBN	_	7	relcl	_	_
+12	.	_	PUNCT	.	_	3	punct	_	_

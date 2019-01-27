@@ -1,0 +1,16 @@
+1	If	_	ADP	IN	_	5	mark	_	_
+2	this	_	DET	DT	_	3	det	_	_
+3	product	_	NOUN	NN	_	5	nsubjpass	_	_
+4	was	_	VERB	VBD	_	5	auxpass	_	_
+5	acquired	_	VERB	VBN	_	15	advcl	_	_
+6	outside	_	ADP	IN	_	5	prep	_	_
+7	the	_	DET	DT	_	9	det	_	_
+8	United	_	PROPN	NNP	_	9	compound	_	_
+9	States	_	PROPN	NNP	_	6	pobj	_	_
+10	,	_	PUNCT	,	_	15	punct	_	_
+11	then	_	ADV	RB	_	15	advmod	_	_
+12	local	_	ADJ	JJ	_	13	amod	_	_
+13	law	_	NOUN	NN	_	15	nsubj	_	_
+14	may	_	VERB	MD	_	15	aux	_	_
+15	apply	_	VERB	VB	_	15	ROOT	_	_
+16	.	_	PUNCT	.	_	15	punct	_	_

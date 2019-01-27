@@ -1,0 +1,10 @@
+6	and	and	CCONJ	CC	_	5	cc	975-6	_
+7	Privatives	privatives	PROPN	NNPS	_	5	conj	975-7	_
+8	,	,	PUNCT	,	_	20	punct	975-8	_
+9	if	if	ADP	IN	_	14	mark	975-9	_
+10	the	the	DET	DT	_	11	det	975-10	975->[26:28]
+11	subject	subject	NOUN	NN	_	14	nsubj	975-11	975->[26:28]
+12	does	do	VERB	VBZ	_	14	aux	975-12	_
+13	not	not	ADV	RB	_	14	neg	975-13	_
+14	exist	exist	VERB	VB	_	20	advcl	975-14	_
+15	at	at	ADV	RB	_	16	advmod	975-15	_

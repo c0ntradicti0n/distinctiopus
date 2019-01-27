@@ -1,0 +1,12 @@
+1	Take	_	VERB	VB	_	1	ROOT	_	_
+2	as	_	ADP	IN	_	1	prep	_	_
+3	an	_	DET	DT	_	4	det	_	_
+4	instance	_	NOUN	NN	_	2	pobj	_	_
+5	the	_	DET	DT	_	7	det	_	_
+6	genus	_	NOUN	NN	_	7	compound	_	_
+7	Animal	_	PROPN	NNP	_	1	dobj	_	_
+8	and	_	CCONJ	CC	_	7	cc	_	_
+9	the	_	DET	DT	_	11	det	_	_
+10	genus	_	NOUN	NN	_	11	compound	_	_
+11	Knowledge	_	NOUN	NN	_	7	conj	_	_
+12	.	_	PUNCT	.	_	1	punct	_	_

@@ -1,0 +1,10 @@
+6	only	only	ADV	RB	_	7	advmod	575-6	_
+7	relative	relative	ADJ	JJ	_	5	acomp	575-7	_
+8	in	in	ADP	IN	_	7	prep	575-8	_
+9	so	so	ADV	RB	_	10	advmod	575-9	_
+10	far	far	ADV	RB	_	5	advmod	575-10	_
+11	as	as	ADP	IN	_	13	mark	575-11	_
+12	it	-PRON-	PRON	PRP	_	13	nsubj	575-12	_
+13	is	be	VERB	VBZ	_	5	advcl	575-13	_
+14	someone	someone	NOUN	NN	_	16	poss	575-14	_
+15	's	's	PART	POS	_	14	case	575-15	_

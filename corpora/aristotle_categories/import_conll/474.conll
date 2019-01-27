@@ -1,0 +1,17 @@
+1	There	there	ADV	EX	_	3	expl	474-423	_
+2	may	may	VERB	MD	_	3	aux	474-424	_
+3	be	be	VERB	VB	_	3	ROOT	474-425	_
+4	a	a	DET	DT	_	5	det	474-426	_
+5	change	change	NOUN	NN	_	3	attr	474-427	_
+6	from	from	ADP	IN	_	5	prep	474-428	_
+7	possession	possession	NOUN	NN	_	6	pobj	474-429	_
+8	to	to	ADP	IN	_	5	prep	474-430	_
+9	privation	privation	NOUN	NN	_	8	pobj	474-431	_
+10	,	,	PUNCT	,	_	3	punct	474-432	_
+11	but	but	CCONJ	CC	_	3	cc	474-433	_
+12	not	not	ADV	RB	_	13	neg	474-434	_
+13	from	from	ADP	IN	_	3	conj	474-435	_
+14	privation	privation	NOUN	NN	_	13	pobj	474-436	_
+15	to	to	ADP	IN	_	13	prep	474-437	_
+16	possession	possession	NOUN	NN	_	15	pobj	474-438	_
+17	.	.	PUNCT	.	_	3	punct	474-439	_

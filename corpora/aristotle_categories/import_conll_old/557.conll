@@ -1,0 +1,10 @@
+1	Part	_	NOUN	NN	_	6	intj	_	_
+2	The	_	DET	DT	_	3	det	_	_
+3	term	_	NOUN	NN	_	6	nsubjpass	_	_
+4	Tohave	_	PROPN	NNP	_	3	appos	_	_
+5	is	_	VERB	VBZ	_	6	auxpass	_	_
+6	used	_	VERB	VBN	_	6	ROOT	_	_
+7	in	_	ADP	IN	_	6	prep	_	_
+8	various	_	ADJ	JJ	_	9	amod	_	_
+9	senses	_	NOUN	NNS	_	7	pobj	_	_
+10	.	_	PUNCT	.	_	6	punct	_	_

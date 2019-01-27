@@ -1,0 +1,13 @@
+1	Yet	yet	CCONJ	CC	_	4	cc	517-263	_
+2	it	-PRON-	PRON	PRP	_	4	nsubj	517-264	_
+3	would	would	VERB	MD	_	4	aux	517-265	_
+4	seem	seem	VERB	VB	_	4	ROOT	517-266	_
+5	that	that	ADP	IN	_	10	mark	517-267	_
+6	besides	besides	ADP	IN	_	10	prep	517-268	_
+7	those	those	DET	DT	_	6	pobj	517-269	_
+8	mentioned	mention	VERB	VBN	_	7	acl	517-270	_
+9	there	there	ADV	EX	_	10	expl	517-271	_
+10	is	be	VERB	VBZ	_	4	ccomp	517-272	_
+11	yet	yet	ADV	RB	_	12	advmod	517-273	_
+12	another	another	DET	DT	_	10	attr	517-274	_
+13	.	.	PUNCT	.	_	4	punct	517-275	_

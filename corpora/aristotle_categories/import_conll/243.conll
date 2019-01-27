@@ -1,0 +1,8 @@
+1	So	so	ADV	RB	_	3	advmod	243-277	_
+2	it	-PRON-	PRON	PRP	_	3	nsubj	243-278	_
+3	is	be	VERB	VBZ	_	3	ROOT	243-279	_
+4	in	in	ADP	IN	_	3	prep	243-280	_
+5	all	all	DET	DT	_	7	det	243-281	_
+6	other	other	ADJ	JJ	_	7	amod	243-282	_
+7	cases	case	NOUN	NNS	_	4	pobj	243-283	_
+8	.	.	PUNCT	.	_	3	punct	243-284	_

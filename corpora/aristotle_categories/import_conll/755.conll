@@ -1,0 +1,10 @@
+6	particular	particular	ADJ	JJ	_	7	amod	755-6	_
+7	instances	instance	NOUN	NNS	_	5	pobj	755-7	_
+8	,	,	PUNCT	,	_	3	punct	755-8	_
+9	if	if	ADP	IN	_	11	mark	755-9	_
+10	we	-PRON-	PRON	PRP	_	11	nsubj	755-10	_
+11	apply	apply	VERB	VBP	_	3	advcl	755-11	_
+12	the	the	DET	DT	_	13	det	755-12	_
+13	names	name	NOUN	NNS	_	11	dobj	755-13	_
+14	used	use	VERB	VBN	_	13	acl	755-14	_
+15	to	to	PART	TO	_	16	aux	755-15	_

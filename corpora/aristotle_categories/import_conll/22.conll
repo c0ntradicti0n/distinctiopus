@@ -1,0 +1,15 @@
+1	If	if	ADP	IN	_	3	mark	22-168	_
+2	genera	genera	NOUN	NN	_	3	nsubj	22-169	22->[8:9],22->[11:12]
+3	are	be	VERB	VBP	_	10	advcl	22-170	_
+4	different	different	ADJ	JJ	_	3	acomp	22-171	_
+5	and	and	CCONJ	CC	_	4	cc	22-172	_
+6	coordinate	coordinate	VERB	VB	_	4	conj	22-173	_
+7	,	,	PUNCT	,	_	10	punct	22-174	_
+8	their	-PRON-	ADJ	PRP$	_	9	poss	22-175	22->[2:3],22->[11:12]
+9	differentiae	differentiae	VERB	VBN	_	10	nsubj	22-176	_
+10	are	be	VERB	VBP	_	10	ROOT	22-177	_
+11	themselves	-PRON-	PRON	PRP	_	10	nsubj	22-178	22->[2:3],22->[8:9]
+12	different	different	ADJ	JJ	_	10	acomp	22-179	_
+13	in	in	ADP	IN	_	12	prep	22-180	_
+14	kind	kind	NOUN	NN	_	13	pobj	22-181	_
+15	.	.	PUNCT	.	_	10	punct	22-182	_

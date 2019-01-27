@@ -1,0 +1,14 @@
+1	A	a	DET	DT	_	3	det	325-342	_
+2	third	third	ADJ	JJ	_	3	amod	325-343	_
+3	class	class	NOUN	NN	_	7	nsubj	325-344	_
+4	within	within	ADP	IN	_	3	prep	325-345	_
+5	this	this	DET	DT	_	6	det	325-346	_
+6	category	category	NOUN	NN	_	4	pobj	325-347	_
+7	is	be	VERB	VBZ	_	7	ROOT	325-348	_
+8	that	that	DET	DT	_	7	attr	325-349	_
+9	of	of	ADP	IN	_	8	prep	325-350	_
+10	affective	affective	ADJ	JJ	_	11	amod	325-351	_
+11	qualities	quality	NOUN	NNS	_	9	pobj	325-352	_
+12	and	and	CCONJ	CC	_	11	cc	325-353	_
+13	affections	affection	NOUN	NNS	_	11	conj	325-354	_
+14	.	.	PUNCT	.	_	7	punct	325-355	_

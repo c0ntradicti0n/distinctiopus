@@ -1,0 +1,13 @@
+1	Habit	habit	PROPN	NNP	_	2	nsubj	308-345	_
+2	differs	differ	NOUN	NNS	_	2	ROOT	308-346	_
+3	from	from	ADP	IN	_	2	prep	308-347	_
+4	disposition	disposition	NOUN	NN	_	3	pobj	308-348	_
+5	in	in	ADP	IN	_	4	prep	308-349	_
+6	being	be	VERB	VBG	_	5	pcomp	308-350	_
+7	more	more	ADV	RBR	_	8	advmod	308-351	_
+8	lasting	lasting	ADJ	JJ	_	6	acomp	308-352	_
+9	and	and	CCONJ	CC	_	8	cc	308-353	_
+10	more	more	ADV	RBR	_	11	advmod	308-354	_
+11	firmly	firmly	ADV	RB	_	12	advmod	308-355	_
+12	established	establish	VERB	VBN	_	8	conj	308-356	_
+13	.	.	PUNCT	.	_	2	punct	308-357	_

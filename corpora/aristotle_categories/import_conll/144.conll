@@ -1,0 +1,9 @@
+1	Number	number	NOUN	NN	_	5	nsubj	144-222	_
+2	,	,	PUNCT	,	_	5	punct	144-223	_
+3	therefore	therefore	ADV	RB	_	5	advmod	144-224	_
+4	,	,	PUNCT	,	_	5	punct	144-225	_
+5	is	be	VERB	VBZ	_	5	ROOT	144-226	_
+6	a	a	DET	DT	_	8	det	144-227	_
+7	discrete	discrete	ADJ	JJ	_	8	amod	144-228	_
+8	quantity	quantity	NOUN	NN	_	5	attr	144-229	_
+9	.	.	PUNCT	.	_	5	punct	144-230	_

@@ -1,0 +1,10 @@
+6	is	be	VERB	VBZ	_	6	ROOT	995-6	_
+7	equally	equally	ADV	RB	_	6	advmod	995-7	_
+8	the	the	DET	DT	_	9	det	995-8	_
+9	contrary	contrary	NOUN	NN	_	6	attr	995-9	_
+10	of	of	ADP	IN	_	9	prep	995-10	_
+11	the	the	DET	DT	_	12	det	995-11	_
+12	one	one	NUM	CD	_	10	pobj	995-12	_
+13	and	and	CCONJ	CC	_	10	cc	995-13	_
+14	of	of	ADP	IN	_	10	conj	995-14	_
+15	the	the	DET	DT	_	16	det	995-15	_

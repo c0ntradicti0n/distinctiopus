@@ -1,0 +1,16 @@
+1	When	when	ADV	WRB	_	4	advmod	257-531	_
+2	the	the	DET	DT	_	3	det	257-532	257->[8:9]
+3	terminology	terminology	NOUN	NN	_	4	nsubj	257-533	257->[8:9]
+4	is	be	VERB	VBZ	_	9	advcl	257-534	_
+5	thus	thus	ADV	RB	_	4	advmod	257-535	_
+6	correct	correct	ADJ	JJ	_	4	acomp	257-536	_
+7	,	,	PUNCT	,	_	9	punct	257-537	_
+8	it	-PRON-	PRON	PRP	_	9	nsubj	257-538	257->[2:4]
+9	is	be	VERB	VBZ	_	9	ROOT	257-539	_
+10	evident	evident	ADJ	JJ	_	9	acomp	257-540	_
+11	that	that	ADP	IN	_	14	mark	257-541	_
+12	all	all	DET	DT	_	13	det	257-542	_
+13	correlatives	correlative	NOUN	NNS	_	14	nsubj	257-543	_
+14	are	be	VERB	VBP	_	9	ccomp	257-544	_
+15	interdependent	interdependent	ADJ	JJ	_	14	acomp	257-545	_
+16	.	.	PUNCT	.	_	9	punct	257-546	_

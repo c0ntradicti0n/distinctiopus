@@ -1,0 +1,7 @@
+1	For	for	ADP	IN	_	3	mark	76-265	_
+2	they	-PRON-	PRON	PRP	_	3	nsubj	76-266	_
+3	are	be	VERB	VBP	_	3	ROOT	76-267	_
+4	not	not	ADV	RB	_	3	neg	76-268	_
+5	in	in	ADP	IN	_	3	prep	76-269	_
+6	man	man	NOUN	NN	_	5	pobj	76-270	_
+7	.	.	PUNCT	.	_	3	punct	76-271	_

@@ -1,0 +1,12 @@
+1	The	the	DET	DT	_	3	det	411-158	_
+2	proposed	propose	VERB	VBN	_	3	amod	411-159	_
+3	categories	category	NOUN	NNS	_	10	nsubj	411-160	_
+4	have	have	VERB	VBP	_	10	aux	411-161	_
+5	,	,	PUNCT	,	_	10	punct	411-162	_
+6	then	then	ADV	RB	_	10	advmod	411-163	_
+7	,	,	PUNCT	,	_	10	punct	411-164	_
+8	been	be	VERB	VBN	_	10	auxpass	411-165	_
+9	adequately	adequately	ADV	RB	_	10	advmod	411-166	_
+10	dealt	deal	VERB	VBN	_	10	ROOT	411-167	_
+11	with	with	ADP	IN	_	10	prt	411-168	_
+12	.	.	PUNCT	.	_	10	punct	411-169	_

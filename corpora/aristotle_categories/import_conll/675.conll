@@ -1,0 +1,9 @@
+6	changes	change	NOUN	NNS	_	9	nsubj	675-6	_
+7	of	of	ADP	IN	_	6	prep	675-7	_
+8	colour	colour	NOUN	NN	_	7	pobj	675-8	_
+9	take	take	VERB	VBP	_	2	ccomp	675-9	_
+10	place	place	NOUN	NN	_	9	dobj	675-10	_
+11	because	because	ADP	IN	_	9	prep	675-11	_
+12	of	of	ADP	IN	_	11	pcomp	675-12	_
+13	affections	affection	NOUN	NNS	_	11	pobj	675-13	_
+14	.	.	PUNCT	.	_	2	punct	675-14	_

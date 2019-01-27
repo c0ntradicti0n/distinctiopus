@@ -1,0 +1,13 @@
+1	That	_	DET	DT	_	7	nsubj	_	_
+2	which	_	ADJ	WDT	_	3	nsubj	_	_
+3	is	_	VERB	VBZ	_	1	relcl	_	_
+4	affirmed	_	VERB	VBN	_	3	acomp	_	_
+5	or	_	CCONJ	CC	_	4	cc	_	_
+6	denied	_	VERB	VBN	_	4	conj	_	_
+7	is	_	VERB	VBZ	_	7	ROOT	_	_
+8	not	_	ADV	RB	_	7	neg	_	_
+9	itself	_	PRON	PRP	_	7	attr	_	_
+10	affirmation	_	NOUN	NN	_	7	attr	_	_
+11	or	_	CCONJ	CC	_	10	cc	_	_
+12	denial	_	NOUN	NN	_	10	conj	_	_
+13	.	_	PUNCT	.	_	7	punct	_	_

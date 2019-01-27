@@ -1,0 +1,15 @@
+1	Moreover	_	ADV	RB	_	4	advmod	_	_
+2	,	_	PUNCT	,	_	4	punct	_	_
+3	it	_	PRON	PRP	_	4	nsubj	_	_
+4	is	_	VERB	VBZ	_	4	ROOT	_	_
+5	a	_	DET	DT	_	7	det	_	_
+6	discrete	_	ADJ	JJ	_	7	amod	_	_
+7	quantity	_	NOUN	NN	_	4	attr	_	_
+8	for	_	ADP	IN	_	7	prep	_	_
+9	its	_	ADJ	PRP$	_	10	poss	_	_
+10	parts	_	NOUN	NNS	_	8	pobj	_	_
+11	have	_	VERB	VBP	_	4	ccomp	_	_
+12	no	_	DET	DT	_	14	det	_	_
+13	common	_	ADJ	JJ	_	14	amod	_	_
+14	boundary	_	NOUN	NN	_	11	dobj	_	_
+15	.	_	PUNCT	.	_	4	punct	_	_

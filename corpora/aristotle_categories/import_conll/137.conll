@@ -1,0 +1,10 @@
+1	Let	let	VERB	VB	_	1	ROOT	137-335	_
+2	these	these	DET	DT	_	3	nsubj	137-336	_
+3	remarks	remark	NOUN	NNS	_	4	nsubj	137-337	_
+4	suffice	suffice	VERB	VB	_	1	ccomp	137-338	_
+5	on	on	ADP	IN	_	4	prep	137-339	_
+6	the	the	DET	DT	_	7	det	137-340	_
+7	subject	subject	NOUN	NN	_	5	pobj	137-341	_
+8	of	of	ADP	IN	_	7	prep	137-342	_
+9	substance	substance	NOUN	NN	_	8	pobj	137-343	_
+10	.	.	PUNCT	.	_	1	punct	137-344	_

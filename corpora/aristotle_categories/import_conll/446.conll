@@ -1,0 +1,13 @@
+1	By	by	ADP	IN	_	4	prep	446-313	_
+2	Affirmation	affirmation	NOUN	NN	_	1	pobj	446-314	_
+3	we	-PRON-	PRON	PRP	_	4	nsubj	446-315	_
+4	mean	mean	VERB	VBP	_	4	ROOT	446-316	_
+5	an	an	DET	DT	_	7	det	446-317	_
+6	affirmative	affirmative	ADJ	JJ	_	7	amod	446-318	_
+7	proposition	proposition	NOUN	NN	_	4	dobj	446-319	_
+8	,	,	PUNCT	,	_	4	punct	446-320	_
+9	by	by	ADP	IN	_	4	prep	446-321	_
+10	Denial	denial	PROPN	NNP	_	9	pobj	446-322	_
+11	a	a	DET	DT	_	12	det	446-323	_
+12	negative	negative	NOUN	NN	_	9	pobj	446-324	_
+13	.	.	PUNCT	.	_	4	punct	446-325	_

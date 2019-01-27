@@ -1,0 +1,15 @@
+1	It	-PRON-	PRON	PRP	_	2	nsubj	182-246	_
+2	is	be	VERB	VBZ	_	2	ROOT	182-247	_
+3	,	,	PUNCT	,	_	2	punct	182-248	_
+4	therefore	therefore	ADV	RB	_	2	advmod	182-249	_
+5	,	,	PUNCT	,	_	2	punct	182-250	_
+6	plain	plain	ADJ	JJ	_	2	acomp	182-251	_
+7	that	that	ADP	IN	_	9	mark	182-252	_
+8	these	these	DET	DT	_	9	nsubj	182-253	183->[6:7],183->[12:13]
+9	are	be	VERB	VBP	_	6	ccomp	182-254	_
+10	to	to	PART	TO	_	12	aux	182-255	_
+11	be	be	VERB	VB	_	12	auxpass	182-256	_
+12	classed	class	VERB	VBN	_	9	xcomp	182-257	_
+13	as	as	ADV	RB	_	12	prep	182-258	_
+14	relative	relative	ADJ	JJ	_	13	amod	182-259	_
+15	.	.	PUNCT	.	_	2	punct	182-260	_

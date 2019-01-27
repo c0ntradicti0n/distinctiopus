@@ -1,0 +1,11 @@
+1	Nor	nor	CCONJ	CC	_	8	cc	98-346	_
+2	can	can	VERB	MD	_	8	aux	98-347	_
+3	the	the	DET	DT	_	4	det	98-348	_
+4	species	specie	NOUN	NNS	_	8	nsubj	98-349	_
+5	or	or	CCONJ	CC	_	4	cc	98-350	_
+6	the	the	DET	DT	_	7	det	98-351	_
+7	genus	genus	NOUN	NNS	_	4	conj	98-352	_
+8	have	have	VERB	VBP	_	8	ROOT	98-353	_
+9	a	a	DET	DT	_	10	det	98-354	_
+10	contrary	contrary	NOUN	NN	_	8	dobj	98-355	_
+11	.	.	PUNCT	.	_	8	punct	98-356	_

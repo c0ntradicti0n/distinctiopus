@@ -1,0 +1,10 @@
+6	and	and	CCONJ	CC	_	5	cc	715-6	_
+7	smoothness	smoothness	NOUN	NN	_	5	conj	715-7	_
+8	,	,	PUNCT	,	_	1	punct	715-8	_
+9	seem	seem	VERB	VBP	_	9	ROOT	715-9	_
+10	to	to	PART	TO	_	11	aux	715-10	_
+11	be	be	VERB	VB	_	9	xcomp	715-11	_
+12	terms	term	NOUN	NNS	_	11	attr	715-12	_
+13	indicating	indicate	VERB	VBG	_	12	acl	715-13	_
+14	quality	quality	NOUN	NN	_	13	dobj	715-14	_
+15	,	,	PUNCT	,	_	9	punct	715-15	_

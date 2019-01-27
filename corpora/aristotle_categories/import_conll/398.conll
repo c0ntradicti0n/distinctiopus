@@ -1,0 +1,10 @@
+1	Thus	thus	ADV	RB	_	7	advmod	398-410	_
+2	,	,	PUNCT	,	_	7	punct	398-411	_
+3	individual	individual	ADJ	JJ	_	4	amod	398-412	_
+4	branches	branch	NOUN	NNS	_	7	nsubj	398-413	_
+5	of	of	ADP	IN	_	4	prep	398-414	_
+6	knowledge	knowledge	NOUN	NN	_	5	pobj	398-415	_
+7	are	be	VERB	VBP	_	7	ROOT	398-416	_
+8	not	not	ADV	RB	_	7	neg	398-417	_
+9	relative	relative	ADJ	JJ	_	7	acomp	398-418	_
+10	.	.	PUNCT	.	_	7	punct	398-419	_

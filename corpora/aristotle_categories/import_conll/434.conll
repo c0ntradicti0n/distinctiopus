@@ -1,0 +1,11 @@
+1	Thus	thus	ADV	RB	_	6	advmod	434-363	_
+2	,	,	PUNCT	,	_	6	punct	434-364	_
+3	sight	sight	NOUN	NN	_	6	nsubj	434-365	_
+4	and	and	CCONJ	CC	_	3	cc	434-366	_
+5	blindness	blindness	NOUN	NN	_	3	conj	434-367	_
+6	have	have	VERB	VBP	_	6	ROOT	434-368	_
+7	reference	reference	NOUN	NN	_	6	dobj	434-369	_
+8	to	to	ADP	IN	_	7	prep	434-370	_
+9	the	the	DET	DT	_	10	det	434-371	_
+10	eye	eye	NOUN	NN	_	8	pobj	434-372	_
+11	.	.	PUNCT	.	_	6	punct	434-373	_

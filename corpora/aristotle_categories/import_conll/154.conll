@@ -1,0 +1,14 @@
+1	Time	time	NOUN	NN	_	10	nsubj	154-174	_
+2	,	,	PUNCT	,	_	10	punct	154-175	_
+3	past	past	ADJ	JJ	_	2	intj	154-176	_
+4	,	,	PUNCT	,	_	5	punct	154-177	_
+5	present	present	ADJ	JJ	_	3	conj	154-178	_
+6	,	,	PUNCT	,	_	5	punct	154-179	_
+7	and	and	CCONJ	CC	_	5	cc	154-180	_
+8	future	future	NOUN	NN	_	5	conj	154-181	_
+9	,	,	PUNCT	,	_	10	punct	154-182	_
+10	forms	form	VERB	VBZ	_	10	ROOT	154-183	_
+11	a	a	DET	DT	_	13	det	154-184	_
+12	continuous	continuous	ADJ	JJ	_	13	amod	154-185	_
+13	whole	whole	NOUN	NN	_	10	dobj	154-186	_
+14	.	.	PUNCT	.	_	10	punct	154-187	_

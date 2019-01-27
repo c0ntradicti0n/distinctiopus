@@ -1,0 +1,9 @@
+1	Alteration	alteration	NOUN	NN	_	7	nsubj	546-364	_
+2	and	and	CCONJ	CC	_	1	cc	546-365	_
+3	increase	increase	NOUN	NN	_	1	conj	546-366	_
+4	,	,	PUNCT	,	_	7	punct	546-367	_
+5	therefore	therefore	ADV	RB	_	7	advmod	546-368	_
+6	,	,	PUNCT	,	_	7	punct	546-369	_
+7	are	be	VERB	VBP	_	7	ROOT	546-370	_
+8	distinct	distinct	ADJ	JJ	_	7	acomp	546-371	_
+9	.	.	PUNCT	.	_	7	punct	546-372	_

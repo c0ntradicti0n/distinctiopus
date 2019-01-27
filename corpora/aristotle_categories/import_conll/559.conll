@@ -1,0 +1,10 @@
+1	The	the	DET	DT	_	2	det	559-440	_
+2	expression	expression	NOUN	NN	_	6	nsubj	559-441	_
+3	in	in	ADP	IN	_	2	prep	559-442	_
+4	such	such	ADJ	JJ	_	5	amod	559-443	_
+5	cases	case	NOUN	NNS	_	3	pobj	559-444	_
+6	has	have	VERB	VBZ	_	6	ROOT	559-445	_
+7	reference	reference	NOUN	NN	_	6	dobj	559-446	_
+8	to	to	ADP	IN	_	7	prep	559-447	_
+9	content	content	NOUN	NN	_	8	pobj	559-448	_
+10	.	.	PUNCT	.	_	6	punct	559-449	_

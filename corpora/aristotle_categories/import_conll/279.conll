@@ -1,0 +1,12 @@
+1	Thus	thus	ADV	RB	_	5	advmod	279-393	_
+2	,	,	PUNCT	,	_	5	punct	279-394	_
+3	it	-PRON-	PRON	PRP	_	5	nsubj	279-395	out of the margins
+4	would	would	VERB	MD	_	5	aux	279-396	_
+5	seem	seem	VERB	VB	_	5	ROOT	279-397	_
+6	that	that	ADP	IN	_	9	mark	279-398	_
+7	the	the	DET	DT	_	8	det	279-399	_
+8	perceptible	perceptible	ADJ	JJ	_	9	nsubj	279-400	_
+9	exists	exist	VERB	VBZ	_	5	ccomp	279-401	_
+10	before	before	ADP	IN	_	9	prep	279-402	_
+11	perception	perception	NOUN	NN	_	10	pobj	279-403	_
+12	.	.	PUNCT	.	_	5	punct	279-404	_

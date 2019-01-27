@@ -1,0 +1,14 @@
+1	It	_	PRON	PRP	_	2	nsubj	_	_
+2	is	_	VERB	VBZ	_	2	ROOT	_	_
+3	plain	_	ADJ	JJ	_	2	acomp	_	_
+4	that	_	ADP	IN	_	9	mark	_	_
+5	many	_	ADJ	JJ	_	6	amod	_	_
+6	changes	_	NOUN	NNS	_	9	nsubj	_	_
+7	of	_	ADP	IN	_	6	prep	_	_
+8	colour	_	NOUN	NN	_	7	pobj	_	_
+9	take	_	VERB	VBP	_	2	ccomp	_	_
+10	place	_	NOUN	NN	_	9	dobj	_	_
+11	because	_	ADP	IN	_	9	prep	_	_
+12	of	_	ADP	IN	_	11	pcomp	_	_
+13	affections	_	NOUN	NNS	_	11	pobj	_	_
+14	.	_	PUNCT	.	_	2	punct	_	_

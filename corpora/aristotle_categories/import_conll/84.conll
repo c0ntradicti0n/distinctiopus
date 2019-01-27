@@ -1,0 +1,14 @@
+1	Similarly	similarly	ADV	RB	_	6	advmod	84-225	_
+2	,	,	PUNCT	,	_	6	punct	84-226	_
+3	the	the	DET	DT	_	4	det	84-227	_
+4	differentiae	differentiae	VERB	VBN	_	6	nsubjpass	84-228	_
+5	are	be	VERB	VBP	_	6	auxpass	84-229	_
+6	predicated	predicate	VERB	VBN	_	6	ROOT	84-230	_
+7	of	of	ADP	IN	_	6	prep	84-231	_
+8	the	the	DET	DT	_	9	det	84-232	81->[13:15],83->[6:8],83->[18:20],85->[6:8],85->[26:28],87->[12:14]
+9	species	specie	NOUN	NNS	_	7	pobj	84-233	81->[13:15],83->[6:8],83->[18:20],85->[6:8],85->[26:28],87->[12:14]
+10	and	and	CCONJ	CC	_	7	cc	84-234	_
+11	of	of	ADP	IN	_	7	conj	84-235	_
+12	the	the	DET	DT	_	13	det	84-236	_
+13	individuals	individual	NOUN	NNS	_	11	pobj	84-237	_
+14	.	.	PUNCT	.	_	6	punct	84-238	_

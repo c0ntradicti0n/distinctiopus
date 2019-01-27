@@ -1,0 +1,15 @@
+1	One	_	NUM	CD	_	2	nummod	_	_
+2	thing	_	NOUN	NN	_	5	nsubj	_	_
+3	can	_	VERB	MD	_	5	aux	_	_
+4	not	_	ADV	RB	_	5	neg	_	_
+5	be	_	VERB	VB	_	5	ROOT	_	_
+6	two	_	NUM	CD	_	7	nummod	_	_
+7	cubits	_	NOUN	NNS	_	8	npadvmod	_	_
+8	long	_	ADJ	JJ	_	5	acomp	_	_
+9	in	_	ADP	IN	_	5	prep	_	_
+10	a	_	DET	DT	_	12	det	_	_
+11	greater	_	ADJ	JJR	_	12	amod	_	_
+12	degree	_	NOUN	NN	_	9	pobj	_	_
+13	than	_	ADP	IN	_	12	prep	_	_
+14	another	_	DET	DT	_	13	pobj	_	_
+15	.	_	PUNCT	.	_	5	punct	_	_

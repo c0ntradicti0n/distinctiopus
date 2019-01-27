@@ -1,0 +1,15 @@
+1	Now	now	ADV	RB	_	3	advmod	427-369	_
+2	there	there	ADV	EX	_	3	expl	427-370	_
+3	is	be	VERB	VBZ	_	3	ROOT	427-371	_
+4	no	no	DET	DT	_	5	det	427-372	_
+5	intermediate	intermediate	NOUN	NN	_	3	attr	427-373	_
+6	between	between	ADP	IN	_	5	prep	427-374	_
+7	the	the	DET	DT	_	8	det	427-375	_
+8	terms	term	NOUN	NNS	_	6	pobj	427-376	_
+9	of	of	ADP	IN	_	8	prep	427-377	_
+10	either	either	DET	DT	_	9	pobj	427-378	_
+11	of	of	ADP	IN	_	10	prep	427-379	_
+12	these	these	DET	DT	_	14	det	427-380	_
+13	two	two	NUM	CD	_	14	nummod	427-381	_
+14	pairs	pair	NOUN	NNS	_	11	pobj	427-382	_
+15	.	.	PUNCT	.	_	3	punct	427-383	_

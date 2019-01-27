@@ -1,0 +1,14 @@
+1	There	there	ADV	EX	_	2	expl	383-191	_
+2	are	be	VERB	VBP	_	2	ROOT	383-192	_
+3	some	some	DET	DT	_	2	attr	383-193	384->[1:2],384->[16:17],384->[27:28]
+4	,	,	PUNCT	,	_	2	punct	383-194	_
+5	indeed	indeed	ADV	RB	_	2	advmod	383-195	_
+6	,	,	PUNCT	,	_	2	punct	383-196	_
+7	who	who	NOUN	WP	_	8	nsubj	383-197	_
+8	dispute	dispute	VERB	VBP	_	2	ccomp	383-198	_
+9	the	the	DET	DT	_	10	det	383-199	_
+10	possibility	possibility	NOUN	NN	_	8	dobj	383-200	_
+11	of	of	ADP	IN	_	10	prep	383-201	_
+12	variation	variation	NOUN	NN	_	11	pobj	383-202	_
+13	here	here	ADV	RB	_	12	advmod	383-203	_
+14	.	.	PUNCT	.	_	2	punct	383-204	_

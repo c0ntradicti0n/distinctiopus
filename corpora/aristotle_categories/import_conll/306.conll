@@ -1,0 +1,11 @@
+1	Quality	quality	NOUN	NN	_	2	nsubj	306-323	_
+2	is	be	VERB	VBZ	_	2	ROOT	306-324	_
+3	a	a	DET	DT	_	4	det	306-325	_
+4	term	term	NOUN	NN	_	2	attr	306-326	_
+5	that	that	ADJ	WDT	_	7	nsubjpass	306-327	_
+6	is	be	VERB	VBZ	_	7	auxpass	306-328	_
+7	used	use	VERB	VBN	_	4	relcl	306-329	_
+8	in	in	ADP	IN	_	7	prep	306-330	_
+9	many	many	ADJ	JJ	_	10	amod	306-331	_
+10	senses	sens	NOUN	NNS	_	8	pobj	306-332	_
+11	.	.	PUNCT	.	_	2	punct	306-333	_

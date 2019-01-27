@@ -1,0 +1,16 @@
+1	For	_	ADP	IN	_	11	prep	_	_
+2	all	_	DET	DT	_	1	pobj	_	_
+3	that	_	ADJ	WDT	_	5	nsubjpass	_	_
+4	is	_	VERB	VBZ	_	5	auxpass	_	_
+5	predicated	_	VERB	VBN	_	2	relcl	_	_
+6	of	_	ADP	IN	_	5	prep	_	_
+7	the	_	DET	DT	_	8	det	_	_
+8	predicate	_	NOUN	NN	_	6	pobj	_	_
+9	will	_	VERB	MD	_	11	aux	_	_
+10	be	_	VERB	VB	_	11	auxpass	_	_
+11	predicated	_	VERB	VBN	_	11	ROOT	_	_
+12	also	_	ADV	RB	_	11	advmod	_	_
+13	of	_	ADP	IN	_	11	prep	_	_
+14	the	_	DET	DT	_	15	det	_	_
+15	subject	_	NOUN	NN	_	13	pobj	_	_
+16	.	_	PUNCT	.	_	11	punct	_	_

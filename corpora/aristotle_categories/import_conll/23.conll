@@ -1,0 +1,12 @@
+1	Take	take	VERB	VB	_	1	ROOT	23-183	_
+2	as	as	ADP	IN	_	1	prep	23-184	_
+3	an	an	DET	DT	_	4	det	23-185	_
+4	instance	instance	NOUN	NN	_	2	pobj	23-186	_
+5	the	the	DET	DT	_	7	det	23-187	_
+6	genus	genus	NOUN	NN	_	7	compound	23-188	_
+7	Animal	animal	PROPN	NNP	_	1	dobj	23-189	_
+8	and	and	CCONJ	CC	_	7	cc	23-190	_
+9	the	the	DET	DT	_	11	det	23-191	_
+10	genus	genus	NOUN	NN	_	11	compound	23-192	_
+11	Knowledge	knowledge	PROPN	NNP	_	7	conj	23-193	_
+12	.	.	PUNCT	.	_	1	punct	23-194	_

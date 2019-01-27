@@ -1,0 +1,17 @@
+1	In	in	ADP	IN	_	15	prep	473-406	_
+2	the	the	DET	DT	_	3	det	473-407	_
+3	case	case	NOUN	NN	_	1	pobj	473-408	_
+4	of	of	ADP	IN	_	3	prep	473-409	_
+5	Positives	positives	PROPN	NNPS	_	4	pobj	473-410	_
+6	and	and	CCONJ	CC	_	5	cc	473-411	_
+7	Privatives	privatives	PROPN	NNPS	_	5	conj	473-412	_
+8	,	,	PUNCT	,	_	11	punct	473-413	_
+9	however	however	ADV	RB	_	11	advmod	473-414	_
+10	,	,	PUNCT	,	_	11	punct	473-415	_
+11	change	change	VERB	VBP	_	15	nsubj	473-416	_
+12	in	in	ADP	IN	_	11	prep	473-417	_
+13	both	both	DET	DT	_	14	det	473-418	_
+14	directions	direction	NOUN	NNS	_	12	pobj	473-419	_
+15	is	be	VERB	VBZ	_	15	ROOT	473-420	_
+16	impossible	impossible	ADJ	JJ	_	15	acomp	473-421	_
+17	.	.	PUNCT	.	_	15	punct	473-422	_

@@ -1,0 +1,16 @@
+1	Whiteness	whiteness	PROPN	NNP	_	3	nsubjpass	378-359	_
+2	is	be	VERB	VBZ	_	3	auxpass	378-360	_
+3	predicated	predicate	VERB	VBN	_	3	ROOT	378-361	_
+4	of	of	ADP	IN	_	3	prep	378-362	_
+5	one	one	NUM	CD	_	6	nummod	378-363	_
+6	thing	thing	NOUN	NN	_	4	pobj	378-364	_
+7	in	in	ADP	IN	_	6	prep	378-365	_
+8	a	a	DET	DT	_	12	det	378-366	_
+9	greater	great	ADJ	JJR	_	12	amod	378-367	_
+10	or	or	CCONJ	CC	_	9	cc	378-368	_
+11	less	less	ADJ	JJR	_	9	conj	378-369	_
+12	degree	degree	NOUN	NN	_	7	pobj	378-370	_
+13	than	than	ADP	IN	_	6	prep	378-371	_
+14	of	of	ADP	IN	_	13	prep	378-372	_
+15	another	another	DET	DT	_	14	pobj	378-373	_
+16	.	.	PUNCT	.	_	3	punct	378-374	_

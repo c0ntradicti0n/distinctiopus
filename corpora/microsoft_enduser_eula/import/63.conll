@@ -1,0 +1,17 @@
+1	Si	_	VERB	VB	_	6	nmod	_	_
+2	vous	_	ADJ	JJ	_	6	amod	_	_
+3	avez	_	NOUN	NN	_	5	amod	_	_
+4	acquis	_	NOUN	NN	_	5	compound	_	_
+5	votre	_	NOUN	NN	_	6	compound	_	_
+6	produit	_	VERB	VBP	_	6	ROOT	_	_
+7	Microsoft	_	PROPN	NNP	_	6	dobj	_	_
+8	au	_	ADP	IN	_	6	prep	_	_
+9	CANADA	_	PROPN	NNP	_	8	pobj	_	_
+10	,	_	PUNCT	,	_	6	punct	_	_
+11	la	_	ADJ	JJ	_	12	nsubj	_	_
+12	garantie	_	NOUN	NN	_	6	conj	_	_
+13	limitée	_	VERB	VBZ	_	14	nmod	_	_
+14	suivante	_	ADJ	JJ	_	16	nmod	_	_
+15	vous	_	ADJ	JJ	_	16	amod	_	_
+16	concerne	_	ADJ	JJ	_	12	dobj	_	_
+17	,	_	PUNCT	,	_	12	punct	_	_

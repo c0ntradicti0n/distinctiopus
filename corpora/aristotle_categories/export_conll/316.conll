@@ -1,0 +1,15 @@
+1	Habits	_	NOUN	NNS	_	2	nsubj	_	_
+2	are	_	VERB	VBP	_	2	ROOT	_	_
+3	at	_	ADP	IN	_	2	prep	_	_
+4	the	_	DET	DT	_	7	det	_	_
+5	same	_	ADJ	JJ	_	6	amod	_	_
+6	time	_	NOUN	NN	_	7	compound	_	_
+7	dispositions	_	NOUN	NNS	_	3	pobj	_	_
+8	,	_	PUNCT	,	_	2	punct	_	_
+9	but	_	CCONJ	CC	_	2	cc	_	_
+10	dispositions	_	NOUN	NNS	_	11	nsubj	_	_
+11	are	_	VERB	VBP	_	2	conj	_	_
+12	not	_	ADV	RB	_	11	neg	_	_
+13	necessarily	_	ADV	RB	_	11	advmod	_	_
+14	habits	_	NOUN	NNS	_	11	attr	_	_
+15	.	_	PUNCT	.	_	11	punct	_	_

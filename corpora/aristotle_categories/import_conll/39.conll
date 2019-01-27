@@ -1,0 +1,17 @@
+1	Thus	thus	ADV	RB	_	12	advmod	39-456	_
+2	,	,	PUNCT	,	_	12	punct	39-457	_
+3	both	both	CCONJ	CC	_	5	preconj	39-458	_
+4	the	the	DET	DT	_	5	det	39-459	_
+5	name	name	NOUN	NN	_	12	nsubj	39-460	_
+6	and	and	CCONJ	CC	_	5	cc	39-461	_
+7	the	the	DET	DT	_	8	det	39-462	_
+8	definition	definition	NOUN	NN	_	5	conj	39-463	_
+9	of	of	ADP	IN	_	8	prep	39-464	_
+10	the	the	DET	DT	_	11	det	39-465	_
+11	species	specie	NOUN	NNS	_	9	pobj	39-466	_
+12	are	be	VERB	VBP	_	12	ROOT	39-467	_
+13	predicable	predicable	ADJ	JJ	_	12	acomp	39-468	_
+14	of	of	ADP	IN	_	13	prep	39-469	_
+15	the	the	DET	DT	_	16	det	39-470	_
+16	individual	individual	NOUN	NN	_	14	pobj	39-471	_
+17	.	.	PUNCT	.	_	12	punct	39-472	_

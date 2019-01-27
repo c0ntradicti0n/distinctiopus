@@ -1,0 +1,14 @@
+1	The	the	DET	DT	_	3	det	282-190	_
+2	individual	individual	ADJ	JJ	_	3	amod	282-191	_
+3	man	man	NOUN	NN	_	8	nsubjpass	282-192	_
+4	or	or	CCONJ	CC	_	3	cc	282-193	_
+5	ox	ox	NOUN	NN	_	3	conj	282-194	_
+6	is	be	VERB	VBZ	_	8	auxpass	282-195	_
+7	not	not	ADV	RB	_	8	neg	282-196	_
+8	defined	define	VERB	VBN	_	8	ROOT	282-197	_
+9	with	with	ADP	IN	_	8	prep	282-198	_
+10	reference	reference	NOUN	NN	_	9	pobj	282-199	_
+11	to	to	ADP	IN	_	10	prep	282-200	_
+12	something	something	NOUN	NN	_	11	pobj	282-201	_
+13	external	external	ADJ	JJ	_	12	amod	282-202	_
+14	.	.	PUNCT	.	_	8	punct	282-203	_

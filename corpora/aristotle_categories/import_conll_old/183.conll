@@ -1,0 +1,15 @@
+1	It	_	PRON	PRP	_	2	nsubj	_	_
+2	is	_	VERB	VBZ	_	2	ROOT	_	_
+3	,	_	PUNCT	,	_	2	punct	_	_
+4	therefore	_	ADV	RB	_	2	advmod	_	_
+5	,	_	PUNCT	,	_	2	punct	_	_
+6	plain	_	ADJ	JJ	_	2	acomp	_	_
+7	that	_	ADP	IN	_	9	mark	_	_
+8	these	_	DET	DT	_	9	nsubj	_	_
+9	are	_	VERB	VBP	_	2	ccomp	_	_
+10	to	_	PART	TO	_	12	aux	_	_
+11	be	_	VERB	VB	_	12	auxpass	_	_
+12	classed	_	VERB	VBN	_	9	xcomp	_	_
+13	as	_	ADP	IN	_	12	prep	_	_
+14	relative	_	ADJ	JJ	_	13	amod	_	_
+15	.	_	PUNCT	.	_	2	punct	_	_

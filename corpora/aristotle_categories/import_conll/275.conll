@@ -1,0 +1,13 @@
+1	But	but	CCONJ	CC	_	8	cc	275-280	_
+2	the	the	DET	DT	_	3	det	275-281	_
+3	annihilation	annihilation	NOUN	NN	_	8	nsubj	275-282	_
+4	of	of	ADP	IN	_	3	prep	275-283	_
+5	perception	perception	NOUN	NN	_	4	pobj	275-284	_
+6	does	do	VERB	VBZ	_	8	aux	275-285	_
+7	not	not	ADV	RB	_	8	neg	275-286	_
+8	involve	involve	VERB	VB	_	8	ROOT	275-287	_
+9	that	that	DET	DT	_	8	dobj	275-288	_
+10	of	of	ADP	IN	_	9	prep	275-289	_
+11	the	the	DET	DT	_	12	det	275-290	_
+12	perceptible	perceptible	ADJ	JJ	_	10	pobj	275-291	_
+13	.	.	PUNCT	.	_	8	punct	275-292	_

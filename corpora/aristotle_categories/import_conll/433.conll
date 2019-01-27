@@ -1,0 +1,10 @@
+1	Privatives	privatif	NOUN	NNS	_	4	nsubj	433-353	_
+2	and	and	CCONJ	CC	_	1	cc	433-354	_
+3	Positives	positives	PROPN	NNPS	_	1	conj	433-355	_
+4	have	have	VERB	VBP	_	4	ROOT	433-356	_
+5	reference	reference	NOUN	NN	_	4	dobj	433-357	_
+6	to	to	ADP	IN	_	5	prep	433-358	_
+7	the	the	DET	DT	_	9	det	433-359	_
+8	same	same	ADJ	JJ	_	9	amod	433-360	_
+9	subject	subject	NOUN	NN	_	6	pobj	433-361	_
+10	.	.	PUNCT	.	_	4	punct	433-362	_

@@ -1,0 +1,15 @@
+1	That	_	DET	DT	_	9	nsubjpass	_	_
+2	which	_	ADJ	WDT	_	3	nsubj	_	_
+3	is	_	VERB	VBZ	_	1	relcl	_	_
+4	better	_	ADJ	JJR	_	3	acomp	_	_
+5	and	_	CCONJ	CC	_	4	cc	_	_
+6	more	_	ADV	RBR	_	7	advmod	_	_
+7	honourable	_	ADJ	JJ	_	4	conj	_	_
+8	is	_	VERB	VBZ	_	9	auxpass	_	_
+9	said	_	VERB	VBN	_	9	ROOT	_	_
+10	to	_	PART	TO	_	11	aux	_	_
+11	have	_	VERB	VB	_	9	xcomp	_	_
+12	a	_	DET	DT	_	14	det	_	_
+13	natural	_	ADJ	JJ	_	14	amod	_	_
+14	priority	_	NOUN	NN	_	11	dobj	_	_
+15	.	_	PUNCT	.	_	9	punct	_	_

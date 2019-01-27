@@ -1,0 +1,14 @@
+1	Substance	substance	PROPN	NNP	_	7	nsubj	102-115	_
+2	,	,	PUNCT	,	_	7	punct	102-116	_
+3	again	again	ADV	RB	_	7	advmod	102-117	_
+4	,	,	PUNCT	,	_	7	punct	102-118	_
+5	does	do	VERB	VBZ	_	7	aux	102-119	_
+6	not	not	ADV	RB	_	7	neg	102-120	_
+7	appear	appear	VERB	VB	_	7	ROOT	102-121	_
+8	to	to	PART	TO	_	9	aux	102-122	_
+9	admit	admit	VERB	VB	_	7	xcomp	102-123	_
+10	of	of	ADP	IN	_	9	prep	102-124	_
+11	variation	variation	NOUN	NN	_	10	pobj	102-125	_
+12	of	of	ADP	IN	_	11	prep	102-126	_
+13	degree	degree	NOUN	NN	_	12	pobj	102-127	_
+14	.	.	PUNCT	.	_	7	punct	102-128	_

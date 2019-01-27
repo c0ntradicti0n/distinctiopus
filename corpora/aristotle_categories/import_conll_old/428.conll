@@ -1,0 +1,15 @@
+1	Now	_	ADV	RB	_	3	advmod	_	_
+2	there	_	ADV	EX	_	3	expl	_	_
+3	is	_	VERB	VBZ	_	3	ROOT	_	_
+4	no	_	DET	DT	_	5	det	_	_
+5	intermediate	_	ADJ	JJ	_	3	attr	_	_
+6	between	_	ADP	IN	_	5	prep	_	_
+7	the	_	DET	DT	_	8	det	_	_
+8	terms	_	NOUN	NNS	_	6	pobj	_	_
+9	of	_	ADP	IN	_	8	prep	_	_
+10	either	_	DET	DT	_	9	pobj	_	_
+11	of	_	ADP	IN	_	10	prep	_	_
+12	these	_	DET	DT	_	14	det	_	_
+13	two	_	NUM	CD	_	14	nummod	_	_
+14	pairs	_	NOUN	NNS	_	11	pobj	_	_
+15	.	_	PUNCT	.	_	3	punct	_	_

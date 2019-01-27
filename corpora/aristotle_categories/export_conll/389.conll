@@ -1,0 +1,14 @@
+1	Thus	_	ADV	RB	_	4	advmod	_	_
+2	,	_	PUNCT	,	_	4	punct	_	_
+3	it	_	PRON	PRP	_	4	nsubj	_	_
+4	is	_	VERB	VBZ	_	4	ROOT	_	_
+5	not	_	ADV	RB	_	4	neg	_	_
+6	all	_	DET	DT	_	4	advmod	_	_
+7	qualities	_	NOUN	NNS	_	4	attr	_	_
+8	which	_	ADJ	WDT	_	9	nsubj	_	_
+9	admit	_	VERB	VBP	_	4	ccomp	_	_
+10	of	_	ADP	IN	_	9	prep	_	_
+11	variation	_	NOUN	NN	_	10	pobj	_	_
+12	of	_	ADP	IN	_	11	prep	_	_
+13	degree	_	NOUN	NN	_	12	pobj	_	_
+14	.	_	PUNCT	.	_	4	punct	_	_

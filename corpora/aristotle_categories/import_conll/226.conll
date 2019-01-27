@@ -1,0 +1,12 @@
+1	It	-PRON-	PRON	PRP	_	3	nsubj	226-243	_
+2	also	also	ADV	RB	_	3	advmod	226-244	_
+3	appears	appear	VERB	VBZ	_	3	ROOT	226-245	_
+4	that	that	ADP	IN	_	7	mark	226-246	_
+5	relatives	relative	NOUN	NNS	_	7	nsubj	226-247	_
+6	can	can	VERB	MD	_	7	aux	226-248	_
+7	admit	admit	VERB	VB	_	3	ccomp	226-249	_
+8	of	of	ADP	IN	_	7	prep	226-250	_
+9	variation	variation	NOUN	NN	_	8	pobj	226-251	_
+10	of	of	ADP	IN	_	9	prep	226-252	_
+11	degree	degree	NOUN	NN	_	10	pobj	226-253	_
+12	.	.	PUNCT	.	_	3	punct	226-254	_

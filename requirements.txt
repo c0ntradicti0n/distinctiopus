@@ -1,0 +1,9 @@
+allennlp
+spacy-nightly
+pyprover
+numpy-indexed
+pyxdameraulevenshtein
+editdistance
+pygraphviz
+pylab
+pandas

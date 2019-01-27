@@ -1,0 +1,8 @@
+1	This	this	DET	DT	_	2	det	66-320	67->[1:2],67->[10:11]
+2	law	law	NOUN	NN	_	3	nsubj	66-321	67->[1:2],67->[10:11]
+3	holds	hold	VERB	VBZ	_	3	ROOT	66-322	_
+4	good	good	ADJ	JJ	_	3	dobj	66-323	_
+5	in	in	ADP	IN	_	3	prep	66-324	_
+6	all	all	DET	DT	_	7	det	66-325	_
+7	cases	case	NOUN	NNS	_	5	pobj	66-326	_
+8	.	.	PUNCT	.	_	3	punct	66-327	_

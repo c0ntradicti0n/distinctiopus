@@ -1,0 +1,20 @@
+1	For	for	ADP	IN	_	6	prep	420-151	_
+2	the	the	DET	DT	_	3	det	420-152	out of the margins,out of the margins,out of the margins,out of the margins
+3	thing	thing	NOUN	NN	_	1	pobj	420-153	out of the margins,out of the margins,out of the margins,out of the margins
+4	known	know	VERB	VBN	_	3	acl	420-154	out of the margins,out of the margins,out of the margins,out of the margins
+5	is	be	VERB	VBZ	_	6	auxpass	420-155	_
+6	explained	explain	VERB	VBN	_	6	ROOT	420-156	_
+7	as	as	ADP	IN	_	6	prep	420-157	_
+8	that	that	DET	DT	_	7	pobj	420-158	_
+9	which	which	ADJ	WDT	_	11	nsubjpass	420-159	_
+10	is	be	VERB	VBZ	_	11	auxpass	420-160	_
+11	known	know	VERB	VBN	_	6	advcl	420-161	_
+12	by	by	ADP	IN	_	11	agent	420-162	_
+13	something	something	NOUN	NN	_	12	pobj	420-163	_
+14	,	,	PUNCT	,	_	11	punct	420-164	_
+15	that	that	ADV	RB	_	16	advmod	420-165	_
+16	is	is	ADV	RB	_	18	advmod	420-166	_
+17	,	,	PUNCT	,	_	18	punct	420-167	_
+18	by	by	ADP	IN	_	11	prep	420-168	_
+19	knowledge	knowledge	NOUN	NN	_	18	pobj	420-169	_
+20	.	.	PUNCT	.	_	6	punct	420-170	_

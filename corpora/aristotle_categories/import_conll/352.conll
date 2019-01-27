@@ -1,0 +1,12 @@
+1	Such	such	ADJ	JJ	_	2	amod	352-179	_
+2	conditions	condition	NOUN	NNS	_	5	nsubjpass	352-180	_
+3	are	be	VERB	VBP	_	5	auxpass	352-181	_
+4	therefore	therefore	ADV	RB	_	5	advmod	352-182	_
+5	termed	term	VERB	VBN	_	5	ROOT	352-183	_
+6	,	,	PUNCT	,	_	5	punct	352-184	_
+7	not	not	ADV	RB	_	8	neg	352-185	_
+8	qualities	quality	NOUN	NNS	_	5	conj	352-186	_
+9	,	,	PUNCT	,	_	8	punct	352-187	_
+10	but	but	CCONJ	CC	_	8	cc	352-188	_
+11	affections	affection	NOUN	NNS	_	8	conj	352-189	_
+12	.	.	PUNCT	.	_	5	punct	352-190	_

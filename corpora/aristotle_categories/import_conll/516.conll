@@ -1,0 +1,16 @@
+1	Such	such	ADJ	JJ	_	5	nsubj	516-247	_
+2	,	,	PUNCT	,	_	5	punct	516-248	_
+3	then	then	ADV	RB	_	5	advmod	516-249	_
+4	,	,	PUNCT	,	_	5	punct	516-250	_
+5	are	be	VERB	VBP	_	5	ROOT	516-251	_
+6	the	the	DET	DT	_	8	det	516-252	_
+7	different	different	ADJ	JJ	_	8	amod	516-253	_
+8	senses	sens	NOUN	NNS	_	5	attr	516-254	_
+9	in	in	ADP	IN	_	15	prep	516-255	_
+10	which	which	ADJ	WDT	_	9	pobj	516-256	_
+11	the	the	DET	DT	_	12	det	516-257	_
+12	term	term	NOUN	NN	_	15	nsubjpass	516-258	_
+13	Prior	prior	PROPN	NNP	_	15	advmod	516-259	_
+14	is	be	VERB	VBZ	_	15	auxpass	516-260	_
+15	used	use	VERB	VBN	_	8	relcl	516-261	_
+16	.	.	PUNCT	.	_	5	punct	516-262	_

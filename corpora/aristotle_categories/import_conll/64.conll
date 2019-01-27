@@ -1,0 +1,9 @@
+1	For	for	ADP	IN	_	3	prep	64-286	_
+2	these	these	DET	DT	_	1	pobj	64-287	63->[41:42]
+3	are	be	VERB	VBP	_	3	ROOT	64-288	_
+4	the	the	DET	DT	_	5	det	64-289	_
+5	subjects	subject	NOUN	NNS	_	3	attr	64-290	_
+6	of	of	ADP	IN	_	5	prep	64-291	_
+7	all	all	DET	DT	_	8	det	64-292	_
+8	such	such	ADJ	JJ	_	6	pobj	64-293	_
+9	.	.	PUNCT	.	_	3	punct	64-294	_

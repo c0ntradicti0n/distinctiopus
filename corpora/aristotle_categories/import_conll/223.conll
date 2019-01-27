@@ -1,0 +1,9 @@
+1	It	-PRON-	PRON	PRP	_	2	nsubj	223-186	_
+2	is	be	VERB	VBZ	_	2	ROOT	223-187	_
+3	possible	possible	ADJ	JJ	_	2	acomp	223-188	_
+4	for	for	ADP	IN	_	7	mark	223-189	_
+5	relatives	relative	NOUN	NNS	_	7	nsubj	223-190	_
+6	to	to	PART	TO	_	7	aux	223-191	_
+7	have	have	VERB	VB	_	2	advcl	223-192	_
+8	contraries	contrary	NOUN	NNS	_	7	dobj	223-193	_
+9	.	.	PUNCT	.	_	2	punct	223-194	_

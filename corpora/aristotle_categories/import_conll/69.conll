@@ -1,0 +1,27 @@
+1	For	for	ADP	IN	_	4	prep	69-384	_
+2	Man	man	PROPN	NNP	_	1	pobj	69-385	_
+3	is	be	VERB	VBZ	_	4	auxpass	69-386	_
+4	predicated	predicate	VERB	VBN	_	4	ROOT	69-387	_
+5	of	of	ADP	IN	_	4	prep	69-388	_
+6	the	the	DET	DT	_	8	det	69-389	69->[24:27],out of the margins,out of the margins
+7	individual	individual	ADJ	JJ	_	8	amod	69-390	69->[24:27],out of the margins,out of the margins
+8	man	man	NOUN	NN	_	5	pobj	69-391	69->[24:27],out of the margins,out of the margins
+9	,	,	PUNCT	,	_	4	punct	69-392	_
+10	but	but	CCONJ	CC	_	4	cc	69-393	_
+11	is	be	VERB	VBZ	_	4	conj	69-394	_
+12	not	not	ADV	RB	_	11	neg	69-395	_
+13	present	present	ADJ	JJ	_	11	acomp	69-396	_
+14	in	in	ADP	IN	_	11	prep	69-397	_
+15	any	any	DET	DT	_	16	det	69-398	_
+16	subject	subject	NOUN	NN	_	14	pobj	69-399	_
+17	,	,	PUNCT	,	_	11	punct	69-400	_
+18	for	for	ADP	IN	_	20	prep	69-401	_
+19	manhood	manhood	NOUN	NN	_	18	pobj	69-402	_
+20	is	be	VERB	VBZ	_	11	advcl	69-403	_
+21	not	not	ADV	RB	_	20	neg	69-404	_
+22	present	present	ADJ	JJ	_	20	acomp	69-405	_
+23	in	in	ADP	IN	_	22	prep	69-406	_
+24	the	the	DET	DT	_	26	det	69-407	69->[6:9],out of the margins,out of the margins
+25	individual	individual	ADJ	JJ	_	26	amod	69-408	69->[6:9],out of the margins,out of the margins
+26	man	man	NOUN	NN	_	23	pobj	69-409	69->[6:9],out of the margins,out of the margins
+27	.	.	PUNCT	.	_	4	punct	69-410	_

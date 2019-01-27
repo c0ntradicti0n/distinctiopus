@@ -1,0 +1,11 @@
+1	Though	though	ADP	IN	_	3	mark	381-149	_
+2	this	this	DET	DT	_	3	nsubj	381-150	_
+3	is	be	VERB	VBZ	_	9	advcl	381-151	_
+4	generally	generally	ADV	RB	_	3	advmod	381-152	_
+5	the	the	DET	DT	_	6	det	381-153	_
+6	case	case	NOUN	NN	_	3	attr	381-154	_
+7	,	,	PUNCT	,	_	9	punct	381-155	_
+8	there	there	ADV	EX	_	9	expl	381-156	_
+9	are	be	VERB	VBP	_	9	ROOT	381-157	_
+10	exceptions	exception	NOUN	NNS	_	9	attr	381-158	_
+11	.	.	PUNCT	.	_	9	punct	381-159	_

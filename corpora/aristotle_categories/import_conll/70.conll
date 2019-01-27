@@ -1,0 +1,21 @@
+1	In	in	ADP	IN	_	9	prep	70-117	_
+2	the	the	DET	DT	_	4	det	70-118	_
+3	same	same	ADJ	JJ	_	4	amod	70-119	_
+4	way	way	NOUN	NN	_	1	pobj	70-120	_
+5	,	,	PUNCT	,	_	9	punct	70-121	_
+6	Animal	animal	PROPN	NNP	_	9	nsubjpass	70-122	_
+7	is	be	VERB	VBZ	_	9	auxpass	70-123	_
+8	also	also	ADV	RB	_	9	advmod	70-124	_
+9	predicated	predicate	VERB	VBN	_	9	ROOT	70-125	_
+10	of	of	ADP	IN	_	9	prep	70-126	_
+11	the	the	DET	DT	_	13	det	70-127	out of the margins,out of the margins,70->[20:21]
+12	individual	individual	ADJ	JJ	_	13	amod	70-128	out of the margins,out of the margins,70->[20:21]
+13	man	man	NOUN	NN	_	10	pobj	70-129	out of the margins,out of the margins,70->[20:21]
+14	,	,	PUNCT	,	_	9	punct	70-130	_
+15	but	but	CCONJ	CC	_	9	cc	70-131	_
+16	is	be	VERB	VBZ	_	9	conj	70-132	_
+17	not	not	ADV	RB	_	16	neg	70-133	_
+18	present	present	ADJ	JJ	_	16	acomp	70-134	_
+19	in	in	ADP	IN	_	18	prep	70-135	_
+20	him	-PRON-	PRON	PRP	_	19	pobj	70-136	out of the margins,out of the margins,70->[11:14]
+21	.	.	PUNCT	.	_	9	punct	70-137	_

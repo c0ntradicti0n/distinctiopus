@@ -1,0 +1,9 @@
+1	I	_	PRON	PRP	_	2	nsubj	_	_
+2	mean	_	VERB	VBP	_	2	ROOT	_	_
+3	here	_	ADV	RB	_	2	advmod	_	_
+4	that	_	DET	DT	_	5	det	_	_
+5	speech	_	NOUN	NN	_	2	dobj	_	_
+6	which	_	ADJ	WDT	_	7	nsubj	_	_
+7	is	_	VERB	VBZ	_	5	relcl	_	_
+8	vocal	_	ADJ	JJ	_	7	acomp	_	_
+9	.	_	PUNCT	.	_	2	punct	_	_

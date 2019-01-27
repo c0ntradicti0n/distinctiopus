@@ -1,0 +1,14 @@
+1	The	_	DET	DT	_	3	det	_	_
+2	individual	_	ADJ	JJ	_	3	amod	_	_
+3	man	_	NOUN	NN	_	8	nsubjpass	_	_
+4	or	_	CCONJ	CC	_	3	cc	_	_
+5	ox	_	NOUN	NN	_	3	conj	_	_
+6	is	_	VERB	VBZ	_	8	auxpass	_	_
+7	not	_	ADV	RB	_	8	neg	_	_
+8	defined	_	VERB	VBN	_	8	ROOT	_	_
+9	with	_	ADP	IN	_	8	prep	_	_
+10	reference	_	NOUN	NN	_	9	pobj	_	_
+11	to	_	ADP	IN	_	10	prep	_	_
+12	something	_	NOUN	NN	_	11	pobj	_	_
+13	external	_	ADJ	JJ	_	12	amod	_	_
+14	.	_	PUNCT	.	_	8	punct	_	_

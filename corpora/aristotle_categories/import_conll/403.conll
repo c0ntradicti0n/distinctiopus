@@ -1,0 +1,14 @@
+1	Action	action	NOUN	NN	_	1	ROOT	403-221	_
+2	and	and	CCONJ	CC	_	1	cc	403-222	_
+3	affection	affection	NOUN	NN	_	1	conj	403-223	_
+4	both	both	DET	DT	_	5	det	403-224	_
+5	admit	admit	NOUN	NN	_	5	ROOT	403-225	_
+6	of	of	ADP	IN	_	5	prep	403-226	_
+7	contraries	contrary	NOUN	NNS	_	6	pobj	403-227	_
+8	and	and	CCONJ	CC	_	5	cc	403-228	_
+9	also	also	ADV	RB	_	10	advmod	403-229	_
+10	of	of	ADP	IN	_	5	conj	403-230	_
+11	variation	variation	NOUN	NN	_	10	pobj	403-231	_
+12	of	of	ADP	IN	_	11	prep	403-232	_
+13	degree	degree	NOUN	NN	_	12	pobj	403-233	_
+14	.	.	PUNCT	.	_	5	punct	403-234	_

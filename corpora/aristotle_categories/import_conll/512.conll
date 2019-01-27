@@ -1,0 +1,12 @@
+1	Besides	besides	ADP	IN	_	9	prep	512-192	_
+2	these	these	DET	DT	_	3	det	512-193	_
+3	senses	sens	NOUN	NNS	_	1	pobj	512-194	_
+4	of	of	ADP	IN	_	3	prep	512-195	_
+5	the	the	DET	DT	_	6	det	512-196	515->[4:6]
+6	word	word	NOUN	NN	_	4	pobj	512-197	515->[4:6]
+7	,	,	PUNCT	,	_	9	punct	512-198	_
+8	there	there	ADV	EX	_	9	expl	512-199	_
+9	is	be	VERB	VBZ	_	9	ROOT	512-200	_
+10	a	a	DET	DT	_	11	det	512-201	_
+11	fourth	fourth	ADJ	JJ	_	9	attr	512-202	_
+12	.	.	PUNCT	.	_	9	punct	512-203	_

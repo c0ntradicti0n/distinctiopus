@@ -1,0 +1,9 @@
+1	Similarly	similarly	ADV	RB	_	3	advmod	323-295	_
+2	,	,	PUNCT	,	_	1	punct	323-296	_
+3	with	with	ADP	IN	_	3	ROOT	323-297	_
+4	regard	regard	NOUN	NN	_	3	pobj	323-298	_
+5	to	to	ADP	IN	_	4	prep	323-299	_
+6	softness	softness	NOUN	NN	_	5	pobj	323-300	_
+7	and	and	CCONJ	CC	_	6	cc	323-301	_
+8	hardness	hardness	NOUN	NN	_	6	conj	323-302	_
+9	.	.	PUNCT	.	_	3	punct	323-303	_

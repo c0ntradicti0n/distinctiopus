@@ -1,0 +1,13 @@
+1	One	one	NUM	CD	_	2	nummod	25-220	_
+2	species	specie	NOUN	NNS	_	7	nsubj	25-221	_
+3	of	of	ADP	IN	_	2	prep	25-222	_
+4	knowledge	knowledge	NOUN	NN	_	3	pobj	25-223	_
+5	does	do	VERB	VBZ	_	7	aux	25-224	_
+6	not	not	ADV	RB	_	7	neg	25-225	_
+7	differ	differ	VERB	VB	_	7	ROOT	25-226	_
+8	from	from	ADP	IN	_	7	prep	25-227	_
+9	another	another	DET	DT	_	8	pobj	25-228	_
+10	in	in	ADP	IN	_	7	prep	25-229	_
+11	being	be	VERB	VBG	_	12	auxpass	25-230	_
+12	Twofooted	twofoot	VERB	VBN	_	10	pcomp	25-231	_
+13	.	.	PUNCT	.	_	7	punct	25-232	_

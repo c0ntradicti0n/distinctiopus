@@ -1,0 +1,14 @@
+1	So	so	ADV	RB	_	3	advmod	376-338	_
+2	it	-PRON-	PRON	PRP	_	3	nsubj	376-339	_
+3	is	be	VERB	VBZ	_	3	ROOT	376-340	_
+4	with	with	ADP	IN	_	3	prep	376-341	_
+5	all	all	DET	DT	_	7	det	376-342	_
+6	other	other	ADJ	JJ	_	7	amod	376-343	_
+7	contraries	contrary	NOUN	NNS	_	4	pobj	376-344	_
+8	falling	fall	VERB	VBG	_	7	acl	376-345	_
+9	under	under	ADP	IN	_	8	prep	376-346	_
+10	the	the	DET	DT	_	11	det	376-347	_
+11	category	category	NOUN	NN	_	9	pobj	376-348	_
+12	of	of	ADP	IN	_	11	prep	376-349	_
+13	quality	quality	NOUN	NN	_	12	pobj	376-350	_
+14	.	.	PUNCT	.	_	3	punct	376-351	_

@@ -1,0 +1,9 @@
+1	The	the	DET	DT	_	2	det	554-264	555->[5:6],556->[5:6]
+2	term	term	NOUN	NN	_	5	nsubjpass	554-265	555->[5:6],556->[5:6]
+3	Tohave	tohave	PROPN	NNP	_	2	appos	554-266	555->[5:6],556->[5:6]
+4	is	be	VERB	VBZ	_	5	auxpass	554-267	_
+5	used	use	VERB	VBN	_	5	ROOT	554-268	_
+6	in	in	ADP	IN	_	5	prep	554-269	_
+7	various	various	ADJ	JJ	_	8	amod	554-270	_
+8	senses	sens	NOUN	NNS	_	6	pobj	554-271	_
+9	.	.	PUNCT	.	_	5	punct	554-272	_

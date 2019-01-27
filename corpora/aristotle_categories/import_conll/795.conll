@@ -1,0 +1,9 @@
+6	the	the	DET	DT	_	7	det	795-6	_
+7	genus	genus	NOUN	NN	_	8	nsubj	795-7	_
+8	is	be	VERB	VBZ	_	8	ROOT	795-8	_
+9	relative	relative	ADJ	JJ	_	8	acomp	795-9	_
+10	,	,	PUNCT	,	_	8	punct	795-10	_
+11	the	the	DET	DT	_	12	det	795-11	_
+12	individual	individual	NOUN	NN	_	7	appos	795-12	_
+13	not	not	ADV	RB	_	8	neg	795-13	_
+14	.	.	PUNCT	.	_	8	punct	795-14	_

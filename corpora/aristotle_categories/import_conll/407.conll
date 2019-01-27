@@ -1,0 +1,12 @@
+1	Thus	thus	ADV	RB	_	7	advmod	407-293	_
+2	,	,	PUNCT	,	_	7	punct	407-294	_
+3	action	action	NOUN	NN	_	7	nsubj	407-295	_
+4	and	and	CCONJ	CC	_	3	cc	407-296	_
+5	affection	affection	NOUN	NN	_	3	conj	407-297	_
+6	also	also	ADV	RB	_	7	advmod	407-298	_
+7	admit	admit	VERB	VBP	_	7	ROOT	407-299	_
+8	of	of	ADP	IN	_	7	prep	407-300	_
+9	variation	variation	NOUN	NN	_	8	pobj	407-301	_
+10	of	of	ADP	IN	_	9	prep	407-302	_
+11	degree	degree	NOUN	NN	_	10	pobj	407-303	_
+12	.	.	PUNCT	.	_	7	punct	407-304	_

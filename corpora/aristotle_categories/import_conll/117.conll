@@ -1,0 +1,15 @@
+1	The	the	DET	DT	_	3	det	117-323	117->[5:6],118->[3:5],118->[19:22]
+2	same	same	ADJ	JJ	_	3	amod	117-324	117->[5:6],118->[3:5],118->[19:22]
+3	statement	statement	NOUN	NN	_	10	nsubj	117-325	117->[5:6],118->[3:5],118->[19:22]
+4	,	,	PUNCT	,	_	7	punct	117-326	_
+5	it	-PRON-	PRON	PRP	_	7	nsubjpass	117-327	117->[1:4],118->[3:5],118->[19:22]
+6	is	be	VERB	VBZ	_	7	auxpass	117-328	_
+7	agreed	agree	VERB	VBN	_	10	parataxis	117-329	_
+8	,	,	PUNCT	,	_	7	punct	117-330	_
+9	can	can	VERB	MD	_	10	aux	117-331	_
+10	be	be	VERB	VB	_	10	ROOT	117-332	_
+11	both	both	CCONJ	CC	_	10	dep	117-333	_
+12	true	true	ADJ	JJ	_	10	acomp	117-334	_
+13	and	and	CCONJ	CC	_	12	cc	117-335	_
+14	false	false	ADJ	JJ	_	12	conj	117-336	_
+15	.	.	PUNCT	.	_	10	punct	117-337	_

@@ -1,0 +1,15 @@
+1	For	for	ADP	IN	_	5	prep	81-161	_
+2	all	all	DET	DT	_	4	det	81-162	81->[7:8]
+3	such	such	ADJ	JJ	_	4	amod	81-163	81->[7:8]
+4	propositions	proposition	NOUN	NNS	_	1	pobj	81-164	81->[7:8]
+5	have	have	VERB	VBP	_	5	ROOT	81-165	_
+6	for	for	ADP	IN	_	5	prep	81-166	_
+7	their	-PRON-	ADJ	PRP$	_	8	poss	81-167	81->[2:5]
+8	subject	subject	NOUN	NN	_	6	pobj	81-168	_
+9	either	either	CCONJ	CC	_	11	preconj	81-169	_
+10	the	the	DET	DT	_	11	det	81-170	_
+11	individual	individual	NOUN	NN	_	5	dobj	81-171	_
+12	or	or	CCONJ	CC	_	11	cc	81-172	_
+13	the	the	DET	DT	_	14	det	81-173	83->[6:8],83->[18:20],84->[8:10],85->[6:8],85->[26:28],87->[12:14]
+14	species	specie	NOUN	NNS	_	11	conj	81-174	83->[6:8],83->[18:20],84->[8:10],85->[6:8],85->[26:28],87->[12:14]
+15	.	.	PUNCT	.	_	5	punct	81-175	_

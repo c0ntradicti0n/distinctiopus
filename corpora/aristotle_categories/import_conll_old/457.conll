@@ -1,0 +1,15 @@
+1	But	_	CCONJ	CC	_	8	cc	_	_
+2	those	_	DET	DT	_	3	det	_	_
+3	contraries	_	NOUN	NNS	_	8	nsubj	_	_
+4	which	_	ADJ	WDT	_	5	nsubj	_	_
+5	have	_	VERB	VBP	_	3	relcl	_	_
+6	an	_	DET	DT	_	7	det	_	_
+7	intermediate	_	ADJ	JJ	_	5	dobj	_	_
+8	are	_	VERB	VBP	_	8	ROOT	_	_
+9	not	_	ADV	RB	_	8	neg	_	_
+10	subject	_	ADJ	JJ	_	8	acomp	_	_
+11	to	_	ADP	IN	_	10	prep	_	_
+12	any	_	DET	DT	_	14	det	_	_
+13	such	_	ADJ	JJ	_	14	amod	_	_
+14	necessity	_	NOUN	NN	_	11	pobj	_	_
+15	.	_	PUNCT	.	_	8	punct	_	_

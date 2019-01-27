@@ -1,0 +1,12 @@
+1	Thus	_	ADV	RB	_	8	advmod	_	_
+2	,	_	PUNCT	,	_	8	punct	_	_
+3	the	_	DET	DT	_	4	det	_	_
+4	word	_	NOUN	NN	_	8	nsubjpass	_	_
+5	Prior	_	ADV	RB	_	4	advmod	_	_
+6	may	_	VERB	MD	_	8	aux	_	_
+7	be	_	VERB	VB	_	8	auxpass	_	_
+8	used	_	VERB	VBN	_	8	ROOT	_	_
+9	in	_	ADP	IN	_	8	prep	_	_
+10	five	_	NUM	CD	_	11	nummod	_	_
+11	senses	_	NOUN	NNS	_	9	pobj	_	_
+12	.	_	PUNCT	.	_	8	punct	_	_

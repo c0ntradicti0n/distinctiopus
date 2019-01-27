@@ -1,0 +1,9 @@
+1	He	-PRON-	PRON	PRP	_	3	nsubjpass	344-295	343->[1:7]
+2	is	be	VERB	VBZ	_	3	auxpass	344-296	_
+3	said	say	VERB	VBN	_	3	ROOT	344-297	_
+4	rather	rather	ADV	RB	_	3	advmod	344-298	_
+5	to	to	PART	TO	_	8	aux	344-299	_
+6	have	have	VERB	VB	_	8	aux	344-300	_
+7	been	be	VERB	VBN	_	8	auxpass	344-301	_
+8	affected	affect	VERB	VBN	_	3	xcomp	344-302	_
+9	.	.	PUNCT	.	_	3	punct	344-303	_

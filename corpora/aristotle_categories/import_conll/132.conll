@@ -1,0 +1,16 @@
+1	In	in	ADP	IN	_	5	prep	132-193	_
+2	short	short	ADJ	JJ	_	1	amod	132-194	_
+3	,	,	PUNCT	,	_	5	punct	132-195	_
+4	there	there	ADV	EX	_	5	expl	132-196	_
+5	is	be	VERB	VBZ	_	5	ROOT	132-197	_
+6	nothing	nothing	NOUN	NN	_	5	attr	132-198	_
+7	which	which	ADJ	WDT	_	9	nsubj	132-199	_
+8	can	can	VERB	MD	_	9	aux	132-200	_
+9	alter	alter	VERB	VB	_	6	relcl	132-201	_
+10	the	the	DET	DT	_	11	det	132-202	_
+11	nature	nature	NOUN	NN	_	9	dobj	132-203	_
+12	of	of	ADP	IN	_	11	prep	132-204	_
+13	statements	statement	NOUN	NNS	_	12	pobj	132-205	133->[10:11]
+14	and	and	CCONJ	CC	_	13	cc	132-206	133->[10:11]
+15	opinions	opinion	NOUN	NNS	_	13	conj	132-207	133->[10:11]
+16	.	.	PUNCT	.	_	5	punct	132-208	_

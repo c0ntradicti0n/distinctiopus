@@ -1,0 +1,17 @@
+1	The	the	DET	DT	_	2	det	260-119	_
+2	existence	existence	NOUN	NN	_	6	nsubj	260-120	_
+3	of	of	ADP	IN	_	2	prep	260-121	_
+4	the	the	DET	DT	_	5	det	260-122	out of the margins
+5	half	half	NOUN	NN	_	3	pobj	260-123	out of the margins
+6	necessitates	necessitate	VERB	VBZ	_	6	ROOT	260-124	_
+7	the	the	DET	DT	_	8	det	260-125	_
+8	existence	existence	NOUN	NN	_	6	dobj	260-126	_
+9	of	of	ADP	IN	_	8	prep	260-127	_
+10	that	that	DET	DT	_	9	pobj	260-128	_
+11	of	of	ADP	IN	_	14	prep	260-129	_
+12	which	which	ADJ	WDT	_	11	pobj	260-130	_
+13	it	-PRON-	PRON	PRP	_	14	nsubj	260-131	_
+14	is	be	VERB	VBZ	_	10	relcl	260-132	_
+15	a	a	DET	DT	_	16	det	260-133	_
+16	half	half	NOUN	NN	_	14	attr	260-134	_
+17	.	.	PUNCT	.	_	6	punct	260-135	_

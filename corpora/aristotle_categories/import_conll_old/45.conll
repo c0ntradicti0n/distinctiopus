@@ -1,0 +1,11 @@
+1	This	_	DET	DT	_	2	nsubj	_	_
+2	becomes	_	VERB	VBZ	_	2	ROOT	_	_
+3	evident	_	ADJ	JJ	_	2	acomp	_	_
+4	by	_	ADP	IN	_	2	prep	_	_
+5	reference	_	NOUN	NN	_	4	pobj	_	_
+6	to	_	ADP	IN	_	5	prep	_	_
+7	particular	_	ADJ	JJ	_	8	amod	_	_
+8	instances	_	NOUN	NNS	_	6	pobj	_	_
+9	which	_	ADJ	WDT	_	10	nsubj	_	_
+10	occur	_	VERB	VBP	_	8	relcl	_	_
+11	.	_	PUNCT	.	_	2	punct	_	_

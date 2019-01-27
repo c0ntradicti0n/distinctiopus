@@ -1,0 +1,9 @@
+1	Number	_	NOUN	NN	_	5	nsubj	_	_
+2	,	_	PUNCT	,	_	5	punct	_	_
+3	therefore	_	ADV	RB	_	5	advmod	_	_
+4	,	_	PUNCT	,	_	5	punct	_	_
+5	is	_	VERB	VBZ	_	5	ROOT	_	_
+6	a	_	DET	DT	_	8	det	_	_
+7	discrete	_	ADJ	JJ	_	8	amod	_	_
+8	quantity	_	NOUN	NN	_	5	attr	_	_
+9	.	_	PUNCT	.	_	5	punct	_	_

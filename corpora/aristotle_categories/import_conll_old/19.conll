@@ -1,0 +1,16 @@
+1	Yet	_	CCONJ	CC	_	6	cc	_	_
+2	in	_	ADP	IN	_	6	prep	_	_
+3	some	_	DET	DT	_	4	det	_	_
+4	cases	_	NOUN	NNS	_	2	pobj	_	_
+5	there	_	ADV	EX	_	6	expl	_	_
+6	is	_	VERB	VBZ	_	6	ROOT	_	_
+7	nothing	_	NOUN	NN	_	6	attr	_	_
+8	to	_	PART	TO	_	9	aux	_	_
+9	prevent	_	VERB	VB	_	7	relcl	_	_
+10	such	_	ADJ	JJ	_	11	amod	_	_
+11	being	_	VERB	VBG	_	12	nsubj	_	_
+12	present	_	ADJ	JJ	_	9	ccomp	_	_
+13	in	_	ADP	IN	_	12	prep	_	_
+14	a	_	DET	DT	_	15	det	_	_
+15	subject	_	NOUN	NN	_	13	pobj	_	_
+16	.	_	PUNCT	.	_	6	punct	_	_

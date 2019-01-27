@@ -1,0 +1,7 @@
+1	Quantity	quantity	PROPN	NNP	_	2	nsubj	138-345	_
+2	is	be	VERB	VBZ	_	2	ROOT	138-346	_
+3	either	either	CCONJ	CC	_	4	preconj	138-347	_
+4	discrete	discrete	ADJ	JJ	_	2	acomp	138-348	_
+5	or	or	CCONJ	CC	_	4	cc	138-349	_
+6	continuous	continuous	ADJ	JJ	_	4	conj	138-350	_
+7	.	.	PUNCT	.	_	2	punct	138-351	_

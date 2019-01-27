@@ -1,0 +1,16 @@
+1	Thus	thus	ADV	RB	_	12	advmod	15-221	_
+2	while	while	ADP	IN	_	4	mark	15-222	_
+3	knowledge	knowledge	NOUN	NN	_	4	nsubj	15-223	_
+4	is	be	VERB	VBZ	_	12	advcl	15-224	_
+5	present	present	ADJ	JJ	_	4	acomp	15-225	_
+6	in	in	ADP	IN	_	4	prep	15-226	_
+7	the	the	DET	DT	_	9	det	15-227	_
+8	human	human	ADJ	JJ	_	9	amod	15-228	_
+9	mind	mind	NOUN	NN	_	6	pobj	15-229	_
+10	,	,	PUNCT	,	_	12	punct	15-230	_
+11	it	-PRON-	PRON	PRP	_	12	nsubj	15-231	_
+12	is	be	VERB	VBZ	_	12	ROOT	15-232	_
+13	predicable	predicable	ADJ	JJ	_	12	acomp	15-233	_
+14	of	of	ADP	IN	_	13	prep	15-234	_
+15	grammar	grammar	NOUN	NN	_	14	pobj	15-235	_
+16	.	.	PUNCT	.	_	12	punct	15-236	_

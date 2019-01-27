@@ -1,0 +1,9 @@
+1	These	these	DET	DT	_	3	det	424-265	425->[11:12],425->[19:20],425->[33:34]
+2	two	two	NUM	CD	_	3	nummod	424-266	425->[11:12],425->[19:20],425->[33:34]
+3	types	type	NOUN	NNS	_	6	nsubj	424-267	425->[11:12],425->[19:20],425->[33:34]
+4	of	of	ADP	IN	_	3	prep	424-268	425->[11:12],425->[19:20],425->[33:34]
+5	opposition	opposition	NOUN	NN	_	4	pobj	424-269	425->[11:12],425->[19:20],425->[33:34]
+6	are	be	VERB	VBP	_	6	ROOT	424-270	_
+7	therefore	therefore	ADV	RB	_	8	advmod	424-271	_
+8	distinct	distinct	ADJ	JJ	_	6	acomp	424-272	_
+9	.	.	PUNCT	.	_	6	punct	424-273	_

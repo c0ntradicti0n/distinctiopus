@@ -1,0 +1,10 @@
+1	This	this	DET	DT	_	2	nsubj	379-375	_
+2	is	be	VERB	VBZ	_	2	ROOT	379-376	_
+3	also	also	ADV	RB	_	2	advmod	379-377	_
+4	the	the	DET	DT	_	5	det	379-378	_
+5	case	case	NOUN	NN	_	2	attr	379-379	_
+6	with	with	ADP	IN	_	5	prep	379-380	_
+7	reference	reference	NOUN	NN	_	6	pobj	379-381	_
+8	to	to	ADP	IN	_	7	prep	379-382	_
+9	justice	justice	NOUN	NN	_	8	pobj	379-383	_
+10	.	.	PUNCT	.	_	2	punct	379-384	_

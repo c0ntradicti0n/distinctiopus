@@ -1,0 +1,6 @@
+1	The	the	DET	DT	_	2	det	119-363	_
+2	same	same	ADJ	JJ	_	3	nsubj	119-364	_
+3	applies	apply	VERB	VBZ	_	3	ROOT	119-365	_
+4	to	to	ADP	IN	_	3	prep	119-366	_
+5	opinions	opinion	NOUN	NNS	_	4	pobj	119-367	_
+6	.	.	PUNCT	.	_	3	punct	119-368	_

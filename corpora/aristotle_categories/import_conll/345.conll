@@ -1,0 +1,11 @@
+1	Thus	thus	ADV	RB	_	6	advmod	345-304	_
+2	,	,	PUNCT	,	_	6	punct	345-305	_
+3	such	such	ADJ	JJ	_	4	amod	345-306	_
+4	conditions	condition	NOUN	NNS	_	6	nsubjpass	345-307	_
+5	are	be	VERB	VBP	_	6	auxpass	345-308	_
+6	called	call	VERB	VBN	_	6	ROOT	345-309	_
+7	affections	affection	NOUN	NNS	_	6	oprd	345-310	_
+8	,	,	PUNCT	,	_	7	punct	345-311	_
+9	not	not	ADV	RB	_	7	neg	345-312	_
+10	qualities	quality	NOUN	NNS	_	7	appos	345-313	_
+11	.	.	PUNCT	.	_	6	punct	345-314	_

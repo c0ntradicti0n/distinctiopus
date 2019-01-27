@@ -1,0 +1,11 @@
+1	One	one	NUM	CD	_	2	nummod	307-334	_
+2	sort	sort	NOUN	NN	_	5	nsubj	307-335	_
+3	of	of	ADP	IN	_	2	prep	307-336	_
+4	quality	quality	NOUN	NN	_	3	pobj	307-337	_
+5	let	let	VERB	VBD	_	5	ROOT	307-338	_
+6	us	-PRON-	PRON	PRP	_	7	nsubj	307-339	_
+7	call	call	VERB	VB	_	5	ccomp	307-340	_
+8	Habit	habit	PROPN	NNP	_	7	dobj	307-341	_
+9	or	or	CCONJ	CC	_	8	cc	307-342	_
+10	Disposition	disposition	PROPN	NNP	_	8	conj	307-343	_
+11	.	.	PUNCT	.	_	5	punct	307-344	_

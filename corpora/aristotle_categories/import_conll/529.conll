@@ -1,0 +1,15 @@
+1	Thus	thus	ADV	RB	_	6	advmod	529-422	_
+2	,	,	PUNCT	,	_	6	punct	529-423	_
+3	the	the	DET	DT	_	5	det	529-424	_
+4	Winged	winged	ADJ	JJ	_	5	amod	529-425	_
+5	species	specie	NOUN	NNS	_	6	nsubj	529-426	_
+6	is	be	VERB	VBZ	_	6	ROOT	529-427	_
+7	simultaneous	simultaneous	ADJ	JJ	_	6	acomp	529-428	_
+8	with	with	ADP	IN	_	7	prep	529-429	_
+9	the	the	DET	DT	_	10	det	529-430	_
+10	Terrestrial	terrestrial	PROPN	NNP	_	8	pobj	529-431	_
+11	and	and	CCONJ	CC	_	10	cc	529-432	_
+12	the	the	DET	DT	_	14	det	529-433	_
+13	Water	water	PROPN	NNP	_	14	compound	529-434	_
+14	species	specie	NOUN	NNS	_	10	conj	529-435	_
+15	.	.	PUNCT	.	_	6	punct	529-436	_

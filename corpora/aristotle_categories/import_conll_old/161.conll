@@ -1,0 +1,13 @@
+1	The	_	DET	DT	_	2	det	_	_
+2	same	_	ADJ	JJ	_	3	nsubj	_	_
+3	is	_	VERB	VBZ	_	3	ROOT	_	_
+4	true	_	ADJ	JJ	_	3	acomp	_	_
+5	with	_	ADP	IN	_	3	prep	_	_
+6	regard	_	NOUN	NN	_	5	pobj	_	_
+7	to	_	ADP	IN	_	6	prep	_	_
+8	the	_	DET	DT	_	9	det	_	_
+9	solid	_	ADJ	JJ	_	7	pobj	_	_
+10	and	_	CCONJ	CC	_	7	cc	_	_
+11	to	_	ADP	IN	_	7	conj	_	_
+12	space	_	NOUN	NN	_	11	pobj	_	_
+13	.	_	PUNCT	.	_	3	punct	_	_

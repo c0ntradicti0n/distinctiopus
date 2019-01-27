@@ -1,0 +1,7 @@
+1	Qualities	quality	NOUN	NNS	_	2	compound	377-352	_
+2	admit	admit	VERB	VBP	_	2	ROOT	377-353	_
+3	of	of	ADP	IN	_	2	prep	377-354	_
+4	variation	variation	NOUN	NN	_	3	pobj	377-355	_
+5	of	of	ADP	IN	_	4	prep	377-356	_
+6	degree	degree	NOUN	NN	_	5	pobj	377-357	_
+7	.	.	PUNCT	.	_	2	punct	377-358	_

@@ -1,0 +1,15 @@
+1	Moreover	_	ADV	RB	_	11	advmod	_	_
+2	,	_	PUNCT	,	_	11	punct	_	_
+3	if	_	ADP	IN	_	5	mark	_	_
+4	these	_	DET	DT	_	5	nsubj	_	_
+5	were	_	VERB	VBD	_	11	advcl	_	_
+6	contraries	_	NOUN	NNS	_	5	attr	_	_
+7	,	_	PUNCT	,	_	11	punct	_	_
+8	they	_	PRON	PRP	_	11	nsubj	_	_
+9	would	_	VERB	MD	_	11	aux	_	_
+10	themselves	_	PRON	PRP	_	11	nsubj	_	_
+11	be	_	VERB	VB	_	11	ROOT	_	_
+12	contrary	_	ADJ	JJ	_	11	acomp	_	_
+13	to	_	ADP	IN	_	12	prep	_	_
+14	themselves	_	PRON	PRP	_	13	pobj	_	_
+15	.	_	PUNCT	.	_	11	punct	_	_

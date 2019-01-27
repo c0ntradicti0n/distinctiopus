@@ -1,0 +1,14 @@
+1	Health	health	NOUN	NN	_	4	nsubj	478-557	478->[9:10],479->[14:15]
+2	and	and	CCONJ	CC	_	1	cc	478-558	478->[9:10],479->[14:15]
+3	disease	disease	NOUN	NN	_	1	conj	478-559	478->[9:10],479->[14:15]
+4	are	be	VERB	VBP	_	4	ROOT	478-560	_
+5	contraries	contrary	NOUN	NNS	_	4	attr	478-561	_
+6	,	,	PUNCT	,	_	4	punct	478-562	_
+7	neither	neither	DET	DT	_	10	nsubj	478-563	_
+8	of	of	ADP	IN	_	7	prep	478-564	_
+9	them	-PRON-	PRON	PRP	_	8	pobj	478-565	478->[1:4],479->[14:15]
+10	is	be	VERB	VBZ	_	4	conj	478-566	_
+11	true	true	ADJ	JJ	_	10	acomp	478-567	_
+12	or	or	CCONJ	CC	_	11	cc	478-568	_
+13	false	false	ADJ	JJ	_	11	conj	478-569	_
+14	.	.	PUNCT	.	_	10	punct	478-570	_

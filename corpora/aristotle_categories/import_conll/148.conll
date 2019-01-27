@@ -1,0 +1,15 @@
+1	Moreover	moreover	ADV	RB	_	4	advmod	148-265	_
+2	,	,	PUNCT	,	_	4	punct	148-266	_
+3	it	-PRON-	PRON	PRP	_	4	nsubj	148-267	145->[6:7],146->[1:3],146->[10:11],147->[4:9],148->[9:10]
+4	is	be	VERB	VBZ	_	4	ROOT	148-268	_
+5	a	a	DET	DT	_	7	det	148-269	_
+6	discrete	discrete	ADJ	JJ	_	7	amod	148-270	_
+7	quantity	quantity	NOUN	NN	_	4	attr	148-271	_
+8	for	for	ADP	IN	_	7	prep	148-272	_
+9	its	-PRON-	ADJ	PRP$	_	10	poss	148-273	145->[6:7],146->[1:3],146->[10:11],147->[4:9],148->[3:4]
+10	parts	part	NOUN	NNS	_	8	pobj	148-274	_
+11	have	have	VERB	VBP	_	4	conj	148-275	_
+12	no	no	DET	DT	_	14	det	148-276	_
+13	common	common	ADJ	JJ	_	14	amod	148-277	_
+14	boundary	boundary	NOUN	NN	_	11	dobj	148-278	_
+15	.	.	PUNCT	.	_	4	punct	148-279	_

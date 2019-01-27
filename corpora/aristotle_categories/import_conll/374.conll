@@ -1,0 +1,17 @@
+1	If	if	ADP	IN	_	6	mark	374-251	_
+2	one	one	NUM	CD	_	6	nsubj	374-252	_
+3	of	of	ADP	IN	_	2	prep	374-253	_
+4	two	two	NUM	CD	_	5	nummod	374-254	_
+5	contraries	contrary	NOUN	NNS	_	3	pobj	374-255	_
+6	is	be	VERB	VBZ	_	14	advcl	374-256	_
+7	a	a	DET	DT	_	8	det	374-257	_
+8	quality	quality	NOUN	NN	_	6	attr	374-258	_
+9	,	,	PUNCT	,	_	14	punct	374-259	_
+10	the	the	DET	DT	_	11	det	374-260	_
+11	other	other	ADJ	JJ	_	14	nsubj	374-261	_
+12	will	will	VERB	MD	_	14	aux	374-262	_
+13	also	also	ADV	RB	_	14	advmod	374-263	_
+14	be	be	VERB	VB	_	14	ROOT	374-264	_
+15	a	a	DET	DT	_	16	det	374-265	_
+16	quality	quality	NOUN	NN	_	14	attr	374-266	_
+17	.	.	PUNCT	.	_	14	punct	374-267	_

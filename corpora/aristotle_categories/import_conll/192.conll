@@ -1,0 +1,5 @@
+1	But	but	CCONJ	CC	_	3	cc	192-195	_
+2	this	this	DET	DT	_	3	nsubj	192-196	_
+3	is	be	VERB	VBZ	_	3	ROOT	192-197	_
+4	impossible	impossible	ADJ	JJ	_	3	acomp	192-198	_
+5	.	.	PUNCT	.	_	3	punct	192-199	_

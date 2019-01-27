@@ -1,0 +1,12 @@
+1	It	_	PRON	PRP	_	3	nsubj	_	_
+2	also	_	ADV	RB	_	3	advmod	_	_
+3	appears	_	VERB	VBZ	_	3	ROOT	_	_
+4	that	_	ADP	IN	_	7	mark	_	_
+5	relatives	_	NOUN	NNS	_	7	nsubj	_	_
+6	can	_	VERB	MD	_	7	aux	_	_
+7	admit	_	VERB	VB	_	3	ccomp	_	_
+8	of	_	ADP	IN	_	7	prep	_	_
+9	variation	_	NOUN	NN	_	8	pobj	_	_
+10	of	_	ADP	IN	_	9	prep	_	_
+11	degree	_	NOUN	NN	_	10	pobj	_	_
+12	.	_	PUNCT	.	_	3	punct	_	_

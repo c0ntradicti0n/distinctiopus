@@ -1,0 +1,14 @@
+1	It	-PRON-	PRON	PRP	_	2	nsubj	335-255	_
+2	is	be	VERB	VBZ	_	2	ROOT	335-256	_
+3	plain	plain	ADJ	JJ	_	2	acomp	335-257	_
+4	that	that	ADP	IN	_	9	mark	335-258	_
+5	many	many	ADJ	JJ	_	6	amod	335-259	_
+6	changes	change	NOUN	NNS	_	9	nsubj	335-260	_
+7	of	of	ADP	IN	_	6	prep	335-261	_
+8	colour	colour	NOUN	NN	_	7	pobj	335-262	_
+9	take	take	VERB	VBP	_	2	ccomp	335-263	_
+10	place	place	NOUN	NN	_	9	dobj	335-264	_
+11	because	because	ADP	IN	_	9	prep	335-265	_
+12	of	of	ADP	IN	_	11	pcomp	335-266	_
+13	affections	affection	NOUN	NNS	_	11	pobj	335-267	_
+14	.	.	PUNCT	.	_	2	punct	335-268	_

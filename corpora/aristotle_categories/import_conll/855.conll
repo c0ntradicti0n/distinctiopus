@@ -1,0 +1,10 @@
+6	that	that	ADP	IN	_	25	mark	855-6	_
+7	the	the	DET	DT	_	8	det	855-7	_
+8	subjects	subject	NOUN	NNS	_	25	nsubj	855-8	_
+9	in	in	ADP	IN	_	12	prep	855-9	_
+10	which	which	ADJ	WDT	_	9	pobj	855-10	_
+11	they	-PRON-	PRON	PRP	_	12	nsubj	855-11	855->[19:20],855->[33:34]
+12	are	be	VERB	VBP	_	8	relcl	855-12	_
+13	naturally	naturally	ADV	RB	_	12	advmod	855-13	_
+14	present	present	ADJ	JJ	_	12	acomp	855-14	_
+15	,	,	PUNCT	,	_	12	punct	855-15	_

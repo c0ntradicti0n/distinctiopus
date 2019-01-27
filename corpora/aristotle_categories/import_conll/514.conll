@@ -1,0 +1,17 @@
+1	In	in	ADP	IN	_	5	prep	514-219	_
+2	common	common	ADJ	JJ	_	3	amod	514-220	_
+3	parlance	parlance	NOUN	NN	_	1	pobj	514-221	_
+4	men	man	NOUN	NNS	_	5	nsubj	514-222	514->[9:10],514->[16:17]
+5	speak	speak	VERB	VBP	_	5	ROOT	514-223	_
+6	of	of	ADP	IN	_	5	prep	514-224	_
+7	those	those	DET	DT	_	6	pobj	514-225	_
+8	whom	whom	NOUN	WP	_	10	dobj	514-226	_
+9	they	-PRON-	PRON	PRP	_	10	nsubj	514-227	514->[4:5],514->[16:17]
+10	honour	honour	VERB	VBP	_	7	relcl	514-228	_
+11	and	and	CCONJ	CC	_	10	cc	514-229	_
+12	love	love	VERB	VBP	_	10	conj	514-230	_
+13	as	as	ADP	IN	_	12	prep	514-231	_
+14	Comingfirst	comingfirst	PROPN	NNP	_	13	pobj	514-232	_
+15	with	with	ADP	IN	_	14	prep	514-233	_
+16	them	-PRON-	PRON	PRP	_	15	pobj	514-234	514->[4:5],514->[9:10]
+17	.	.	PUNCT	.	_	5	punct	514-235	_

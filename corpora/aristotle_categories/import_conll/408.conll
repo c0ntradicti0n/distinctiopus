@@ -1,0 +1,13 @@
+1	So	so	ADV	RB	_	2	advmod	408-305	_
+2	much	much	ADV	RB	_	7	advmod	408-306	_
+3	,	,	PUNCT	,	_	7	punct	408-307	_
+4	then	then	ADV	RB	_	7	advmod	408-308	_
+5	,	,	PUNCT	,	_	7	punct	408-309	_
+6	is	be	VERB	VBZ	_	7	auxpass	408-310	_
+7	stated	state	VERB	VBN	_	7	ROOT	408-311	_
+8	with	with	ADP	IN	_	7	prep	408-312	_
+9	regard	regard	NOUN	NN	_	8	pobj	408-313	_
+10	to	to	ADP	IN	_	9	prep	408-314	_
+11	these	these	DET	DT	_	12	det	408-315	_
+12	categories	category	NOUN	NNS	_	10	pobj	408-316	_
+13	.	.	PUNCT	.	_	7	punct	408-317	_

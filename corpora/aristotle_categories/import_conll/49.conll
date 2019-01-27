@@ -1,0 +1,40 @@
+1	For	for	ADP	IN	_	17	prep	49-419	_
+2	if	if	ADP	IN	_	5	mark	49-420	_
+3	anyone	anyone	NOUN	NN	_	5	nsubj	49-421	_
+4	should	should	VERB	MD	_	5	aux	49-422	_
+5	render	render	VERB	VB	_	17	advcl	49-423	_
+6	an	an	DET	DT	_	7	det	49-424	_
+7	account	account	NOUN	NN	_	5	dobj	49-425	_
+8	of	of	ADP	IN	_	7	prep	49-426	_
+9	what	what	NOUN	WP	_	13	attr	49-427	_
+10	a	a	DET	DT	_	12	det	49-428	49->[15:16],out of the margins,out of the margins,out of the margins
+11	primary	primary	ADJ	JJ	_	12	amod	49-429	49->[15:16],out of the margins,out of the margins,out of the margins
+12	substance	substance	NOUN	NN	_	13	nsubj	49-430	49->[15:16],out of the margins,out of the margins,out of the margins
+13	is	be	VERB	VBZ	_	8	pcomp	49-431	_
+14	,	,	PUNCT	,	_	17	punct	49-432	_
+15	he	-PRON-	PRON	PRP	_	17	nsubj	49-433	49->[10:13],out of the margins,out of the margins,out of the margins
+16	would	would	VERB	MD	_	17	aux	49-434	_
+17	render	render	VERB	VB	_	17	ROOT	49-435	_
+18	a	a	DET	DT	_	21	det	49-436	_
+19	more	more	ADV	RBR	_	20	advmod	49-437	_
+20	instructive	instructive	ADJ	JJ	_	21	amod	49-438	_
+21	account	account	NOUN	NN	_	17	dobj	49-439	_
+22	,	,	PUNCT	,	_	17	punct	49-440	_
+23	and	and	CCONJ	CC	_	17	cc	49-441	_
+24	one	one	NUM	CD	_	17	conj	49-442	_
+25	more	more	ADV	RBR	_	26	advmod	49-443	_
+26	proper	proper	ADJ	JJ	_	24	amod	49-444	_
+27	to	to	ADP	IN	_	24	prep	49-445	_
+28	the	the	DET	DT	_	29	det	49-446	_
+29	subject	subject	NOUN	NN	_	27	pobj	49-447	_
+30	,	,	PUNCT	,	_	24	punct	49-448	_
+31	by	by	ADP	IN	_	24	prep	49-449	_
+32	stating	state	VERB	VBG	_	31	pcomp	49-450	_
+33	the	the	DET	DT	_	34	det	49-451	48->[5:7]
+34	species	specie	NOUN	NNS	_	32	dobj	49-452	48->[5:7]
+35	than	than	ADP	IN	_	32	prep	49-453	_
+36	by	by	ADP	IN	_	35	prep	49-454	_
+37	stating	state	VERB	VBG	_	36	pcomp	49-455	_
+38	the	the	DET	DT	_	39	det	49-456	_
+39	genus	genus	NOUN	NN	_	37	dobj	49-457	_
+40	.	.	PUNCT	.	_	17	punct	49-458	_

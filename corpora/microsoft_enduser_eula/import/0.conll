@@ -1,0 +1,12 @@
+1	MICROSOFT	_	PROPN	NNP	_	3	compound	_	_
+2	INTERNET	_	NOUN	NN	_	3	compound	_	_
+3	EXPLORER	_	PROPN	NNP	_	3	ROOT	_	_
+4	,	_	PUNCT	,	_	3	punct	_	_
+5	VERSION	_	PROPN	NNP	_	3	appos	_	_
+6	5	_	NUM	CD	_	5	nummod	_	_
+7	,	_	PUNCT	,	_	5	punct	_	_
+8	AND	_	CCONJ	CC	_	5	cc	_	_
+9	RELATED	_	VERB	VBN	_	11	amod	_	_
+10	SOFTWARE	_	PROPN	NNP	_	11	compound	_	_
+11	COMPONENTS	_	NOUN	NNS	_	5	conj	_	_
+12	.	_	PUNCT	.	_	3	punct	_	_

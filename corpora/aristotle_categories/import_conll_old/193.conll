@@ -1,0 +1,5 @@
+1	But	_	CCONJ	CC	_	3	cc	_	_
+2	this	_	DET	DT	_	3	nsubj	_	_
+3	is	_	VERB	VBZ	_	3	ROOT	_	_
+4	impossible	_	ADJ	JJ	_	3	acomp	_	_
+5	.	_	PUNCT	.	_	3	punct	_	_

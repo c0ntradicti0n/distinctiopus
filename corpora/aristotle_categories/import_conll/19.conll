@@ -1,0 +1,14 @@
+1	Thus	thus	ADV	RB	_	9	advmod	19-310	_
+2	,	,	PUNCT	,	_	9	punct	19-311	_
+3	a	a	DET	DT	_	5	det	19-312	_
+4	certain	certain	ADJ	JJ	_	5	amod	19-313	_
+5	point	point	NOUN	NN	_	9	nsubj	19-314	_
+6	of	of	ADP	IN	_	5	prep	19-315	_
+7	grammatical	grammatical	ADJ	JJ	_	8	amod	19-316	_
+8	knowledge	knowledge	NOUN	NN	_	6	pobj	19-317	_
+9	is	be	VERB	VBZ	_	9	ROOT	19-318	_
+10	present	present	ADJ	JJ	_	9	acomp	19-319	_
+11	in	in	ADP	IN	_	9	prep	19-320	_
+12	a	a	DET	DT	_	13	det	19-321	_
+13	subject	subject	NOUN	NN	_	11	pobj	19-322	_
+14	.	.	PUNCT	.	_	9	punct	19-323	_

@@ -1,0 +1,6 @@
+6	is	be	VERB	VBZ	_	6	ROOT	1035-6	_
+7	perhaps	perhaps	ADV	RB	_	6	advmod	1035-7	_
+8	the	the	DET	DT	_	10	det	1035-8	_
+9	most	most	ADV	RBS	_	10	advmod	1035-9	_
+10	farfetched	farfetched	ADJ	JJ	_	6	attr	1035-10	_
+11	.	.	PUNCT	.	_	6	punct	1035-11	_

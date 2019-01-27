@@ -1,0 +1,14 @@
+1	Thus	thus	ADV	RB	_	10	advmod	112-211	_
+2	,	,	PUNCT	,	_	10	punct	112-212	_
+3	one	one	NUM	CD	_	10	nsubj	112-213	_
+4	and	and	CCONJ	CC	_	3	cc	112-214	_
+5	the	the	DET	DT	_	7	det	112-215	_
+6	same	same	ADJ	JJ	_	7	amod	112-216	_
+7	colour	colour	NOUN	NN	_	3	conj	112-217	_
+8	can	can	VERB	MD	_	10	aux	112-218	_
+9	not	not	ADV	RB	_	10	neg	112-219	_
+10	be	be	VERB	VB	_	10	ROOT	112-220	_
+11	white	white	ADJ	JJ	_	10	acomp	112-221	_
+12	and	and	CCONJ	CC	_	11	cc	112-222	_
+13	black	black	ADJ	JJ	_	11	conj	112-223	_
+14	.	.	PUNCT	.	_	10	punct	112-224	_

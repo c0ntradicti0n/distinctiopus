@@ -1,0 +1,15 @@
+1	We	-PRON-	PRON	PRP	_	4	nsubj	412-170	_
+2	must	must	VERB	MD	_	4	aux	412-171	_
+3	next	next	ADV	RB	_	4	advmod	412-172	_
+4	explain	explain	VERB	VB	_	4	ROOT	412-173	_
+5	the	the	DET	DT	_	7	det	412-174	_
+6	various	various	ADJ	JJ	_	7	amod	412-175	_
+7	senses	sens	NOUN	NNS	_	4	dobj	412-176	_
+8	in	in	ADP	IN	_	14	prep	412-177	_
+9	which	which	ADJ	WDT	_	8	pobj	412-178	_
+10	the	the	DET	DT	_	11	det	412-179	_
+11	term	term	NOUN	NN	_	12	compound	412-180	_
+12	Opposite	opposite	PROPN	NNP	_	14	nsubjpass	412-181	_
+13	is	be	VERB	VBZ	_	14	auxpass	412-182	_
+14	used	use	VERB	VBN	_	7	relcl	412-183	_
+15	.	.	PUNCT	.	_	4	punct	412-184	_

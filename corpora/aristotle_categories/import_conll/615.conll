@@ -1,0 +1,10 @@
+6	in	in	ADP	IN	_	4	prep	615-6	_
+7	virtue	virtue	NOUN	NN	_	6	pobj	615-7	_
+8	of	of	ADP	IN	_	12	prep	615-8	_
+9	which	which	ADJ	WDT	_	8	pobj	615-9	_
+10	people	people	NOUN	NNS	_	12	nsubjpass	615-10	_
+11	are	be	VERB	VBP	_	12	auxpass	615-11	_
+12	said	say	VERB	VBN	_	7	relcl	615-12	_
+13	to	to	PART	TO	_	14	aux	615-13	_
+14	be	be	VERB	VB	_	12	xcomp	615-14	_
+15	such	such	ADJ	JJ	_	14	acomp	615-15	_

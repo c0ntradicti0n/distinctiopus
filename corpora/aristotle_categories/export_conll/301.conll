@@ -1,0 +1,14 @@
+1	It	_	PRON	PRP	_	2	nsubj	_	_
+2	is	_	VERB	VBZ	_	2	ROOT	_	_
+3	not	_	ADV	RB	_	2	neg	_	_
+4	possible	_	ADJ	JJ	_	2	acomp	_	_
+5	to	_	PART	TO	_	6	aux	_	_
+6	know	_	VERB	VB	_	2	xcomp	_	_
+7	forthwith	_	ADP	IN	_	6	prep	_	_
+8	whose	_	ADJ	WP$	_	9	poss	_	_
+9	head	_	NOUN	NN	_	13	nsubjpass	_	_
+10	or	_	CCONJ	CC	_	9	cc	_	_
+11	hand	_	NOUN	NN	_	9	conj	_	_
+12	is	_	VERB	VBZ	_	13	auxpass	_	_
+13	meant	_	VERB	VBN	_	7	pcomp	_	_
+14	.	_	PUNCT	.	_	2	punct	_	_

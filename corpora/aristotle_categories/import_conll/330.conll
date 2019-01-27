@@ -1,0 +1,25 @@
+1	Honey	honey	PROPN	NNP	_	4	nsubjpass	330-128	out of the margins,330->[7:8]
+2	is	be	VERB	VBZ	_	4	auxpass	330-129	_
+3	not	not	ADV	RB	_	4	neg	330-130	_
+4	called	call	VERB	VBN	_	4	ROOT	330-131	_
+5	sweet	sweet	ADJ	JJ	_	4	oprd	330-132	_
+6	because	because	ADP	IN	_	9	mark	330-133	_
+7	it	-PRON-	PRON	PRP	_	9	nsubjpass	330-134	out of the margins,330->[1:2]
+8	is	be	VERB	VBZ	_	9	auxpass	330-135	_
+9	affected	affect	VERB	VBN	_	4	advcl	330-136	_
+10	in	in	ADP	IN	_	9	prep	330-137	_
+11	a	a	DET	DT	_	13	det	330-138	_
+12	specific	specific	ADJ	JJ	_	13	amod	330-139	_
+13	way	way	NOUN	NN	_	10	pobj	330-140	_
+14	,	,	PUNCT	,	_	9	punct	330-141	_
+15	nor	nor	CCONJ	CC	_	9	cc	330-142	_
+16	is	be	VERB	VBZ	_	9	conj	330-143	_
+17	this	this	DET	DT	_	16	attr	330-144	_
+18	what	what	NOUN	WP	_	20	nsubjpass	330-145	_
+19	is	be	VERB	VBZ	_	20	auxpass	330-146	_
+20	meant	mean	VERB	VBN	_	16	ccomp	330-147	_
+21	in	in	ADP	IN	_	20	prep	330-148	_
+22	any	any	DET	DT	_	24	det	330-149	_
+23	other	other	ADJ	JJ	_	24	amod	330-150	_
+24	instance	instance	NOUN	NN	_	21	pobj	330-151	_
+25	.	.	PUNCT	.	_	4	punct	330-152	_

@@ -1,0 +1,7 @@
+1	Thus	thus	ADV	RB	_	4	advmod	405-254	_
+2	,	,	PUNCT	,	_	4	punct	405-255	_
+3	they	-PRON-	PRON	PRP	_	4	nsubj	405-256	406->[1:2]
+4	admit	admit	VERB	VBP	_	4	ROOT	405-257	_
+5	of	of	ADP	IN	_	4	prep	405-258	_
+6	contraries	contrary	NOUN	NNS	_	5	pobj	405-259	_
+7	.	.	PUNCT	.	_	4	punct	405-260	_

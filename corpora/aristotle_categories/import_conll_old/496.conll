@@ -1,0 +1,15 @@
+1	But	_	CCONJ	CC	_	7	cc	_	_
+2	the	_	DET	DT	_	3	det	_	_
+3	contrary	_	NOUN	NN	_	7	nsubj	_	_
+4	of	_	ADP	IN	_	3	prep	_	_
+5	an	_	DET	DT	_	6	det	_	_
+6	evil	_	NOUN	NN	_	4	pobj	_	_
+7	is	_	VERB	VBZ	_	7	ROOT	_	_
+8	sometimes	_	ADV	RB	_	7	advmod	_	_
+9	a	_	DET	DT	_	14	det	_	_
+10	good	_	ADJ	JJ	_	14	amod	_	_
+11	,	_	PUNCT	,	_	14	punct	_	_
+12	sometimes	_	ADV	RB	_	14	advmod	_	_
+13	an	_	DET	DT	_	14	det	_	_
+14	evil	_	NOUN	NN	_	7	attr	_	_
+15	.	_	PUNCT	.	_	7	punct	_	_

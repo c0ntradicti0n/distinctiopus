@@ -1,0 +1,10 @@
+1	It	_	PRON	PRP	_	2	nsubj	_	_
+2	is	_	VERB	VBZ	_	2	ROOT	_	_
+3	plain	_	ADJ	JJ	_	2	acomp	_	_
+4	that	_	ADP	IN	_	6	mark	_	_
+5	there	_	ADV	EX	_	6	expl	_	_
+6	are	_	VERB	VBP	_	2	ccomp	_	_
+7	instances	_	NOUN	NNS	_	6	attr	_	_
+8	of	_	ADP	IN	_	7	prep	_	_
+9	this	_	DET	DT	_	8	pobj	_	_
+10	.	_	PUNCT	.	_	2	punct	_	_

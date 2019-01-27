@@ -1,0 +1,10 @@
+6	that	that	ADP	IN	_	12	mark	595-6	_
+7	such	such	ADJ	JJ	_	11	amod	595-7	_
+8	and	and	CCONJ	CC	_	7	cc	595-8	_
+9	such	such	ADJ	PDT	_	7	conj	595-9	_
+10	a	a	DET	DT	_	11	det	595-10	_
+11	thing	thing	NOUN	NN	_	12	nsubj	595-11	_
+12	is	be	VERB	VBZ	_	4	ccomp	595-12	_
+13	Double	double	ADJ	JJ	_	12	acomp	595-13	_
+14	,	,	PUNCT	,	_	18	punct	595-14	_
+15	he	-PRON-	PRON	PRP	_	18	nsubj	595-15	595->[2:4],596->[9:10],596->[17:18],597->[4:5],597->[17:18],598->[1:2],599->[3:4],599->[16:17]

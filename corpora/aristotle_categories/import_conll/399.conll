@@ -1,0 +1,21 @@
+1	And	and	CCONJ	CC	_	3	cc	399-420	_
+2	it	-PRON-	PRON	PRP	_	3	nsubj	399-421	_
+3	is	be	VERB	VBZ	_	3	ROOT	399-422	_
+4	because	because	ADP	IN	_	6	mark	399-423	_
+5	we	-PRON-	PRON	PRP	_	6	nsubj	399-424	399->[13:14],out of the margins,out of the margins
+6	possess	possess	VERB	VBP	_	3	advcl	399-425	_
+7	these	these	DET	DT	_	9	det	399-426	_
+8	individual	individual	ADJ	JJ	_	9	amod	399-427	_
+9	branches	branch	NOUN	NNS	_	6	dobj	399-428	_
+10	of	of	ADP	IN	_	9	prep	399-429	_
+11	knowledge	knowledge	NOUN	NN	_	10	pobj	399-430	_
+12	that	that	ADJ	WDT	_	17	dobj	399-431	_
+13	we	-PRON-	PRON	PRP	_	15	nsubjpass	399-432	399->[5:6],out of the margins,out of the margins
+14	are	be	VERB	VBP	_	15	auxpass	399-433	_
+15	said	say	VERB	VBN	_	6	ccomp	399-434	_
+16	to	to	PART	TO	_	17	aux	399-435	_
+17	be	be	VERB	VB	_	15	xcomp	399-436	_
+18	such	such	ADJ	JJ	_	17	acomp	399-437	_
+19	and	and	CCONJ	CC	_	18	cc	399-438	_
+20	such	such	ADJ	JJ	_	18	conj	399-439	_
+21	.	.	PUNCT	.	_	3	punct	399-440	_

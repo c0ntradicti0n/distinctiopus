@@ -1,0 +1,10 @@
+1	All	all	DET	DT	_	2	det	90-113	_
+2	substance	substance	NOUN	NN	_	3	nsubj	90-114	_
+3	appears	appear	VERB	VBZ	_	3	ROOT	90-115	_
+4	to	to	PART	TO	_	5	aux	90-116	_
+5	signify	signify	VERB	VB	_	3	xcomp	90-117	_
+6	that	that	ADP	IN	_	8	mark	90-118	_
+7	which	which	ADJ	WDT	_	8	nsubj	90-119	_
+8	is	be	VERB	VBZ	_	5	ccomp	90-120	_
+9	individual	individual	ADJ	JJ	_	8	acomp	90-121	_
+10	.	.	PUNCT	.	_	3	punct	90-122	_

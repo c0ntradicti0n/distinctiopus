@@ -1,0 +1,10 @@
+1	Speaking	speak	VERB	VBG	_	5	advcl	547-373	_
+2	generally	generally	ADV	RB	_	1	advmod	547-374	_
+3	,	,	PUNCT	,	_	5	punct	547-375	_
+4	rest	rest	NOUN	NN	_	5	nsubj	547-376	_
+5	is	be	VERB	VBZ	_	5	ROOT	547-377	_
+6	the	the	DET	DT	_	7	det	547-378	_
+7	contrary	contrary	NOUN	NN	_	5	attr	547-379	_
+8	of	of	ADP	IN	_	7	prep	547-380	_
+9	motion	motion	NOUN	NN	_	8	pobj	547-381	_
+10	.	.	PUNCT	.	_	5	punct	547-382	_

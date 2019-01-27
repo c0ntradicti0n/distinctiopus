@@ -1,0 +1,10 @@
+1	Let	_	VERB	VB	_	1	ROOT	_	_
+2	these	_	DET	DT	_	3	det	_	_
+3	remarks	_	NOUN	NNS	_	4	nsubj	_	_
+4	suffice	_	VERB	VB	_	1	ccomp	_	_
+5	on	_	ADP	IN	_	4	prep	_	_
+6	the	_	DET	DT	_	7	det	_	_
+7	subject	_	NOUN	NN	_	5	pobj	_	_
+8	of	_	ADP	IN	_	7	prep	_	_
+9	substance	_	NOUN	NN	_	8	pobj	_	_
+10	.	_	PUNCT	.	_	1	punct	_	_

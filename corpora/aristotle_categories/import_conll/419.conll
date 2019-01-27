@@ -1,0 +1,33 @@
+1	Knowledge	knowledge	NOUN	NN	_	5	nsubj	419-342	_
+2	,	,	PUNCT	,	_	5	punct	419-343	_
+3	again	again	ADV	RB	_	5	advmod	419-344	_
+4	,	,	PUNCT	,	_	5	punct	419-345	_
+5	is	be	VERB	VBZ	_	5	ROOT	419-346	_
+6	the	the	DET	DT	_	7	det	419-347	_
+7	opposite	opposite	NOUN	NN	_	5	attr	419-348	_
+8	of	of	ADP	IN	_	7	prep	419-349	_
+9	the	the	DET	DT	_	10	det	419-350	419->[19:22],419->[26:27],419->[29:30],out of the margins
+10	thing	thing	NOUN	NN	_	8	pobj	419-351	419->[19:22],419->[26:27],419->[29:30],out of the margins
+11	known	know	VERB	VBN	_	10	acl	419-352	419->[19:22],419->[26:27],419->[29:30],out of the margins
+12	,	,	PUNCT	,	_	5	punct	419-353	_
+13	in	in	ADP	IN	_	5	prep	419-354	_
+14	the	the	DET	DT	_	16	det	419-355	_
+15	same	same	ADJ	JJ	_	16	amod	419-356	_
+16	sense	sense	NOUN	NN	_	13	pobj	419-357	_
+17	,	,	PUNCT	,	_	5	punct	419-358	_
+18	and	and	CCONJ	CC	_	5	cc	419-359	_
+19	the	the	DET	DT	_	20	det	419-360	419->[9:12],419->[26:27],419->[29:30],out of the margins
+20	thing	thing	NOUN	NN	_	24	nsubjpass	419-361	419->[9:12],419->[26:27],419->[29:30],out of the margins
+21	known	know	VERB	VBN	_	20	acl	419-362	419->[9:12],419->[26:27],419->[29:30],out of the margins
+22	also	also	ADV	RB	_	24	advmod	419-363	_
+23	is	be	VERB	VBZ	_	24	auxpass	419-364	_
+24	explained	explain	VERB	VBN	_	5	conj	419-365	_
+25	by	by	ADP	IN	_	24	agent	419-366	_
+26	its	-PRON-	ADJ	PRP$	_	27	poss	419-367	419->[9:12],419->[19:22],419->[29:30],out of the margins
+27	relation	relation	NOUN	NN	_	25	pobj	419-368	_
+28	to	to	ADP	IN	_	27	prep	419-369	_
+29	its	-PRON-	ADJ	PRP$	_	30	poss	419-370	419->[9:12],419->[19:22],419->[26:27],out of the margins
+30	opposite	opposite	NOUN	NN	_	28	pobj	419-371	_
+31	,	,	PUNCT	,	_	30	punct	419-372	_
+32	knowledge	knowledge	NOUN	NN	_	30	appos	419-373	_
+33	.	.	PUNCT	.	_	24	punct	419-374	_

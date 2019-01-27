@@ -1,0 +1,16 @@
+1	Yet	yet	CCONJ	CC	_	6	cc	18-294	_
+2	in	in	ADP	IN	_	6	prep	18-295	_
+3	some	some	DET	DT	_	4	det	18-296	_
+4	cases	case	NOUN	NNS	_	2	pobj	18-297	_
+5	there	there	ADV	EX	_	6	expl	18-298	_
+6	is	be	VERB	VBZ	_	6	ROOT	18-299	_
+7	nothing	nothing	NOUN	NN	_	6	attr	18-300	_
+8	to	to	PART	TO	_	9	aux	18-301	_
+9	prevent	prevent	VERB	VB	_	7	relcl	18-302	_
+10	such	such	ADJ	JJ	_	11	amod	18-303	_
+11	being	be	VERB	VBG	_	6	attr	18-304	_
+12	present	present	ADJ	JJ	_	11	acomp	18-305	_
+13	in	in	ADP	IN	_	11	prep	18-306	_
+14	a	a	DET	DT	_	15	det	18-307	_
+15	subject	subject	NOUN	NN	_	13	pobj	18-308	_
+16	.	.	PUNCT	.	_	6	punct	18-309	_

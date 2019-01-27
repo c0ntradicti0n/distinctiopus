@@ -1,0 +1,13 @@
+1	In	in	ADP	IN	_	5	prep	346-315	_
+2	like	like	ADJ	JJ	_	1	prep	346-316	_
+3	manner	manner	NOUN	NN	_	2	pobj	346-317	_
+4	there	there	ADV	EX	_	5	expl	346-318	_
+5	are	be	VERB	VBP	_	5	ROOT	346-319	_
+6	affective	affective	ADJ	JJ	_	7	amod	346-320	_
+7	qualities	quality	NOUN	NNS	_	5	attr	346-321	_
+8	and	and	CCONJ	CC	_	7	cc	346-322	_
+9	affections	affection	NOUN	NNS	_	7	conj	346-323	_
+10	of	of	ADP	IN	_	7	prep	346-324	_
+11	the	the	DET	DT	_	12	det	346-325	_
+12	soul	soul	NOUN	NN	_	10	pobj	346-326	_
+13	.	.	PUNCT	.	_	5	punct	346-327	_

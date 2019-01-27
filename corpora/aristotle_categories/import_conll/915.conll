@@ -1,0 +1,10 @@
+6	an	an	DET	DT	_	7	det	915-6	916->[29:31],917->[7:9]
+7	intermediate	intermediate	ADJ	JJ	_	5	dobj	915-7	916->[29:31],917->[7:9]
+8	are	be	VERB	VBP	_	8	ROOT	915-8	_
+9	not	not	ADV	RB	_	8	neg	915-9	_
+10	subject	subject	ADJ	JJ	_	8	acomp	915-10	_
+11	to	to	ADP	IN	_	10	prep	915-11	_
+12	any	any	DET	DT	_	14	det	915-12	_
+13	such	such	ADJ	JJ	_	14	amod	915-13	_
+14	necessity	necessity	NOUN	NN	_	11	pobj	915-14	_
+15	.	.	PUNCT	.	_	8	punct	915-15	_

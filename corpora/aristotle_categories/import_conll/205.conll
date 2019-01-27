@@ -1,0 +1,13 @@
+1	Each	each	DET	DT	_	7	nsubjpass	205-246	_
+2	of	of	ADP	IN	_	1	prep	205-247	_
+3	the	the	DET	DT	_	5	det	205-248	_
+4	aforesaid	aforesaid	NOUN	NN	_	5	amod	205-249	_
+5	quantities	quantity	NOUN	NNS	_	2	pobj	205-250	_
+6	is	be	VERB	VBZ	_	7	auxpass	205-251	_
+7	said	say	VERB	VBN	_	7	ROOT	205-252	_
+8	to	to	PART	TO	_	9	aux	205-253	_
+9	be	be	VERB	VB	_	7	xcomp	205-254	_
+10	equal	equal	ADJ	JJ	_	9	acomp	205-255	_
+11	or	or	CCONJ	CC	_	10	cc	205-256	_
+12	unequal	unequal	ADJ	JJ	_	10	conj	205-257	_
+13	.	.	PUNCT	.	_	7	punct	205-258	_

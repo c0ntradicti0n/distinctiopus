@@ -1,0 +1,6 @@
+1	ENDUSER	_	PROPN	NNP	_	3	compound	_	_
+2	LICENSE	_	PROPN	NNP	_	3	compound	_	_
+3	AGREEMENT	_	PROPN	NNP	_	3	ROOT	_	_
+4	FOR	_	ADP	IN	_	3	prep	_	_
+5	MICROSOFT	_	PROPN	NNP	_	6	compound	_	_
+6	SOFTWARE	_	PROPN	NNP	_	4	pobj	_	_

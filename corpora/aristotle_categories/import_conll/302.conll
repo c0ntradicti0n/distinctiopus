@@ -1,0 +1,14 @@
+1	It	-PRON-	PRON	PRP	_	2	nsubj	302-228	_
+2	is	be	VERB	VBZ	_	2	ROOT	302-229	_
+3	not	not	ADV	RB	_	2	neg	302-230	_
+4	possible	possible	ADJ	JJ	_	2	acomp	302-231	_
+5	to	to	PART	TO	_	6	aux	302-232	_
+6	know	know	VERB	VB	_	2	xcomp	302-233	_
+7	forthwith	forthwith	NOUN	NN	_	6	dobj	302-234	_
+8	whose	whose	ADJ	WP$	_	9	poss	302-235	_
+9	head	head	NOUN	NN	_	13	nsubjpass	302-236	_
+10	or	or	CCONJ	CC	_	9	cc	302-237	_
+11	hand	hand	NOUN	NN	_	9	conj	302-238	_
+12	is	be	VERB	VBZ	_	13	auxpass	302-239	_
+13	meant	mean	VERB	VBN	_	7	relcl	302-240	_
+14	.	.	PUNCT	.	_	2	punct	302-241	_

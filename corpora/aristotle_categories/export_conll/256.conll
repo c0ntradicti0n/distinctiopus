@@ -1,0 +1,16 @@
+1	When	_	ADV	WRB	_	4	advmod	_	_
+2	the	_	DET	DT	_	3	det	_	_
+3	terminology	_	NOUN	NN	_	4	nsubj	_	_
+4	is	_	VERB	VBZ	_	9	advcl	_	_
+5	thus	_	ADV	RB	_	6	advmod	_	_
+6	correct	_	ADJ	JJ	_	4	acomp	_	_
+7	,	_	PUNCT	,	_	9	punct	_	_
+8	it	_	PRON	PRP	_	9	nsubj	_	_
+9	is	_	VERB	VBZ	_	9	ROOT	_	_
+10	evident	_	ADJ	JJ	_	9	acomp	_	_
+11	that	_	ADP	IN	_	14	mark	_	_
+12	all	_	DET	DT	_	13	det	_	_
+13	correlatives	_	NOUN	NNS	_	14	nsubj	_	_
+14	are	_	VERB	VBP	_	9	ccomp	_	_
+15	interdependent	_	ADJ	JJ	_	14	acomp	_	_
+16	.	_	PUNCT	.	_	9	punct	_	_

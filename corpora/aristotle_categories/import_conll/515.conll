@@ -1,0 +1,11 @@
+1	This	this	DET	DT	_	2	det	515-236	_
+2	sense	sense	NOUN	NN	_	6	nsubj	515-237	_
+3	of	of	ADP	IN	_	2	prep	515-238	_
+4	the	the	DET	DT	_	5	det	515-239	512->[5:7]
+5	word	word	NOUN	NN	_	3	pobj	515-240	512->[5:7]
+6	is	be	VERB	VBZ	_	6	ROOT	515-241	_
+7	perhaps	perhaps	ADV	RB	_	6	advmod	515-242	_
+8	the	the	DET	DT	_	10	det	515-243	_
+9	most	most	ADV	RBS	_	10	advmod	515-244	_
+10	farfetched	farfetched	ADJ	JJ	_	6	attr	515-245	_
+11	.	.	PUNCT	.	_	6	punct	515-246	_

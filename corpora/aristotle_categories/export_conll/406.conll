@@ -1,0 +1,13 @@
+1	So	_	ADV	RB	_	2	advmod	_	_
+2	much	_	ADV	RB	_	7	advmod	_	_
+3	,	_	PUNCT	,	_	7	punct	_	_
+4	then	_	ADV	RB	_	7	advmod	_	_
+5	,	_	PUNCT	,	_	7	punct	_	_
+6	is	_	VERB	VBZ	_	7	auxpass	_	_
+7	stated	_	VERB	VBN	_	7	ROOT	_	_
+8	with	_	ADP	IN	_	7	prep	_	_
+9	regard	_	NOUN	NN	_	8	pobj	_	_
+10	to	_	ADP	IN	_	9	prep	_	_
+11	these	_	DET	DT	_	12	det	_	_
+12	categories	_	NOUN	NNS	_	10	pobj	_	_
+13	.	_	PUNCT	.	_	7	punct	_	_

@@ -1,0 +1,15 @@
+1	Habits	habit	NOUN	NNS	_	2	nsubj	317-343	_
+2	are	be	VERB	VBP	_	2	ROOT	317-344	_
+3	at	at	ADP	IN	_	2	prep	317-345	_
+4	the	the	DET	DT	_	7	det	317-346	_
+5	same	same	ADJ	JJ	_	6	amod	317-347	_
+6	time	time	NOUN	NN	_	7	compound	317-348	_
+7	dispositions	disposition	NOUN	NNS	_	3	pobj	317-349	_
+8	,	,	PUNCT	,	_	2	punct	317-350	_
+9	but	but	CCONJ	CC	_	2	cc	317-351	_
+10	dispositions	disposition	NOUN	NNS	_	11	nsubj	317-352	_
+11	are	be	VERB	VBP	_	2	conj	317-353	_
+12	not	not	ADV	RB	_	11	neg	317-354	_
+13	necessarily	necessarily	ADV	RB	_	11	advmod	317-355	_
+14	habits	habit	NOUN	NNS	_	11	attr	317-356	_
+15	.	.	PUNCT	.	_	11	punct	317-357	_

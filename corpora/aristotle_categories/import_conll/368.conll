@@ -1,0 +1,7 @@
+1	Yet	yet	CCONJ	CC	_	5	advmod	368-434	_
+2	this	this	DET	DT	_	5	nsubj	368-435	_
+3	does	do	VERB	VBZ	_	5	aux	368-436	_
+4	not	not	ADV	RB	_	5	neg	368-437	_
+5	occur	occur	VERB	VB	_	5	ROOT	368-438	_
+6	often	often	ADV	RB	_	5	advmod	368-439	_
+7	.	.	PUNCT	.	_	5	punct	368-440	_

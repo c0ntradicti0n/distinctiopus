@@ -1,0 +1,26 @@
+1	It	-PRON-	PRON	PRP	_	2	nsubj	169-438	_
+2	is	be	VERB	VBZ	_	2	ROOT	169-439	_
+3	because	because	ADP	IN	_	5	mark	169-440	_
+4	we	-PRON-	PRON	PRP	_	5	nsubj	169-441	169->[19:20],out of the margins,out of the margins
+5	have	have	VERB	VBP	_	2	advcl	169-442	_
+6	in	in	ADP	IN	_	5	prep	169-443	_
+7	mind	mind	NOUN	NN	_	6	pobj	169-444	_
+8	some	some	DET	DT	_	9	det	169-445	_
+9	one	one	NUM	CD	_	5	dobj	169-446	_
+10	of	of	ADP	IN	_	9	prep	169-447	_
+11	these	these	DET	DT	_	12	det	169-448	_
+12	quantities	quantity	NOUN	NNS	_	10	pobj	169-449	_
+13	,	,	PUNCT	,	_	5	punct	169-450	_
+14	properly	properly	ADV	RB	_	16	advmod	169-451	_
+15	so	so	ADV	RB	_	16	advmod	169-452	_
+16	called	call	VERB	VBN	_	5	conj	169-453	_
+17	,	,	PUNCT	,	_	16	punct	169-454	_
+18	that	that	ADP	IN	_	20	mark	169-455	_
+19	we	-PRON-	PRON	PRP	_	20	nsubj	169-456	169->[4:5],out of the margins,out of the margins
+20	apply	apply	VERB	VBP	_	16	conj	169-457	_
+21	quantitative	quantitative	ADJ	JJ	_	22	amod	169-458	_
+22	terms	term	NOUN	NNS	_	20	dobj	169-459	_
+23	to	to	ADP	IN	_	20	prep	169-460	_
+24	other	other	ADJ	JJ	_	25	amod	169-461	_
+25	things	thing	NOUN	NNS	_	23	pobj	169-462	_
+26	.	.	PUNCT	.	_	2	punct	169-463	_

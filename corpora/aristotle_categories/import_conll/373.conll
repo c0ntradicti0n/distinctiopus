@@ -1,0 +1,15 @@
+1	Red	red	ADJ	JJ	_	12	nsubj	373-236	_
+2	,	,	PUNCT	,	_	1	punct	373-237	_
+3	yellow	yellow	ADJ	JJ	_	1	conj	373-238	_
+4	,	,	PUNCT	,	_	3	punct	373-239	_
+5	and	and	CCONJ	CC	_	3	cc	373-240	_
+6	such	such	ADJ	JJ	_	7	amod	373-241	_
+7	colours	colour	NOUN	NNS	_	3	conj	373-242	_
+8	,	,	PUNCT	,	_	1	punct	373-243	_
+9	though	though	ADP	IN	_	12	mark	373-244	_
+10	qualities	quality	NOUN	NNS	_	12	nsubj	373-245	_
+11	,	,	PUNCT	,	_	12	punct	373-246	_
+12	have	have	VERB	VBP	_	12	ROOT	373-247	_
+13	no	no	DET	DT	_	14	det	373-248	_
+14	contraries	contrary	NOUN	NNS	_	12	dobj	373-249	_
+15	.	.	PUNCT	.	_	12	punct	373-250	_

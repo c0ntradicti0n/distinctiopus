@@ -1,0 +1,10 @@
+1	We	-PRON-	PRON	PRP	_	3	nsubj	394-296	393->[1:2]
+2	did	do	VERB	VBD	_	3	aux	394-297	_
+3	say	say	VERB	VB	_	3	ROOT	394-298	_
+4	that	that	ADP	IN	_	8	mark	394-299	_
+5	habits	habit	NOUN	NNS	_	8	nsubj	394-300	_
+6	and	and	CCONJ	CC	_	5	cc	394-301	_
+7	dispositions	disposition	NOUN	NNS	_	5	conj	394-302	_
+8	were	be	VERB	VBD	_	3	ccomp	394-303	_
+9	relative	relative	ADJ	JJ	_	8	acomp	394-304	_
+10	.	.	PUNCT	.	_	3	punct	394-305	_

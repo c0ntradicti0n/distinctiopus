@@ -1,0 +1,17 @@
+1	It	-PRON-	PRON	PRP	_	2	nsubj	135-276	_
+2	is	be	VERB	VBZ	_	2	ROOT	135-277	_
+3	in	in	ADP	IN	_	2	prep	135-278	_
+4	this	this	DET	DT	_	5	det	135-279	_
+5	sense	sense	NOUN	NN	_	3	pobj	135-280	_
+6	that	that	ADP	IN	_	9	mark	135-281	_
+7	it	-PRON-	PRON	PRP	_	9	nsubjpass	135-282	_
+8	is	be	VERB	VBZ	_	9	auxpass	135-283	_
+9	said	say	VERB	VBN	_	2	ccomp	135-284	_
+10	to	to	PART	TO	_	11	aux	135-285	_
+11	be	be	VERB	VB	_	9	xcomp	135-286	_
+12	capable	capable	ADJ	JJ	_	11	acomp	135-287	_
+13	of	of	ADP	IN	_	12	prep	135-288	_
+14	admitting	admit	VERB	VBG	_	13	pcomp	135-289	_
+15	contrary	contrary	ADJ	JJ	_	16	amod	135-290	_
+16	qualities	quality	NOUN	NNS	_	14	dobj	135-291	_
+17	.	.	PUNCT	.	_	2	punct	135-292	_

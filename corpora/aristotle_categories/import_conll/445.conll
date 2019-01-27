@@ -1,0 +1,13 @@
+1	That	that	DET	DT	_	7	nsubj	445-300	_
+2	which	which	ADJ	WDT	_	4	nsubjpass	445-301	_
+3	is	be	VERB	VBZ	_	4	auxpass	445-302	_
+4	affirmed	affirm	VERB	VBN	_	1	relcl	445-303	_
+5	or	or	CCONJ	CC	_	4	cc	445-304	_
+6	denied	deny	VERB	VBN	_	4	conj	445-305	_
+7	is	be	VERB	VBZ	_	7	ROOT	445-306	_
+8	not	not	ADV	RB	_	7	neg	445-307	_
+9	itself	-PRON-	PRON	PRP	_	7	attr	445-308	_
+10	affirmation	affirmation	NOUN	NN	_	7	attr	445-309	_
+11	or	or	CCONJ	CC	_	10	cc	445-310	_
+12	denial	denial	NOUN	NN	_	10	conj	445-311	_
+13	.	.	PUNCT	.	_	7	punct	445-312	_

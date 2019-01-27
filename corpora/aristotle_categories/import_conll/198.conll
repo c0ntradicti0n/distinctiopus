@@ -1,0 +1,13 @@
+1	Quantity	quantity	PROPN	NNP	_	2	nsubj	198-347	_
+2	does	do	VERB	VBZ	_	2	ROOT	198-348	_
+3	not	not	ADV	RB	_	2	neg	198-349	_
+4	,	,	PUNCT	,	_	6	punct	198-350	_
+5	it	-PRON-	PRON	PRP	_	6	nsubj	198-351	_
+6	appears	appear	VERB	VBZ	_	8	parataxis	198-352	_
+7	,	,	PUNCT	,	_	6	punct	198-353	_
+8	admit	admit	VERB	VB	_	2	dep	198-354	_
+9	of	of	ADP	IN	_	8	prep	198-355	_
+10	variation	variation	NOUN	NN	_	9	pobj	198-356	_
+11	of	of	ADP	IN	_	10	prep	198-357	_
+12	degree	degree	NOUN	NN	_	11	pobj	198-358	_
+13	.	.	PUNCT	.	_	2	punct	198-359	_

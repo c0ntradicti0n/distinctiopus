@@ -1,0 +1,12 @@
+1	Thus	thus	ADV	RB	_	8	advmod	522-211	_
+2	,	,	PUNCT	,	_	8	punct	522-212	_
+3	the	the	DET	DT	_	4	det	522-213	_
+4	word	word	NOUN	NN	_	8	nsubjpass	522-214	_
+5	Prior	prior	ADV	RB	_	8	advmod	522-215	_
+6	may	may	VERB	MD	_	8	aux	522-216	_
+7	be	be	VERB	VB	_	8	auxpass	522-217	_
+8	used	use	VERB	VBN	_	8	ROOT	522-218	_
+9	in	in	ADP	IN	_	8	prep	522-219	_
+10	five	five	NUM	CD	_	11	nummod	522-220	_
+11	senses	sens	NOUN	NNS	_	9	pobj	522-221	_
+12	.	.	PUNCT	.	_	8	punct	522-222	_

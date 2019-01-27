@@ -1,0 +1,11 @@
+1	Space	space	NOUN	NN	_	5	nsubj	153-163	_
+2	and	and	CCONJ	CC	_	1	cc	153-164	_
+3	time	time	NOUN	NN	_	1	conj	153-165	_
+4	also	also	ADV	RB	_	5	advmod	153-166	_
+5	belong	belong	VERB	VBP	_	5	ROOT	153-167	_
+6	to	to	ADP	IN	_	5	prep	153-168	_
+7	this	this	DET	DT	_	8	det	153-169	_
+8	class	class	NOUN	NN	_	6	pobj	153-170	_
+9	of	of	ADP	IN	_	8	prep	153-171	_
+10	quantities	quantity	NOUN	NNS	_	9	pobj	153-172	_
+11	.	.	PUNCT	.	_	5	punct	153-173	_

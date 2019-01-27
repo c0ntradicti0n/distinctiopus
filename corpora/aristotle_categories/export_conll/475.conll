@@ -1,0 +1,17 @@
+1	There	_	ADV	EX	_	3	expl	_	_
+2	may	_	VERB	MD	_	3	aux	_	_
+3	be	_	VERB	VB	_	3	ROOT	_	_
+4	a	_	DET	DT	_	5	det	_	_
+5	change	_	NOUN	NN	_	3	attr	_	_
+6	from	_	ADP	IN	_	5	prep	_	_
+7	possession	_	NOUN	NN	_	6	pobj	_	_
+8	to	_	ADP	IN	_	5	prep	_	_
+9	privation	_	NOUN	NN	_	8	pobj	_	_
+10	,	_	PUNCT	,	_	3	punct	_	_
+11	but	_	CCONJ	CC	_	3	cc	_	_
+12	not	_	ADV	RB	_	13	neg	_	_
+13	from	_	ADP	IN	_	3	conj	_	_
+14	privation	_	NOUN	NN	_	13	pobj	_	_
+15	to	_	ADP	IN	_	13	prep	_	_
+16	possession	_	NOUN	NN	_	15	pobj	_	_
+17	.	_	PUNCT	.	_	3	punct	_	_

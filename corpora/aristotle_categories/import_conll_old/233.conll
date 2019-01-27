@@ -1,0 +1,13 @@
+1	Sometimes	_	ADV	RB	_	10	advmod	_	_
+2	,	_	PUNCT	,	_	10	punct	_	_
+3	however	_	ADV	RB	_	10	advmod	_	_
+4	,	_	PUNCT	,	_	10	punct	_	_
+5	reciprocity	_	NOUN	NN	_	10	nsubj	_	_
+6	of	_	ADP	IN	_	5	prep	_	_
+7	correlation	_	NOUN	NN	_	6	pobj	_	_
+8	does	_	VERB	VBZ	_	10	aux	_	_
+9	not	_	ADV	RB	_	10	neg	_	_
+10	appear	_	VERB	VB	_	10	ROOT	_	_
+11	to	_	PART	TO	_	12	aux	_	_
+12	exist	_	VERB	VB	_	10	xcomp	_	_
+13	.	_	PUNCT	.	_	10	punct	_	_

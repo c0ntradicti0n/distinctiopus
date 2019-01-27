@@ -1,0 +1,12 @@
+1	Thus	_	ADV	RB	_	5	advmod	_	_
+2	,	_	PUNCT	,	_	5	punct	_	_
+3	it	_	PRON	PRP	_	5	nsubj	_	_
+4	would	_	VERB	MD	_	5	aux	_	_
+5	seem	_	VERB	VB	_	5	ROOT	_	_
+6	that	_	ADP	IN	_	9	mark	_	_
+7	the	_	DET	DT	_	8	det	_	_
+8	perceptible	_	ADJ	JJ	_	9	nsubj	_	_
+9	exists	_	NOUN	NNS	_	5	ccomp	_	_
+10	before	_	ADP	IN	_	9	prep	_	_
+11	perception	_	NOUN	NN	_	10	pobj	_	_
+12	.	_	PUNCT	.	_	5	punct	_	_

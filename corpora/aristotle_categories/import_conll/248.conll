@@ -1,0 +1,9 @@
+1	Let	let	VERB	VB	_	1	ROOT	248-438	_
+2	me	-PRON-	PRON	PRP	_	3	nsubj	248-439	_
+3	state	state	VERB	VB	_	1	ccomp	248-440	_
+4	what	what	NOUN	WP	_	6	dobj	248-441	_
+5	I	-PRON-	PRON	PRP	_	6	nsubj	248-442	_
+6	mean	mean	VERB	VBP	_	3	ccomp	248-443	_
+7	more	more	ADV	RBR	_	8	advmod	248-444	_
+8	clearly	clearly	ADV	RB	_	3	advmod	248-445	_
+9	.	.	PUNCT	.	_	1	punct	248-446	_

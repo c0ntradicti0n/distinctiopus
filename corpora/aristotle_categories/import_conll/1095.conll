@@ -1,0 +1,13 @@
+6	,	,	PUNCT	,	_	15	punct	1095-6	_
+7	if	if	ADP	IN	_	11	mark	1095-7	_
+8	a	a	DET	DT	_	9	det	1095-8	1095->[13:14]
+9	gnomon	gnomon	NOUN	NN	_	11	nsubjpass	1095-9	1095->[13:14]
+10	is	be	VERB	VBZ	_	11	auxpass	1095-10	_
+11	applied	apply	VERB	VBN	_	15	advcl	1095-11	_
+12	to	to	ADP	IN	_	11	prep	1095-12	_
+13	it	-PRON-	PRON	PRP	_	12	pobj	1095-13	1095->[8:10]
+14	,	,	PUNCT	,	_	15	punct	1095-14	_
+15	undergoes	undergoe	NOUN	NNS	_	15	ROOT	1095-15	_
+16	increase	increase	VERB	VBP	_	15	dobj	1095-16	_
+17	but	but	CCONJ	CC	_	16	cc	1095-17	_
+18	not	not	ADV	RB	_	19	neg	1095-18	_

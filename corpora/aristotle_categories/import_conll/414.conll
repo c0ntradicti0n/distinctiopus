@@ -1,0 +1,8 @@
+1	Let	let	VERB	VB	_	1	ROOT	414-217	_
+2	me	-PRON-	PRON	PRP	_	3	nsubj	414-218	_
+3	sketch	sketch	VERB	VB	_	1	ccomp	414-219	_
+4	my	-PRON-	ADJ	PRP$	_	5	poss	414-220	_
+5	meaning	meaning	NOUN	NN	_	3	dobj	414-221	_
+6	in	in	ADP	IN	_	3	prep	414-222	_
+7	outline	outline	NOUN	NN	_	6	pobj	414-223	_
+8	.	.	PUNCT	.	_	1	punct	414-224	_

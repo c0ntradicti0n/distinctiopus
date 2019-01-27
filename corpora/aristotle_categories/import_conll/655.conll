@@ -1,0 +1,9 @@
+6	category	category	NOUN	NN	_	4	pobj	655-6	_
+7	is	be	VERB	VBZ	_	7	ROOT	655-7	_
+8	that	that	DET	DT	_	7	attr	655-8	_
+9	of	of	ADP	IN	_	8	prep	655-9	_
+10	affective	affective	ADJ	JJ	_	11	amod	655-10	_
+11	qualities	quality	NOUN	NNS	_	9	pobj	655-11	_
+12	and	and	CCONJ	CC	_	11	cc	655-12	_
+13	affections	affection	NOUN	NNS	_	11	conj	655-13	_
+14	.	.	PUNCT	.	_	7	punct	655-14	_

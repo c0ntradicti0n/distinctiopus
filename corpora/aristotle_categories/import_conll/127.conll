@@ -1,0 +1,11 @@
+1	What	what	NOUN	WP	_	4	nsubjpass	127-287	_
+2	has	have	VERB	VBZ	_	4	aux	127-288	_
+3	been	be	VERB	VBN	_	4	auxpass	127-289	_
+4	said	say	VERB	VBN	_	4	ROOT	127-290	_
+5	of	of	ADP	IN	_	4	prep	127-291	_
+6	statements	statement	NOUN	NNS	_	5	pobj	127-292	_
+7	applies	apply	VERB	VBZ	_	6	acl	127-293	_
+8	also	also	ADV	RB	_	7	advmod	127-294	_
+9	to	to	ADP	IN	_	7	prep	127-295	_
+10	opinions	opinion	NOUN	NNS	_	9	pobj	127-296	_
+11	.	.	PUNCT	.	_	4	punct	127-297	_

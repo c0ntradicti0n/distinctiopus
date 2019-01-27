@@ -1,0 +1,13 @@
+1	But	but	CCONJ	CC	_	3	cc	544-319	_
+2	there	there	ADV	EX	_	3	expl	544-320	_
+3	are	be	VERB	VBP	_	3	ROOT	544-321	_
+4	some	some	DET	DT	_	5	det	544-322	_
+5	things	thing	NOUN	NNS	_	3	attr	544-323	_
+6	which	which	ADJ	WDT	_	7	nsubj	544-324	_
+7	undergo	undergo	VERB	VBP	_	5	relcl	544-325	_
+8	increase	increase	NOUN	NN	_	7	dobj	544-326	_
+9	but	but	CCONJ	CC	_	8	cc	544-327	_
+10	yet	yet	ADV	RB	_	12	advmod	544-328	_
+11	not	not	ADV	RB	_	12	neg	544-329	_
+12	alteration	alteration	NOUN	NN	_	8	conj	544-330	_
+13	.	.	PUNCT	.	_	3	punct	544-331	_

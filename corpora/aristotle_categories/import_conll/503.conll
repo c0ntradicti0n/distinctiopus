@@ -1,0 +1,17 @@
+1	There	there	ADV	EX	_	2	expl	503-296	_
+2	are	be	VERB	VBP	_	2	ROOT	503-297	_
+3	four	four	NUM	CD	_	4	nummod	503-298	_
+4	senses	sens	NOUN	NNS	_	2	attr	503-299	_
+5	in	in	ADP	IN	_	11	prep	503-300	_
+6	which	which	ADJ	WDT	_	5	pobj	503-301	_
+7	one	one	NUM	CD	_	8	nummod	503-302	_
+8	thing	thing	NOUN	NN	_	11	nsubjpass	503-303	_
+9	can	can	VERB	MD	_	11	aux	503-304	_
+10	be	be	VERB	VB	_	11	auxpass	503-305	_
+11	said	say	VERB	VBN	_	4	relcl	503-306	_
+12	to	to	PART	TO	_	13	aux	503-307	_
+13	be	be	VERB	VB	_	11	xcomp	503-308	_
+14	Prior	prior	ADV	RB	_	13	advmod	503-309	_
+15	to	to	ADP	IN	_	14	prep	503-310	_
+16	another	another	DET	DT	_	15	pobj	503-311	_
+17	.	.	PUNCT	.	_	2	punct	503-312	_

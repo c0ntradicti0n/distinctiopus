@@ -1,0 +1,17 @@
+1	Nor	nor	CCONJ	CC	_	2	cc	189-473	_
+2	is	be	VERB	VBZ	_	2	ROOT	189-474	_
+3	there	there	ADV	EX	_	2	expl	189-475	_
+4	anything	anything	NOUN	NN	_	2	attr	189-476	_
+5	which	which	ADJ	WDT	_	6	nsubj	189-477	_
+6	is	be	VERB	VBZ	_	4	relcl	189-478	_
+7	qualified	qualified	ADJ	JJ	_	6	acomp	189-479	_
+8	in	in	ADP	IN	_	7	prep	189-480	_
+9	contrary	contrary	ADJ	JJ	_	10	amod	189-481	_
+10	ways	way	NOUN	NNS	_	8	pobj	189-482	_
+11	at	at	ADP	IN	_	6	prep	189-483	_
+12	one	one	NUM	CD	_	11	pobj	189-484	_
+13	and	and	CCONJ	CC	_	12	cc	189-485	_
+14	the	the	DET	DT	_	16	det	189-486	_
+15	same	same	ADJ	JJ	_	16	amod	189-487	_
+16	time	time	NOUN	NN	_	12	conj	189-488	_
+17	.	.	PUNCT	.	_	2	punct	189-489	_

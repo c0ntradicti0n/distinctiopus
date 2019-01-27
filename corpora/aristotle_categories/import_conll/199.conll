@@ -1,0 +1,15 @@
+1	One	one	NUM	CD	_	2	nummod	199-360	_
+2	thing	thing	NOUN	NN	_	5	nsubj	199-361	_
+3	can	can	VERB	MD	_	5	aux	199-362	_
+4	not	not	ADV	RB	_	5	neg	199-363	_
+5	be	be	VERB	VB	_	5	ROOT	199-364	_
+6	two	two	NUM	CD	_	7	nummod	199-365	_
+7	cubits	cubit	NOUN	NNS	_	8	npadvmod	199-366	_
+8	long	long	ADJ	JJ	_	5	acomp	199-367	_
+9	in	in	ADP	IN	_	5	prep	199-368	_
+10	a	a	DET	DT	_	12	det	199-369	_
+11	greater	great	ADJ	JJR	_	12	amod	199-370	_
+12	degree	degree	NOUN	NN	_	9	pobj	199-371	_
+13	than	than	ADP	IN	_	12	prep	199-372	_
+14	another	another	DET	DT	_	13	pobj	199-373	_
+15	.	.	PUNCT	.	_	5	punct	199-374	_

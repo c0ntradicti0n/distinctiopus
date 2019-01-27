@@ -1,0 +1,15 @@
+1	For	for	ADP	IN	_	3	mark	185-344	_
+2	it	-PRON-	PRON	PRP	_	3	nsubj	185-345	_
+3	happens	happen	VERB	VBZ	_	3	ROOT	185-346	_
+4	at	at	ADP	IN	_	3	prep	185-347	_
+5	times	time	NOUN	NNS	_	4	pobj	185-348	_
+6	that	that	ADP	IN	_	10	mark	185-349	_
+7	the	the	DET	DT	_	9	det	185-350	186->[2:5],186->[23:26]
+8	same	same	ADJ	JJ	_	9	amod	185-351	186->[2:5],186->[23:26]
+9	thing	thing	NOUN	NN	_	10	nsubj	185-352	186->[2:5],186->[23:26]
+10	is	be	VERB	VBZ	_	3	ccomp	185-353	_
+11	both	both	DET	DT	_	12	preconj	185-354	_
+12	small	small	ADJ	JJ	_	10	acomp	185-355	_
+13	and	and	CCONJ	CC	_	12	cc	185-356	_
+14	great	great	ADJ	JJ	_	12	conj	185-357	_
+15	.	.	PUNCT	.	_	3	punct	185-358	_

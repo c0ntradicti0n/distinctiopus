@@ -1,0 +1,12 @@
+1	Substance	_	NOUN	NN	_	7	nsubj	_	_
+2	,	_	PUNCT	,	_	7	punct	_	_
+3	then	_	ADV	RB	_	7	advmod	_	_
+4	,	_	PUNCT	,	_	7	punct	_	_
+5	does	_	VERB	VBZ	_	7	aux	_	_
+6	not	_	ADV	RB	_	7	neg	_	_
+7	admit	_	VERB	VB	_	7	ROOT	_	_
+8	of	_	ADP	IN	_	7	prep	_	_
+9	variation	_	NOUN	NN	_	8	pobj	_	_
+10	of	_	ADP	IN	_	9	prep	_	_
+11	degree	_	NOUN	NN	_	10	pobj	_	_
+12	.	_	PUNCT	.	_	7	punct	_	_

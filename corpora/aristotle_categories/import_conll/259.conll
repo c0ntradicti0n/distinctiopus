@@ -1,0 +1,19 @@
+1	This	this	DET	DT	_	2	nsubj	259-556	_
+2	is	be	VERB	VBZ	_	2	ROOT	259-557	_
+3	for	for	ADP	IN	_	2	prep	259-558	_
+4	the	the	DET	DT	_	6	det	259-559	_
+5	most	most	ADJ	JJS	_	6	amod	259-560	_
+6	part	part	NOUN	NN	_	3	pobj	259-561	_
+7	true	true	ADJ	JJ	_	6	amod	259-562	_
+8	,	,	PUNCT	,	_	2	punct	259-563	_
+9	as	as	ADP	IN	_	2	prep	259-564	_
+10	in	in	ADP	IN	_	9	prep	259-565	_
+11	the	the	DET	DT	_	12	det	259-566	_
+12	case	case	NOUN	NN	_	10	pobj	259-567	_
+13	of	of	ADP	IN	_	12	prep	259-568	_
+14	the	the	DET	DT	_	15	det	259-569	_
+15	double	double	ADJ	JJ	_	13	pobj	259-570	_
+16	and	and	CCONJ	CC	_	15	cc	259-571	_
+17	the	the	DET	DT	_	18	det	259-572	out of the margins
+18	half	half	NOUN	NN	_	15	conj	259-573	out of the margins
+19	.	.	PUNCT	.	_	2	punct	259-574	_
