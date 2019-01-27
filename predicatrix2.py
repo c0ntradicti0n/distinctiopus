@@ -25,8 +25,8 @@ class Predication():
         self.tdfidf = tdfidf_tool.tdfidf(lemmatized_text)
 
         # small
-        options_file = './3rdparty/elmo_2x1024_128_2048cnn_1xhighway_options.json'
-        weight_file = './3rdparty/elmo_2x1024_128_2048cnn_1xhighway_weights.hdf5'
+        options_file = './others_models/elmo_2x1024_128_2048cnn_1xhighway_options.json'
+        weight_file = './others_models/elmo_2x1024_128_2048cnn_1xhighway_weights.hdf5'
         self.elmo = ElmoEmbedder(options_file=options_file, weight_file=weight_file)
 
         self.attributive_arg_markers = ['amod', 'acl', 'prep', 'compound', 'appos']  # genitiv/dativ objects?
