@@ -73,7 +73,7 @@ import string
 import re
 from pyxdameraulevenshtein import damerau_levenshtein_distance
 import logging
-from nested_list_tools import check_for_tuple_in_list, flatten,  flatten_reduce, flatten_list
+from nested_list_tools import check_for_tuple_in_list, flatten,  flatten_reduce, flatten_list, type_spec
 import dict_tools
 
 
@@ -168,7 +168,7 @@ class Simmix:
             raise TypeError ("Function doesn't return beam. %s, %s " % (str(fun(ex1,ex2)), str(fun)))
         return res
 
-    def choose(self, data, out=None, layout=None, n=None, G=None, type=None, output=False,
+    def choose(self, data, out=None, layout=None, n=None, G=None, type=None, type2=None, output=False,
                minimize=False):
         """Does the choice in different manners.
 /
@@ -326,20 +326,27 @@ class Simmix:
         if not G == None:
             l_s = Simmix.expressions_list(left_value, right_values, exs1, exs2)
             t_s = Simmix.reduce_i_s_pair_tuples(l_s)
-            if isinstance(exs1[0], dict) and isinstance(exs2[1], dict):
+            if isinstance(exs1[0], dict) and isinstance(exs2[0], dict):
                 all_triggers = flatten_list([self.beam[ex1['id']][ex2['id']]['trigger'] for ex1, ex2 in t_s])
                 for trigger in all_triggers:
                     G.send(trigger + (type,))
             elif isinstance(exs1[0], tuple):
-                # TODO working with more than one result
-                ex11 = t_s[0][0][0][0]
-                ex12 = t_s[0][0][1][0]
-                ex21 = t_s[0][1][0][0]
-                ex22 = t_s[0][1][1][0]
-                trigger1 = (ex11, ex21)
-                trigger2 = (ex12, ex22)
-                G.send(trigger1 + (type,))
-                G.send(trigger2 + (type,))
+                if type2 == None:
+                    raise ValueError ('type2 must be set for paired nodes')
+                for trigger in t_s:
+                    ex11 = trigger[0][0][0]
+                    ex12 = trigger[0][1][0]
+                    ex21 = trigger[1][0][0]
+                    ex22 = trigger[1][1][0]
+                    logging.info (type_spec(trigger[0]))
+                    logging.info (type_spec(trigger[1]))
+                    trigger1 = (ex11, ex21)
+                    trigger2 = (ex12, ex22)
+                    G.send(tuple(t_s[0][0]) + (type2,))
+                    G.send(tuple(t_s[0][1]) + (type2,))    # ???
+                    G.send(trigger1 + (type,))
+                    G.send(trigger2 + (type,))
+
 
         if not out or out == 'ex':
             return Simmix.expressions_list(left_value, right_values, exs1, exs2)

@@ -33,7 +33,7 @@ class Arguments:
     def new_id (self):
         return str(next(self.id_counter))
 
-    def annotate_common_arguments(self, linked_graph):
+    def annotate_common_concept (self, predications=None, coro_graph=None):
         global nlp
         # subordinated predicates subgraph
         G = nx.classes.function.induced_subgraph(

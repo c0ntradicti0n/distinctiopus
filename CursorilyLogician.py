@@ -128,10 +128,12 @@ class DataframeCursorilyLogician:
         #self.G = self.Argumentatrix.annotate_explanations_nodes(contradictions, put_explanation_into_gdb)
 
 
-    def annotate_subjects(self, linked_graph):
-        """Look for equal arguments of the predications, may they be the logical subjects, the predication is made of"""
-        self.G = self.Argumentatrix.annotate_common_arguments(linked_graph)
-
+    def annotate_subjects_and_aspects(self, linked_graph):
+        """Look for some common arguments of the contradicting and correlating predications.
+        These may may they be the logical subjects, the pre"""
+        contradictions           = list(self.get_from_gdb('contradiction'))
+        put_correlation_into_gdb = self.put_into_gdb("entity")
+        self.Argumentatrix.annotate_common_arguments(contradictions, put_correlation_into_gdb)
 
     def center_groups (self, G):
         contradiction_nodes = [n for n, attribute in G.nodes(data=True) if 'contradiction' in attribute]
@@ -291,6 +293,12 @@ class DataframeCursorilyLogician:
         :param data:
         :return:
         """
+        if isinstance(n1, list):
+            logging.warning("node data is list... taking first")
+            n1 = n1[0]
+        if isinstance(n2, list):
+            logging.warning("node data is list... taking first")
+            n2 = n2[0]
         query = (
 r"""               MERGE (a:Expression {id:'%s', s_id:'%s', text:'%s'}) 
                 MERGE (b:Expression {id:'%s', s_id:'%s', text:'%s'}) 
@@ -309,11 +317,26 @@ r"""               MERGE (a:Expression {id:'%s', s_id:'%s', text:'%s'})
                 data = (yield)
                 if isinstance(data, tuple) and len(data) == 3:
                     n1, n2, special_kind =  data
+                    #n1, n2 = self.recursive_2tuple((n1,n2))
                     session.write_transaction(self.add_determed_expression, general_kind, special_kind, n1, n2)
                 else:
                     logging.error('Value could not be set because I don\'t know how to deal with the type')
                     raise ValueError('Value could not be set because I don\'t know how to deal with the type')
         return None
+
+    def recursive_2tuple (self, t):
+        if not isinstance(t, tuple):
+            raise ("not a tuple")
+        t1, t2 = t
+        if len(t) == 2 and isinstance(t1, dict) and isinstance(t2, dict):
+            return t
+        else:
+            if isinstance(t1, tuple) or isinstance(t1, list):
+                t1 = self.recursive_2tuple(t1)
+            if len (t2) !=2:
+                t2 = self.recursive_2tuple(t2)
+            if len(t1) == 2 and len(t2) == 2:
+                return t1, t2
 
     def get_determinded_expressions(self, tx, kind):
         query = (

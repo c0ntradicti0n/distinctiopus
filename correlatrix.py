@@ -46,4 +46,5 @@ class Correlation:
             layout='n',
             out='ex',
             type='modifyer',
+            type2='opposed',
             G=graph_coro)  # Put it in the graph

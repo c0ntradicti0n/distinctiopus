@@ -8,3 +8,4 @@ pygraphviz
 pylab
 pandas
 neo4j
+suffix_trees
