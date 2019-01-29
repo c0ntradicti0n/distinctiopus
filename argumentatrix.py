@@ -1,7 +1,7 @@
 import networkx as nx
 import logging
 
-from nested_list_tools import check_for_tuple_in_list, flatten_reduce
+from nested_list_tools import check_for_tuple_in_list, flatten_reduce, flatten_list
 from simmix import Simmix
 from predicatrix2 import Predication
 from generator_tools import count_up
@@ -62,7 +62,7 @@ class Arguments:
 
         return linked_graph
 
-    def annotate_correlations(self, *, graph_coro=None, contradiction, possible_to_correlate=[]):
+    def annotate_correlations(self, *, contradiction=None, possible_to_correlate=None, graph_coro=None, ):
         """Annotates the correlations, that means expressions that are similar to each other and are distinct from the
         pair, that was found as excluding each other. For instance 'from the one side' and 'from the other side'.
 
@@ -80,7 +80,7 @@ class Arguments:
                        (-100, Simmix.boolean_subsame_sim, 0,0.1)
                        ],
                       )
-        # That's a distinctive criterium, that the correlative keys mustn't be very similar to the contradicting key
+        # That's the distinctive criterium, that the correlative keys can't be too similar to the contradicting key
         distinct =    \
              Simmix ( [(1, Simmix.multi_sim(fun=Simmix.common_words_sim, n=7), 0,0.7),
                        #(2,Simmix.elmo_multi_sim(), 0,0.4),
@@ -89,60 +89,22 @@ class Arguments:
                        ],
                       n=None)
 
-        poss_correlations = correlative.choose((contradiction, possible_to_correlate), layout='1:1')
-        correlation       = distinct.choose   ((contradiction, poss_correlations),
-                                                n=1, minimize=True, out='i')
-        G.send(correlation)
+        list_of_contradicting_predicates = list(flatten_list(list(contradiction)))
 
+        poss_correlations = correlative.choose(     # What correlates
+               (possible_to_correlate,
+                possible_to_correlate),
+            layout='1:1')
+        correlation       = distinct.choose   (     # not too much
+               ([contradiction],
+                poss_correlations),
+            n=1,
+            minimize=True,
+            layout='n',
+            out='ex',
+            type='modifyer',
+            G=graph_coro)                           # Put it in the graph
 
-        def get_poss_correlation_predicates (node):
-            sub_pred_graph = node['predicate']['part_predications']
-            sub_pred_coref = []
-            for cr in node['predicate']['coref']:
-                sub_pred_coref += corpus.coref_lookup (cr, what='sub_pred')
-            return sub_pred_graph + sub_pred_coref
-
-        for source, target, attributes in not_annotated_G.edges(data=True):
-            sub_pred1 = get_poss_correlation_predicates(not_annotated_G.nodes[source])
-            sub_pred2 = get_poss_correlation_predicates(not_annotated_G.nodes[target])
-
-            poss_correlations = correlative.choose((sub_pred1,sub_pred2), layout='1:1')
-
-
-
-            if not correlation:
-                print ("no correlative found within the sentence")
-                continue
-
-            if not source in correlations:
-                correlations[source] = []
-                contradictions[source] = []
-
-            if not target in correlations:
-                correlations[target] = []
-                contradictions[target] = []
-
-            if not (source,target) in correlations:
-                correlations[(source,target)] = []
-                contradictions[(source,target)] = []
-
-            for corr_i, trigg_i in correlation:
-                correlations[source].append(poss_correlations[corr_i[0]][0])
-                correlations[target].append(poss_correlations[corr_i[0]][1])
-                correlations[(source,target)].append(((poss_correlations[corr_i[0]][0]),poss_correlations[corr_i[0]][1]))
-
-                contradictions[source].append(trigger[trigg_i[0]][0])
-                contradictions[target].append(trigger[trigg_i[0]][1])
-                contradictions[(source,target)].append((trigger[trigg_i[0]][0],trigger[trigg_i[0]][1]))
-
-
-            co_graph = self.correl_to_graph (poss_correlations, trigger, correlation)
-            self.draw_correlations(co_graph, source, target)
-
-        self.outsource_as_node(G, correlations, kind='correl', label='correlation', no_tuple=True)
-        self.outsource_as_node(G, contradictions, kind='contra', label='contradiction', no_tuple=True)
-
-        return  G
 
     def correl_to_graph (self, possible_correlations, triggers, correlation):
         dig = nx.DiGraph()

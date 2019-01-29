@@ -326,9 +326,20 @@ class Simmix:
         if not G == None:
             l_s = Simmix.expressions_list(left_value, right_values, exs1, exs2)
             t_s = Simmix.reduce_i_s_pair_tuples(l_s)
-            all_triggers = flatten_list([self.beam[ex1['id']][ex2['id']]['trigger'] for ex1, ex2 in t_s])
-            for trigger in all_triggers:
-                G.send(trigger + (type,))
+            if isinstance(exs1[0], dict) and isinstance(exs2[1], dict):
+                all_triggers = flatten_list([self.beam[ex1['id']][ex2['id']]['trigger'] for ex1, ex2 in t_s])
+                for trigger in all_triggers:
+                    G.send(trigger + (type,))
+            elif isinstance(exs1[0], tuple):
+                # TODO working with more than one result
+                ex11 = t_s[0][0][0][0]
+                ex12 = t_s[0][0][1][0]
+                ex21 = t_s[0][1][0][0]
+                ex22 = t_s[0][1][1][0]
+                trigger1 = (ex11, ex21)
+                trigger2 = (ex12, ex22)
+                G.send(trigger1 + (type,))
+                G.send(trigger2 + (type,))
 
         if not out or out == 'ex':
             return Simmix.expressions_list(left_value, right_values, exs1, exs2)

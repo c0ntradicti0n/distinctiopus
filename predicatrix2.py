@@ -1,3 +1,4 @@
+import pandas
 import re
 import pyprover
 import itertools
@@ -73,6 +74,9 @@ class Predication():
              'lemma_': Predication.spacy_lemma_,
              'text': Predication.spacy_text,
              'i': Predication.spacy_i}
+
+        self.predicate_df = pandas.DataFrame()
+
         return None
 
     def spacy_dep_ (ex):
@@ -101,10 +105,10 @@ class Predication():
 
     def analyse_predication(self, doc=None, **kwargs):
         """Analyses spacy doc and return all found predicates"""
-        if not doc or id==None:
-            raise KeyError("keyword arguments 'doc' and 'id' must be given")
-        predicate = self.collect_all_predicates(doc, **kwargs)
-        return predicate
+        if not doc or 's_id' not in kwargs:
+            raise KeyError("keyword arguments 'doc' and 's_id' must be given")
+        ps = self.collect_all_predicates(doc, **kwargs)
+        return ps
 
     def get_attributive_roots(self,ex):
         return (e for e in ex if e.dep_ in ['nsubjpass', 'nsubj', 'obj', 'dobj', 'iobj', 'pobj'])
@@ -289,13 +293,9 @@ class Predication():
                          negations = attrs['predicate']['negation_particle'] = len(list(neg not in negations_of_neighbors for neg in negations))
                  except  TypeError:
                      logging.error ("negations is int? %s" % (str(negations)))
-
-
         return ps
 
     def attribute_contained_predicates(self,ps, expand = False):
-        # needs text  and  i keys for the predicate
-
         ps = sorted(ps, key=lambda x:-len(x['full_ex_i']))
 
         Sub_sim = Simmix([(1, Simmix.sub_i,  0.1, 1),
@@ -317,20 +317,14 @@ class Predication():
         edges = contain
 
         containment_structure = nx.DiGraph()
-
         containment_structure.add_nodes_from([i for i,p in enumerate(ps)])
-
         attrs = {i: {'label': p['key']+ "  " + " ".join(p['text']), 'predicate':p} for i,p in enumerate(ps)}
         nx.set_node_attributes(containment_structure, attrs)
-
         containment_structure.add_edges_from(edges)
         containment_structure = transitive_reduction(containment_structure)
-
-        root_edges = find_roots(containment_structure)
         source_nodes = [node for node, indegree in containment_structure.in_degree(containment_structure.nodes()) if indegree == 0]
 
         p_new = []
-
         for r in source_nodes:
                  sub_predicates                 = [ps[r]] + [ps[x] for x in nx.algorithms.descendants(containment_structure, r)]
                  ps[r]['part_predications']     = sorted(sub_predicates, key=lambda x:len(x['full_ex_i']))
@@ -399,7 +393,7 @@ class Predication():
             predicate["lemma_tag_"] = [ex[x].lemma_ + '_' + ex[x].tag_ for x in predicate["full_ex_i"]]
         return ps
 
-    def collect_all_predicates(self,ex, coref=None, id=None,  no_picture=False):
+    def collect_all_predicates(self,ex, coref=None, s_id=None,  no_picture=False):
         """ Extracts a multitude of properties from a natural language expression, including grammar
         imformation, word2vec, some importance weight in the document, some kind of cursorily logical
         formula with a dictionary, to what expressions the constants in the formula belong to.
@@ -435,9 +429,10 @@ class Predication():
             logging.error("no predicates found for %s" % str(ex))
         if not coref:
             coref = [[]]*len (ex)
+
         for p in ps:
             p["id"]                  = str(next(self.id_generator))
-            p['outsIDe']             = id
+            p['s_id']                = s_id
             p["elmo_embeddings"]     = elmo_embeddings[:,p["full_ex_i"]].sum(axis=1)
             p['coref']               = [coref[i] for i in p["full_ex_i"]]
             p["elmo_embeddings_per_word"]     = elmo_embeddings[:,p["full_ex_i"]]
@@ -454,14 +449,17 @@ class Predication():
 
         for p in ps:
             p = self.formalize(p, elmo_embeddings, importance)
-
         if not ps:
             text = " ".join([x.text for x in ex])
             logging.error("No predication found in expression: '%s'." % text )
 
         self.draw_predicate_structure(ps,"./img/predicate chunks " + ps[0]['key']+".svg")
+        self.append_to_predicate_df(ps)
         return ps
 
+    def append_to_predicate_df (self, ps):
+        self.predicate_df = self.predicate_df.append(ps)
+        self.predicate_df = self.predicate_df.append([part_p for p in ps for part_p in p['part_predications']])
 
     def sp_imp_elmo_dictize_ex(self, ex, elmo_embeddings, importance):
         if not ex:

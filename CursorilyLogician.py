@@ -46,7 +46,7 @@ class DataframeCursorilyLogician:
 
     def annotate_predicates (self):
         def analyse_predications(x):
-            return self.Predicatrix.analyse_predication (doc=x['spacy_doc'], coref=x['coref'], id=x.name)
+            return self.Predicatrix.analyse_predication (doc=x['spacy_doc'], coref=x['coref'], s_id=x['s_id'])
         self.sentence_df['predication'] = self.sentence_df.apply(
                                                    analyse_predications,
                                                    result_type="reduce",
@@ -62,10 +62,9 @@ class DataframeCursorilyLogician:
                                                    axis=1)
 
     def get_predicates_in_horizon(self, s_id):
-        if s_id == None:
-            raise ValueError("s_id must be given to get the predicates in range")
-        return self.sentence_df.query("s_id == @s_id")['predications_in_range'].values
-
+        return self.sentence_df.query('s_id==@s_id')['predications_in_range'].values[0]
+    def get_predication(self, id):
+        return self.Predicatrix.predicate_df.query('id==@id').to_dict(orient='records')
 
     def annotate_contradictions(self):
         """Looks first for pairs of phrases with negations and antonyms in an horizon
@@ -111,14 +110,19 @@ class DataframeCursorilyLogician:
         #put_example_into_gdb     = self.put_into_gdb("example")
         #put_explanation_into_gdb = self.put_into_gdb("explanation")
 
+        # Lookup what contradicitons were found
+        contradictions           = list(self.get_from_gdb('contradiction'))
+
+        # Coroutine for writing-tasks, no values stored here
         put_correlation_into_gdb = self.put_into_gdb("correlation")
-        contradictions     = self.get_from_gdb('contradiction')
 
         for contra1, contra2 in contradictions:
-            s_id = contra1['s_id']
+            s_id = contra1[0]['s_id']
             horizon_predicates = self.get_predicates_in_horizon(s_id)
-
-            self.Argumentatrix.annotate_correlations(put_correlation_into_gdb, horizon_predicates)
+            self.Argumentatrix.annotate_correlations(
+                contradiction= (contra1, contra2),
+                possible_to_correlate=horizon_predicates,
+                graph_coro=put_correlation_into_gdb)
 
         #self.G = self.Argumentatrix.annotate_example_nodes(contradictions, self.corpus), put_example_into_gdb)
         #self.G = self.Argumentatrix.annotate_explanations_nodes(contradictions, put_explanation_into_gdb)
@@ -287,13 +291,16 @@ class DataframeCursorilyLogician:
         :param data:
         :return:
         """
-        tx.run(("MERGE (a:N%s {text:'%s'}) "
-                "MERGE (b:N%s {text:'%s'}) "
-                "MERGE (a)-[:%s {By:'%s'}]->(b) ") %
-                (n1['id'], " ".join(n1['text']),
-                 n2['id'], " ".join(n2['text']),
-                 general_kind, special_kind))
-        return None
+        query = (
+r"""               MERGE (a:Expression {id:'%s', s_id:'%s', text:'%s'}) 
+                MERGE (b:Expression {id:'%s', s_id:'%s', text:'%s'}) 
+                MERGE (a)-[:TextRelation {GeneralKind: '%s', SpecialKind:'%s'}]->(b)"""
+                %
+               (n1['id'], n1['s_id'],  " ".join(n1['text']),
+                n2['id'], n2['s_id'],  " ".join(n2['text']),
+                general_kind, special_kind))
+        logging.info ("querying neo4j the following:\n %s" % query)
+        tx.run(query)
 
     @coroutine
     def put_into_gdb (self, general_kind):
@@ -309,15 +316,19 @@ class DataframeCursorilyLogician:
         return None
 
     def get_determinded_expressions(self, tx, kind):
-        for record in tx.run(
-                "MATCH path = (a)-[:%s]->(b) "
-                "WITH REDUCE(pairs =[],r in relationships(path) | "
-                        "pairs + [[a,b]]) as pairs "
-                "UNWIND pairs as pair "
-                "WITH DISTINCT pair "
-                "RETURN pair[0] as from, pair[1] as to "
-                % kind):
-            return record
+        query = (
+r"""                MATCH path = (a)-[:TextRelation {GeneralKind:'contradiction'}]->(b) 
+                WHERE ID(a) < ID(b)
+                RETURN a,b """
+                )
+        logging.info ("query neo4j for reading by this:\n%s" % query)
+        records = tx.run(query)
+        records = [
+            (self.get_predication(pair[0]._properties['id']),
+             self.get_predication(pair[1]._properties['id']))
+            for pair in records
+        ]
+        return records
 
     def get_from_gdb (self, kind):
         """ Returns pairs of in certain way connected nodes from neo4j
@@ -327,7 +338,7 @@ class DataframeCursorilyLogician:
         """
         with driver.session() as session:
             while True:
-                yield session.read_transaction(self.get_determinded_expressions, kind)
+                return session.read_transaction(self.get_determinded_expressions, kind)
 
 import unittest
 
