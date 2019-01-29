@@ -29,11 +29,11 @@ class DataframeCursorilyLogician:
         self.corpus = corpus
         self.sentence_df = self.corpus.sentence_df
 
-        self.Contradictrix = Contradiction ()
         self.Predicatrix   = Predication(corpus)
+        self.Contradictrix = Contradiction ()
+        self.Correlatrix   = Correlation()
         self.Argumentatrix = Arguments(corpus)
-        self.Correlatrix = Correlation()
-        self.G = nx.Graph()
+
 
     def annotate_horizon (self, horizon=3):
         def horizon_from_row(x):
@@ -119,7 +119,7 @@ class DataframeCursorilyLogician:
         for contra1, contra2 in contradictions:
             s_id = contra1[0]['s_id']
             horizon_predicates = self.get_predicates_in_horizon(s_id)
-            self.Argumentatrix.annotate_correlations(
+            self.Correlatrix.annotate_correlations(
                 contradiction= (contra1, contra2),
                 possible_to_correlate=horizon_predicates,
                 graph_coro=put_correlation_into_gdb)
