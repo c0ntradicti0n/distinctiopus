@@ -328,7 +328,7 @@ class Simmix:
             t_s = Simmix.reduce_i_s_pair_tuples(l_s)
             all_triggers = flatten_list([self.beam[ex1['id']][ex2['id']]['trigger'] for ex1, ex2 in t_s])
             for trigger in all_triggers:
-                G.send(trigger)
+                G.send(trigger + (type,))
 
         if not out or out == 'ex':
             return Simmix.expressions_list(left_value, right_values, exs1, exs2)

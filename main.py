@@ -52,9 +52,8 @@ def main():
     Logician.annotate_horizon(horizon=3)
     Logician.annotate_predicates()
     Logician.annotate_contradictions()
+    Logician.annotate_correlations()
 
-    linked_graph = Logician.get_cleaned_graph(sub_dir_nodes="predicate", sub_dir_edges="contradiction", split_dict='trigger')
-    Logician.annotate_correlations(linked_graph)
     Logician.annotate_subjects(linked_graph)
     graph = Logician.center_groups(linked_graph)
     graph = Logician.subordinate_marked(graph, 'example', 'example for')

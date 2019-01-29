@@ -1,28 +1,28 @@
 import itertools
 import networkx as nx
-from networkx.drawing.nx_agraph import graphviz_layout
+import textwrap
 
 import matplotlib
-
-from corutine_utils import coroutine
-
 matplotlib.use('TkAgg')
 import pylab as plt
-
-import textwrap
 
 from contradictrix import Contradiction
 from predicatrix2 import Predication
 from correlatrix import Correlation
 from argumentatrix import Arguments
-from webanno_parser import Webanno_Parser
+from corutine_utils import coroutine
+
 
 import logging
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
+
 from neo4j import GraphDatabase
 driver = GraphDatabase.driver("bolt://localhost:7687", auth=("s0krates", "password"))
-
+with driver.session() as session:
+    def clean_graph(tx):
+        tx.run("match (n) optional match (n)-[r]-() delete n,r")
+    session.write_transaction(clean_graph)
 
 class DataframeCursorilyLogician:
     def __init__(self, corpus):
@@ -33,10 +33,7 @@ class DataframeCursorilyLogician:
         self.Predicatrix   = Predication(corpus)
         self.Argumentatrix = Arguments(corpus)
         self.Correlatrix = Correlation()
-
         self.G = nx.Graph()
-        return None
-
 
     def annotate_horizon (self, horizon=3):
         def horizon_from_row(x):
@@ -45,7 +42,7 @@ class DataframeCursorilyLogician:
                                                    horizon_from_row,
                                                    result_type="reduce",
                                                    axis=1)
-        return None
+
 
     def annotate_predicates (self):
         def analyse_predications(x):
@@ -63,7 +60,12 @@ class DataframeCursorilyLogician:
                                                    collect_predicates_from_rows,
                                                    result_type="reduce",
                                                    axis=1)
-        return None
+
+    def get_predicates_in_horizon(self, s_id):
+        if s_id == None:
+            raise ValueError("s_id must be given to get the predicates in range")
+        return self.sentence_df.query("s_id == @s_id")['predications_in_range'].values
+
 
     def annotate_contradictions(self):
         """Looks first for pairs of phrases with negations and antonyms in an horizon
@@ -77,8 +79,7 @@ class DataframeCursorilyLogician:
                       x['predication'],
                       x['predications_in_range'],
                       out='r',
-                      G=put_contradiction_into_gdb,
-                      type='contradiction')
+                      G=put_contradiction_into_gdb)
             else:
                 return None
         self.sentence_df['contradiction'] = self.sentence_df.apply(
@@ -94,20 +95,39 @@ class DataframeCursorilyLogician:
                                                    delete_none_findings,
                                                    result_type="reduce",
                                                    axis=1)
-        return None
 
-    def annotate_correlations(self, G):
-        """Look for hypotactical and paratactical and anaphorical expressions with similar semantics and modalities
-        (meaning, that these are expressions, that both talk about examples or that both give reasons etc.)"""
-        self.G = self.Argumentatrix.annotate_example_nodes(G)
-        self.G = self.Argumentatrix.annotate_explanations_nodes(G)
-        self.G = self.Argumentatrix.annotate_correlations(G, self.corpus)
-        return None
+
+    def annotate_correlations(self):
+        """Look for pairs of hypotactical and paratactical and anaphorical expressions with similar semantics and
+        modalities
+
+        That means expressions, that both talk about examples or that both give reasons or are a modifyer to the
+        seemingly contradictions, that are found.
+
+        These routines reclassify some of the contradictions, because also talking about examples can seem to be
+        anithetical, if the explanation of the instanciated concept is repeated.
+
+        """
+        #put_example_into_gdb     = self.put_into_gdb("example")
+        #put_explanation_into_gdb = self.put_into_gdb("explanation")
+
+        put_correlation_into_gdb = self.put_into_gdb("correlation")
+        contradictions     = self.get_from_gdb('contradiction')
+
+        for contra1, contra2 in contradictions:
+            s_id = contra1['s_id']
+            horizon_predicates = self.get_predicates_in_horizon(s_id)
+
+            self.Argumentatrix.annotate_correlations(put_correlation_into_gdb, horizon_predicates)
+
+        #self.G = self.Argumentatrix.annotate_example_nodes(contradictions, self.corpus), put_example_into_gdb)
+        #self.G = self.Argumentatrix.annotate_explanations_nodes(contradictions, put_explanation_into_gdb)
+
 
     def annotate_subjects(self, linked_graph):
         """Look for equal arguments of the predications, may they be the logical subjects, the predication is made of"""
         self.G = self.Argumentatrix.annotate_common_arguments(linked_graph)
-        return None
+
 
     def center_groups (self, G):
         contradiction_nodes = [n for n, attribute in G.nodes(data=True) if 'contradiction' in attribute]
@@ -177,7 +197,6 @@ class DataframeCursorilyLogician:
             if 'computing' in d:
                 if u in diG and v in diG:
                  diG.add_edge(u, v, xlabel='computed', constraint='false', headport='e', tailport='e', style='dotted')
-
         return diG
 
     def get_cleaned_graph(self, split_dict=None, sub_dir_nodes=None, sub_dir_edges=None):
@@ -260,7 +279,7 @@ class DataframeCursorilyLogician:
             session.write_transaction()
         return None
 
-    def add_determed_expression_neo4j (self, tx, kind, n1, n2):
+    def add_determed_expression (self, tx, general_kind, special_kind, n1, n2):
         """ Throws node data into neo4j by expanding data as dictionary.
 
         :param tx:
@@ -268,36 +287,47 @@ class DataframeCursorilyLogician:
         :param data:
         :return:
         """
-        tx.run(("MERGE (a:N%s {text:%s}) "
-                "MERGE (b:N%s {text:%s}) "
-                "MERGE (a)-[:%s]->(b) ") %
-                (n1['id'], n1['text'],
-                 n2['id'], n2['text'],
-                 kind))
+        tx.run(("MERGE (a:N%s {text:'%s'}) "
+                "MERGE (b:N%s {text:'%s'}) "
+                "MERGE (a)-[:%s {By:'%s'}]->(b) ") %
+                (n1['id'], " ".join(n1['text']),
+                 n2['id'], " ".join(n2['text']),
+                 general_kind, special_kind))
         return None
 
     @coroutine
-    def put_into_gdb (self, kind):
+    def put_into_gdb (self, general_kind):
         with driver.session() as session:
             while True:
                 data = (yield)
-                if isinstance(data, tuple) and len(data) == 2:
-                    n1, n2 =  data
-                    session.write_transaction(self.add_determed_expression_neo4j, kind, n1, n2)
+                if isinstance(data, tuple) and len(data) == 3:
+                    n1, n2, special_kind =  data
+                    session.write_transaction(self.add_determed_expression, general_kind, special_kind, n1, n2)
+                else:
+                    logging.error('Value could not be set because I don\'t know how to deal with the type')
+                    raise ValueError('Value could not be set because I don\'t know how to deal with the type')
         return None
 
-    def get_from_gdb (k = "kind"):
+    def get_determinded_expressions(self, tx, kind):
+        for record in tx.run(
+                "MATCH path = (a)-[:%s]->(b) "
+                "WITH REDUCE(pairs =[],r in relationships(path) | "
+                        "pairs + [[a,b]]) as pairs "
+                "UNWIND pairs as pair "
+                "WITH DISTINCT pair "
+                "RETURN pair[0] as from, pair[1] as to "
+                % kind):
+            return record
 
+    def get_from_gdb (self, kind):
+        """ Returns pairs of in certain way connected nodes from neo4j
 
-        def print_friends(tx, name):
-            for record in tx.run("MATCH (a:Person)-[:KNOWS]->(friend) WHERE a.name = $name "
-                                 "RETURN friend.name ORDER BY friend.name", name=name):
-                print(record["friend.name"])
-
-
-
+        :param kind: this certain kind of connection; its a property of the graph edges
+        :yield: tuples of contradicting predicates
+        """
         with driver.session() as session:
-            session.read_transaction(print_friends, "Arthur")
+            while True:
+                yield session.read_transaction(self.get_determinded_expressions, kind)
 
 import unittest
 

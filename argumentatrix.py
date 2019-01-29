@@ -62,7 +62,7 @@ class Arguments:
 
         return linked_graph
 
-    def annotate_correlations(self, G, corpus):
+    def annotate_correlations(self, *, graph_coro=None, contradiction, possible_to_correlate=[]):
         """Annotates the correlations, that means expressions that are similar to each other and are distinct from the
         pair, that was found as excluding each other. For instance 'from the one side' and 'from the other side'.
 
@@ -70,11 +70,6 @@ class Arguments:
         On the other side the same operation is done for additional (sub)predications in context, following
         coreferential relations
         """
-
-        # subordinated predicates subgraph
-        not_annotated_G = nx.classes.function.induced_subgraph(
-                G,
-                [n for n, data in G.nodes(data='kind') if data not in ['example']])
 
         correlative =    \
              Simmix ( [(18, Simmix.common_words_sim, 0.2,1),
@@ -85,7 +80,6 @@ class Arguments:
                        (-100, Simmix.boolean_subsame_sim, 0,0.1)
                        ],
                       )
-
         # That's a distinctive criterium, that the correlative keys mustn't be very similar to the contradicting key
         distinct =    \
              Simmix ( [(1, Simmix.multi_sim(fun=Simmix.common_words_sim, n=7), 0,0.7),
@@ -95,8 +89,11 @@ class Arguments:
                        ],
                       n=None)
 
-        correlations = {}
-        contradictions = {}
+        poss_correlations = correlative.choose((contradiction, possible_to_correlate), layout='1:1')
+        correlation       = distinct.choose   ((contradiction, poss_correlations),
+                                                n=1, minimize=True, out='i')
+        G.send(correlation)
+
 
         def get_poss_correlation_predicates (node):
             sub_pred_graph = node['predicate']['part_predications']
@@ -111,15 +108,7 @@ class Arguments:
 
             poss_correlations = correlative.choose((sub_pred1,sub_pred2), layout='1:1')
 
-            trigger = not_annotated_G.edges[source,target]['trigger']
-            # Triggers should be turned in the same directions as the view on the possible_correlation between these keys
 
-            if not poss_correlations or not trigger:
-                logging.warning('empty triggers or no correlation')
-                continue
-
-            correlation = distinct.choose ((poss_correlations, trigger),
-                                           n=1, minimize=True, out='i')
 
             if not correlation:
                 print ("no correlative found within the sentence")
@@ -214,6 +203,8 @@ class Arguments:
         marked = {}
         def pred_len(x):
             return len (x['i'])
+
+        nodes
         for n, attrs in [(node,attributes) for node, attributes in G.nodes(data=True) if 'predicate' in attributes]:
             node_texts.update({i: p for i, p in  enumerate(G.nodes[n]['predicate']['part_predications'])})
             marker_containing_i = self.find_str_patterns (node_texts, marker_dict)

@@ -39,13 +39,10 @@ class Contradiction:
         if not predicates1 or not predicates2:
             logging.error("no predicate found as noticed")
             return []
-
-        negation_contradictions = self.Contra_Neg.choose ((predicates1, predicates2), layout='n', **kwargs)
-        antonym_contradictions  = self.Contra_Anto.choose((predicates1, predicates2), layout='n', **kwargs)
-
+        negation_contradictions = self.Contra_Neg.choose ((predicates1, predicates2), type='negation', layout='n', **kwargs)
+        antonym_contradictions  = self.Contra_Anto.choose((predicates1, predicates2), type='antonym',  layout='n', **kwargs)
         logging.info("Contradictions by Antonym : %s" % str (antonym_contradictions))
         logging.info("Contradictions by Negation: %s" % str (negation_contradictions))
-
         try:
             return  negation_contradictions + antonym_contradictions
         except TypeError:
