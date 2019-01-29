@@ -3,6 +3,9 @@ import networkx as nx
 from networkx.drawing.nx_agraph import graphviz_layout
 
 import matplotlib
+
+from corutine_utils import coroutine
+
 matplotlib.use('TkAgg')
 import pylab as plt
 
@@ -13,10 +16,12 @@ from predicatrix2 import Predication
 from correlatrix import Correlation
 from argumentatrix import Arguments
 from webanno_parser import Webanno_Parser
-from grammarannotator import GrammarAnnotator,split_data_frame_list_beware
 
 import logging
 logging.getLogger(__name__).addHandler(logging.NullHandler())
+
+from neo4j import GraphDatabase
+driver = GraphDatabase.driver("bolt://localhost:7687", auth=("s0krates", "password"))
 
 
 class DataframeCursorilyLogician:
@@ -28,10 +33,12 @@ class DataframeCursorilyLogician:
         self.Predicatrix   = Predication(corpus)
         self.Argumentatrix = Arguments(corpus)
         self.Correlatrix = Correlation()
+
         self.G = nx.Graph()
         return None
 
-    def annotate_horizon (self, horizon):
+
+    def annotate_horizon (self, horizon=3):
         def horizon_from_row(x):
             return list(self.sentence_df.loc[x.name:x.name + horizon + 1].index)
         self.sentence_df['horizon'] = self.sentence_df.apply(
@@ -62,21 +69,16 @@ class DataframeCursorilyLogician:
         """Looks first for pairs of phrases with negations and antonyms in an horizon
         and second it evaluates the similarity of these phrases, what would be the fitting counterpart for that one"""
 
+        put_contradiction_into_gdb = self.put_into_gdb("contradiction")
+
         def get_contradictions_from_row(x):
             if x['horizon']:
-                res =  self.Contradictrix.find_contradictive(
+                return self.Contradictrix.find_contradictive(
                       x['predication'],
                       x['predications_in_range'],
                       out='r',
-                      G=self.G,
+                      G=put_contradiction_into_gdb,
                       type='contradiction')
-                if res:
-                    print ("Contradiction(s) for %s in horizon: %s"
-                             % (str (" ".join(x['predication'][0]['text'])),
-                                str(", ".join([str(i) for i in res]))))
-                    return res
-                else:
-                    return None
             else:
                 return None
         self.sentence_df['contradiction'] = self.sentence_df.apply(
@@ -251,8 +253,67 @@ class DataframeCursorilyLogician:
         A = nx.drawing.nx_agraph.to_agraph(H)
         A.layout('dot')
         A.draw(path = "found_distinction.svg")
-        #A.write(path=path)
-
-
         return None
+
+    def gdb_add_node (kind, data):
+        with driver.session() as session:
+            session.write_transaction()
+        return None
+
+    def add_determed_expression_neo4j (self, tx, kind, n1, n2):
+        """ Throws node data into neo4j by expanding data as dictionary.
+
+        :param tx:
+        :param kind:
+        :param data:
+        :return:
+        """
+        tx.run(("MERGE (a:N%s {text:%s}) "
+                "MERGE (b:N%s {text:%s}) "
+                "MERGE (a)-[:%s]->(b) ") %
+                (n1['id'], n1['text'],
+                 n2['id'], n2['text'],
+                 kind))
+        return None
+
+    @coroutine
+    def put_into_gdb (self, kind):
+        with driver.session() as session:
+            while True:
+                data = (yield)
+                if isinstance(data, tuple) and len(data) == 2:
+                    n1, n2 =  data
+                    session.write_transaction(self.add_determed_expression_neo4j, kind, n1, n2)
+        return None
+
+    def get_from_gdb (k = "kind"):
+
+
+        def print_friends(tx, name):
+            for record in tx.run("MATCH (a:Person)-[:KNOWS]->(friend) WHERE a.name = $name "
+                                 "RETURN friend.name ORDER BY friend.name", name=name):
+                print(record["friend.name"])
+
+
+
+        with driver.session() as session:
+            session.read_transaction(print_friends, "Arthur")
+
+import unittest
+
+
+class TestCursorilyLogician(unittest.TestCase):
+
+    def testNeo4j (self):
+        from corpus_reader import CorpusReader
+        corpus = CorpusReader(corpus_path="./corpora/aristotle_categories/import_conll", only=[7,9])
+        Logician = DataframeCursorilyLogician(corpus)
+        Logician.annotate_horizon(horizon=3)
+        Logician.annotate_predicates()
+        predicates = Logician.sentence_df['predications_in_range'].iloc[0]
+        spam = Logician.put_into_gdb ("spam")
+        spam.send ((predicates[0], predicates[1]))
+
+if __name__ == '__main__':
+    unittest.main()
 

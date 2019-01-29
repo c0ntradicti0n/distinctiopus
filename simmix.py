@@ -73,7 +73,7 @@ import string
 import re
 from pyxdameraulevenshtein import damerau_levenshtein_distance
 import logging
-from nested_list_tools import check_for_tuple_in_list, flatten,  flatten_reduce
+from nested_list_tools import check_for_tuple_in_list, flatten,  flatten_reduce, flatten_list
 import dict_tools
 
 
@@ -199,6 +199,8 @@ class Simmix:
         self.beam = {}
         if n:
             self.n = n
+        if layout == None:
+            raise ValueError ("'layout' must be given")
 
         if isinstance(data, list) or isinstance(data, types.GeneratorType):
             tuples = []
@@ -312,7 +314,7 @@ class Simmix:
             mask = is_within_thresholds
             left_value, right_values = Simmix.one_to_one(weighted_res, exs1, exs2, mask)
 
-        elif layout == "(x<=m):(y<=n)" or layout == None:
+        elif layout == 'n':
             chords = np.divmod(best_n, len(exs2))
             chords = np.column_stack(chords)
             left_value = np.unique(chords[:, 0])  # unique values, centers of different
@@ -324,14 +326,9 @@ class Simmix:
         if not G == None:
             l_s = Simmix.expressions_list(left_value, right_values, exs1, exs2)
             t_s = Simmix.reduce_i_s_pair_tuples(l_s)
-
-            for (ex1, ex2) in t_s:
-                if not G.has_node(ex1['id']):
-                    G.add_node(ex1['id'], **ex1)
-                if not G.has_node(ex2['id']):
-                    G.add_node(ex2['id'], **ex2)
-                # print (self.beam[ex1['id']][ ex2['id']])
-                G.add_edge(ex1['id'], ex2['id'], **self.beam[ex1['id']][ex2['id']], type=type)
+            all_triggers = flatten_list([self.beam[ex1['id']][ex2['id']]['trigger'] for ex1, ex2 in t_s])
+            for trigger in all_triggers:
+                G.send(trigger)
 
         if not out or out == 'ex':
             return Simmix.expressions_list(left_value, right_values, exs1, exs2)
@@ -345,7 +342,7 @@ class Simmix:
             return Simmix.reduce_i_s_pair_tuples(i_s)
         elif out == 'nx':
             if G == None:
-                raise ValueError("parameter G is required for use with Graph!")
+                raise ValueError("parameter G is required for use with a Graph!")
             return G
         elif out == '(i,ex)':
             return (Simmix.i_list(left_value, right_values),

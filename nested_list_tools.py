@@ -17,6 +17,13 @@ def flatten_reduce(iterable):
     else:
         return iterable
 
+def flatten_list(l):
+    for el in l:
+        if isinstance(el, list):
+            yield from flatten_list(el)
+        else:
+            yield el
+
 
 def curry(fun, *args, **kwargs):
     def fun_new(x):

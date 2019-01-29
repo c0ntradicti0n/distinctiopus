@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+
 from predicatrix2 import Predication
 import word_definitions
 import tdfidf_tool
@@ -36,8 +40,8 @@ class Contradiction:
             logging.error("no predicate found as noticed")
             return []
 
-        negation_contradictions = self.Contra_Neg.choose ((predicates1, predicates2), **kwargs)
-        antonym_contradictions  = self.Contra_Anto.choose((predicates1, predicates2), **kwargs)
+        negation_contradictions = self.Contra_Neg.choose ((predicates1, predicates2), layout='n', **kwargs)
+        antonym_contradictions  = self.Contra_Anto.choose((predicates1, predicates2), layout='n', **kwargs)
 
         logging.info("Contradictions by Antonym : %s" % str (antonym_contradictions))
         logging.info("Contradictions by Negation: %s" % str (negation_contradictions))
@@ -141,11 +145,13 @@ class TestContradictrix(unittest.TestCase):
         self.default_P = self.P =  Predication(corpus)
 
     def test_try_out(self):
-        corpus = CorpusReader(corpus_path='./corpora/aristotle_categories/import_conll', only=[7,8,9])
-        P = Predication(corpus)
+        corpus = CorpusReader(corpus_path='./corpora/aristotle_categories/import_conll', only=[7])
+
         from CursorilyLogician import DataframeCursorilyLogician
         Logician = DataframeCursorilyLogician(corpus)
 
+        Logician.annotate_horizon()
+        Logician.annotate_predicates()
         Logician.annotate_contradictions()
 
     def test_antonym_dict(self):
