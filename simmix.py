@@ -355,6 +355,10 @@ class Simmix:
         elif out == 'r':
             i_s = Simmix.i_list(left_value, right_values)
             return Simmix.reduce_i_s_right_values(i_s)
+        elif out == 'lx':
+            return [exs1[i] for i in left_value]
+        elif out == 'rx':
+            return [exs1[i] for i in right_values]
         elif out == '2t':
             i_s = Simmix.i_list(left_value, right_values)
             return Simmix.reduce_i_s_pair_tuples(i_s)
@@ -433,7 +437,7 @@ class Simmix:
         str1  = ex1["text"]
         str2  = ex2["text"]
         return -damerau_levenshtein_distance(str1, str2) / (len(ex1) + len(ex2)) , {}
-    @standard_range(-0.6, 0.6)
+    @standard_range(-0.9, 0.9)
     def common_words_sim (ex1, ex2):
         str1  = ex1["lemma"]
         str2  = ex2["lemma"]
@@ -441,7 +445,6 @@ class Simmix:
                len([ex2['importance'][i] for i, x in enumerate(str2) if x in str1]) -
                len([ex1['importance'][i] for i, x in enumerate(str1) if x not in str2]) -
                len([ex2['importance'][i] for i, x in enumerate(str2) if x in str1]))/(len(ex1) + len(ex2))
-        print (res)
         return res, {}
     @standard_range(-1000, 1000)
     def vecs_sim (gensim_model):

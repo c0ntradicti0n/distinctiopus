@@ -52,8 +52,7 @@ def main():
     Logician.annotate_predicates()
     Logician.annotate_contradictions()
     Logician.annotate_correlations()
-
-    Logician.annotate_subjects_and_aspects(linked_graph)
+    Logician.annotate_subjects_and_aspects()
 
     #graph = Logician.center_groups(linked_graph)
     #graph = Logician.subordinate_marked(graph, 'example', 'example for')

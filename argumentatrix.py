@@ -10,116 +10,35 @@ from grammarannotator import nlp
 
 class Arguments:
     def __init__(self, corpus_path):
-        self.id_counter = count_up()
         self.P = Predication (corpus_path)
-
         self.fit_mix_subject = \
              Simmix ( [(1, Simmix.elmo_layer_sim(layer=[0,1]
                         ), 0.2,1)
                        ],
                       n=100)
-        self.fit_mix_diff_layer = \
-             Simmix ( [(1, Simmix.elmo_layer_sim(layer=[0,1]
-                        ), 0.2,1)
-                       ],
-                      n=100)
-        self.fit_mix_example_expr = \
-             Simmix ( [(1, Simmix.elmo_layer_sim(layer=[2]
-                        ), 0.8,1)
-                       ],
-                      n=100)
-        return None
-
-    def new_id (self):
-        return str(next(self.id_counter))
-
-    def annotate_common_concept (self, predications=None, coro_graph=None):
         global nlp
-        # subordinated predicates subgraph
-        G = nx.classes.function.induced_subgraph(
-                linked_graph,
-                [n for n, data in linked_graph.nodes(data='kind') if data not in ['example', 'correl']])
+        standard_ex = nlp("The thing is round from the right side.")
+        self.standard_predicate = self.P.collect_all_predicates(standard_ex)
+        self.standard_entity_exs             = self.standard_predicate[0]['arguments'][0:1]
+        self.standard_differential_layer_exs = self.standard_predicate[0]['arguments'][1:2]
 
-        groups = nx.connected_components(G)
 
+    def annotate_common_concepts (self, *,predications=None, graph_coro_ent=None, graph_coro_asp = None):
         # Collect arguments for nodes
         # Iterate through from the right sideattributes of nodes
-        arguments = {}
-        for n, attrs in G.nodes(data=True):
-            if 'predicate' in attrs:
-                arguments.update({n: attrs['predicate']['arguments']})
+        arguments1 = predications[0][0]['arguments']
+        arguments2 = predications[1][0]['arguments']
 
-        standard_ex = nlp("The thing is round from the right side.")
-        standard_predicate = self.P.collect_all_predicates(standard_ex)
-        standard_entity_exs             = standard_predicate[0]['arguments'][0:1]
-        standard_differential_layer_exs = standard_predicate[0]['arguments'][1:2]
+        subject1            = self.fit_mix_subject.choose((arguments1, self.standard_entity_exs), out='ex', layout='n', n=1)
+        subject2            = self.fit_mix_subject.choose((arguments2, self.standard_entity_exs), out='ex', layout='n', n=1)
+        aspect1            = self.fit_mix_subject.choose((arguments1, self.standard_differential_layer_exs), out='ex', layout='n', n=1)
+        aspect2            = self.fit_mix_subject.choose((arguments2, self.standard_differential_layer_exs), out='ex', layout='n', n=1)
 
-        subjects            = self.find_idealized_expr(self.fit_mix_subject,groups, arguments, standard_entity_exs)
-        differential_layers = self.find_idealized_expr(self.fit_mix_diff_layer, groups, arguments, standard_differential_layer_exs)
+        graph_coro_ent.send( (subject1[0][0],predications[0][0]) + ('subject',))
+        graph_coro_ent.send( (subject2[0][0],predications[1][0]) + ('subject',))
+        graph_coro_asp.send( (aspect1[0][0],predications[0][0]) + ('aspect',))
+        graph_coro_asp.send( (aspect2[0][0],predications[1][0]) + ('aspect',))
 
-        self.outsource_as_node(linked_graph, subjects, kind='subject', label='entity')
-        self.outsource_as_node(linked_graph, differential_layers, kind='differential_layer', label="differential layer")
-        return linked_graph
-
-
-    def annotate_example_nodes (self, G):
-        example_dict = ['thus', ('for', 'instance'), ('for', 'example'), 'instance', ('for', 'if'),
-                        ('by', '*', '-PRON-', '*', 'mean'), 'inasmuch'] # ('such', 'as')
-        example_noun_dict = ['TwoFooted', 'White', 'account']
-        return self.annotate_nodes_by_markers_whole_p(G, example_dict + example_noun_dict, 'example')
-
-    def annotate_explanations_nodes (self, G):
-        explanation_markers = [('sketch', '*', 'meaning'), ('by', '*', '-PRON-', '*', 'mean')]
-        return self.annotate_nodes_by_markers_whole_p(G, explanation_markers, 'explanation')
-
-    def annotate_nodes_by_markers (self, G, marker_dict, kind):
-        node_texts = {}
-        marked = {}
-        def pred_len(x):
-            return len (x['i'])
-
-        nodes
-        for n, attrs in [(node,attributes) for node, attributes in G.nodes(data=True) if 'predicate' in attributes]:
-            node_texts.update({i: p for i, p in  enumerate(G.nodes[n]['predicate']['part_predications'])})
-            marker_containing_i = self.find_str_patterns (node_texts, marker_dict)
-            marker_containing   = [node_texts[i] for i in marker_containing_i]
-            if not marker_containing:
-                continue
-            min_pred          = min(marker_containing, key=pred_len)
-            marked.update({n: min_pred})
-
-        whole_marked = [n for n in marked.keys() if 'ROOT' in G.nodes[n]['predicate']['dep_']]
-        sub_marked   = {n: [d] for n, d in marked.items() if 'ROOT' not in G.nodes[n]['predicate']['dep_']}
-
-        node_attr = {n: {'kind': kind} for n in whole_marked}
-        edge_attr = {ed:{'kind': kind} for ed in G.edges(nbunch=whole_marked)}
-        nx.set_node_attributes(G, node_attr)
-        nx.set_edge_attributes(G, edge_attr)
-
-        self.outsource_as_node(G, sub_marked, kind=kind, label=kind, no_tuple=True)
-        return G
-
-    def annotate_nodes_by_markers_whole_p (self, G, marker_dict, kind):
-        node_texts = {}
-        for n, attrs in [(node,attributes) for node, attributes in G.nodes(data=True) if 'predicate' in attributes]:
-            node_texts.update({n: G.nodes[n]['predicate']})
-        marked = self.find_str_patterns (node_texts, marker_dict)
-        node_attr = {n: {'kind': kind} for n in marked}
-        edge_attr = {ed:{'kind': kind} for ed in G.edges(nbunch=marked)}
-        nx.set_node_attributes(G, node_attr)
-        nx.set_edge_attributes(G, edge_attr)
-        return G
-
-    def find_idealized_expr(self, find_sim, groups, arguments, standard_exs):
-        return {node:
-            find_sim.choose(
-                (standard_exs,
-                 arguments[node]),
-                n=10,
-                out='ex',
-                layout="1:1",
-                output=True)
-            for group in groups for node in group if node in arguments}
 
     def outsource_as_node (self, linked_graph, things, kind, label, no_tuple=False, **kwargs):
         for node, val in things.items(): # Simmix findings for node in dict

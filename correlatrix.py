@@ -16,9 +16,9 @@ class Correlation:
         coreferential relations
         """
         correlative = \
-            Simmix([(18, Simmix.common_words_sim, 0.2, 1),
-                    (1, Simmix.dep_sim, 0.2, 1),
-                    (1, Simmix.pos_sim, 0.2, 1),
+            Simmix([(18, Simmix.common_words_sim, 0.25, 1),
+                    (1, Simmix.dep_sim, 0.25, 1),
+                    (1, Simmix.pos_sim, 0.25, 1),
                     # (1,Simmix.elmo_sim(), 0.5,1),
                     # (1,Simmix.fuzzystr_sim, 0.5,1),
                     (-100, Simmix.boolean_subsame_sim, 0, 0.1)
@@ -27,7 +27,7 @@ class Correlation:
 
         # That's the distinctive criterium, that the correlative keys can't be too similar to the contradicting key
         distinct = \
-            Simmix([(1, Simmix.multi_sim(fun=Simmix.common_words_sim, n=7), 0, 0.7),
+            Simmix([(1, Simmix.multi_sim(fun=Simmix.common_words_sim, n=7), 0, 0.4),
                     # (2,Simmix.elmo_multi_sim(), 0,0.4),
                     # (1, Simmix.multi_sim(fun=Simmix.sub_i, n=4), 0,0.3),
                     # (1, Simmix.multi_sim(fun=Simmix.longer_sim, n=4), 0, 0.7) \

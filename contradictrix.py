@@ -17,7 +17,7 @@ class Contradiction:
         self.G = nx.Graph()
 
         fit_mix_neg = \
-             Simmix ( [#(1,Simmix.elmo_sim(), 0.6,1),
+             Simmix ( [(1,Simmix.elmo_sim(), 0.4,1),
                        (1, Simmix.common_words_sim, 0.5,1),
                        #(1,Simmix.fuzzystr_sim, 0.45,1)
                         ],
@@ -28,7 +28,7 @@ class Contradiction:
                     ], n=30, type="negation_contra")
 
         fit_mix_ant = \
-             Simmix ( [(1,Simmix.elmo_sim(), 0.5, 1),
+             Simmix ( [(1,Simmix.elmo_sim(), 0.55, 1),
                        (1, Simmix.excluding_pair_boolean_sim(word_definitions.antonym_dict), 0.1, 1)
                        ], n=None)
         self.Contra_Anto = \
@@ -142,7 +142,7 @@ class TestContradictrix(unittest.TestCase):
         self.default_P = self.P =  Predication(corpus)
 
     def test_try_out(self):
-        corpus = CorpusReader(corpus_path='./corpora/aristotle_categories/import_conll', only=[7])
+        corpus = CorpusReader(corpus_path='./corpora/aristotle_categories/import_conll', only=[10,11,12,13,14,15,16,17])
 
         from CursorilyLogician import DataframeCursorilyLogician
         Logician = DataframeCursorilyLogician(corpus)

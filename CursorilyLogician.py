@@ -128,12 +128,22 @@ class DataframeCursorilyLogician:
         #self.G = self.Argumentatrix.annotate_explanations_nodes(contradictions, put_explanation_into_gdb)
 
 
-    def annotate_subjects_and_aspects(self, linked_graph):
+    def annotate_subjects_and_aspects(self):
         """Look for some common arguments of the contradicting and correlating predications.
         These may may they be the logical subjects, the pre"""
-        contradictions           = list(self.get_from_gdb('contradiction'))
-        put_correlation_into_gdb = self.put_into_gdb("entity")
-        self.Argumentatrix.annotate_common_arguments(contradictions, put_correlation_into_gdb)
+        # Say, after annotation of the contradictions and their correlating modifyers we have a pair of 'opposed'
+        # nodes, as annotated by the correlatrix.
+        oppositions              = list(self.get_from_gdb('opposed'))
+        put_entity_into_gdb = self.put_into_gdb("entity")
+        put_aspect_into_gdb = self.put_into_gdb("aspect")
+
+        for oppo1, oppo2 in oppositions:
+            self.Argumentatrix.annotate_common_concepts(
+                predications   = (oppo1, oppo2),
+                graph_coro_ent = put_entity_into_gdb,
+                graph_coro_asp = put_aspect_into_gdb
+                )
+
 
     def center_groups (self, G):
         contradiction_nodes = [n for n, attribute in G.nodes(data=True) if 'contradiction' in attribute]
@@ -302,7 +312,7 @@ class DataframeCursorilyLogician:
         query = (
 r"""               MERGE (a:Expression {id:'%s', s_id:'%s', text:'%s'}) 
                 MERGE (b:Expression {id:'%s', s_id:'%s', text:'%s'}) 
-                MERGE (a)-[:TextRelation {GeneralKind: '%s', SpecialKind:'%s'}]->(b)"""
+                MERGE (a)-[:TextRelation {GeneralKind: '%s', SpecialKind:'%s'}]-(b)"""
                 %
                (n1['id'], n1['s_id'],  " ".join(n1['text']),
                 n2['id'], n2['s_id'],  " ".join(n2['text']),

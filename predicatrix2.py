@@ -442,7 +442,8 @@ class Predication():
             p['arguments']           = self.sp_imp_elmo_dictize_ex (
                                          p['arguments'],
                                          elmo_embeddings,
-                                         importance)
+                                         importance,
+                                         s_id)
 
         ps = self.attribute_contained_predicates(ps)
         ps = self.attribute_negation_in_shell_expression(ps)
@@ -461,15 +462,16 @@ class Predication():
         self.predicate_df = self.predicate_df.append(ps)
         self.predicate_df = self.predicate_df.append([part_p for p in ps for part_p in p['part_predications']])
 
-    def sp_imp_elmo_dictize_ex(self, ex, elmo_embeddings, importance):
+    def sp_imp_elmo_dictize_ex(self, ex, elmo_embeddings, importance, s_id):
         if not ex:
             logging.warning("empty expression for argument?")
             return {}
         if isinstance(ex, list) and not isinstance(ex[0], spacy.tokens.token.Token ):
-            return list (self.sp_imp_elmo_dictize_ex(e, elmo_embeddings, importance) for e in ex)
+            return list (self.sp_imp_elmo_dictize_ex(e, elmo_embeddings, importance, s_id) for e in ex)
 
         i_s = [x.i for x in ex]
         d = {
+            "s_id"            : s_id,
             "id"              : str(next(self.id_generator)),
             "full_ex"         : ex,
             "doc"             : ex[0].doc,
