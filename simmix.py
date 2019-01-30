@@ -1,74 +1,56 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""This module is intended for overlapping an open-end variety of similarty measures on complex data in
-natural language processing. Its like an organ with different registers for text-comparisons.
 
-Choices are made from two lists of dict elements, that are representing some phrases. They are bundles
-of properties, as their text, grammar, also a logical formula to represent their logical structure (pyprover), semantical vectors (and syntactical, like elmo-embeddings from allen-nlp) , tdf-idf-importance and some more. These are predefined here, if you know some of your own,its possible to give custom functions.
+''' This module is intended for overlapping an open-end variety of similarty measures on complex data in
+    natural language processing. Its like an organ with different registers for text-comparisons.
 
-p1 =
-  {
-  'text': ['The', 'cause', 'of', 'cancer', 'is', 'not', 'a', 'virus', 'and', 'the', 'cause', 'of', 'cancer', 'is', 'not', 'a', 'fungus'],
-  'lemma_': ['the', 'because', 'of', 'cancer', 'be', 'not', 'a', 'virus', 'and', 'the', 'because', 'of', 'cancer', 'be', 'not', 'a', 'fungus'],
-  'dep',
-  'importance': array([0.53395703, ...  0.2       ])
-  A ∧ ¬C ∧ B ∧ ¬D
-((((pyprover.A )) & ~ pyprover.C ) & (((pyprover.B )) & ~ pyprover.D ))
-  }
+    Choices are made from two lists of dict elements, that are representing some phrases. They are bundles
+    of properties, as their text, grammar, also a logical formula to represent their logical structure (pyprover), semantical vectors (and syntactical, like elmo-embeddings from allen-nlp) , tdf-idf-importance and some more. These are predefined here, if you know some of your own,its possible to give custom functions.
 
-p2 = ...
-q1 = ...
-q2 = ...
-ps = [p1,p2,p3 ...]
-qs = [q1,q2,q3 ...]
+    p1 =
+      {
+      'text': ['The', 'cause', 'of', 'cancer', 'is', 'not', 'a', 'virus', 'and', 'the', 'cause', 'of', 'cancer', 'is', 'not', 'a', 'fungus'],
+      'lemma_': ['the', 'because', 'of', 'cancer', 'be', 'not', 'a', 'virus', 'and', 'the', 'because', 'of', 'cancer', 'be', 'not', 'a', 'fungus'],
+      'dep',
+      'importance': array([0.53395703, ...  0.2       ])
+      A ∧ ¬C ∧ B ∧ ¬D
+    ((((pyprover.A )) & ~ pyprover.C ) & (((pyprover.B )) & ~ pyprover.D ))
+      }
 
-Two list of these elements have to be provided for the Simmix.choose ((p1,p2))-function.
+    p2 = ...
+    q1 = ...
+    q2 = ...
+    ps = [p1,p2,p3 ...]
+    qs = [q1,q2,q3 ...]
 
-
-
+    Two list of these elements have to be provided for the Simmix.choose ((p1,p2))-function.
 
 
-Also there are functions in Simmix to compare these and different sorts of how choices can be made.
+    Also there are functions in Simmix to compare these and different sorts of how choices can be made.
 
-The functions and parameters for computing the overall-similarity,, that should be used in a complex comparison have to
-be initialized like this:
+    The functions and parameters for computing the overall-similarity,, that should be used in a complex comparison
+    have to be initialized like this:
 
- superficial_sim  = \
-    Simmix([(1, Simmix.fuzzystr_sim, 0.72, 2.01), # fuzzy-string-comparison
-            (1, Simmix.dep_sim, 0.4, 1)       # levensthein distance of the dependency measures
-            ])
+     superficial_sim  = \
+        Simmix([(1, Simmix.fuzzystr_sim, 0.72, 2.01), # fuzzy-string-comparison
+                (1, Simmix.dep_sim, 0.4, 1)       # levensthein distance of the dependency measures
+                ])
 
-The list of tuple parameter is represents a pipeline, what should be computed:
-1                     -- The weight of their normalized results.
-Simmix.fuzzystr_sim   -- which function
-0.72                  -- minimum-score
-2.01                  -- maximum-score
+    The list of tuple parameter is represents a pipeline, what should be computed:
+    1                     -- The weight of their normalized results.
+    Simmix.fuzzystr_sim   -- which function
+    0.72                  -- minimum-score
+    2.01                  -- maximum-score
 
+'''
 
-
-There are also different kinds, how choices can be made. Simmix.choose(data) takes optional arguments.
-
-def choose (self, data, out=None, layout=None, n=None):
-
-Default behavior: the best and only one element.
-
-If n is set, the best first n results are chosen.
-
-If out is set to "i", you get the indices of your input-bundles data for the made choice.
-
-If layout is set to "1:1:, for each input-bundle in the lists of the data exactly one element is taken from both lists, in the realm of the given thresholds and the number of items given.
-
-
-"""
 import types
 import scipy
 import numpy as np
 import numpy_indexed as npi
 from sklearn import preprocessing
 import itertools
-import collections
 import pyprover
-
 import string
 import re
 from pyxdameraulevenshtein import damerau_levenshtein_distance
@@ -77,36 +59,35 @@ from nested_list_tools import check_for_tuple_in_list, flatten,  flatten_reduce,
 import dict_tools
 
 
-
-def invert_dict(d):
-    inverse = dict()
-    for key in d:
-        # Go through the list that is saved in the dict:
-        for item in d[key]:
-            # Check if in the inverted dict the key exists
-            if item not in inverse:
-                # If not create a new list
-                inverse[item] = [key]
-            else:
-                inverse[item].append(key)
-    return inverse
-
-
 uppercase_abc = list(string.ascii_uppercase)
 uppercase_bca = list(string.ascii_uppercase)[::-1]
 
-# https://stackoverflow.com/questions/11144513/numpy-cartesian-product-of-x-and-y-array-points-into-single-array-of-2d-points
-# Generalized N-dimensional products
+
 def cartesian_product_itertools(arrays):
+    ''' Cartesian product, that works with functions and combinations of parameters and returns an ordered output, that
+        can be sliced with numpy and axis-indexing
+
+    '''
+    # https://stackoverflow.com/questions/11144513/numpy-cartesian-product-of-x-and-y-array-points-into-single-array-of-2d-points
+    # Generalized N-dimensional products
     return np.array(list(itertools.product(*arrays)))
 
 
-
 class Simmix:
-    """This module contains utils to overlap different similarity measuring functions. 
-    """
+    '''This module contains utils to overlap different similarity measures.'''
+    def __init__ (self, similarity_composition, n=1):
+        ''' Set up, which functions are taken to compute a similarity matrix to choose from
 
-    def __init__ (self, similarity_composition, n=1, elmo=None, type=None):
+            :param similarity_composition:
+                list of tuples (
+                    weight<float>,
+                    fun<function, accepting expressiondicts as arguments>,
+                    min-val<float>,
+                    max-val<float>)
+            :param n:
+                number of results to return, can be overridden with choose(...)
+
+        '''
         funs           = [np.nan] * len(similarity_composition) 
         weights        = [np.nan] * len(similarity_composition) 
         thresholds_min = [np.nan] * len(similarity_composition) 
@@ -127,14 +108,12 @@ class Simmix:
             else:
                 raise ValueError("len of tuples must be 2, (weight, fun) or 3 (weight, fun, threshold_min, threshold_max)" +
                                  str(similarity_composition))
+        self.n              = n
+
         self.funs           = np.array(funs)
         self.weights        = np.array(weights)
         self.thresholds_min = np.array(thresholds_min)
         self.thresholds_max = np.array(thresholds_max)
-        self.n              = n
-        self.elmo           = elmo
-        self.beam           = {}
-        self.type           = type
 
         try:
             mins = [f.min for f in funs]
@@ -142,20 +121,22 @@ class Simmix:
             self.minmax_defaults = np.array([mins,maxs])
         except AttributeError:
             raise AttributeError ("At least one of the funs doesn't have standard_range decorator! %s " % (str (funs)))
-
         self.scaler = preprocessing.MinMaxScaler()
 
+
     def standard_range (minim, maxim):
+        ''' Decorator for similarity computing functions, it is later used for normalisation
+
+        :param maxim: maximum value
+        :param maxim: minimum value
+        :return: decorated function
+        '''
         def wrapper(f):
             f.min = minim
             f.max = maxim
             return f
         return wrapper
 
-    def join_choices_ (list_of_funs):
-        def collate_choices(data):
-            return list(itertools.chain.from_iterable([fun(data) for fun in list_of_funs]))
-        return collate_choices
 
     def apply_sim_fun (self, fee):
         fun = fee[2]
@@ -168,9 +149,15 @@ class Simmix:
             raise TypeError ("Function doesn't return beam. %s, %s " % (str(fun(ex1,ex2)), str(fun)))
         return res
 
-    def choose(self, data, out=None, layout=None, n=None, G=None, type=None, type2=None, output=False,
+    def choose(self, data,
+               out=None,
+               layout=None,
+               n=None,
+               G=None,
+               type=None,
+               output=False,
                minimize=False):
-        """Does the choice in different manners.
+        '''Chooses in different manners
 /
         :param data:
             tuple of lists of expressions, meaning the dictionaries or what is compared for you
@@ -182,7 +169,12 @@ class Simmix:
             '2t': pairs of tuples (for building a graph
             'nx': directed networkxgraph
         :param G:
-            Graph instance for out=='nx'
+            graph_coroutine, that accepts a 3-tuple of two dictionaries and a `type` string
+        :param type:
+            If using `G`, one has to specify the type-argument,
+                * either in case of input lists as data a string,
+                * or a 3tuple `(type_l_pair, type_r_pair, type_between)=type` in case of input datatypes like the
+            list-tuple-list-dict, that this module returns
         :param layout:
             default=None behavior like n=1
             '1:1' means for each one element of the one expression is eactly one chosen from the other
@@ -192,7 +184,7 @@ class Simmix:
             count of best n solutions, also clusters of expressions of the one are chosen to fit to a cluster of the other
         :return:
             list of tuples of lists of ints or indexed expressions, according to the chosen 'out' parameter
-        """
+        '''
 
         exs1 = None
         exs2 = None
@@ -324,29 +316,7 @@ class Simmix:
             # ex1 is comparable to all these
 
         if not G == None:
-            l_s = Simmix.expressions_list(left_value, right_values, exs1, exs2)
-            t_s = Simmix.reduce_i_s_pair_tuples(l_s)
-            if isinstance(exs1[0], dict) and isinstance(exs2[0], dict):
-                all_triggers = flatten_list([self.beam[ex1['id']][ex2['id']]['trigger'] for ex1, ex2 in t_s])
-                for trigger in all_triggers:
-                    G.send(trigger + (type,))
-            elif isinstance(exs1[0], tuple):
-                if type2 == None:
-                    raise ValueError ('type2 must be set for paired nodes')
-                for trigger in t_s:
-                    ex11 = trigger[0][0][0]
-                    ex12 = trigger[0][1][0]
-                    ex21 = trigger[1][0][0]
-                    ex22 = trigger[1][1][0]
-                    logging.info (type_spec(trigger[0]))
-                    logging.info (type_spec(trigger[1]))
-                    trigger1 = (ex11, ex21)
-                    trigger2 = (ex12, ex22)
-                    G.send(tuple(t_s[0][0]) + (type2,))
-                    G.send(tuple(t_s[0][1]) + (type2,))    # ???
-                    G.send(trigger1 + (type,))
-                    G.send(trigger2 + (type,))
-
+            self.write_to_graph (G=G, type=type, exs1=exs1, exs2=exs2, left_value=left_value, right_values=right_values)
 
         if not out or out == 'ex':
             return Simmix.expressions_list(left_value, right_values, exs1, exs2)
@@ -394,6 +364,7 @@ class Simmix:
     def i_list (left_value, right_values):
         return [([left_value[l]], [r for r in right_values[l]])#, trans_cube[n[0]])
                   for l in range(len(left_value))]
+
     def reduce_i_s_right_values(x):
         if not x:
             return []
@@ -787,6 +758,40 @@ class Simmix:
         cost = int(pyprover.proves(eval(f), pyprover.logic.false)) ##eval(to_proove)))
 
         return cost
+
+    def write_to_graph(self, G, type, exs1, exs2, left_value, right_values):
+        l_s = Simmix.expressions_list(left_value, right_values, exs1, exs2)
+        t_s = Simmix.reduce_i_s_pair_tuples(l_s)
+        if isinstance(exs1[0], dict) and isinstance(exs2[0], dict):
+            all_triggers = flatten_list([self.beam[ex1['id']][ex2['id']]['trigger'] for ex1, ex2 in t_s])
+            for trigger in all_triggers:
+                G.send(trigger + (type,))
+        elif isinstance(exs1[0], tuple):
+            (type_l_pair, type_r_pair, type_between) = type
+            for trigger in t_s:
+                try:
+                    ex11 = trigger[0][0][0]
+                    ex12 = trigger[0][1][0]
+                    ex21 = trigger[1][0][0]
+                    ex22 = trigger[1][1][0]
+
+                    lr1_edge = (ex11, ex21)
+                    lr2_edge = (ex12, ex22)
+                    orig_l_edge = (ex11, ex12)
+                    orig_r_edge = (ex21, ex22)
+
+                    G.send(orig_l_edge + (type_l_pair,))
+                    G.send(orig_r_edge + (type_r_pair,))
+                    G.send(lr1_edge + (type_between,))
+                    G.send(lr2_edge + (type_between,))
+                except TypeError:
+                    raise TypeError(
+                        "one of the edges didn't have the list-tuple-dict-list-specification\n"
+                        "types: \n%s,\n%s,\n%s,\n%s" %
+                        (type_spec(orig_l_edge),
+                         type_spec(orig_r_edge),
+                         type_spec(lr1_edge),
+                         type_spec(lr2_edge)))
 
 
 import unittest

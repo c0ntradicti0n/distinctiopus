@@ -51,7 +51,7 @@ class Correlation:
             minimize=True,
             layout='n',
             out='ex',
-            type=("type_l_pair", "type_r_pair", "type_between"),
+            type=("opposed", "opposed", "correlated"),
             G=graph_coro)                             # Put it in the graph
 
         return correlation

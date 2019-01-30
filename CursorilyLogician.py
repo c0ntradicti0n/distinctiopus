@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import itertools
 import networkx as nx
 import textwrap
@@ -16,7 +19,6 @@ from corutine_utils import coroutine
 import logging
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
-
 from neo4j import GraphDatabase
 driver = GraphDatabase.driver("bolt://localhost:7687", auth=("s0krates", "password"))
 with driver.session() as session:
@@ -25,6 +27,17 @@ with driver.session() as session:
     session.write_transaction(clean_graph)
 
 class DataframeCursorilyLogician:
+    ''' This module handles all the databases for the operations on the text and does some transactions in between.
+
+        * a DataFrame in the corpus, representing the grammatical information read from the input files, one
+        line per word.
+        * a DataFrame with all the predicative substructures of the sentences
+        * a DataFrame with the actual sentences in it.
+        and
+        * a GraphDatabase (neo4j) for storing the results of the operations on the text as well as for querying for
+        certain connections of such superficial rhetorical relations in the text
+
+    '''
     def __init__(self, corpus):
         self.corpus = corpus
         self.sentence_df = self.corpus.sentence_df
@@ -67,8 +80,10 @@ class DataframeCursorilyLogician:
         return self.Predicatrix.predicate_df.query('id==@id').to_dict(orient='records')
 
     def annotate_contradictions(self):
-        """Looks first for pairs of phrases with negations and antonyms in an horizon
-        and second it evaluates the similarity of these phrases, what would be the fitting counterpart for that one"""
+        ''' Looks first for pairs of phrases with negations and antonyms in an horizon
+            and second it evaluates the similarity of these phrases, what would be the fitting counterpart for that one
+
+        '''
 
         put_contradiction_into_gdb = self.put_into_gdb("contradiction")
 
@@ -97,16 +112,16 @@ class DataframeCursorilyLogician:
 
 
     def annotate_correlations(self):
-        """Look for pairs of hypotactical and paratactical and anaphorical expressions with similar semantics and
-        modalities
+        ''' Look for pairs of hypotactical and paratactical and anaphorical expressions with similar semantics and
+            modalities
 
-        That means expressions, that both talk about examples or that both give reasons or are a modifyer to the
-        seemingly contradictions, that are found.
+            That means expressions, that both talk about examples or that both give reasons or are a modifyer to the
+            seemingly contradictions, that are found.
 
-        These routines reclassify some of the contradictions, because also talking about examples can seem to be
-        anithetical, if the explanation of the instanciated concept is repeated.
+            These routines reclassify some of the contradictions, because also talking about examples can seem to be
+            anithetical, if the explanation of the instanciated concept is repeated.
 
-        """
+        '''
         #put_example_into_gdb     = self.put_into_gdb("example")
         #put_explanation_into_gdb = self.put_into_gdb("explanation")
 
@@ -129,8 +144,10 @@ class DataframeCursorilyLogician:
 
 
     def annotate_subjects_and_aspects(self):
-        """Look for some common arguments of the contradicting and correlating predications.
+        ''' Look for some common arguments of the contradicting and correlating predications.
         These may may they be the logical subjects, the pre"""
+
+        '''
         # Say, after annotation of the contradictions and their correlating modifyers we have a pair of 'opposed'
         # nodes, as annotated by the correlatrix.
         oppositions              = list(self.get_from_gdb('opposed'))
@@ -138,7 +155,7 @@ class DataframeCursorilyLogician:
         put_aspect_into_gdb = self.put_into_gdb("aspect")
 
         for oppo1, oppo2 in oppositions:
-            self.Argumentatrix.annotate_common_concepts(
+            self.Argumentatrix.annotate(
                 predications   = (oppo1, oppo2),
                 graph_coro_ent = put_entity_into_gdb,
                 graph_coro_asp = put_aspect_into_gdb

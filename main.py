@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 from corpus_reader import CorpusReader
 from CursorilyLogician import DataframeCursorilyLogician
 from grammarannotator import GrammarAnnotator
