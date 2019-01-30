@@ -158,7 +158,7 @@ class Simmix:
                type=None,
                output=False,
                minimize=False):
-        '''Chooses in different manners
+        '''Choose in different manners
 /
         :param data:
             tuple of lists of expressions, meaning the dictionaries or what is compared for you

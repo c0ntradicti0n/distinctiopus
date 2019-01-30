@@ -78,14 +78,27 @@ def balance_complex_tuple_dict(d, _sort=False):
 
 
 def dict_compare(d1, d2, ignore_order=False):
-    '''
+    ''' This function compares two dicts.
 
-    :param d1:
-    :param d2:
-    :param ignore_order:
+        Example
+        -------
+
+        >>> d1 = dict(zip(range(0,10), [list(range(x-1,x+2)) for x in range(10,20)]))
+        >>> d2 = dict(zip(range(1,9), [list(range(x+2,x-1,-1)) for x in range(10,20)]))
+        >>> d1
+        {0: [9, 10, 11], 1: [10, 11, 12], 2: [11, 12, 13], 3: [12, 13, 14], 4: [13, 14, 15], 5: [14, 15, 16], 6: [15, 16, 17], 7: [16, 17, 18], 8: [17, 18, 19], 9: [18, 19, 20]}
+        >>> d2
+        {1: [12, 11, 10], 2: [13, 12, 11], 3: [14, 13, 12], 4: [15, 14, 13], 5: [16, 15, 14], 6: [17, 16, 15], 7: [18, 17, 16], 8: [19, 18, 17]}
+        >>> dict_compare(d1,d2)
+        ({0, 9}, set(), {1: ([10, 11, 12], [12, 11, 10]), 2: ([11, 12, 13], [13, 12, 11]), 3: ([12, 13, 14], [14, 13, 12]), 4: ([13, 14, 15], [15, 14, 13]), 5: ([14, 15, 16], [16, 15, 14]), 6: ([15, 16, 17], [17, 16, 15]), 7: ([16, 17, 18], [18, 17, 16]), 8: ([17, 18, 19], [19, 18, 17])}, set())
+
+    :param d1: dict
+    :param d2: dict
+    :param ignore_order: ignore the order of the keys
     :return:
-    '''
+         4-tuple of set: added, removed, modified, same
 
+    '''
     d1_keys = set(d1.keys())
     d2_keys = set(d2.keys())
     intersect_keys = d1_keys.intersection(d2_keys)

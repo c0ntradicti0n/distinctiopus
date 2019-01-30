@@ -1,7 +1,6 @@
 import networkx as nx
 
 
-
 def transitive_reduction(G):
     """ Returns transitive reduction of a directed graph
 
