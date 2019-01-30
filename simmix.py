@@ -317,7 +317,7 @@ class Simmix:
             # ex1 is comparable to all these
 
         if not G == None:
-            self.write_to_graph (G=G, type=type, exs1=exs1, exs2=exs2, left_value=left_value, right_values=right_values)
+            self.write_to_graph (graph_coro=G, type=type, exs1=exs1, exs2=exs2, left_value=left_value, right_values=right_values)
 
         if not out or out == 'ex':
             return Simmix.expressions_list(left_value, right_values, exs1, exs2)
@@ -633,7 +633,6 @@ class Simmix:
                 new_cost = Simmix.do_logic(
                     formulas = (f1, f2),
                     key_rel = {k1[0]['key']: k2[0]['key']},
-                    fun = pyprover.proves,
                     negate_one=True)
                 if new_cost:
                     triggers.append((k1[0],k2[0]))
@@ -688,8 +687,8 @@ class Simmix:
             for k1, k2 in key_to_key:
                 new_cost = Simmix.do_logic(
                     formulas = (f1, f2),
-                    key_rel = {k1[0]['key']: k2[0]['key']},
-                    fun = pyprover.proves)
+                    key_rel = {k1[0]['key']: k2[0]['key']}
+                )
                 if new_cost:
                     triggers.append((k1[0],k2[0]))
                 cost += new_cost
@@ -709,7 +708,21 @@ class Simmix:
 
     key_regex = re.compile("pyprover\.logic\.Prop\(\\'([a-zA-Z0-9])+\\'\)")
     @classmethod
-    def do_logic(cls, formulas=None, key_rel=None, fun=None, negate_one=False):
+    def do_logic(cls, formulas=None, key_rel=None, negate_one=False):
+        ''' This function does the logic and returns true, it can generate a contradiction
+
+            It renames the keys in the formula: These keys, that don't belong to each other, get some other name.
+            The relationated keys get the same key.
+
+            If  negate_one` is set, then for one relationated key a negation is added. That is used, if the expression, that
+            this key stands for contains a negation
+
+            :param formulas:   formulas 1 and 2 as tuple
+            :param key_rel:    the keys to combine
+            :param negate_one: add a negation to one of the keys of key_rel
+            :return: 1 for a contradiction, 0 for no one
+
+        '''
         f1, f2 =  formulas
 
         k_in_1 = re.findall(Simmix.key_regex, f1)
@@ -722,51 +735,51 @@ class Simmix:
         k_not_to_correlate_2 = list(set(k_in_2) - set(k_to_correlate_2))
 
         not_in_other_formula = eval(
-            "(x for x in uppercase_bca)")  # "eval" because there is a complication, that the generator is really created every call of this function
+            "(x for x in uppercase_bca)")  # `eval` because there is a complication,
+                                           # that the generator is really created every call of this function
         in_other_formula = eval(
-            "(x for x in uppercase_abc)")  # "eval" because there is a complication, that the generator is really created every call of this function
+            "(x for x in uppercase_abc)")  # the same
 
         def pyprover_key(k):
             return "pyprover.logic.Prop('" + k + "')"
-
         for k1 in k_not_to_correlate_1:
             f1 = f1.replace(pyprover_key(k1), pyprover_key(next(not_in_other_formula)))
         for k2 in k_not_to_correlate_2:
             f2 = f2.replace(pyprover_key(k2), pyprover_key(next(not_in_other_formula)))
 
         relevant_keys = []
-
         for k1, k2 in zip(k_to_correlate_1, k_to_correlate_2):
             shared_key = pyprover_key("common" + next(in_other_formula))
             f1 = f1.replace(pyprover_key(k1), shared_key)
-
             if negate_one:
                 shared_key = '~' + shared_key
-
             f2 = f2.replace(pyprover_key(k2), shared_key)
-
             relevant_keys.append(shared_key)
-            # relevant_keys_nice.append (k1)
-
-        set_keys = "&".join(relevant_keys)
 
         f = '(' + f1 + ') & (' + f2 + ')'
-        to_proove =  '(' + set_keys + ') & ~ (' + set_keys + ')'
 
-        #if not set_keys:
-        #    logging.debug("No keys set? %s" % (str(key_to_key)))
-
-        cost = int(pyprover.proves(eval(f), pyprover.logic.false)) ##eval(to_proove)))
-
+        cost = int(pyprover.proves(eval(f), pyprover.logic.false))
         return cost
 
-    def write_to_graph(self, G, type, exs1, exs2, left_value, right_values):
+
+    def write_to_graph(self, graph_coro, type, exs1, exs2, left_value, right_values):
+        ''' Write a result to the graph using a coroutine
+
+        :param graph_coro: coroutine to send a (dict, dict, type)-tuple to
+        :param type: the type added to the pair of dicts
+        :param exs1: expression list 1
+        :param exs2: expression list 2
+        :param left_value: list of left indices
+        :param right_values: list of right indices
+        :return: None
+
+        '''
         l_s = Simmix.expressions_list(left_value, right_values, exs1, exs2)
         t_s = Simmix.reduce_i_s_pair_tuples(l_s)
         if isinstance(exs1[0], dict) and isinstance(exs2[0], dict):
             all_triggers = flatten_list([self.beam[ex1['id']][ex2['id']]['trigger'] for ex1, ex2 in t_s])
             for trigger in all_triggers:
-                G.send(trigger + (type,))
+                graph_coro.send(trigger + (type,))
         elif isinstance(exs1[0], tuple):
             (type_l_pair, type_r_pair, type_between) = type
             for trigger in t_s:
@@ -781,10 +794,10 @@ class Simmix:
                     orig_l_edge = (ex11, ex12)
                     orig_r_edge = (ex21, ex22)
 
-                    G.send(orig_l_edge + (type_l_pair,))
-                    G.send(orig_r_edge + (type_r_pair,))
-                    G.send(lr1_edge + (type_between,))
-                    G.send(lr2_edge + (type_between,))
+                    graph_coro.send(orig_l_edge + (type_l_pair,))
+                    graph_coro.send(orig_r_edge + (type_r_pair,))
+                    graph_coro.send(lr1_edge + (type_between,))
+                    graph_coro.send(lr2_edge + (type_between,))
                 except TypeError:
                     raise TypeError(
                         "one of the edges didn't have the list-tuple-dict-list-specification\n"
@@ -828,7 +841,6 @@ class TestSimmix(unittest.TestCase):
         print(Simmix.one_to_one(weighted_res.T, exs2, exs1))
 
 
-
     def test_excluding_pair (self):
         import spacy
         nlp = spacy.load('en_core_web_sm')
@@ -841,11 +853,9 @@ class TestSimmix(unittest.TestCase):
         p2 = {"full_ex":s2[8:24]}
 
 
-        d = {
-                #'differ': [ 'derive'],
-                'differ': [('differ', 'in'), 'differ', ('have', '*', 'in', 'common')]}
+        d = {'differ': [('differ', 'in'), 'differ', ('have', '*', 'in', 'common')]}
         d =  balance_complex_tuple_dict(d)
-        fun = Simmix.excluding_pair_boolean_sim({'lemma_':d})
+        #fun = Simmix.excluding_pair_boolean_sim({'lemma_':d})
         fun = Simmix.excluding_pair_boolean_sim(word_definitions.antonym_dict)
 
         print (p1,p2, )
@@ -860,7 +870,7 @@ class TestSimmix(unittest.TestCase):
         import word_definitions
         from dict_tools import dict_compare
 
-        d1 = invert_dict(word_definitions.antonym_dict['lemma_'])
+        d1 = dict_tools.invert_dict(word_definitions.antonym_dict['lemma_'])
         d2 = word_definitions.antonym_dict['lemma_']
 
         added, removed, modified, same=\
@@ -872,12 +882,10 @@ class TestSimmix(unittest.TestCase):
 
     def test_antonym_dict_for_symmetry(self):
         import word_definitions
-        from dict_tools import dict_compare
 
         def key_in_val(d):
             print ([(k,v)  for k,v in d.items() if k in v])
             return (any ([k in v  for k,v in d.items()]))
-
         self.assertFalse (key_in_val(word_definitions.antonym_dict['lemma_']))
 
 

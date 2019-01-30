@@ -25,7 +25,7 @@ class Contradiction:
         self.Contra_Neg  = \
             Simmix([(1, Simmix.formula_contradicts(fit_mix_neg), 0.1, 1)
                     ,(1, Simmix.sub_i,0,0.1)
-                    ], n=30, type="negation_contra")
+                    ], n=30)
 
         fit_mix_ant = \
              Simmix ( [(1,Simmix.elmo_sim(), 0.55, 1),
@@ -33,7 +33,7 @@ class Contradiction:
                        ], n=None)
         self.Contra_Anto = \
             Simmix([(1, Simmix.formula_prooves(fit_mix_ant), 0.1, 1)
-                    ], n=30, type="antonym_contra")
+                    ], n=30)
 
     def find_contradictive (self, predicates1, predicates2, **kwargs):
         if not predicates1 or not predicates2:

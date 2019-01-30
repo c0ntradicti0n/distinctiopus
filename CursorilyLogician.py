@@ -4,6 +4,7 @@
 import itertools
 import networkx as nx
 import textwrap
+from corutine_utils import coroutine
 
 import matplotlib
 matplotlib.use('TkAgg')
@@ -12,19 +13,11 @@ import pylab as plt
 from contradictrix import Contradiction
 from predicatrix2 import Predication
 from correlatrix import Correlation
-from argumentatrix import Arguments
-from corutine_utils import coroutine
-
+from subjectrix import Subjects
 
 import logging
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
-from neo4j import GraphDatabase
-driver = GraphDatabase.driver("bolt://localhost:7687", auth=("s0krates", "password"))
-with driver.session() as session:
-    def clean_graph(tx):
-        tx.run("match (n) optional match (n)-[r]-() delete n,r")
-    session.write_transaction(clean_graph)
 
 class DataframeCursorilyLogician:
     ''' This module handles all the databases for the operations on the text and does some transactions in between.
@@ -45,7 +38,16 @@ class DataframeCursorilyLogician:
         self.Predicatrix   = Predication(corpus)
         self.Contradictrix = Contradiction ()
         self.Correlatrix   = Correlation()
-        self.Argumentatrix = Arguments(corpus)
+        self.Subjectrix    = Subjects(corpus)
+
+
+        from neo4j import GraphDatabase
+        self.driver = GraphDatabase.driver("bolt://localhost:7687", auth=("s0krates", "password"))
+        with self.driver.session() as session:
+            def clean_graph(tx):
+                tx.run("match (n) optional match (n)-[r]-() delete n,r")
+
+            session.write_transaction(clean_graph)
 
 
     def annotate_horizon (self, horizon=3):
@@ -150,15 +152,16 @@ class DataframeCursorilyLogician:
         '''
         # Say, after annotation of the contradictions and their correlating modifyers we have a pair of 'opposed'
         # nodes, as annotated by the correlatrix.
+
+
         oppositions              = list(self.get_from_gdb('opposed'))
         put_entity_into_gdb = self.put_into_gdb("entity")
         put_aspect_into_gdb = self.put_into_gdb("aspect")
 
         for oppo1, oppo2 in oppositions:
-            self.Argumentatrix.annotate(
-                predications   = (oppo1, oppo2),
-                graph_coro_ent = put_entity_into_gdb,
-                graph_coro_asp = put_aspect_into_gdb
+            self.Subjectrix.annotate(
+                original_pair   = (oppo1, oppo2),
+                graph_coro = put_entity_into_gdb,
                 )
 
 
@@ -308,7 +311,7 @@ class DataframeCursorilyLogician:
         return None
 
     def gdb_add_node (kind, data):
-        with driver.session() as session:
+        with self.driver.session() as session:
             session.write_transaction()
         return None
 
@@ -339,7 +342,7 @@ r"""               MERGE (a:Expression {id:'%s', s_id:'%s', text:'%s'})
 
     @coroutine
     def put_into_gdb (self, general_kind):
-        with driver.session() as session:
+        with self.driver.session() as session:
             while True:
                 data = (yield)
                 if isinstance(data, tuple) and len(data) == 3:
@@ -386,13 +389,11 @@ r"""                MATCH path = (a)-[:TextRelation {GeneralKind:'contradiction'
         :param kind: this certain kind of connection; its a property of the graph edges
         :yield: tuples of contradicting predicates
         """
-        with driver.session() as session:
+        with self.driver.session() as session:
             while True:
                 return session.read_transaction(self.get_determinded_expressions, kind)
 
 import unittest
-
-
 class TestCursorilyLogician(unittest.TestCase):
 
     def testNeo4j (self):

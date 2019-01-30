@@ -8,10 +8,10 @@ from grammarannotator import nlp
 
 
 class Arguments(Pairix):
-    def __init__(self, corpus_path):
+    def __init__(self, corpus):
         super().__init__()
 
-        self.P = Predication (corpus_path)
+        self.P = Predication (corpus)
         self.fit_mix_subject = \
              Simmix ( [(1, Simmix.elmo_layer_sim(layer=[0,1]
                         ), 0.2,1)
@@ -20,7 +20,7 @@ class Arguments(Pairix):
 
         global nlp
         standard_ex = nlp("The thing is round from the right side.")
-        self.standard_predicate = self.P.collect_all_predicates(standard_ex)
+        self.standard_predicate              = self.P.collect_all_predicates(standard_ex)
         self.standard_entity_exs             = self.standard_predicate[0]['arguments'][0:1]
         self.standard_differential_layer_exs = self.standard_predicate[0]['arguments'][1:2]
 
