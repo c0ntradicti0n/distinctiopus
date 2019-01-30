@@ -149,6 +149,7 @@ class Simmix:
             raise TypeError ("Function doesn't return beam. %s, %s " % (str(fun(ex1,ex2)), str(fun)))
         return res
 
+
     def choose(self, data,
                out=None,
                layout=None,
@@ -343,15 +344,15 @@ class Simmix:
             raise NotImplementedError("What the else could out be returned? Wrong parameter for 'out'")
 
     def one_to_one(weighted_res, exs1, exs2, mask):
-        """
-        compute combinations of input-lists with a solution connecting one to one expression.
-        Solved with the hungarian method, filtered by the mask of acceptable solutions within the allowed range of values.
+        ''' Compute combinations of input-lists with a solution connecting one to one expression.
+            Solved with the hungarian method, filtered by the mask of acceptable solutions within the allowed range of values.
 
-        :param exs1:  list of comparaed values  in x direction
-        :param exs2:  list of compared values   in y direction
-        :paramm mask: np boolean mask of fine solutions
-        :return: tuple of list of indices to the exs1 list and of indices of the exs2 list
-        """
+            :param exs1:  list of comparaed values  in x direction
+            :param exs2:  list of compared values   in y direction
+            :param mask:  np boolean mask of fine solutions
+            :return:      tuple of list of indices to the exs1 list and of indices of the exs2 list
+
+        '''
         res = scipy.optimize.linear_sum_assignment(-weighted_res)
         res_mask = mask[res]
         l_values = res[0][res_mask].tolist()
@@ -359,10 +360,10 @@ class Simmix:
         return l_values, r_values
 
     def expressions_list (left_value, right_values, exs1, exs2):
-        return [([exs1[left_value[l]]], [exs2[r] for r in right_values[l]])#, trans_cube[n[0]])
+        return [([exs1[left_value[l]]], [exs2[r] for r in right_values[l]])
                   for l in range(len(left_value))]
     def i_list (left_value, right_values):
-        return [([left_value[l]], [r for r in right_values[l]])#, trans_cube[n[0]])
+        return [([left_value[l]], [r for r in right_values[l]])
                   for l in range(len(left_value))]
 
     def reduce_i_s_right_values(x):
