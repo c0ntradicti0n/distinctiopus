@@ -41,8 +41,7 @@ class Correlation(Pairix):
         '''
 
         poss_correlations = self.correlative.choose(  # What correlates
-            (possible_to_correlate,
-             possible_to_correlate),
+            possible_to_correlate,
             layout='1:1')
 
         if not poss_correlations:

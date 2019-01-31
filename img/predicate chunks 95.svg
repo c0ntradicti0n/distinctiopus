@@ -19,10 +19,10 @@ z
   </g>
   <g id="axes_1">
    <g id="patch_2">
-    <path clip-path="url(#p826d8e1ab4)" d="M 604.301503 134.509091 
+    <path clip-path="url(#pfb47ea4484)" d="M 604.301503 134.509091 
 Q 407.602608 361.710601 213.099083 586.376299 
 " style="fill:none;stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
-    <path clip-path="url(#p826d8e1ab4)" d="M 218.055322 584.318218 
+    <path clip-path="url(#pfb47ea4484)" d="M 218.055322 584.318218 
 L 213.099083 586.376299 
 L 214.426362 581.176459 
 L 218.055322 584.318218 
@@ -30,10 +30,10 @@ z
 " style="stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
    </g>
    <g id="patch_3">
-    <path clip-path="url(#p826d8e1ab4)" d="M 604.301503 134.509091 
+    <path clip-path="url(#pfb47ea4484)" d="M 604.301503 134.509091 
 Q 604.301503 361.098863 604.301503 584.334532 
 " style="fill:none;stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
-    <path clip-path="url(#p826d8e1ab4)" d="M 606.701503 579.534532 
+    <path clip-path="url(#pfb47ea4484)" d="M 606.701503 579.534532 
 L 604.301503 584.334532 
 L 601.901503 579.534532 
 L 606.701503 579.534532 
@@ -41,10 +41,10 @@ z
 " style="stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
    </g>
    <g id="patch_4">
-    <path clip-path="url(#p826d8e1ab4)" d="M 604.301503 134.509091 
+    <path clip-path="url(#pfb47ea4484)" d="M 604.301503 134.509091 
 Q 750.480553 361.497367 894.843579 585.665703 
 " style="fill:none;stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
-    <path clip-path="url(#p826d8e1ab4)" d="M 894.262482 580.330693 
+    <path clip-path="url(#pfb47ea4484)" d="M 894.262482 580.330693 
 L 894.843579 585.665703 
 L 890.226913 582.929575 
 L 894.262482 580.330693 
@@ -53,7 +53,7 @@ z
    </g>
    <g id="text_1">
     <g id="patch_5">
-     <path clip-path="url(#p826d8e1ab4)" d="M 338.558274 371.578125 
+     <path clip-path="url(#pfb47ea4484)" d="M 338.558274 371.578125 
 L 473.375461 371.578125 
 Q 476.375461 371.578125 476.375461 368.578125 
 L 476.375461 358.621875 
@@ -65,7 +65,7 @@ Q 335.558274 371.578125 338.558274 371.578125
 z
 " style="fill:#ffffff;stroke:#ffffff;stroke-linejoin:miter;"/>
     </g>
-    <g clip-path="url(#p826d8e1ab4)">
+    <g clip-path="url(#pfb47ea4484)">
      <!-- shared_negations: (never,) -->
      <defs>
       <path d="M 44.28125 53.078125 
@@ -423,17 +423,17 @@ C -4.473168 -2.597899 -5 -1.326016 -5 0
 C -5 1.326016 -4.473168 2.597899 -3.535534 3.535534 
 C -2.597899 4.473168 -1.326016 5 0 5 
 z
-" id="m855701572b" style="stroke:#0000ff;"/>
+" id="m3f620ec999" style="stroke:#0000ff;"/>
     </defs>
-    <g clip-path="url(#p826d8e1ab4)">
-     <use style="fill:#0000ff;stroke:#0000ff;" x="604.301503" xlink:href="#m855701572b" y="134.509091"/>
-     <use style="fill:#0000ff;stroke:#0000ff;" x="207.632231" xlink:href="#m855701572b" y="592.690909"/>
-     <use style="fill:#0000ff;stroke:#0000ff;" x="604.301503" xlink:href="#m855701572b" y="592.690909"/>
-     <use style="fill:#0000ff;stroke:#0000ff;" x="899.367769" xlink:href="#m855701572b" y="592.690909"/>
+    <g clip-path="url(#pfb47ea4484)">
+     <use style="fill:#0000ff;stroke:#0000ff;" x="604.301503" xlink:href="#m3f620ec999" y="134.509091"/>
+     <use style="fill:#0000ff;stroke:#0000ff;" x="207.632231" xlink:href="#m3f620ec999" y="592.690909"/>
+     <use style="fill:#0000ff;stroke:#0000ff;" x="604.301503" xlink:href="#m3f620ec999" y="592.690909"/>
+     <use style="fill:#0000ff;stroke:#0000ff;" x="899.367769" xlink:href="#m3f620ec999" y="592.690909"/>
     </g>
    </g>
    <g id="text_2">
-    <g clip-path="url(#p826d8e1ab4)">
+    <g clip-path="url(#pfb47ea4484)">
      <!-- 95  But , to speak more -->
      <defs>
       <path d="M 10.984375 1.515625 
@@ -636,7 +636,7 @@ z
       <use x="1117.302734" xlink:href="#DejaVuSans-65"/>
      </g>
     </g>
-    <g clip-path="url(#p826d8e1ab4)">
+    <g clip-path="url(#pfb47ea4484)">
      <!-- generally , that which is -->
      <defs>
       <path d="M 9.421875 75.984375 
@@ -726,7 +726,7 @@ z
       <use x="1148.144531" xlink:href="#DejaVuSans-73"/>
      </g>
     </g>
-    <g clip-path="url(#p826d8e1ab4)">
+    <g clip-path="url(#pfb47ea4484)">
      <!-- individual and has the -->
      <g transform="translate(548.818691 137.268466)scale(0.1 -0.1)">
       <use xlink:href="#DejaVuSans-69"/>
@@ -753,7 +753,7 @@ z
       <use x="1048.144531" xlink:href="#DejaVuSans-65"/>
      </g>
     </g>
-    <g clip-path="url(#p826d8e1ab4)">
+    <g clip-path="url(#pfb47ea4484)">
      <!-- character of a unit is never -->
      <defs>
       <path d="M 37.109375 75.984375 
@@ -808,7 +808,7 @@ z
       <use x="1314.697266" xlink:href="#DejaVuSans-72"/>
      </g>
     </g>
-    <g clip-path="url(#p826d8e1ab4)">
+    <g clip-path="url(#pfb47ea4484)">
      <!-- predicable of a subject . -->
      <defs>
       <path d="M 48.6875 27.296875 
@@ -890,7 +890,7 @@ z
     </g>
    </g>
    <g id="text_3">
-    <g clip-path="url(#p826d8e1ab4)">
+    <g clip-path="url(#pfb47ea4484)">
      <!-- 94  But that is never -->
      <defs>
       <path d="M 37.796875 64.3125 
@@ -935,7 +935,7 @@ z
       <use x="985.9375" xlink:href="#DejaVuSans-72"/>
      </g>
     </g>
-    <g clip-path="url(#p826d8e1ab4)">
+    <g clip-path="url(#pfb47ea4484)">
      <!-- predicable of a subject -->
      <g transform="translate(150.5377 601.04919)scale(0.1 -0.1)">
       <use xlink:href="#DejaVuSans-70"/>
@@ -965,7 +965,7 @@ z
     </g>
    </g>
    <g id="text_4">
-    <g clip-path="url(#p826d8e1ab4)">
+    <g clip-path="url(#pfb47ea4484)">
      <!-- 92  the character of a unit -->
      <defs>
       <path d="M 19.1875 8.296875 
@@ -1025,7 +1025,7 @@ z
     </g>
    </g>
    <g id="text_5">
-    <g clip-path="url(#p826d8e1ab4)">
+    <g clip-path="url(#pfb47ea4484)">
      <!-- 93  which is individual -->
      <defs>
       <path d="M 40.578125 39.3125 
@@ -1461,7 +1461,7 @@ z
   </g>
  </g>
  <defs>
-  <clipPath id="p826d8e1ab4">
+  <clipPath id="pfb47ea4484">
    <rect height="554.4" width="837" x="135" y="86.4"/>
   </clipPath>
  </defs>

@@ -19,10 +19,10 @@ z
   </g>
   <g id="axes_1">
    <g id="patch_2">
-    <path clip-path="url(#p0056fae05e)" d="M 576.374852 134.509091 
+    <path clip-path="url(#p0577f82b19)" d="M 576.374852 134.509091 
 Q 394.126164 247.735812 214.726506 359.192498 
 " style="fill:none;stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
-    <path clip-path="url(#p0056fae05e)" d="M 220.070241 358.698031 
+    <path clip-path="url(#p0577f82b19)" d="M 220.070241 358.698031 
 L 214.726506 359.192498 
 L 217.537174 354.62083 
 L 220.070241 358.698031 
@@ -30,10 +30,10 @@ z
 " style="stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
    </g>
    <g id="patch_3">
-    <path clip-path="url(#p0056fae05e)" d="M 576.374852 134.509091 
+    <path clip-path="url(#p0577f82b19)" d="M 576.374852 134.509091 
 Q 576.374852 246.553408 576.374852 355.243623 
 " style="fill:none;stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
-    <path clip-path="url(#p0056fae05e)" d="M 578.774852 350.443623 
+    <path clip-path="url(#p0577f82b19)" d="M 578.774852 350.443623 
 L 576.374852 355.243623 
 L 573.974852 350.443623 
 L 578.774852 350.443623 
@@ -41,10 +41,10 @@ z
 " style="stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
    </g>
    <g id="patch_4">
-    <path clip-path="url(#p0056fae05e)" d="M 576.374852 134.509091 
+    <path clip-path="url(#p0577f82b19)" d="M 576.374852 134.509091 
 Q 735.832152 247.60822 892.553638 358.766905 
 " style="fill:none;stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
-    <path clip-path="url(#p0056fae05e)" d="M 890.02693 354.032378 
+    <path clip-path="url(#p0577f82b19)" d="M 890.02693 354.032378 
 L 892.553638 358.766905 
 L 887.249991 357.947555 
 L 890.02693 354.032378 
@@ -52,10 +52,10 @@ z
 " style="stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
    </g>
    <g id="patch_5">
-    <path clip-path="url(#p0056fae05e)" d="M 207.632231 363.6 
+    <path clip-path="url(#p0577f82b19)" d="M 207.632231 363.6 
 Q 207.632231 475.644317 207.632231 584.334532 
 " style="fill:none;stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
-    <path clip-path="url(#p0056fae05e)" d="M 210.032231 579.534532 
+    <path clip-path="url(#p0577f82b19)" d="M 210.032231 579.534532 
 L 207.632231 584.334532 
 L 205.232231 579.534532 
 L 210.032231 579.534532 
@@ -74,18 +74,18 @@ C -4.473168 -2.597899 -5 -1.326016 -5 0
 C -5 1.326016 -4.473168 2.597899 -3.535534 3.535534 
 C -2.597899 4.473168 -1.326016 5 0 5 
 z
-" id="m420dd603e6" style="stroke:#0000ff;"/>
+" id="mbd9bbc4d95" style="stroke:#0000ff;"/>
     </defs>
-    <g clip-path="url(#p0056fae05e)">
-     <use style="fill:#0000ff;stroke:#0000ff;" x="576.374852" xlink:href="#m420dd603e6" y="134.509091"/>
-     <use style="fill:#0000ff;stroke:#0000ff;" x="207.632231" xlink:href="#m420dd603e6" y="363.6"/>
-     <use style="fill:#0000ff;stroke:#0000ff;" x="576.374852" xlink:href="#m420dd603e6" y="363.6"/>
-     <use style="fill:#0000ff;stroke:#0000ff;" x="899.367769" xlink:href="#m420dd603e6" y="363.6"/>
-     <use style="fill:#0000ff;stroke:#0000ff;" x="207.632231" xlink:href="#m420dd603e6" y="592.690909"/>
+    <g clip-path="url(#p0577f82b19)">
+     <use style="fill:#0000ff;stroke:#0000ff;" x="576.374852" xlink:href="#mbd9bbc4d95" y="134.509091"/>
+     <use style="fill:#0000ff;stroke:#0000ff;" x="207.632231" xlink:href="#mbd9bbc4d95" y="363.6"/>
+     <use style="fill:#0000ff;stroke:#0000ff;" x="576.374852" xlink:href="#mbd9bbc4d95" y="363.6"/>
+     <use style="fill:#0000ff;stroke:#0000ff;" x="899.367769" xlink:href="#mbd9bbc4d95" y="363.6"/>
+     <use style="fill:#0000ff;stroke:#0000ff;" x="207.632231" xlink:href="#mbd9bbc4d95" y="592.690909"/>
     </g>
    </g>
    <g id="text_1">
-    <g clip-path="url(#p0056fae05e)">
+    <g clip-path="url(#p0577f82b19)">
      <!-- 39  Things are said to be -->
      <defs>
       <path d="M 40.578125 39.3125 
@@ -467,7 +467,7 @@ z
       <use x="1181.560547" xlink:href="#DejaVuSans-65"/>
      </g>
     </g>
-    <g clip-path="url(#p0056fae05e)">
+    <g clip-path="url(#p0577f82b19)">
      <!-- named Derivatively , which -->
      <defs>
       <path d="M 52 44.1875 
@@ -622,7 +622,7 @@ z
       <use x="1304.6875" xlink:href="#DejaVuSans-68"/>
      </g>
     </g>
-    <g clip-path="url(#p0056fae05e)">
+    <g clip-path="url(#p0577f82b19)">
      <!-- derive their name from some -->
      <defs>
       <path d="M 37.109375 75.984375 
@@ -676,7 +676,7 @@ z
       <use x="1403.923828" xlink:href="#DejaVuSans-65"/>
      </g>
     </g>
-    <g clip-path="url(#p0056fae05e)">
+    <g clip-path="url(#p0577f82b19)">
      <!-- other name , but differ from -->
      <defs>
       <path d="M 8.5 21.578125 
@@ -732,7 +732,7 @@ z
       <use x="1308.5625" xlink:href="#DejaVuSans-6d"/>
      </g>
     </g>
-    <g clip-path="url(#p0056fae05e)">
+    <g clip-path="url(#p0577f82b19)">
      <!-- it in termination . -->
      <defs>
       <path d="M 10.6875 12.40625 
@@ -766,7 +766,7 @@ z
     </g>
    </g>
    <g id="text_2">
-    <g clip-path="url(#p0056fae05e)">
+    <g clip-path="url(#p0577f82b19)">
      <!-- 37  to be which derive their -->
      <defs>
       <path d="M 8.203125 72.90625 
@@ -810,7 +810,7 @@ z
       <use x="1341.162109" xlink:href="#DejaVuSans-72"/>
      </g>
     </g>
-    <g clip-path="url(#p0056fae05e)">
+    <g clip-path="url(#p0577f82b19)">
      <!-- name from some other name -->
      <g transform="translate(134.241606 371.958281)scale(0.1 -0.1)">
       <use xlink:href="#DejaVuSans-6e"/>
@@ -842,7 +842,7 @@ z
     </g>
    </g>
    <g id="text_3">
-    <g clip-path="url(#p0056fae05e)">
+    <g clip-path="url(#p0577f82b19)">
      <!-- 36  Things are said to be -->
      <defs>
       <path d="M 33.015625 40.375 
@@ -904,7 +904,7 @@ z
       <use x="1181.560547" xlink:href="#DejaVuSans-65"/>
      </g>
     </g>
-    <g clip-path="url(#p0056fae05e)">
+    <g clip-path="url(#p0577f82b19)">
      <!-- named Derivatively -->
      <g transform="translate(527.303759 371.958281)scale(0.1 -0.1)">
       <use xlink:href="#DejaVuSans-6e"/>
@@ -929,7 +929,7 @@ z
     </g>
    </g>
    <g id="text_4">
-    <g clip-path="url(#p0056fae05e)">
+    <g clip-path="url(#p0577f82b19)">
      <!-- 38  Things are differ from it -->
      <defs>
       <path d="M 31.78125 34.625 
@@ -1004,7 +1004,7 @@ z
       <use x="1340.025391" xlink:href="#DejaVuSans-74"/>
      </g>
     </g>
-    <g clip-path="url(#p0056fae05e)">
+    <g clip-path="url(#p0577f82b19)">
      <!-- in termination -->
      <g transform="translate(864.059956 371.958281)scale(0.1 -0.1)">
       <use xlink:href="#DejaVuSans-69"/>
@@ -1025,7 +1025,7 @@ z
     </g>
    </g>
    <g id="text_5">
-    <g clip-path="url(#p0056fae05e)">
+    <g clip-path="url(#p0577f82b19)">
      <!-- 35  some other name -->
      <defs>
       <path d="M 10.796875 72.90625 
@@ -1503,7 +1503,7 @@ z
   </g>
  </g>
  <defs>
-  <clipPath id="p0056fae05e">
+  <clipPath id="p0577f82b19">
    <rect height="554.4" width="837" x="135" y="86.4"/>
   </clipPath>
  </defs>

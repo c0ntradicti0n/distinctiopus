@@ -84,9 +84,40 @@ class DataframeCursorilyLogician:
                                                    axis=1)
 
     def get_predicates_in_horizon(self, s_id):
+        ''' Collects the predicates, that are in the annotatet range, befor and after the sentence, where to look for
+        intresting expressions
+
+        :param s_id: id of the sentence
+        :return: list of super-predicates, means they all have the property of having 'part_predications' under it
+
+        '''
         return self.sentence_df.query('s_id==@s_id')['predications_in_range'].values[0]
+
+
     def get_predication(self, id):
+        ''' Finds the predicate dict, that a special id belongs to by looking it up in the DataFrame in the Predication-
+        module.
+
+        :param id: id of that predicate
+        :return: predicate-dict
+
+        '''
         return self.Predicatrix.predicate_df.query('id==@id').to_dict(orient='records')
+
+
+    def get_part_predication(self, s_id):
+        ''' Collect all particular predications in that sentence. It also looks, if there were more blocks of predicates
+        found.
+
+        :param s_id: id of the sentense
+        :return: list of predicate dicts.
+
+        '''
+        return [pp
+                for pred_in_s in self.sentence_df.query('s_id==@s_id')['predication'].values.tolist()
+                for x in pred_in_s
+                for pp in x['part_predications']]
+
 
     def annotate_contradictions(self):
         ''' Looks first for pairs of phrases with negations and antonyms in an horizon
@@ -120,6 +151,52 @@ class DataframeCursorilyLogician:
                                                    axis=1)
 
 
+    def get_correllation_preds(self, pred):
+        '''  Collect the predicates, that can be modifyers to the predicate.
+
+        These are either in the same sentence or the coreferenced predicates or in the sentence after
+
+        :param pred: the predicate
+        :return: list of predicate_tuples
+        '''
+        pred = pred[0]
+        s_id = pred['s_id']
+        poss_part = self.get_part_predication(s_id)
+        coref_preds = self.get_coreferenced_preds (pred)
+        # TODO next sentence also!
+        return poss_part + coref_preds
+
+
+    def get_addressed_coref (self, coref):
+        ''' Analyses a coref mention and looks it up in the Database for predications.
+
+
+        :param coref: dict  with sentence id, start and end of the mention
+        :return:
+        '''
+
+        s_id  = coref['s_id']
+        m_start = coref['m_start']
+        m_end   = coref['m_end']
+        mask = self.Predicatrix.predicate_df.query("s_id==@s_id")['full_ex_i'].apply(
+            lambda ex_i: True if [m for m in range(m_start, m_end) if m in ex_i] else False)
+        return self.Predicatrix.predicate_df.query("s_id==@s_id")[mask].to_dict(orient='records')
+
+
+    def get_coreferenced_preds (self, pred):
+        ''' Get the predicates, that are coreferenced by the coreference tags of another preducate.
+
+        :param pred: predication tuple
+        :return: list oft predicate dicts
+        '''
+        if any(pred['coref']):
+            corefs_list = [x for x in pred['coref'] if x]
+            preds = [p for corefs in corefs_list for coref in corefs for p in self.get_addressed_coref(coref)]
+            return preds
+        else:
+            return []
+
+
     def annotate_correlations(self):
         ''' Look for pairs of hypotactical and paratactical and anaphorical expressions with similar semantics and
             modalities
@@ -131,9 +208,6 @@ class DataframeCursorilyLogician:
             anithetical, if the explanation of the instanciated concept is repeated.
 
         '''
-        #put_example_into_gdb     = self.put_into_gdb("example")
-        #put_explanation_into_gdb = self.put_into_gdb("explanation")
-
         # Lookup what contradicitons were found
         contradictions           = list(self.get_from_gdb('contradiction'))
 
@@ -141,15 +215,13 @@ class DataframeCursorilyLogician:
         put_correlation_into_gdb = self.put_into_gdb("correlation")
 
         for contra1, contra2 in contradictions:
-            s_id = contra1[0]['s_id']
-            horizon_predicates = self.get_predicates_in_horizon(s_id)[:2]
+            poss_correl_l = self.get_correllation_preds(contra1)
+            poss_correl_r = self.get_correllation_preds(contra2)
+
             self.Correlatrix.annotate_correlations(
                 contradiction= (contra1, contra2),
-                possible_to_correlate=horizon_predicates,
+                possible_to_correlate=(poss_correl_l, poss_correl_r),
                 graph_coro=put_correlation_into_gdb)
-
-        #self.G = self.Argumentatrix.annotate_example_nodes(contradictions, self.corpus), put_example_into_gdb)
-        #self.G = self.Argumentatrix.annotate_explanations_nodes(contradictions, put_explanation_into_gdb)
 
 
     def annotate_subjects_and_aspects(self):
@@ -167,13 +239,13 @@ class DataframeCursorilyLogician:
 
             self.Subjectrix.annotate(
                 original_pair   = (oppo1, oppo2),
-                graph_coro = put_arg_into_gdb,
+                graph_coro = (put_arg_into_gdb, put_arg_into_gdb),
                 )
 
-            self.Aspectrix.annotate(
-                original_pair   = (oppo1, oppo2),
-                graph_coro = put_arg_into_gdb,
-                )
+            #self.Aspectrix.annotate(
+            #    original_pair   = (oppo1, oppo2),
+            #    graph_coro = put_arg_into_gdb,
+            #    )
 
 
     kind_color_map = {
@@ -224,10 +296,6 @@ class DataframeCursorilyLogician:
         A.draw(path = "found_distinction.svg")
         return None
 
-    def gdb_add_node (kind, data):
-        with self.driver.session() as session:
-            session.write_transaction()
-        return None
 
     def add_determed_expression (self, general_kind, special_kind, n1, n2):
         ''' Throws node data into neo4j by expanding data as dictionary.

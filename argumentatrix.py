@@ -22,50 +22,7 @@ class Arguments(Pairix):
 
 
     def annotate(self, *, original_pair=None, graph_coro=None):
-        '''  Look in the arguments of the pair and group them as pairs and then find a pair that fits most and above a
-             limit the pattern of the standard example.
-
-        '''
-        pred1, pred2 = original_pair
-
-        arguments1 = pred1[0] ['arguments']
-        arguments2 = pred2[0] ['arguments']
-
-        poss_argument = self.similar.choose(      # What correlates
-            (arguments1,
-             arguments2),
-            layout='1:1')
-
-        if not poss_argument:
-            return []
-
-        assert type_spec (poss_argument) == type_spec (self.pattern_pair)
-
-        argument = self.filter.choose(            # next to a standard subject
-            (poss_argument,
-             self.pattern_pair),
-            n=1,
-            minimize=True,
-            layout='n',
-            out='lx')
-
-        if not argument:
-            return []
-
-        # Put it in the graph
-        p1 = pred1[0]
-        p2 = pred2[0]
-        s1 = argument[0][0][0]
-        s2 = argument[0][1][0]
-
-        lr1_edge = (p1, s1)
-        lr2_edge = (p2, s2)
-        l_edge   = (s1, s2)
-
-        graph_coro.send(lr1_edge + (self.bind_predicates,))
-        graph_coro.send(lr2_edge + (self.bind_predicates,))
-        graph_coro.send(l_edge   + (self.bind_subjects,))
-        return argument
+        pass
 
 
     def draw_correlations (self, G, source, target):
