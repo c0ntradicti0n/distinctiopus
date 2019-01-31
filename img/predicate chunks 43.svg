@@ -19,10 +19,10 @@ z
   </g>
   <g id="axes_1">
    <g id="patch_2">
-    <path clip-path="url(#p08274772f5)" d="M 553.5 134.509091 
+    <path clip-path="url(#p1c623528b3)" d="M 553.5 134.509091 
 Q 382.649418 247.674638 214.595156 358.987998 
 " style="fill:none;stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
-    <path clip-path="url(#p08274772f5)" d="M 219.92224 358.338249 
+    <path clip-path="url(#p1c623528b3)" d="M 219.92224 358.338249 
 L 214.595156 358.987998 
 L 217.271607 354.336481 
 L 219.92224 358.338249 
@@ -30,10 +30,10 @@ z
 " style="stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
    </g>
    <g id="patch_3">
-    <path clip-path="url(#p08274772f5)" d="M 553.5 134.509091 
+    <path clip-path="url(#p1c623528b3)" d="M 553.5 134.509091 
 Q 724.350582 247.674638 892.404844 358.987998 
 " style="fill:none;stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
-    <path clip-path="url(#p08274772f5)" d="M 889.728393 354.336481 
+    <path clip-path="url(#p1c623528b3)" d="M 889.728393 354.336481 
 L 892.404844 358.987998 
 L 887.07776 358.338249 
 L 889.728393 354.336481 
@@ -41,10 +41,10 @@ z
 " style="stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
    </g>
    <g id="patch_4">
-    <path clip-path="url(#p08274772f5)" d="M 207.632231 363.6 
+    <path clip-path="url(#p1c623528b3)" d="M 207.632231 363.6 
 Q 207.632231 475.644317 207.632231 584.334532 
 " style="fill:none;stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
-    <path clip-path="url(#p08274772f5)" d="M 210.032231 579.534532 
+    <path clip-path="url(#p1c623528b3)" d="M 210.032231 579.534532 
 L 207.632231 584.334532 
 L 205.232231 579.534532 
 L 210.032231 579.534532 
@@ -63,17 +63,17 @@ C -4.473168 -2.597899 -5 -1.326016 -5 0
 C -5 1.326016 -4.473168 2.597899 -3.535534 3.535534 
 C -2.597899 4.473168 -1.326016 5 0 5 
 z
-" id="mefe5ab393d" style="stroke:#0000ff;"/>
+" id="m6858d7b064" style="stroke:#0000ff;"/>
     </defs>
-    <g clip-path="url(#p08274772f5)">
-     <use style="fill:#0000ff;stroke:#0000ff;" x="553.5" xlink:href="#mefe5ab393d" y="134.509091"/>
-     <use style="fill:#0000ff;stroke:#0000ff;" x="207.632231" xlink:href="#mefe5ab393d" y="363.6"/>
-     <use style="fill:#0000ff;stroke:#0000ff;" x="207.632231" xlink:href="#mefe5ab393d" y="592.690909"/>
-     <use style="fill:#0000ff;stroke:#0000ff;" x="899.367769" xlink:href="#mefe5ab393d" y="363.6"/>
+    <g clip-path="url(#p1c623528b3)">
+     <use style="fill:#0000ff;stroke:#0000ff;" x="553.5" xlink:href="#m6858d7b064" y="134.509091"/>
+     <use style="fill:#0000ff;stroke:#0000ff;" x="207.632231" xlink:href="#m6858d7b064" y="363.6"/>
+     <use style="fill:#0000ff;stroke:#0000ff;" x="207.632231" xlink:href="#m6858d7b064" y="592.690909"/>
+     <use style="fill:#0000ff;stroke:#0000ff;" x="899.367769" xlink:href="#m6858d7b064" y="363.6"/>
     </g>
    </g>
    <g id="text_1">
-    <g clip-path="url(#p08274772f5)">
+    <g clip-path="url(#p1c623528b3)">
      <!-- 43  Thus , the grammarian -->
      <defs>
       <path d="M 37.796875 64.3125 
@@ -429,7 +429,7 @@ z
       <use x="1274.169922" xlink:href="#DejaVuSans-6e"/>
      </g>
     </g>
-    <g clip-path="url(#p08274772f5)">
+    <g clip-path="url(#p1c623528b3)">
      <!-- derives his name from the word -->
      <defs>
       <path d="M 45.40625 46.390625 
@@ -557,7 +557,7 @@ z
       <use x="1535.548828" xlink:href="#DejaVuSans-64"/>
      </g>
     </g>
-    <g clip-path="url(#p08274772f5)">
+    <g clip-path="url(#p1c623528b3)">
      <!-- Grammar , and the courageous -->
      <defs>
       <path d="M 59.515625 10.40625 
@@ -638,7 +638,7 @@ z
       <use x="1519.775391" xlink:href="#DejaVuSans-73"/>
      </g>
     </g>
-    <g clip-path="url(#p08274772f5)">
+    <g clip-path="url(#p1c623528b3)">
      <!-- man from the word Courage . -->
      <defs>
       <path d="M 64.40625 67.28125 
@@ -701,7 +701,7 @@ z
     </g>
    </g>
    <g id="text_2">
-    <g clip-path="url(#p08274772f5)">
+    <g clip-path="url(#p1c623528b3)">
      <!-- 42  Thus the grammarian -->
      <defs>
       <path d="M 19.1875 8.296875 
@@ -755,7 +755,7 @@ z
       <use x="1210.595703" xlink:href="#DejaVuSans-6e"/>
      </g>
     </g>
-    <g clip-path="url(#p08274772f5)">
+    <g clip-path="url(#p1c623528b3)">
      <!-- derives his name from the word -->
      <g transform="translate(127.682231 366.359375)scale(0.1 -0.1)">
       <use xlink:href="#DejaVuSans-64"/>
@@ -790,7 +790,7 @@ z
       <use x="1535.548828" xlink:href="#DejaVuSans-64"/>
      </g>
     </g>
-    <g clip-path="url(#p08274772f5)">
+    <g clip-path="url(#p1c623528b3)">
      <!-- Grammar -->
      <g transform="translate(183.778325 377.557187)scale(0.1 -0.1)">
       <use xlink:href="#DejaVuSans-47"/>
@@ -804,7 +804,7 @@ z
     </g>
    </g>
    <g id="text_3">
-    <g clip-path="url(#p08274772f5)">
+    <g clip-path="url(#p1c623528b3)">
      <!-- 40  the word Grammar -->
      <defs>
       <path d="M 31.78125 66.40625 
@@ -854,7 +854,7 @@ z
     </g>
    </g>
    <g id="text_4">
-    <g clip-path="url(#p08274772f5)">
+    <g clip-path="url(#p1c623528b3)">
      <!-- 41  the word Courage -->
      <defs>
       <path d="M 12.40625 8.296875 
@@ -1296,7 +1296,7 @@ z
   </g>
  </g>
  <defs>
-  <clipPath id="p08274772f5">
+  <clipPath id="p1c623528b3">
    <rect height="554.4" width="837" x="135" y="86.4"/>
   </clipPath>
  </defs>

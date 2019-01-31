@@ -19,10 +19,10 @@ z
   </g>
   <g id="axes_1">
    <g id="patch_2">
-    <path clip-path="url(#p8c8031aca1)" d="M 552.514622 134.509091 
+    <path clip-path="url(#pecc96401d4)" d="M 552.514622 134.509091 
 Q 382.156056 247.671142 214.591374 358.977333 
 " style="fill:none;stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
-    <path clip-path="url(#p8c8031aca1)" d="M 219.9176 358.320584 
+    <path clip-path="url(#pecc96401d4)" d="M 219.9176 358.320584 
 L 214.591374 358.977333 
 L 217.261709 354.322303 
 L 219.9176 358.320584 
@@ -30,10 +30,10 @@ z
 " style="stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
    </g>
    <g id="patch_3">
-    <path clip-path="url(#p8c8031aca1)" d="M 552.514622 134.509091 
+    <path clip-path="url(#pecc96401d4)" d="M 552.514622 134.509091 
 Q 723.854604 247.676385 892.395844 358.995156 
 " style="fill:none;stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
-    <path clip-path="url(#p8c8031aca1)" d="M 889.713306 354.347147 
+    <path clip-path="url(#pecc96401d4)" d="M 889.713306 354.347147 
 L 892.395844 358.995156 
 L 887.067913 358.35238 
 L 889.713306 354.347147 
@@ -41,10 +41,10 @@ z
 " style="stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
    </g>
    <g id="patch_4">
-    <path clip-path="url(#p8c8031aca1)" d="M 207.632231 363.6 
+    <path clip-path="url(#pecc96401d4)" d="M 207.632231 363.6 
 Q 207.632231 475.644317 207.632231 584.334532 
 " style="fill:none;stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
-    <path clip-path="url(#p8c8031aca1)" d="M 210.032231 579.534532 
+    <path clip-path="url(#pecc96401d4)" d="M 210.032231 579.534532 
 L 207.632231 584.334532 
 L 205.232231 579.534532 
 L 210.032231 579.534532 
@@ -63,17 +63,17 @@ C -4.473168 -2.597899 -5 -1.326016 -5 0
 C -5 1.326016 -4.473168 2.597899 -3.535534 3.535534 
 C -2.597899 4.473168 -1.326016 5 0 5 
 z
-" id="m28e0efaf70" style="stroke:#0000ff;"/>
+" id="m4ca014d60f" style="stroke:#0000ff;"/>
     </defs>
-    <g clip-path="url(#p8c8031aca1)">
-     <use style="fill:#0000ff;stroke:#0000ff;" x="552.514622" xlink:href="#m28e0efaf70" y="134.509091"/>
-     <use style="fill:#0000ff;stroke:#0000ff;" x="207.632231" xlink:href="#m28e0efaf70" y="363.6"/>
-     <use style="fill:#0000ff;stroke:#0000ff;" x="899.367769" xlink:href="#m28e0efaf70" y="363.6"/>
-     <use style="fill:#0000ff;stroke:#0000ff;" x="207.632231" xlink:href="#m28e0efaf70" y="592.690909"/>
+    <g clip-path="url(#pecc96401d4)">
+     <use style="fill:#0000ff;stroke:#0000ff;" x="552.514622" xlink:href="#m4ca014d60f" y="134.509091"/>
+     <use style="fill:#0000ff;stroke:#0000ff;" x="207.632231" xlink:href="#m4ca014d60f" y="363.6"/>
+     <use style="fill:#0000ff;stroke:#0000ff;" x="899.367769" xlink:href="#m4ca014d60f" y="363.6"/>
+     <use style="fill:#0000ff;stroke:#0000ff;" x="207.632231" xlink:href="#m4ca014d60f" y="592.690909"/>
     </g>
    </g>
    <g id="text_1">
-    <g clip-path="url(#p8c8031aca1)">
+    <g clip-path="url(#pecc96401d4)">
      <!-- 86  Thus while knowledge is -->
      <defs>
       <path d="M 31.78125 34.625 
@@ -426,7 +426,7 @@ z
       <use x="1358.203125" xlink:href="#DejaVuSans-73"/>
      </g>
     </g>
-    <g clip-path="url(#p8c8031aca1)">
+    <g clip-path="url(#pecc96401d4)">
      <!-- present in the human mind , it -->
      <defs>
       <path d="M 18.109375 8.203125 
@@ -595,7 +595,7 @@ z
       <use x="1488.738281" xlink:href="#DejaVuSans-74"/>
      </g>
     </g>
-    <g clip-path="url(#p8c8031aca1)">
+    <g clip-path="url(#pecc96401d4)">
      <!-- is predicable of grammar . -->
      <defs>
       <path d="M 48.78125 52.59375 
@@ -702,7 +702,7 @@ z
     </g>
    </g>
    <g id="text_2">
-    <g clip-path="url(#p8c8031aca1)">
+    <g clip-path="url(#pecc96401d4)">
      <!-- 84  while knowledge is present -->
      <defs>
       <path d="M 37.796875 64.3125 
@@ -756,7 +756,7 @@ z
       <use x="1513.445312" xlink:href="#DejaVuSans-74"/>
      </g>
     </g>
-    <g clip-path="url(#p8c8031aca1)">
+    <g clip-path="url(#pecc96401d4)">
      <!-- in the human mind -->
      <g transform="translate(160.058794 371.958281)scale(0.1 -0.1)">
       <use xlink:href="#DejaVuSans-69"/>
@@ -780,7 +780,7 @@ z
     </g>
    </g>
    <g id="text_3">
-    <g clip-path="url(#p8c8031aca1)">
+    <g clip-path="url(#pecc96401d4)">
      <!-- 85  Thus it is predicable of -->
      <defs>
       <path d="M 10.796875 72.90625 
@@ -839,7 +839,7 @@ z
       <use x="1292.351562" xlink:href="#DejaVuSans-66"/>
      </g>
     </g>
-    <g clip-path="url(#p8c8031aca1)">
+    <g clip-path="url(#pecc96401d4)">
      <!-- grammar -->
      <g transform="translate(876.213862 371.958281)scale(0.1 -0.1)">
       <use xlink:href="#DejaVuSans-67"/>
@@ -853,7 +853,7 @@ z
     </g>
    </g>
    <g id="text_4">
-    <g clip-path="url(#p8c8031aca1)">
+    <g clip-path="url(#pecc96401d4)">
      <!-- 83  the human mind -->
      <defs>
       <path d="M 40.578125 39.3125 
@@ -1259,7 +1259,7 @@ z
   </g>
  </g>
  <defs>
-  <clipPath id="p8c8031aca1">
+  <clipPath id="pecc96401d4">
    <rect height="554.4" width="837" x="135" y="86.4"/>
   </clipPath>
  </defs>

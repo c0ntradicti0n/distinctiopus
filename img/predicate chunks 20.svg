@@ -19,10 +19,10 @@ z
   </g>
   <g id="axes_1">
    <g id="patch_2">
-    <path clip-path="url(#pfe55fe75f2)" d="M 553.5 134.509091 
+    <path clip-path="url(#pf5dc48929a)" d="M 553.5 134.509091 
 Q 382.649418 247.674638 214.595156 358.987998 
 " style="fill:none;stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
-    <path clip-path="url(#pfe55fe75f2)" d="M 219.92224 358.338249 
+    <path clip-path="url(#pf5dc48929a)" d="M 219.92224 358.338249 
 L 214.595156 358.987998 
 L 217.271607 354.336481 
 L 219.92224 358.338249 
@@ -30,10 +30,10 @@ z
 " style="stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
    </g>
    <g id="patch_3">
-    <path clip-path="url(#pfe55fe75f2)" d="M 553.5 134.509091 
+    <path clip-path="url(#pf5dc48929a)" d="M 553.5 134.509091 
 Q 724.350582 247.674638 892.404844 358.987998 
 " style="fill:none;stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
-    <path clip-path="url(#pfe55fe75f2)" d="M 889.728393 354.336481 
+    <path clip-path="url(#pf5dc48929a)" d="M 889.728393 354.336481 
 L 892.404844 358.987998 
 L 887.07776 358.338249 
 L 889.728393 354.336481 
@@ -41,10 +41,10 @@ z
 " style="stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
    </g>
    <g id="patch_4">
-    <path clip-path="url(#pfe55fe75f2)" d="M 207.632231 363.6 
+    <path clip-path="url(#pf5dc48929a)" d="M 207.632231 363.6 
 Q 207.632231 475.644317 207.632231 584.334532 
 " style="fill:none;stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
-    <path clip-path="url(#pfe55fe75f2)" d="M 210.032231 579.534532 
+    <path clip-path="url(#pf5dc48929a)" d="M 210.032231 579.534532 
 L 207.632231 584.334532 
 L 205.232231 579.534532 
 L 210.032231 579.534532 
@@ -52,10 +52,10 @@ z
 " style="stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
    </g>
    <g id="patch_5">
-    <path clip-path="url(#pfe55fe75f2)" d="M 899.367769 363.6 
+    <path clip-path="url(#pf5dc48929a)" d="M 899.367769 363.6 
 Q 899.367769 475.644317 899.367769 584.334532 
 " style="fill:none;stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
-    <path clip-path="url(#pfe55fe75f2)" d="M 901.767769 579.534532 
+    <path clip-path="url(#pf5dc48929a)" d="M 901.767769 579.534532 
 L 899.367769 584.334532 
 L 896.967769 579.534532 
 L 901.767769 579.534532 
@@ -74,18 +74,18 @@ C -4.473168 -2.597899 -5 -1.326016 -5 0
 C -5 1.326016 -4.473168 2.597899 -3.535534 3.535534 
 C -2.597899 4.473168 -1.326016 5 0 5 
 z
-" id="mec29591885" style="stroke:#0000ff;"/>
+" id="m180eed56b0" style="stroke:#0000ff;"/>
     </defs>
-    <g clip-path="url(#pfe55fe75f2)">
-     <use style="fill:#0000ff;stroke:#0000ff;" x="553.5" xlink:href="#mec29591885" y="134.509091"/>
-     <use style="fill:#0000ff;stroke:#0000ff;" x="207.632231" xlink:href="#mec29591885" y="363.6"/>
-     <use style="fill:#0000ff;stroke:#0000ff;" x="899.367769" xlink:href="#mec29591885" y="363.6"/>
-     <use style="fill:#0000ff;stroke:#0000ff;" x="207.632231" xlink:href="#mec29591885" y="592.690909"/>
-     <use style="fill:#0000ff;stroke:#0000ff;" x="899.367769" xlink:href="#mec29591885" y="592.690909"/>
+    <g clip-path="url(#pf5dc48929a)">
+     <use style="fill:#0000ff;stroke:#0000ff;" x="553.5" xlink:href="#m180eed56b0" y="134.509091"/>
+     <use style="fill:#0000ff;stroke:#0000ff;" x="207.632231" xlink:href="#m180eed56b0" y="363.6"/>
+     <use style="fill:#0000ff;stroke:#0000ff;" x="899.367769" xlink:href="#m180eed56b0" y="363.6"/>
+     <use style="fill:#0000ff;stroke:#0000ff;" x="207.632231" xlink:href="#m180eed56b0" y="592.690909"/>
+     <use style="fill:#0000ff;stroke:#0000ff;" x="899.367769" xlink:href="#m180eed56b0" y="592.690909"/>
     </g>
    </g>
    <g id="text_1">
-    <g clip-path="url(#pfe55fe75f2)">
+    <g clip-path="url(#pf5dc48929a)">
      <!-- 20  For should anyone define -->
      <defs>
       <path d="M 19.1875 8.296875 
@@ -440,7 +440,7 @@ z
       <use x="1398.537109" xlink:href="#DejaVuSans-65"/>
      </g>
     </g>
-    <g clip-path="url(#pfe55fe75f2)">
+    <g clip-path="url(#pf5dc48929a)">
      <!-- in what sense each is an -->
      <defs>
       <path d="M 4.203125 54.6875 
@@ -527,7 +527,7 @@ z
       <use x="1168.701172" xlink:href="#DejaVuSans-6e"/>
      </g>
     </g>
-    <g clip-path="url(#pfe55fe75f2)">
+    <g clip-path="url(#pf5dc48929a)">
      <!-- animal , his definition in the -->
      <defs>
       <path d="M 52 44.1875 
@@ -602,7 +602,7 @@ z
       <use x="1337.353516" xlink:href="#DejaVuSans-65"/>
      </g>
     </g>
-    <g clip-path="url(#pfe55fe75f2)">
+    <g clip-path="url(#pf5dc48929a)">
      <!-- one case will be appropriate -->
      <defs>
       <path d="M 48.6875 27.296875 
@@ -688,7 +688,7 @@ z
       <use x="1356.609375" xlink:href="#DejaVuSans-65"/>
      </g>
     </g>
-    <g clip-path="url(#pfe55fe75f2)">
+    <g clip-path="url(#pf5dc48929a)">
      <!-- to that case only . -->
      <defs>
       <path d="M 10.6875 12.40625 
@@ -722,7 +722,7 @@ z
     </g>
    </g>
    <g id="text_2">
-    <g clip-path="url(#pfe55fe75f2)">
+    <g clip-path="url(#pf5dc48929a)">
      <!-- 19  each his definition in the -->
      <defs>
       <path d="M 12.40625 8.296875 
@@ -802,7 +802,7 @@ z
       <use x="1366.845703" xlink:href="#DejaVuSans-65"/>
      </g>
     </g>
-    <g clip-path="url(#pfe55fe75f2)">
+    <g clip-path="url(#pf5dc48929a)">
      <!-- one case will be appropriate -->
      <g transform="translate(136.724419 366.359375)scale(0.1 -0.1)">
       <use xlink:href="#DejaVuSans-6f"/>
@@ -835,7 +835,7 @@ z
       <use x="1356.609375" xlink:href="#DejaVuSans-65"/>
      </g>
     </g>
-    <g clip-path="url(#pfe55fe75f2)">
+    <g clip-path="url(#pf5dc48929a)">
      <!-- to that case only -->
      <g transform="translate(165.621294 377.557187)scale(0.1 -0.1)">
       <use xlink:href="#DejaVuSans-74"/>
@@ -859,7 +859,7 @@ z
     </g>
    </g>
    <g id="text_3">
-    <g clip-path="url(#pfe55fe75f2)">
+    <g clip-path="url(#pf5dc48929a)">
      <!-- 17  For should anyone define -->
      <defs>
       <path d="M 8.203125 72.90625 
@@ -903,7 +903,7 @@ z
       <use x="1398.537109" xlink:href="#DejaVuSans-65"/>
      </g>
     </g>
-    <g clip-path="url(#pfe55fe75f2)">
+    <g clip-path="url(#pf5dc48929a)">
      <!-- in what sense each is an -->
      <g transform="translate(837.766206 366.359375)scale(0.1 -0.1)">
       <use xlink:href="#DejaVuSans-69"/>
@@ -932,7 +932,7 @@ z
       <use x="1168.701172" xlink:href="#DejaVuSans-6e"/>
      </g>
     </g>
-    <g clip-path="url(#pfe55fe75f2)">
+    <g clip-path="url(#pf5dc48929a)">
      <!-- animal -->
      <g transform="translate(882.422456 377.557187)scale(0.1 -0.1)">
       <use xlink:href="#DejaVuSans-61"/>
@@ -945,7 +945,7 @@ z
     </g>
    </g>
    <g id="text_4">
-    <g clip-path="url(#pfe55fe75f2)">
+    <g clip-path="url(#pf5dc48929a)">
      <!-- 16  his definition in the one -->
      <defs>
       <path d="M 33.015625 40.375 
@@ -1011,7 +1011,7 @@ z
       <use x="1311.767578" xlink:href="#DejaVuSans-65"/>
      </g>
     </g>
-    <g clip-path="url(#pfe55fe75f2)">
+    <g clip-path="url(#pf5dc48929a)">
      <!-- case -->
      <g transform="translate(196.1377 601.04919)scale(0.1 -0.1)">
       <use xlink:href="#DejaVuSans-63"/>
@@ -1022,7 +1022,7 @@ z
     </g>
    </g>
    <g id="text_5">
-    <g clip-path="url(#pfe55fe75f2)">
+    <g clip-path="url(#pf5dc48929a)">
      <!-- 18  each is an animal -->
      <defs>
       <path d="M 31.78125 34.625 
@@ -1537,7 +1537,7 @@ z
   </g>
  </g>
  <defs>
-  <clipPath id="pfe55fe75f2">
+  <clipPath id="pf5dc48929a">
    <rect height="554.4" width="837" x="135" y="86.4"/>
   </clipPath>
  </defs>

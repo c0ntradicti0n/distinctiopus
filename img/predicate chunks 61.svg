@@ -19,10 +19,10 @@ z
   </g>
   <g id="axes_1">
    <g id="patch_2">
-    <path clip-path="url(#pd2b7d928c3)" d="M 553.5 134.509091 
+    <path clip-path="url(#pb60d21d651)" d="M 553.5 134.509091 
 Q 382.649418 247.674638 214.595156 358.987998 
 " style="fill:none;stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
-    <path clip-path="url(#pd2b7d928c3)" d="M 219.92224 358.338249 
+    <path clip-path="url(#pb60d21d651)" d="M 219.92224 358.338249 
 L 214.595156 358.987998 
 L 217.271607 354.336481 
 L 219.92224 358.338249 
@@ -30,10 +30,10 @@ z
 " style="stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
    </g>
    <g id="patch_3">
-    <path clip-path="url(#pd2b7d928c3)" d="M 553.5 134.509091 
+    <path clip-path="url(#pb60d21d651)" d="M 553.5 134.509091 
 Q 724.350582 247.674638 892.404844 358.987998 
 " style="fill:none;stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
-    <path clip-path="url(#pd2b7d928c3)" d="M 889.728393 354.336481 
+    <path clip-path="url(#pb60d21d651)" d="M 889.728393 354.336481 
 L 892.404844 358.987998 
 L 887.07776 358.338249 
 L 889.728393 354.336481 
@@ -41,10 +41,10 @@ z
 " style="stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
    </g>
    <g id="patch_4">
-    <path clip-path="url(#pd2b7d928c3)" d="M 899.367769 363.6 
+    <path clip-path="url(#pb60d21d651)" d="M 899.367769 363.6 
 Q 899.367769 475.644317 899.367769 584.334532 
 " style="fill:none;stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
-    <path clip-path="url(#pd2b7d928c3)" d="M 901.767769 579.534532 
+    <path clip-path="url(#pb60d21d651)" d="M 901.767769 579.534532 
 L 899.367769 584.334532 
 L 896.967769 579.534532 
 L 901.767769 579.534532 
@@ -53,7 +53,7 @@ z
    </g>
    <g id="text_1">
     <g id="patch_5">
-     <path clip-path="url(#pd2b7d928c3)" d="M 313.157522 257.03267 
+     <path clip-path="url(#pb60d21d651)" d="M 313.157522 257.03267 
 L 447.974709 257.03267 
 Q 450.974709 257.03267 450.974709 254.03267 
 L 450.974709 244.07642 
@@ -65,7 +65,7 @@ Q 310.157522 257.03267 313.157522 257.03267
 z
 " style="fill:#ffffff;stroke:#ffffff;stroke-linejoin:miter;"/>
     </g>
-    <g clip-path="url(#pd2b7d928c3)">
+    <g clip-path="url(#pb60d21d651)">
      <!-- shared_negations: (never,) -->
      <defs>
       <path d="M 44.28125 53.078125 
@@ -423,17 +423,17 @@ C -4.473168 -2.597899 -5 -1.326016 -5 0
 C -5 1.326016 -4.473168 2.597899 -3.535534 3.535534 
 C -2.597899 4.473168 -1.326016 5 0 5 
 z
-" id="m37a8fa091a" style="stroke:#0000ff;"/>
+" id="m395848173c" style="stroke:#0000ff;"/>
     </defs>
-    <g clip-path="url(#pd2b7d928c3)">
-     <use style="fill:#0000ff;stroke:#0000ff;" x="553.5" xlink:href="#m37a8fa091a" y="134.509091"/>
-     <use style="fill:#0000ff;stroke:#0000ff;" x="207.632231" xlink:href="#m37a8fa091a" y="363.6"/>
-     <use style="fill:#0000ff;stroke:#0000ff;" x="899.367769" xlink:href="#m37a8fa091a" y="363.6"/>
-     <use style="fill:#0000ff;stroke:#0000ff;" x="899.367769" xlink:href="#m37a8fa091a" y="592.690909"/>
+    <g clip-path="url(#pb60d21d651)">
+     <use style="fill:#0000ff;stroke:#0000ff;" x="553.5" xlink:href="#m395848173c" y="134.509091"/>
+     <use style="fill:#0000ff;stroke:#0000ff;" x="207.632231" xlink:href="#m395848173c" y="363.6"/>
+     <use style="fill:#0000ff;stroke:#0000ff;" x="899.367769" xlink:href="#m395848173c" y="363.6"/>
+     <use style="fill:#0000ff;stroke:#0000ff;" x="899.367769" xlink:href="#m395848173c" y="592.690909"/>
     </g>
    </g>
    <g id="text_2">
-    <g clip-path="url(#pd2b7d928c3)">
+    <g clip-path="url(#pb60d21d651)">
      <!-- 61  Thus , Man is predicable -->
      <defs>
       <path d="M 33.015625 40.375 
@@ -635,7 +635,7 @@ z
       <use x="1345.378906" xlink:href="#DejaVuSans-65"/>
      </g>
     </g>
-    <g clip-path="url(#pd2b7d928c3)">
+    <g clip-path="url(#pb60d21d651)">
      <!-- of the individual man , and is -->
      <defs>
       <path d="M 37.109375 75.984375 
@@ -722,7 +722,7 @@ z
       <use x="1406.298828" xlink:href="#DejaVuSans-73"/>
      </g>
     </g>
-    <g clip-path="url(#pd2b7d928c3)">
+    <g clip-path="url(#pb60d21d651)">
      <!-- never present in a subject . -->
      <defs>
       <path d="M 9.421875 54.6875 
@@ -782,7 +782,7 @@ z
     </g>
    </g>
    <g id="text_3">
-    <g clip-path="url(#pd2b7d928c3)">
+    <g clip-path="url(#pb60d21d651)">
      <!-- 60  Thus , Man is never -->
      <defs>
       <path d="M 31.78125 66.40625 
@@ -833,7 +833,7 @@ z
       <use x="1126.123047" xlink:href="#DejaVuSans-72"/>
      </g>
     </g>
-    <g clip-path="url(#pd2b7d928c3)">
+    <g clip-path="url(#pb60d21d651)">
      <!-- present in a subject -->
      <g transform="translate(158.005669 371.958281)scale(0.1 -0.1)">
       <use xlink:href="#DejaVuSans-70"/>
@@ -860,7 +860,7 @@ z
     </g>
    </g>
    <g id="text_4">
-    <g clip-path="url(#pd2b7d928c3)">
+    <g clip-path="url(#pb60d21d651)">
      <!-- 59  Thus Man is predicable of -->
      <defs>
       <path d="M 10.796875 72.90625 
@@ -950,7 +950,7 @@ z
       <use x="1436.296875" xlink:href="#DejaVuSans-66"/>
      </g>
     </g>
-    <g clip-path="url(#pd2b7d928c3)">
+    <g clip-path="url(#pb60d21d651)">
      <!-- the individual man -->
      <g transform="translate(852.615425 371.958281)scale(0.1 -0.1)">
       <use xlink:href="#DejaVuSans-74"/>
@@ -975,7 +975,7 @@ z
     </g>
    </g>
    <g id="text_5">
-    <g clip-path="url(#pd2b7d928c3)">
+    <g clip-path="url(#pb60d21d651)">
      <!-- 58  the individual man -->
      <defs>
       <path d="M 31.78125 34.625 
@@ -1392,7 +1392,7 @@ z
   </g>
  </g>
  <defs>
-  <clipPath id="pd2b7d928c3">
+  <clipPath id="pb60d21d651">
    <rect height="554.4" width="837" x="135" y="86.4"/>
   </clipPath>
  </defs>

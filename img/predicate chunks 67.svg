@@ -19,10 +19,10 @@ z
   </g>
   <g id="axes_1">
    <g id="patch_2">
-    <path clip-path="url(#p87758d94b0)" d="M 586.208094 134.509091 
+    <path clip-path="url(#p2dcedb06a9)" d="M 586.208094 134.509091 
 Q 399.058952 247.760281 214.779403 359.27497 
 " style="fill:none;stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
-    <path clip-path="url(#p87758d94b0)" d="M 220.128569 358.843204 
+    <path clip-path="url(#p2dcedb06a9)" d="M 220.128569 358.843204 
 L 214.779403 359.27497 
 L 217.643491 354.736577 
 L 220.128569 358.843204 
@@ -30,10 +30,10 @@ z
 " style="stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
    </g>
    <g id="patch_3">
-    <path clip-path="url(#p87758d94b0)" d="M 586.208094 134.509091 
+    <path clip-path="url(#p2dcedb06a9)" d="M 586.208094 134.509091 
 Q 586.208094 246.553408 586.208094 355.243623 
 " style="fill:none;stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
-    <path clip-path="url(#p87758d94b0)" d="M 588.608094 350.443623 
+    <path clip-path="url(#p2dcedb06a9)" d="M 588.608094 350.443623 
 L 586.208094 355.243623 
 L 583.808094 350.443623 
 L 588.608094 350.443623 
@@ -41,10 +41,10 @@ z
 " style="stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
    </g>
    <g id="patch_4">
-    <path clip-path="url(#p87758d94b0)" d="M 586.208094 134.509091 
+    <path clip-path="url(#p2dcedb06a9)" d="M 586.208094 134.509091 
 Q 740.770236 247.578507 892.625309 358.667576 
 " style="fill:none;stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
-    <path clip-path="url(#p87758d94b0)" d="M 890.168288 353.896513 
+    <path clip-path="url(#p2dcedb06a9)" d="M 890.168288 353.896513 
 L 892.625309 358.667576 
 L 887.334245 357.770555 
 L 890.168288 353.896513 
@@ -52,10 +52,10 @@ z
 " style="stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
    </g>
    <g id="patch_5">
-    <path clip-path="url(#p87758d94b0)" d="M 207.632231 363.6 
+    <path clip-path="url(#p2dcedb06a9)" d="M 207.632231 363.6 
 Q 207.632231 475.644317 207.632231 584.334532 
 " style="fill:none;stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
-    <path clip-path="url(#p87758d94b0)" d="M 210.032231 579.534532 
+    <path clip-path="url(#p2dcedb06a9)" d="M 210.032231 579.534532 
 L 207.632231 584.334532 
 L 205.232231 579.534532 
 L 210.032231 579.534532 
@@ -63,10 +63,10 @@ z
 " style="stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
    </g>
    <g id="patch_6">
-    <path clip-path="url(#p87758d94b0)" d="M 586.208094 363.6 
+    <path clip-path="url(#p2dcedb06a9)" d="M 586.208094 363.6 
 Q 586.208094 475.644317 586.208094 584.334532 
 " style="fill:none;stroke:#000000;stroke-linecap:round;stroke-width:3;"/>
-    <path clip-path="url(#p87758d94b0)" d="M 588.608094 579.534532 
+    <path clip-path="url(#p2dcedb06a9)" d="M 588.608094 579.534532 
 L 586.208094 584.334532 
 L 583.808094 579.534532 
 L 588.608094 579.534532 
@@ -75,7 +75,7 @@ z
    </g>
    <g id="text_1">
     <g id="patch_7">
-     <path clip-path="url(#p87758d94b0)" d="M 524.947938 257.03267 
+     <path clip-path="url(#p2dcedb06a9)" d="M 524.947938 257.03267 
 L 647.46825 257.03267 
 Q 650.46825 257.03267 650.46825 254.03267 
 L 650.46825 244.07642 
@@ -87,7 +87,7 @@ Q 521.947938 257.03267 524.947938 257.03267
 z
 " style="fill:#ffffff;stroke:#ffffff;stroke-linejoin:miter;"/>
     </g>
-    <g clip-path="url(#p87758d94b0)">
+    <g clip-path="url(#p2dcedb06a9)">
      <!-- shared_negations: (not,) -->
      <defs>
       <path d="M 44.28125 53.078125 
@@ -434,19 +434,19 @@ C -4.473168 -2.597899 -5 -1.326016 -5 0
 C -5 1.326016 -4.473168 2.597899 -3.535534 3.535534 
 C -2.597899 4.473168 -1.326016 5 0 5 
 z
-" id="m45c48af2d4" style="stroke:#0000ff;"/>
+" id="mcdbf7b21b2" style="stroke:#0000ff;"/>
     </defs>
-    <g clip-path="url(#p87758d94b0)">
-     <use style="fill:#0000ff;stroke:#0000ff;" x="586.208094" xlink:href="#m45c48af2d4" y="134.509091"/>
-     <use style="fill:#0000ff;stroke:#0000ff;" x="207.632231" xlink:href="#m45c48af2d4" y="363.6"/>
-     <use style="fill:#0000ff;stroke:#0000ff;" x="586.208094" xlink:href="#m45c48af2d4" y="363.6"/>
-     <use style="fill:#0000ff;stroke:#0000ff;" x="899.367769" xlink:href="#m45c48af2d4" y="363.6"/>
-     <use style="fill:#0000ff;stroke:#0000ff;" x="207.632231" xlink:href="#m45c48af2d4" y="592.690909"/>
-     <use style="fill:#0000ff;stroke:#0000ff;" x="586.208094" xlink:href="#m45c48af2d4" y="592.690909"/>
+    <g clip-path="url(#p2dcedb06a9)">
+     <use style="fill:#0000ff;stroke:#0000ff;" x="586.208094" xlink:href="#mcdbf7b21b2" y="134.509091"/>
+     <use style="fill:#0000ff;stroke:#0000ff;" x="207.632231" xlink:href="#mcdbf7b21b2" y="363.6"/>
+     <use style="fill:#0000ff;stroke:#0000ff;" x="586.208094" xlink:href="#mcdbf7b21b2" y="363.6"/>
+     <use style="fill:#0000ff;stroke:#0000ff;" x="899.367769" xlink:href="#mcdbf7b21b2" y="363.6"/>
+     <use style="fill:#0000ff;stroke:#0000ff;" x="207.632231" xlink:href="#mcdbf7b21b2" y="592.690909"/>
+     <use style="fill:#0000ff;stroke:#0000ff;" x="586.208094" xlink:href="#mcdbf7b21b2" y="592.690909"/>
     </g>
    </g>
    <g id="text_2">
-    <g clip-path="url(#p87758d94b0)">
+    <g clip-path="url(#p2dcedb06a9)">
      <!-- 67  By being Presentinasubject -->
      <defs>
       <path d="M 33.015625 40.375 
@@ -670,7 +670,7 @@ z
       <use x="1516.603516" xlink:href="#DejaVuSans-74"/>
      </g>
     </g>
-    <g clip-path="url(#p87758d94b0)">
+    <g clip-path="url(#p2dcedb06a9)">
      <!-- I do not mean present as parts -->
      <defs>
       <path d="M 9.8125 72.90625 
@@ -769,7 +769,7 @@ z
       <use x="1492.986328" xlink:href="#DejaVuSans-73"/>
      </g>
     </g>
-    <g clip-path="url(#p87758d94b0)">
+    <g clip-path="url(#p2dcedb06a9)">
      <!-- are present in a whole , but -->
      <defs>
       <path d="M 4.203125 54.6875 
@@ -825,7 +825,7 @@ z
       <use x="1343.638672" xlink:href="#DejaVuSans-74"/>
      </g>
     </g>
-    <g clip-path="url(#p87758d94b0)">
+    <g clip-path="url(#p2dcedb06a9)">
      <!-- being incapable of existence -->
      <defs>
       <path d="M 37.109375 75.984375 
@@ -894,7 +894,7 @@ z
       <use x="1376.009766" xlink:href="#DejaVuSans-65"/>
      </g>
     </g>
-    <g clip-path="url(#p87758d94b0)">
+    <g clip-path="url(#p2dcedb06a9)">
      <!-- apart from the said subject . -->
      <defs>
       <path d="M 10.6875 12.40625 
@@ -938,7 +938,7 @@ z
     </g>
    </g>
    <g id="text_3">
-    <g clip-path="url(#p87758d94b0)">
+    <g clip-path="url(#p2dcedb06a9)">
      <!-- 66  being incapable of -->
      <g transform="translate(151.861919 355.161562)scale(0.1 -0.1)">
       <use xlink:href="#DejaVuSans-36"/>
@@ -965,7 +965,7 @@ z
       <use x="1080.175781" xlink:href="#DejaVuSans-66"/>
      </g>
     </g>
-    <g clip-path="url(#p87758d94b0)">
+    <g clip-path="url(#p2dcedb06a9)">
      <!-- existence apart from the said -->
      <g transform="translate(133.716606 366.359375)scale(0.1 -0.1)">
       <use xlink:href="#DejaVuSans-65"/>
@@ -999,7 +999,7 @@ z
       <use x="1414.845703" xlink:href="#DejaVuSans-64"/>
      </g>
     </g>
-    <g clip-path="url(#p87758d94b0)">
+    <g clip-path="url(#p2dcedb06a9)">
      <!-- subject -->
      <g transform="translate(189.509575 377.557187)scale(0.1 -0.1)">
       <use xlink:href="#DejaVuSans-73"/>
@@ -1013,7 +1013,7 @@ z
     </g>
    </g>
    <g id="text_4">
-    <g clip-path="url(#p87758d94b0)">
+    <g clip-path="url(#p2dcedb06a9)">
      <!-- 64  By being Presentinasubject -->
      <defs>
       <path d="M 37.796875 64.3125 
@@ -1067,7 +1067,7 @@ z
       <use x="1516.603516" xlink:href="#DejaVuSans-74"/>
      </g>
     </g>
-    <g clip-path="url(#p87758d94b0)">
+    <g clip-path="url(#p2dcedb06a9)">
      <!-- I do not mean present -->
      <g transform="translate(530.660438 371.958281)scale(0.1 -0.1)">
       <use xlink:href="#DejaVuSans-49"/>
@@ -1095,7 +1095,7 @@ z
     </g>
    </g>
    <g id="text_5">
-    <g clip-path="url(#p87758d94b0)">
+    <g clip-path="url(#p2dcedb06a9)">
      <!-- 65  as parts are present in a -->
      <defs>
       <path d="M 10.796875 72.90625 
@@ -1155,7 +1155,7 @@ z
       <use x="1357.652344" xlink:href="#DejaVuSans-61"/>
      </g>
     </g>
-    <g clip-path="url(#p87758d94b0)">
+    <g clip-path="url(#p2dcedb06a9)">
      <!-- whole but -->
      <g transform="translate(874.692769 371.958281)scale(0.1 -0.1)">
       <use xlink:href="#DejaVuSans-77"/>
@@ -1171,7 +1171,7 @@ z
     </g>
    </g>
    <g id="text_6">
-    <g clip-path="url(#p87758d94b0)">
+    <g clip-path="url(#p2dcedb06a9)">
      <!-- 62  the said subject -->
      <defs>
       <path d="M 19.1875 8.296875 
@@ -1224,7 +1224,7 @@ z
     </g>
    </g>
    <g id="text_7">
-    <g clip-path="url(#p87758d94b0)">
+    <g clip-path="url(#p2dcedb06a9)">
      <!-- 63  being Presentinasubject -->
      <defs>
       <path d="M 40.578125 39.3125 
@@ -1740,7 +1740,7 @@ z
   </g>
  </g>
  <defs>
-  <clipPath id="p87758d94b0">
+  <clipPath id="p2dcedb06a9">
    <rect height="554.4" width="837" x="135" y="86.4"/>
   </clipPath>
  </defs>

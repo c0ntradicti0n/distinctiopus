@@ -304,7 +304,11 @@ Match (pred3)-[{GeneralKind:'correlation', SpecialKind:'correlated'}]-(pred1)-[{
 (arg1)-[{SpecialKind:'subject_juncture'}]-(arg2),
 (arg3)-[{SpecialKind:'aspect_juncture'}]-(arg4)
 
+where ID(pred1)<ID(pred2)
+
 Return arg1, arg2, pred1, pred2, pred3, pred4, arg3, arg4"""
         logging.info ("query neo4j for distinctions")
-        self.distinction_df =  pd.DataFrame(self.graph.run(query).data())
+        self.distinction_df =  pd.DataFrame(self.graph.run(query).data()).applymap(
+            lambda x: x['text']
+        )
         return self.distinction_df
