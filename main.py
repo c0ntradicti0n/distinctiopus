@@ -55,10 +55,9 @@ def main():
     Logician.annotate_correlations()
     Logician.annotate_subjects_and_aspects()
 
-    #graph = Logician.center_groups(linked_graph)
-    #graph = Logician.subordinate_marked(graph, 'example', 'example for')
-    #graph = Logician.subordinate_marked(graph, 'explanation', 'explanation for')
-    #digraph = Logician.to_digraph(graph)
+    df = Logician.query_distinctions()
+    print(df.to_excel("output.xlsx"))
+
     #Logician.draw_as_dot_digraph(digraph, args.work_dir + "/found_distinctions." + args.output)
     return 0
 

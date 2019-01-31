@@ -5,6 +5,7 @@ import itertools
 import networkx as nx
 import textwrap
 from corutine_utils import coroutine
+import pandas as pd
 
 import matplotlib
 matplotlib.use('TkAgg')
@@ -14,10 +15,12 @@ from contradictrix import Contradiction
 from predicatrix2 import Predication
 from correlatrix import Correlation
 from subjectrix import Subjects
+from aspectrix import Aspects
 
 import logging
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
+import py2neo
 
 class DataframeCursorilyLogician:
     ''' This module handles all the databases for the operations on the text and does some transactions in between.
@@ -38,17 +41,21 @@ class DataframeCursorilyLogician:
         self.Predicatrix   = Predication(corpus)
         self.Contradictrix = Contradiction ()
         self.Correlatrix   = Correlation()
-        self.Subjectrix    = Subjects(corpus)
+        self.Subjectrix    = Subjects(corpus, type=('subject', 'subject_juncture'))
+        self.Aspectrix     = Aspects(corpus, type=('aspect', 'aspect_juncture'))
 
 
-        from neo4j import GraphDatabase
-        self.driver = GraphDatabase.driver("bolt://localhost:7687", auth=("s0krates", "password"))
-        with self.driver.session() as session:
-            def clean_graph(tx):
-                tx.run("match (n) optional match (n)-[r]-() delete n,r")
 
-            session.write_transaction(clean_graph)
+        #from neo4j import GraphDatabase
+        #self.driver = GraphDatabase.driver("bolt://localhost:7687", auth=("s0krates", "password"))
+        #with self.driver.session() as session:
+        #    def clean_graph(tx):
+        #        tx.run("match (n) optional match (n)-[r]-() delete n,r")
+        #
+        #    session.write_transaction(clean_graph)
 
+        self.graph = py2neo.Graph("bolt://localhost:7687", auth=("s0krates", "password"))
+        self.graph.run("match (n) optional match (n)-[r]-() delete n,r")
 
     def annotate_horizon (self, horizon=3):
         def horizon_from_row(x):
@@ -135,7 +142,7 @@ class DataframeCursorilyLogician:
 
         for contra1, contra2 in contradictions:
             s_id = contra1[0]['s_id']
-            horizon_predicates = self.get_predicates_in_horizon(s_id)
+            horizon_predicates = self.get_predicates_in_horizon(s_id)[:2]
             self.Correlatrix.annotate_correlations(
                 contradiction= (contra1, contra2),
                 possible_to_correlate=horizon_predicates,
@@ -153,116 +160,21 @@ class DataframeCursorilyLogician:
         # Say, after annotation of the contradictions and their correlating modifyers we have a pair of 'opposed'
         # nodes, as annotated by the correlatrix.
 
-
         oppositions              = list(self.get_from_gdb('opposed'))
-        put_entity_into_gdb = self.put_into_gdb("entity")
-        put_aspect_into_gdb = self.put_into_gdb("aspect")
+        put_arg_into_gdb = self.put_into_gdb("argument")
 
         for oppo1, oppo2 in oppositions:
+
             self.Subjectrix.annotate(
                 original_pair   = (oppo1, oppo2),
-                graph_coro = put_entity_into_gdb,
+                graph_coro = put_arg_into_gdb,
                 )
 
+            self.Aspectrix.annotate(
+                original_pair   = (oppo1, oppo2),
+                graph_coro = put_arg_into_gdb,
+                )
 
-    def center_groups (self, G):
-        contradiction_nodes = [n for n, attribute in G.nodes(data=True) if 'contradiction' in attribute]
-        contradiction_subgraph = nx.classes.function.induced_subgraph(G, contradiction_nodes)
-        groups = [list(g) for g in nx.connected_components(contradiction_subgraph)]
-
-        for i, group in enumerate(groups):
-            center_node = "center%d" % i
-            G.add_node(center_node, label="let's distinguish:", kind='center')
-            G.remove_edges_from (list(contradiction_subgraph.edges(nbunch=group)))
-            G.add_edges_from ([(node, center_node) for node in group], triggering_text_labels='exclusive')
-        return G
-
-    def subordinate_marked (self, G, kind, new_label):
-        subgraph = nx.classes.function.induced_subgraph(
-                G,
-                [n for n, data in G.nodes(data='kind') if data == kind])
-
-        nodes = list(subgraph.nodes)
-        # G.remove_edges_from(list(G.edges(nbunch=nodes)))
-        new_edges = []
-        for n in nodes:
-            found = False
-            for dist in range(1,3):
-                try:
-                    new_node = str(int (n) - dist)
-                except ValueError:
-                    logging.error ('previously outsourced node, should be handled somewhere else')
-                    continue
-                if new_node in G and new_node not in nodes:
-                    found = True
-                    new_edges.append((new_node,n))
-                    break
-            if not found:
-                logging.error ('For some %s nothing well found!' % (kind))
-        G.add_edges_from([(u, v) for u, v in new_edges], triggering_text_labels=new_label)
-        return G
-
-    def to_digraph(self, G):
-        diG = nx.DiGraph()
-        centers = [node for node, da in G.nodes(data='kind') if da=='center']
-        added = set()
-        for center in centers:
-            diG.add_node(center, label="let's distinguish:", kind='center', rank=0)
-            added.add(center)
-
-            # Predicates
-            for neigh_rank1 in G[center]:
-                if neigh_rank1 not in added and 'kind' not in G.nodes[neigh_rank1]:
-                    diG.add_node(neigh_rank1, label=G.nodes[neigh_rank1]['predicate']['label'], kind='predicate', rank=1)
-                    diG.add_edge(center, neigh_rank1, xlabel='exclusive', kind='exclusion')
-                    added.add(neigh_rank1)
-
-            # Correlations, Examples, Subjects, Explanations
-            for neigh_rank1 in diG[center]:
-                for neigh_rank2 in G[neigh_rank1]:
-                    if neigh_rank2 not in diG:
-                        #print (neigh_rank2)
-                        if not 'kind' in G.nodes[neigh_rank2]:
-                            print (G.nodes[neigh_rank2])
-                            continue
-                        diG.add_node(neigh_rank2, label=G.nodes[neigh_rank2]['label'], kind=G.nodes[neigh_rank2]['kind'], rank=2)
-                        diG.add_edge(neigh_rank1,neigh_rank2, xlabel=G.nodes[neigh_rank2]['kind'])
-                        added.add(neigh_rank2)
-        for ed in G.edges(data=True):
-            u, v, d = ed
-            if 'computing' in d:
-                if u in diG and v in diG:
-                 diG.add_edge(u, v, xlabel='computed', constraint='false', headport='e', tailport='e', style='dotted')
-        return diG
-
-    def get_cleaned_graph(self, split_dict=None, sub_dir_nodes=None, sub_dir_edges=None):
-        """A call of a filter function returns graphs with nodes as input und changed eges as output, to use that graph
-        for further analysis, this egde data has to be shifted to the nodes and the edges are free to be renamed or
-        changed."""
-        cG = self.G.copy()
-
-        for (n,c) in list(self.G.nodes(data=True)):
-            old_attributes = dict(c)
-            if not sub_dir_nodes:
-                cG.add_node(n, **old_attributes)
-            else:
-                for k in list(self.G.node[n].keys()):
-                    del cG.node[n][k]
-                cG.add_node(n, **{sub_dir_nodes:old_attributes})
-
-        node_labels = dict((n, {'label': d}) for n, d in self.G.nodes(data='label'))
-        nx.set_node_attributes(cG, node_labels)
-
-        for (u,v,c) in self.G.edges(data=True):
-            uc, vc = list(zip(*c[split_dict]))
-
-            if not sub_dir_edges:
-                cG.add_node(u, **uc)
-                cG.add_node(v, **vc)
-            else:
-                cG.add_node(u, **{sub_dir_edges: uc})
-                cG.add_node(v, **{sub_dir_edges: vc})
-        return cG
 
     kind_color_map = {
             'subject'           : '#5B6C5D',
@@ -287,6 +199,8 @@ class DataframeCursorilyLogician:
             'computed'          : 'compared with',
             None                : '?'
         }
+
+
     def draw_as_dot_digraph(self, digraph, path):
         H = digraph
         def wrap (strs):
@@ -315,14 +229,15 @@ class DataframeCursorilyLogician:
             session.write_transaction()
         return None
 
-    def add_determed_expression (self, tx, general_kind, special_kind, n1, n2):
-        """ Throws node data into neo4j by expanding data as dictionary.
+    def add_determed_expression (self, general_kind, special_kind, n1, n2):
+        ''' Throws node data into neo4j by expanding data as dictionary.
 
-        :param tx:
-        :param kind:
-        :param data:
-        :return:
-        """
+            :param general_kind: Property "GeneralKind" in the GDB
+            :param special_kind: Property "SpecialKind" in the GDB ('anonym'/'negation')
+            :param n1: predicate dict 1
+            :param n2: predicate dict 2
+            :return:
+        '''
         if isinstance(n1, list):
             logging.warning("node data is list... taking first")
             n1 = n1[0]
@@ -334,54 +249,30 @@ r"""               MERGE (a:Expression {id:'%s', s_id:'%s', text:'%s'})
                 MERGE (b:Expression {id:'%s', s_id:'%s', text:'%s'}) 
                 MERGE (a)-[:TextRelation {GeneralKind: '%s', SpecialKind:'%s'}]-(b)"""
                 %
-               (n1['id'], n1['s_id'],  " ".join(n1['text']),
-                n2['id'], n2['s_id'],  " ".join(n2['text']),
+               (n1['id'], n1['s_id'],  " ".join(n1['text']).replace("'", ""),
+                n2['id'], n2['s_id'],  " ".join(n2['text']).replace("'", ""),
                 general_kind, special_kind))
         logging.info ("querying neo4j the following:\n %s" % query)
-        tx.run(query)
+        self.graph.run(query)
+
 
     @coroutine
     def put_into_gdb (self, general_kind):
-        with self.driver.session() as session:
-            while True:
-                data = (yield)
-                if isinstance(data, tuple) and len(data) == 3:
-                    n1, n2, special_kind =  data
-                    #n1, n2 = self.recursive_2tuple((n1,n2))
-                    session.write_transaction(self.add_determed_expression, general_kind, special_kind, n1, n2)
-                else:
-                    logging.error('Value could not be set because I don\'t know how to deal with the type')
-                    raise ValueError('Value could not be set because I don\'t know how to deal with the type')
+        ''' This returns a subgraph of the graph, selected by the 'general_kind' param.
+
+        :param general_kind: Property "GeneralKind" in the GDB
+        :return: list of Predicate-dict-2tuples
+        '''
+        while True:
+            data = (yield)
+            if isinstance(data, tuple) and len(data) == 3:
+                n1, n2, special_kind =  data
+                self.add_determed_expression(general_kind, special_kind, n1, n2)
+            else:
+                logging.error('Value could not be set because I don\'t know how to deal with the type')
+                raise ValueError('Value could not be set because I don\'t know how to deal with the type')
         return None
 
-    def recursive_2tuple (self, t):
-        if not isinstance(t, tuple):
-            raise ("not a tuple")
-        t1, t2 = t
-        if len(t) == 2 and isinstance(t1, dict) and isinstance(t2, dict):
-            return t
-        else:
-            if isinstance(t1, tuple) or isinstance(t1, list):
-                t1 = self.recursive_2tuple(t1)
-            if len (t2) !=2:
-                t2 = self.recursive_2tuple(t2)
-            if len(t1) == 2 and len(t2) == 2:
-                return t1, t2
-
-    def get_determinded_expressions(self, tx, kind):
-        query = (
-r"""                MATCH path = (a)-[:TextRelation {GeneralKind:'contradiction'}]->(b) 
-                WHERE ID(a) < ID(b)
-                RETURN a,b """
-                )
-        logging.info ("query neo4j for reading by this:\n%s" % query)
-        records = tx.run(query)
-        records = [
-            (self.get_predication(pair[0]._properties['id']),
-             self.get_predication(pair[1]._properties['id']))
-            for pair in records
-        ]
-        return records
 
     def get_from_gdb (self, kind):
         """ Returns pairs of in certain way connected nodes from neo4j
@@ -389,23 +280,31 @@ r"""                MATCH path = (a)-[:TextRelation {GeneralKind:'contradiction'
         :param kind: this certain kind of connection; its a property of the graph edges
         :yield: tuples of contradicting predicates
         """
-        with self.driver.session() as session:
-            while True:
-                return session.read_transaction(self.get_determinded_expressions, kind)
+        query = (
+            r"""MATCH path = (a)-[:TextRelation {GeneralKind:'contradiction'}]->(b) 
+                WHERE ID(a) < ID(b)
+                RETURN a,b """
+        )
+        logging.info("query neo4j for reading by this:\n%s" % query)
+        records = self.graph.run(query).data()
+        records = [
+            (self.get_predication(pair['a']['id']),
+             self.get_predication(pair['b']['id']))
+            for pair in records
+        ]
+        return records
 
-import unittest
-class TestCursorilyLogician(unittest.TestCase):
+    def query_distinctions (self):
+        query = \
+            r"""
+Match (pred3)-[{GeneralKind:'correlation', SpecialKind:'correlated'}]-(pred1)-[{GeneralKind:'contradiction'}]-(pred2)-[{GeneralKind:'correlation', SpecialKind:'correlated'}]-(pred4)-[{GeneralKind:'correlation', SpecialKind:'opposed'}]-(pred3), 
 
-    def testNeo4j (self):
-        from corpus_reader import CorpusReader
-        corpus = CorpusReader(corpus_path="./corpora/aristotle_categories/import_conll", only=[7,9])
-        Logician = DataframeCursorilyLogician(corpus)
-        Logician.annotate_horizon(horizon=3)
-        Logician.annotate_predicates()
-        predicates = Logician.sentence_df['predications_in_range'].iloc[0]
-        spam = Logician.put_into_gdb ("spam")
-        spam.send ((predicates[0], predicates[1]))
+(pred1)-[{GeneralKind:'argument',SpecialKind:'subject'}]-(arg1), (pred2)-[{GeneralKind:'argument',SpecialKind:'subject'}]-(arg2),
+(pred3)-[{GeneralKind:'argument',SpecialKind:'aspect'}]-(arg3), (pred4)-[{GeneralKind:'argument',SpecialKind:'aspect'}]-(arg4),
+(arg1)-[{SpecialKind:'subject_juncture'}]-(arg2),
+(arg3)-[{SpecialKind:'aspect_juncture'}]-(arg4)
 
-if __name__ == '__main__':
-    unittest.main()
-
+Return arg1, arg2, pred1, pred2, pred3, pred4, arg3, arg4"""
+        logging.info ("query neo4j for distinctions")
+        self.distinction_df =  pd.DataFrame(self.graph.run(query).data())
+        return self.distinction_df

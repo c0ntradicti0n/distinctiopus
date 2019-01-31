@@ -7,5 +7,7 @@ editdistance
 pygraphviz
 pylab
 pandas
-neo4j
+neo4j-driver==1.6.2
+py2neo
 suffix_trees
+openpyxl

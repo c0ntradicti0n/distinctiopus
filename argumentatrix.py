@@ -1,5 +1,6 @@
 import networkx as nx
 
+from nested_list_tools import type_spec
 from pairix import Pairix
 from simmix import Simmix
 from predicatrix2 import Predication
@@ -12,11 +13,6 @@ class Arguments(Pairix):
         super().__init__()
 
         self.P = Predication (corpus)
-        self.fit_mix_subject = \
-             Simmix ( [(1, Simmix.elmo_layer_sim(layer=[0,1]
-                        ), 0.2,1)
-                       ],
-                      n=100)
 
         global nlp
         standard_ex = nlp("The thing is round from the right side.")
@@ -25,28 +21,55 @@ class Arguments(Pairix):
         self.standard_differential_layer_exs = self.standard_predicate[0]['arguments'][1:2]
 
 
-    def annotate (self, predications=None, graph_coro_ent=None, graph_coro_asp = None):
-        pass
-        # Collect arguments for nodes
-        # Iterate through from the right sideattributes of nodes
-        arguments1 = predications[0][0]['arguments']
-        arguments2 = predications[1][0]['arguments']
+    def annotate(self, *, original_pair=None, graph_coro=None):
+        '''  Look in the arguments of the pair and group them as pairs and then find a pair that fits most and above a
+             limit the pattern of the standard example.
 
-        subject1            = self.fit_mix_subject.choose((arguments1, self.standard_entity_exs), out='ex', layout='n', n=1)
-        subject2            = self.fit_mix_subject.choose((arguments2, self.standard_entity_exs), out='ex', layout='n', n=1)
-        aspect1            = self.fit_mix_subject.choose((arguments1, self.standard_differential_layer_exs), out='ex', layout='n', n=1)
-        aspect2            = self.fit_mix_subject.choose((arguments2, self.standard_differential_layer_exs), out='ex', layout='n', n=1)
+        '''
+        pred1, pred2 = original_pair
 
-        graph_coro_ent.send( (subject1[0][0],predications[0][0]) + ('subject',))
-        graph_coro_ent.send( (subject2[0][0],predications[1][0]) + ('subject',))
-        graph_coro_asp.send( (aspect1[0][0],predications[0][0]) + ('aspect',))
-        graph_coro_asp.send( (aspect2[0][0],predications[1][0]) + ('aspect',))
+        arguments1 = pred1[0] ['arguments']
+        arguments2 = pred2[0] ['arguments']
+
+        poss_argument = self.similar.choose(      # What correlates
+            (arguments1,
+             arguments2),
+            layout='1:1')
+
+        if not poss_argument:
+            return []
+
+        assert type_spec (poss_argument) == type_spec (self.pattern_pair)
+
+        argument = self.filter.choose(            # next to a standard subject
+            (poss_argument,
+             self.pattern_pair),
+            n=1,
+            minimize=True,
+            layout='n',
+            out='lx')
+
+        if not argument:
+            return []
+
+        # Put it in the graph
+        p1 = pred1[0]
+        p2 = pred2[0]
+        s1 = argument[0][0][0]
+        s2 = argument[0][1][0]
+
+        lr1_edge = (p1, s1)
+        lr2_edge = (p2, s2)
+        l_edge   = (s1, s2)
+
+        graph_coro.send(lr1_edge + (self.bind_predicates,))
+        graph_coro.send(lr2_edge + (self.bind_predicates,))
+        graph_coro.send(l_edge   + (self.bind_subjects,))
+        return argument
 
 
     def draw_correlations (self, G, source, target):
         import pylab as P
-        import textwrap
-
         path = './img/contradiction -- new correlation'+ source +" -- "+ target +".svg"
 
         G.graph['graph'] = {'rankdir': 'LR', 'splines':'line'}

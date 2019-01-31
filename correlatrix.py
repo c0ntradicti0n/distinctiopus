@@ -1,6 +1,7 @@
+from pairix import Pairix
 from simmix import Simmix
 
-class Correlation:
+class Correlation(Pairix):
     def __init__(self):
         ''' This module looks for pairwise modifying expressions in the horizon of a predicate
         '''
@@ -43,6 +44,9 @@ class Correlation:
             (possible_to_correlate,
              possible_to_correlate),
             layout='1:1')
+
+        if not poss_correlations:
+            return []
 
         correlation = self.distinct.choose(           # not too much
             ([contradiction],
