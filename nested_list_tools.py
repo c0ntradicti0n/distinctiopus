@@ -17,6 +17,13 @@ def flatten_reduce(iterable):
     else:
         return iterable
 
+def flatten_list(l):
+    for el in l:
+        if isinstance(el, list):
+            yield from flatten_list(el)
+        else:
+            yield el
+
 
 def curry(fun, *args, **kwargs):
     def fun_new(x):
@@ -154,6 +161,104 @@ def check_for_tuple_in_list (l, t, wildcard ='*'):
         else:
             return False
     return found
+
+
+def guess_seq_len(seq):
+    guess = 1
+    max_len = int(len(seq) / 2)
+    for x in range(2, max_len):
+        if seq[0:x] == seq[x:2*x] :
+            return x
+    return guess
+
+
+from suffix_trees import STree
+def occurrence_of_string_sequence (strings, min_len):
+    st = STree.STree(strings)
+    longest = st.lcs()
+    if len(longest) >= min_len:
+        occurrences = st.find_all(longest)
+        return len(occurrences)
+    else:
+        return 0
+
+
+_iterable_cache_ = []
+def check_for_hash_teration(obj):
+    #global _iterable_cache_
+    #_iterable_cache_ += [str(hash(str(obj)))]
+    #if occurrence_of_string_sequence(_iterable_cache_, 16) > 10:
+    #    _iterable_cache_ = []
+    #    return "<***>"
+    return False
+
+maximal_depth = 20
+def type_spec_iterable(obj, name, depth, max_depth=maximal_depth):
+    depth += 1
+    if depth > max_depth:
+        return "?*"
+
+    check = check_for_hash_teration(obj)
+    if check:
+        return check
+
+    tps = set(type_spec(e, depth) for e in obj)
+    if len(tps) == 1:
+        return name + "<" + next(iter(tps)) + ">"
+    else:
+        return name + "<...>"
+
+
+def type_spec_dict(obj, depth, max_depth=maximal_depth):
+    depth += 1
+    if depth > max_depth:
+        return "?*"
+
+    check = check_for_hash_teration(obj)
+    if check:
+        return check
+
+    tps = set((type_spec(k, depth), type_spec(v, depth)) for (k,v) in obj.items())
+    keytypes = set(k for (k, v) in tps)
+    valtypes =  set(v for (k, v) in tps)
+    kt = next(iter(keytypes)) if len(keytypes) == 1 else "..."
+    vt = next(iter(valtypes)) if len(valtypes) == 1 else "..."
+    return "dict<%s, %s>" % (kt, vt)
+
+
+def type_spec_tuple(obj, depth, max_depth=maximal_depth):
+    depth += 1
+    if depth > max_depth:
+        return "?*"
+
+    check = check_for_hash_teration(obj)
+    if check:
+        return check
+    return "tuple<" + ", ".join(type_spec(e, depth) for e in obj) + ">"
+
+
+def type_spec(obj, depth = 0, max_depth=maximal_depth):
+    depth += 1
+    check = check_for_hash_teration(obj)
+    if check:
+        return check
+    if depth > max_depth:
+        return "?*"
+
+    t = type(obj)
+    res = {
+        int: "int",
+        str: "str",
+        bool: "bool",
+        float: "float",
+        type(None): "(none)",
+        list: lambda o: type_spec_iterable(o, 'list', depth),
+        set: lambda o: type_spec_iterable(o, 'set', depth),
+        dict: lambda o: type_spec_dict(o, depth),
+        tuple: lambda o: type_spec_tuple(o, depth),
+    }.get(t, lambda o: type(o).__name__)
+    return res if type(res) is str else res(obj)
+
 
 ########################################
 

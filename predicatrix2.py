@@ -1,3 +1,4 @@
+import pandas
 import re
 import pyprover
 import itertools
@@ -73,6 +74,9 @@ class Predication():
              'lemma_': Predication.spacy_lemma_,
              'text': Predication.spacy_text,
              'i': Predication.spacy_i}
+
+        self.predicate_df = pandas.DataFrame()
+
         return None
 
     def spacy_dep_ (ex):
@@ -101,10 +105,10 @@ class Predication():
 
     def analyse_predication(self, doc=None, **kwargs):
         """Analyses spacy doc and return all found predicates"""
-        if not doc or id==None:
-            raise KeyError("keyword arguments 'doc' and 'id' must be given")
-        predicate = self.collect_all_predicates(doc, **kwargs)
-        return predicate
+        if not doc or 's_id' not in kwargs:
+            raise KeyError("keyword arguments 'doc' and 's_id' must be given")
+        ps = self.collect_all_predicates(doc, **kwargs)
+        return ps
 
     def get_attributive_roots(self,ex):
         return (e for e in ex if e.dep_ in ['nsubjpass', 'nsubj', 'obj', 'dobj', 'iobj', 'pobj'])
@@ -289,13 +293,9 @@ class Predication():
                          negations = attrs['predicate']['negation_particle'] = len(list(neg not in negations_of_neighbors for neg in negations))
                  except  TypeError:
                      logging.error ("negations is int? %s" % (str(negations)))
-
-
         return ps
 
     def attribute_contained_predicates(self,ps, expand = False):
-        # needs text  and  i keys for the predicate
-
         ps = sorted(ps, key=lambda x:-len(x['full_ex_i']))
 
         Sub_sim = Simmix([(1, Simmix.sub_i,  0.1, 1),
@@ -305,7 +305,7 @@ class Predication():
         if not ps:
             logging.error ("empty expression_list can't contain any predicate.")
             return []
-        contain =  Sub_sim.choose ((ps[:], ps[:]), out='2t')
+        contain =  Sub_sim.choose ((ps[:], ps[:]), out='2t', layout='n')
 
         if not contain:
             # If there is no dependent structure, its just one predicate
@@ -317,20 +317,14 @@ class Predication():
         edges = contain
 
         containment_structure = nx.DiGraph()
-
         containment_structure.add_nodes_from([i for i,p in enumerate(ps)])
-
         attrs = {i: {'label': p['key']+ "  " + " ".join(p['text']), 'predicate':p} for i,p in enumerate(ps)}
         nx.set_node_attributes(containment_structure, attrs)
-
         containment_structure.add_edges_from(edges)
         containment_structure = transitive_reduction(containment_structure)
-
-        root_edges = find_roots(containment_structure)
         source_nodes = [node for node, indegree in containment_structure.in_degree(containment_structure.nodes()) if indegree == 0]
 
         p_new = []
-
         for r in source_nodes:
                  sub_predicates                 = [ps[r]] + [ps[x] for x in nx.algorithms.descendants(containment_structure, r)]
                  ps[r]['part_predications']     = sorted(sub_predicates, key=lambda x:len(x['full_ex_i']))
@@ -399,7 +393,7 @@ class Predication():
             predicate["lemma_tag_"] = [ex[x].lemma_ + '_' + ex[x].tag_ for x in predicate["full_ex_i"]]
         return ps
 
-    def collect_all_predicates(self,ex, coref=None, id=None,  no_picture=False):
+    def collect_all_predicates(self,ex, coref=None, s_id=None,  no_picture=False):
         """ Extracts a multitude of properties from a natural language expression, including grammar
         imformation, word2vec, some importance weight in the document, some kind of cursorily logical
         formula with a dictionary, to what expressions the constants in the formula belong to.
@@ -435,8 +429,10 @@ class Predication():
             logging.error("no predicates found for %s" % str(ex))
         if not coref:
             coref = [[]]*len (ex)
+
         for p in ps:
-            p['outsIDe']             = id
+            p["id"]                  = str(next(self.id_generator))
+            p['s_id']                = s_id
             p["elmo_embeddings"]     = elmo_embeddings[:,p["full_ex_i"]].sum(axis=1)
             p['coref']               = [coref[i] for i in p["full_ex_i"]]
             p["elmo_embeddings_per_word"]     = elmo_embeddings[:,p["full_ex_i"]]
@@ -446,30 +442,37 @@ class Predication():
             p['arguments']           = self.sp_imp_elmo_dictize_ex (
                                          p['arguments'],
                                          elmo_embeddings,
-                                         importance)
+                                         importance,
+                                         s_id)
 
         ps = self.attribute_contained_predicates(ps)
         ps = self.attribute_negation_in_shell_expression(ps)
 
         for p in ps:
             p = self.formalize(p, elmo_embeddings, importance)
-
         if not ps:
             text = " ".join([x.text for x in ex])
             logging.error("No predication found in expression: '%s'." % text )
 
         self.draw_predicate_structure(ps,"./img/predicate chunks " + ps[0]['key']+".svg")
+        self.append_to_predicate_df(ps)
         return ps
 
-    def sp_imp_elmo_dictize_ex(self, ex, elmo_embeddings, importance):
+    def append_to_predicate_df (self, ps):
+        self.predicate_df = self.predicate_df.append(ps)
+        self.predicate_df = self.predicate_df.append([part_p for p in ps for part_p in p['part_predications']])
+
+    def sp_imp_elmo_dictize_ex(self, ex, elmo_embeddings, importance, s_id):
         if not ex:
             logging.warning("empty expression for argument?")
             return {}
         if isinstance(ex, list) and not isinstance(ex[0], spacy.tokens.token.Token ):
-            return list (self.sp_imp_elmo_dictize_ex(e, elmo_embeddings, importance) for e in ex)
+            return list (self.sp_imp_elmo_dictize_ex(e, elmo_embeddings, importance, s_id) for e in ex)
 
         i_s = [x.i for x in ex]
         d = {
+            "s_id"            : s_id,
+            "id"              : str(next(self.id_generator)),
             "full_ex"         : ex,
             "doc"             : ex[0].doc,
             "i_s"             : i_s,
@@ -485,43 +488,6 @@ class Predication():
             "key"             : "arg" + str(next(self.arg_key_gen))
         }
         return d
-
-    # Print Functions
-    def print_predicates(self,predicates, debug = False):
-        for p in predicates:
-            self.print_predicate(p,debug=debug)
-        return None
-
-    def print_predicate(self,predicate, debug = False):
-        print("Predicate: "+" ".join(predicate['text']))
-        pprint.pprint(str(predicate['wff_nice_and']))
-        pprint.pprint(str(predicate['wff_nice_or']))
-        self.pprint_key_dict(predicate)
-
-        if (debug):
-            pprint.pprint(str(predicate['wff_comp_and']))
-            pprint.pprint(str(predicate['wff_comp_or']))
-
-        return None
-
-    def pprint_key_dict (self,predicate):
-        pprint.pprint({k: val['full_ex'] for k, val in predicate['wff_dict'].items()})
-        return None
-
-
-    def ps_to_file(self,fp, ps):
-        for p in ps:
-            self.p_to_file(self,fp, p)
-        return None
-
-    def p_to_file(self,fp, predicate):
-        try:
-            fp.write(str(predicate['text'])+"\n")
-            fp.write(str(predicate['wff'])+"\n")
-            fp.write(str(({ str(k): str([x.text for x in val['full_ex']]) + "\n" for k, val in predicate['wff_dict'].items()}))+"\n")
-        except:
-            logging.error("Predicate is a scalar? " + str(predicate))
-        return None
 
 
     def formalize (self,pred, elmo_embeddings, importance):
@@ -543,9 +509,7 @@ class Predication():
         now_wff_and    = logical_subjunct_predicates(ps, "&")
         now_wff_or     = logical_subjunct_predicates(ps, "|")
 
-        doc = pred["full_ex"][0].doc
         pred["wff_dict"]  = {key: val  for key,val in ascribed_keys.items()}
-
 
         try:
             pred["wff_nice_and"]       = str(pyprover.simplify(eval(now_wff_and)))
@@ -558,70 +522,40 @@ class Predication():
 
         pred ["id"]           = str(next(self.id_generator))
         pred ["label"]        = " ".join(pred['text'])
-
         return pred
 
-    """
-    def load_conll (self, i, corpus_path):
-        if isinstance(i, list):
-            docs = []
-            for j in i:
-                print (j)
-                docs.append(self.load_conll(j, corpus_path))
-            return docs
+    def print_predicates(self,predicates, debug = False):
+        for p in predicates:
+            self.print_predicate(p,debug=debug)
+        return None
 
-        fname = corpus_path + "/" + str (i) + '.conll'
-        sentence = []
-        last = ''
-        with open(fname, 'r') as fh:
-            for line in fh:
-                try:
-                    sentence.append(re.search(r'(?:^\d+\t)([^\t]+)', line).group(1))
-                except AttributeError:
-                    print (i, "'"+line+"'")
-                    raise
-                if not line.strip():
-                    line = last
-                    break
-                last = line
+    def print_predicate(self,predicate, debug = False):
+        print("Predicate: "+" ".join(predicate['text']))
+        pprint.pprint(str(predicate['wff_nice_and']))
+        pprint.pprint(str(predicate['wff_nice_or']))
+        self.pprint_key_dict(predicate)
+        if (debug):
+            pprint.pprint(str(predicate['wff_comp_and']))
+            pprint.pprint(str(predicate['wff_comp_or']))
+        return None
 
-                pass
-        doc = self.nlp(" ".join(sentence))
-        new_doc = self.conll_over_spacy(doc, fname)
-        return new_doc
-    """
+    def pprint_key_dict (self,predicate):
+        pprint.pprint({k: val['full_ex'] for k, val in predicate['wff_dict'].items()})
+        return None
 
-    def conll_over_spacy(self, doc, path):
-        pattern = re.compile(r"""(?P<id>.*?)        # quoted name
-                                 \t(?P<text>.*?)    # whitespace, next bar, n1
-                                 \t(?P<nothing1>.*?)# whitespace, next bar, n1
-                                 \t(?P<pos_>.*?)    # whitespace, next bar, n2
-                                 \t(?P<tag_>.*?)    # whitespace, next bar, n1
-                                 \t(?P<nothing2>.*?)# whitespace, next bar, n1
-                                 \t(?P<head_id>.*?) # whitespace, next bar, n2
-                                 \t(?P<dep_>.*?)    # whitespace, next bar, n2
-                                 \t(?P<nothing3>.*?)# whitespace, next bar, n1
-                                 \t(?P<coreference>.*?)# whitespace, next bar, n1
-                                 """, re.VERBOSE)
-        def conll_line2match(line):
-            match = pattern.match(line)
-            return match
-        # read conll_files, may manipulated over spacy
-        with open(path) as f:
-            for line in f:
-                match = conll_line2match(line)
-                i = int(match.group("id")) - 1
-                head_i = int(match.group("head_id")) - 1
-                try:
-                    doc[i].head = doc[head_i]
-                    doc[i].pos_ = match.group("pos_")
-                    doc[i].tag_ = match.group("tag_")
-                    doc[i].dep_ = match.group("dep_")
-                    doc[i].coref.dep_ = match.group("coreference")
+    def ps_to_file(self,fp, ps):
+        for p in ps:
+            self.p_to_file(self,fp, p)
+        return None
 
-                except IndexError:
-                    raise ValueError("Shape of the spacy doc and conll file incongruent, look for the number of tokens! '%s'" % (str(doc)))
-        return doc
+    def p_to_file(self,fp, predicate):
+        try:
+            fp.write(str(predicate['text'])+"\n")
+            fp.write(str(predicate['wff'])+"\n")
+            fp.write(str(({ str(k): str([x.text for x in val['full_ex']]) + "\n" for k, val in predicate['wff_dict'].items()}))+"\n")
+        except:
+            logging.error("Predicate is a scalar? " + str(predicate))
+        return None
 
     def draw_predicate_structure(self, ps, path):
         import textwrap
@@ -644,8 +578,7 @@ class Predication():
             res = "/n".join(["%s: %s" % (str(atrr), wrap(str(val))) for atrr, val in dic.items() if val])
             return res
 
-        node_labels = dict((#"n:" + str(n) + " " +
-                            n,d['label']) for n, d in G.nodes(data=True))
+        node_labels = dict((n,d['label']) for n, d in G.nodes(data=True))
         edge_labels = {(u,v): dict_to_nice(attrs) for (u,v,attrs) in G.edges(data=True)}
 
         node_labels = {k: wrap(str(v)) for k,v in node_labels.items()}
@@ -676,7 +609,6 @@ class Predication():
         pylab.axis('off')
         pylab.savefig (path, dpi=200)
         pylab.clf()
-
         return None
 
 

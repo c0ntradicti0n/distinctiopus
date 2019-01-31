@@ -12,11 +12,7 @@ import pickle
 import spacy
 nlp = spacy.load('en_core_web_sm')
 
-from webanno_parser import Webanno_Parser
-
-
 quotes = {}
-
 class Replacement(object):
     def __init__(self, dict, fun, replacement):
         self.replacement = replacement
@@ -32,7 +28,6 @@ class Replacement(object):
 
         self.occurrences.append((matched, replaced))
         return replaced
-
 
 
 def split_data_frame_list(df, target_column):
@@ -225,48 +220,46 @@ class GrammarAnnotator:
             f.write('\n'.join(GrammarAnnotator.doc2conll(doc)))
 
     def load_conll_over_spacy_doc(self, doc, df_for_sentence=None):
-        # read conll_files, may manipulated over spacy
+        """ read conll_files over a spacy document with same length. they may be manipulated."""
         if df_for_sentence.empty:
             raise ValueError("no DataFrame with conll_information")
-        for  index, row in df_for_sentence.iterrows():
-                 i           = row["id"] - 1
-                 head_i      = row["head_id"] - 1
 
-                 if i >= len(doc) or head_i >= len(doc):
-                     logging.error("%d not in doc %s" % (i, str(doc)))
-                     return doc
-
-                 doc[i].head = doc[head_i]
-                 doc[i].dep_ = row["dep_"]
-                 doc[i].tag_  = row["tag_"]
-                 doc[i].pos_  = row["pos_"]
-                 doc[i].lemma_ = row ['lemma']
-
+        for index, row in df_for_sentence.iterrows():
+             i = row ['id']
+             if i >= len(doc) or row['head_id'] >= len(doc):
+                 logging.error("%d not in doc %s" % (i, str(doc)))
+                 return doc
+             doc[i].head   = doc[row['head_id']]
+             doc[i].dep_   = row["dep_"]
+             doc[i].tag_   = row["tag_"]
+             doc[i].pos_   = row["pos_"]
+             doc[i].lemma_ = row['lemma']
         return doc
 
-    pattern = re.compile(   r"""(?P<id>\d+)((?:\.)?(?P<hidden>\d+))?      # i (as well es hidden node-ids in conll-u format)
-                                 \t(?P<text>.*?)    # whitespace, next bar, n1
-                                 \t(?P<lemma>.*?)   # whitespace, next bar, n1
-                                 \t(?P<pos_>.*?)    # whitespace, next bar, n2
-                                 \t(?P<tag_>.*?)    # whitespace, next bar, n1
-                                 \t(?P<nothing2>.*?)# whitespace, next bar, n1
-                                 \t(?P<head_id>\d+)((?:\.)?(?P<head_hidden>\d+))?   # head_id (as well es hidden node-ids in conll-u format)
-                                 \t(?P<dep_>.*?)    # whitespace, next bar, n2
-                                 \t(?P<spacy_i>.*?)# whitespace, next bar, n1
-                                 \t(?P<coref>.*)# whitespace, next bar, n1
-                                 """, re.VERBOSE)
-
+    conll_pattern = re.compile(
+                            r"""(?P<id>\d+)((?:\.)?(?P<hidden>\d+))?      # i (as well es hidden node-ids in conll-u format)
+                                 \t(?P<text>.*?)    
+                                 \t(?P<lemma>.*?)  
+                                 \t(?P<pos_>.*?) 
+                                 \t(?P<tag_>.*?)
+                                 \t(?P<nothing2>.*?)
+                                 \t(?P<head_id>\d+)((?:\.)?(?P<head_hidden>\d+))?
+                                 \t(?P<dep_>.*?)
+                                 \t(?P<spacy_i>.*?)
+                                 \t(?P<coref>.*)
+                                     """, re.VERBOSE
+                              )
     def conll_line2match(line):
-        match = GrammarAnnotator.pattern.match(line)
+        match = GrammarAnnotator.conll_pattern.match(line)
         return match
 
     def clean_text(string):
         global quotes
         # Text cleaning
-        #string = string.lower()                                               # big letters
+        #string = string.lower()                                                              # big letters
         #string = re.sub(ur"([‚‘])",                              "'", string)
         string = re.sub(r"""e\.g\.""",                            " exempli gratia ", string)
-        string = re.sub(r"""e\.g""",                            " exempli gratia ", string)
+        string = re.sub(r"""e\.g""",                              " exempli gratia ", string)
 
         string = re.sub(r"""([\d]+[\w]+.)""",                     "", string)
 
@@ -280,41 +273,10 @@ class GrammarAnnotator:
                                                    replace_the_cites, string)   
         #for matched, replaced in replace_the_cites.occurrences:
         #    print (matched, '=>', replaced)
+
         string = re.sub("[:;]",                                   ",", string)# punctuation of sentences
         string = string.replace("-",                              "")                                   # dashs 
         string = string.replace("—",                              ", ") 
         
         string = " ".join(string.split())                                 # all kinds of whitespaces, tabs --> one space
         return string
-
-
-
-
-    def join_str (l):
-        " ".join(l)
-
-
-def main():
-    logging.basicConfig(filename='./log/GrammarAnnotator.log', filemode='w', level=logging.DEBUG)
-    logging.info('Started')
-
-    img_folder = '../parse_webann/printedphraphs/'
-
-    webannoparsed = Webanno_Parser("../corpus/aristotle-categories-edghill-spell-checked.tsv")
-    webannoparsed.paint_graphviz(img_folder + "graphviz " +'_graphviz.png')
-
-    grammarian = GrammarAnnotator(import_dir='/home/bingobongo/code/sokrates_drei/corpus/import_conll/')
-    grammarian.annotate(webannoparsed)
-    print (grammarian.sentence_df)
-
-
-     
-
-    logging.info('Finished')
-
-
-    #print (df[['token', 'swid', 'sentence_id','word_id']])
-    # """+ now.strftime("%Y-%m-%d %H:%M:%S")"""
-
-if __name__ == '__main__':
-    main()

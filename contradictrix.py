@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+
 from predicatrix2 import Predication
 import word_definitions
 import tdfidf_tool
@@ -13,7 +17,7 @@ class Contradiction:
         self.G = nx.Graph()
 
         fit_mix_neg = \
-             Simmix ( [#(1,Simmix.elmo_sim(), 0.6,1),
+             Simmix ( [(1,Simmix.elmo_sim(), 0.4,1),
                        (1, Simmix.common_words_sim, 0.5,1),
                        #(1,Simmix.fuzzystr_sim, 0.45,1)
                         ],
@@ -21,27 +25,24 @@ class Contradiction:
         self.Contra_Neg  = \
             Simmix([(1, Simmix.formula_contradicts(fit_mix_neg), 0.1, 1)
                     ,(1, Simmix.sub_i,0,0.1)
-                    ], n=30, type="negation_contra")
+                    ], n=30)
 
         fit_mix_ant = \
-             Simmix ( [(1,Simmix.elmo_sim(), 0.5, 1),
+             Simmix ( [(1,Simmix.elmo_sim(), 0.55, 1),
                        (1, Simmix.excluding_pair_boolean_sim(word_definitions.antonym_dict), 0.1, 1)
                        ], n=None)
         self.Contra_Anto = \
             Simmix([(1, Simmix.formula_prooves(fit_mix_ant), 0.1, 1)
-                    ], n=30, type="antonym_contra")
+                    ], n=30)
 
     def find_contradictive (self, predicates1, predicates2, **kwargs):
         if not predicates1 or not predicates2:
             logging.error("no predicate found as noticed")
             return []
-
-        negation_contradictions = self.Contra_Neg.choose ((predicates1, predicates2), **kwargs)
-        antonym_contradictions  = self.Contra_Anto.choose((predicates1, predicates2), **kwargs)
-
+        negation_contradictions = self.Contra_Neg.choose ((predicates1, predicates2), type='negation', layout='n', **kwargs)
+        antonym_contradictions  = self.Contra_Anto.choose((predicates1, predicates2), type='antonym',  layout='n', **kwargs)
         logging.info("Contradictions by Antonym : %s" % str (antonym_contradictions))
         logging.info("Contradictions by Negation: %s" % str (negation_contradictions))
-
         try:
             return  negation_contradictions + antonym_contradictions
         except TypeError:
@@ -141,11 +142,13 @@ class TestContradictrix(unittest.TestCase):
         self.default_P = self.P =  Predication(corpus)
 
     def test_try_out(self):
-        corpus = CorpusReader(corpus_path='./corpora/aristotle_categories/import_conll', only=[7,8,9])
-        P = Predication(corpus)
+        corpus = CorpusReader(corpus_path='./corpora/aristotle_categories/import_conll', only=[10,11,12,13,14,15,16,17])
+
         from CursorilyLogician import DataframeCursorilyLogician
         Logician = DataframeCursorilyLogician(corpus)
 
+        Logician.annotate_horizon()
+        Logician.annotate_predicates()
         Logician.annotate_contradictions()
 
     def test_antonym_dict(self):
