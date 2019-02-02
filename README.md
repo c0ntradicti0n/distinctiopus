@@ -16,14 +16,14 @@ How to try it out on your own machine and mine in your own text.
 
 You are going to need:
 
-*[Spacy](https://spacy.io)
-*[NeuralCoref](https://github.com/huggingface/neuralcoref)
-*[AllenAI](https://allennlp.org)
-*[NLTK](https://www.nltk.org)
+* [Spacy](https://spacy.io)
+* [NeuralCoref](https://github.com/huggingface/neuralcoref)
+* [AllenAI](https://allennlp.org)
+* [NLTK](https://www.nltk.org)
 
 and the graph DataBase
 
-*[Neo4J](https://neo4j.com/)
+* [Neo4J](https://neo4j.com/)
 
 If you want to mine distinctions of your choice, you have also to preprocess the text, to obtain a folder of conll-files for your text.
 This is necessary combine the best features of each of these tools, because in other dimensions they may have not so nice results.
