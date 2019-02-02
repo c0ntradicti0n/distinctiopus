@@ -18,7 +18,7 @@ class Arguments(Pairix):
         standard_ex = nlp("The thing is round from the right side.")
         self.standard_predicate              = self.P.collect_all_predicates(standard_ex)
         self.standard_entity_exs             = self.standard_predicate[0]['arguments'][0:1]
-        self.standard_differential_layer_exs = self.standard_predicate[0]['arguments'][1:2]
+        self.standard_aspect_exs             = self.standard_predicate[0]['arguments'][1:2]
 
 
     def annotate(self, *, original_pair=None, graph_coro=None):

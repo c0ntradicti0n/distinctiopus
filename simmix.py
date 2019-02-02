@@ -57,6 +57,7 @@ from pyxdameraulevenshtein import damerau_levenshtein_distance
 import logging
 from nested_list_tools import check_for_tuple_in_list, flatten,  flatten_reduce, flatten_list, type_spec
 import dict_tools
+import abstractness_estimator
 
 
 uppercase_abc = list(string.ascii_uppercase)
@@ -329,7 +330,7 @@ class Simmix:
         elif out == 'lx':
             return [exs1[i] for i in left_value]
         elif out == 'rx':
-            return [exs1[i] for i in right_values]
+            return [exs1[i] for r in right_values for i in r]
         elif out == '2t':
             i_s = Simmix.i_list(left_value, right_values)
             return Simmix.reduce_i_s_pair_tuples(i_s)
@@ -418,6 +419,19 @@ class Simmix:
                len([ex1['importance'][i] for i, x in enumerate(str1) if x not in str2]) -
                len([ex2['importance'][i] for i, x in enumerate(str2) if x in str1]))/(len(ex1) + len(ex2))
         return res, {}
+
+    def convolve_sim(layer=None):
+        import scipy.signal as sg
+        if not layer:
+            raise ValueError('layers must be set!')
+        @Simmix.standard_range(-5, 5)
+        def _convolve_sim (ex1, ex2):
+            vectors1 = ex1["elmo_embeddings_full"]
+            vectors2 = ex2["elmo_embeddings_full"]
+            return sg.convolve(vectors1, vectors2).mean()
+        return _convolve_sim
+
+
     @standard_range(-1000, 1000)
     def vecs_sim (gensim_model):
         def vecs_sim_(ex1,ex2):
@@ -528,12 +542,20 @@ class Simmix:
         @Simmix.standard_range(fun.min*n,fun.max*n)  # depends on fun!
         def multi_generated (exs1,exs2):
             sim = 0
+            if not exs1 or not exs2:
+                raise ValueError ("one of the expressions is empty")
+
             for ex1, ex2 in itertools.product(flatten_reduce(exs1), flatten_reduce(exs2)):
-                res, d = fun (ex1, ex2)
+                try:
+                    res, d = fun (ex1, ex2)
+                except TypeError:
+                    raise NotImplementedError ("return beam from the distance measure!")
                 sim += res
                 b.update(d)
             return sim, b
         return multi_generated
+
+
     @standard_range(-1000, 100)
     def nextleft_sim (ex1, ex2):
         minL1  = min(ex1["i"])
@@ -706,6 +728,7 @@ class Simmix:
             return cost, beam
         return formula_contradicts_generated
 
+
     key_regex = re.compile("pyprover\.logic\.Prop\(\\'([a-zA-Z0-9])+\\'\)")
     @classmethod
     def do_logic(cls, formulas=None, key_rel=None, negate_one=False):
@@ -760,6 +783,28 @@ class Simmix:
 
         cost = int(pyprover.proves(eval(f), pyprover.logic.false))
         return cost
+
+
+    def beam_under_construction (ex1, ex2, info):
+        return {ex1['id']:
+                    {ex2['id']:
+                         info
+                     }
+                }
+
+
+    def abtract_conrete_sim():
+        ae = abstractness_estimator.AbstractnessEstimator()
+
+        @Simmix.standard_range(0, 1)
+        def _abstract_conrete_sim(ex1, ex2):
+            most_important1 = ex1['importance'].argmax()
+            most_important2 = ex2['importance'].argmax()
+            word1 = ex1['text'][most_important1]
+            word2 = ex2['text'][most_important2]
+            beam = Simmix.beam_under_construction(ex1, ex2, (word1, word2))
+            return ae.estimate(word1) > ae.estimate(word2), beam
+        return _abstract_conrete_sim
 
 
     def write_to_graph(self, graph_coro, type, exs1, exs2, left_value, right_values):

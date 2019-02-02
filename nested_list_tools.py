@@ -12,10 +12,13 @@ def flatten(iterable):
             yield el
 
 def flatten_reduce(iterable):
-    if not isinstance(iterable[0], dict):
-        return functools.reduce(operator.add, iterable)
-    else:
-        return iterable
+    try:
+        if not isinstance(iterable[0], dict):
+            return functools.reduce(operator.add, iterable)
+        else:
+            return iterable
+    except KeyError:
+        raise ValueError("Value empty")
 
 def flatten_list(l):
     for el in l:

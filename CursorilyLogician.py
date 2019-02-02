@@ -14,8 +14,7 @@ import pylab as plt
 from contradictrix import Contradiction
 from predicatrix2 import Predication
 from correlatrix import Correlation
-from subjectrix import Subjects
-from aspectrix import Aspects
+from subj_and_aspectrix import Subjects_and_aspects
 
 import logging
 logging.getLogger(__name__).addHandler(logging.NullHandler())
@@ -35,24 +34,18 @@ class DataframeCursorilyLogician:
 
     '''
     def __init__(self, corpus):
+        ''' Set up all the textsuntactical models and the graph database
+
+        :param corpus: corpus instance with loaded conlls
+
+        '''
         self.corpus = corpus
         self.sentence_df = self.corpus.sentence_df
 
-        self.Predicatrix   = Predication(corpus)
-        self.Contradictrix = Contradiction ()
-        self.Correlatrix   = Correlation()
-        self.Subjectrix    = Subjects(corpus, type=('subject', 'subject_juncture'))
-        self.Aspectrix     = Aspects(corpus, type=('aspect', 'aspect_juncture'))
-
-
-
-        #from neo4j import GraphDatabase
-        #self.driver = GraphDatabase.driver("bolt://localhost:7687", auth=("s0krates", "password"))
-        #with self.driver.session() as session:
-        #    def clean_graph(tx):
-        #        tx.run("match (n) optional match (n)-[r]-() delete n,r")
-        #
-        #    session.write_transaction(clean_graph)
+        self.Predicatrix    = Predication(corpus)
+        self.Contradictrix  = Contradiction ()
+        self.Correlatrix    = Correlation()
+        self.Subj_Aspectrix = Subjects_and_aspects(corpus)
 
         self.graph = py2neo.Graph("bolt://localhost:7687", auth=("s0krates", "password"))
         self.graph.run("match (n) optional match (n)-[r]-() delete n,r")
@@ -224,6 +217,34 @@ class DataframeCursorilyLogician:
                 graph_coro=put_correlation_into_gdb)
 
 
+    def get_opposed_constellation_gdb (self):
+        ''' Returns the pattern, that gave a contradiction-opposition-pair
+
+        :return: 2tuple-2tuple-list-predicate-dict
+        '''
+        query = \
+            """Match (pred3)-[{GeneralKind:'correlation', SpecialKind:'correlated'}]-(pred1),
+                     (pred1)-[{GeneralKind:'correlation', SpecialKind:'opposed'}]-(pred2),
+                     (pred2)-[{GeneralKind:'correlation', SpecialKind:'correlated'}]-(pred4),
+                     (pred4)-[{GeneralKind:'correlation', SpecialKind:'opposed'}]-(pred3),
+                     
+                     (pred1)-[{GeneralKind:'contradiction'}]-(pred2)
+
+               Where ID(pred1)<ID(pred2)
+               Return pred1, pred2, pred3, pred4"""
+
+        logging.info("query neo4j for reading by this:\n%s" % query)
+        records = self.graph.run(query).data()
+        records = [
+            (((self.get_predication(tuple4['pred1']['id']),
+               self.get_predication(tuple4['pred2']['id'])),
+              (self.get_predication(tuple4['pred3']['id']),
+               self.get_predication(tuple4['pred4']['id']))))
+            for tuple4 in records
+        ]
+        return records
+
+
     def annotate_subjects_and_aspects(self):
         ''' Look for some common arguments of the contradicting and correlating predications.
         These may may they be the logical subjects, the pre"""
@@ -232,20 +253,18 @@ class DataframeCursorilyLogician:
         # Say, after annotation of the contradictions and their correlating modifyers we have a pair of 'opposed'
         # nodes, as annotated by the correlatrix.
 
-        oppositions              = list(self.get_from_gdb('opposed'))
-        put_arg_into_gdb = self.put_into_gdb("argument")
+        opposed_pair_pairs   = self.get_opposed_constellation_gdb()
 
-        for oppo1, oppo2 in oppositions:
+        put_arg_into_gdb     = self.put_into_gdb('argument')
+        put_deno_into_gdb    = self.put_into_gdb('denotation')
 
-            self.Subjectrix.annotate(
-                original_pair   = (oppo1, oppo2),
-                graph_coro = (put_arg_into_gdb, put_arg_into_gdb),
+
+        for oppo in opposed_pair_pairs:
+            self.Subj_Aspectrix.annotate(
+                opposed_pair_pair   = oppo,
+                graph_coro_subj_asp= put_arg_into_gdb,
+                graph_coro_arg_binding=put_deno_into_gdb
                 )
-
-            #self.Aspectrix.annotate(
-            #    original_pair   = (oppo1, oppo2),
-            #    graph_coro = put_arg_into_gdb,
-            #    )
 
 
     kind_color_map = {
@@ -349,9 +368,9 @@ r"""               MERGE (a:Expression {id:'%s', s_id:'%s', text:'%s'})
         :yield: tuples of contradicting predicates
         """
         query = (
-            r"""MATCH path = (a)-[:TextRelation {GeneralKind:'contradiction'}]->(b) 
+            r"""MATCH path = (a)-[:TextRelation {GeneralKind:'%s'}]->(b) 
                 WHERE ID(a) < ID(b)
-                RETURN a,b """
+                RETURN a,b """ % kind
         )
         logging.info("query neo4j for reading by this:\n%s" % query)
         records = self.graph.run(query).data()
