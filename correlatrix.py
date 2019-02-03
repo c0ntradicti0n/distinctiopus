@@ -1,3 +1,5 @@
+import networkx as nx
+
 from pairix import Pairix
 from simmix import Simmix
 
@@ -59,14 +61,13 @@ class Correlation(Pairix):
 
 
         if save_graph:
-            G = self.correl_to_graph(possible_to_correlate, correlation)
-            self.draw_correlations(G=G, source=correlation[0][0]['id'], target=correlation[1][0]['id'])
+            G = self.correl_to_graph(contradiction, poss_correlations, correlation)
+            self.draw_correlations(G=G, source=contradiction[0][0]['id'], target=contradiction[1][0]['id'])
 
         return correlation
 
 
-    def correl_to_graph (self, contradictions, possible_correlations, correlation):
-        import networkx as nx
+    def correl_to_graph (self, contradiction, possible_correlations, correlation):
         dig = nx.DiGraph()
         import textwrap
 
@@ -88,17 +89,17 @@ class Correlation(Pairix):
             add_possible_correlation_node(ex2[0], kind = 'poss new')
             add_possible_correlation_edge(ex1[0], ex2[0], label="possible new", kind="poss new")
 
-        for ex1, ex2 in contradictions:
-            add_possible_correlation_node(ex1, kind = 'contra')
-            add_possible_correlation_node(ex2, kind = 'contra')
-            add_possible_correlation_edge(ex1, ex2, label="contradiction", kind="contra")
+        for ex1, ex2 in [contradiction]:
+            add_possible_correlation_node(ex1[0], kind = 'contra')
+            add_possible_correlation_node(ex2[0], kind = 'contra')
+            add_possible_correlation_edge(ex1[0], ex2[0], label="contradiction", kind="contra")
 
         def add_edge_between (key_corr_i, key_trigg_i):
-            key_corr  = "poss new" + possible_correlations[key_corr_i[0]][0][0]['key']
-            key_trigg = "contra" + contradictions[key_trigg_i[0]][0]['key']
+            key_corr  = "poss new" + key_corr_i[0][1][0]['key']
+            key_trigg = "contra"   + contradiction[0][0]['key']
             dig.add_edge (key_corr, key_trigg, label = "correl")
-            key_corr  = "poss new" + possible_correlations[key_corr_i[0]][1][0]['key']
-            key_trigg = "contra" + contradictions[key_trigg_i[0]][1]['key']
+            key_corr  = "poss new" + key_corr_i[0][1][0]['key']
+            key_trigg = "contra"   + contradiction[1][0]['key']
             dig.add_edge (key_corr, key_trigg, label = "correl")
 
         for corr_i, trigg_i in correlation:
