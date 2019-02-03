@@ -2,7 +2,7 @@
 
 A tool for mining distinctions based on textlinguistic and rhetoric features of a text.
 
-![Image](/home/stefan/PycharmProjects/Sokrates3.1/img/contradiction -- new correlation36 -- 37.svg)
+![Image](img/contradiction -- new correlation36 -- 37.svg)
 <img src="img/contradiction -- new correlation36 -- 37.svg">
 
 
