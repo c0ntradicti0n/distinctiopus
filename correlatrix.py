@@ -57,17 +57,17 @@ class Correlation(Pairix):
             layout='n',
             out='ex',
             type=("opposed", "opposed", "correlated"),
-            G=graph_coro)                             # Put it in the graph
+            graph_coro=graph_coro)                             # Put it in the graph
 
 
         if save_graph:
-            G = self.correl_to_graph(contradiction, poss_correlations, correlation)
+            G = self.correl_to_nxdigraph(contradiction, poss_correlations, correlation)
             self.draw_correlations(G=G, source=contradiction[0][0]['id'], target=contradiction[1][0]['id'])
 
         return correlation
 
 
-    def correl_to_graph (self, contradiction, possible_correlations, correlation):
+    def correl_to_nxdigraph (self, contradiction, possible_correlations, correlation):
         dig = nx.DiGraph()
         import textwrap
 

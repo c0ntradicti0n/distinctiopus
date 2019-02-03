@@ -1,5 +1,4 @@
 import pandas
-import re
 import pyprover
 import itertools
 import string
@@ -8,6 +7,8 @@ from allennlp.commands.elmo import ElmoEmbedder
 import spacy
 
 import logging
+
+
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 from nested_list_tools import *
@@ -16,40 +17,56 @@ from dict_tools import *
 from simmix import Simmix
 import word_definitions
 import tdfidf_tool
+from generator_tools import count_up
 
 
 class Predication():
-    def __init__(self, corpus):
-        """set up predication analysis tool, load spacy, elmo, tdfidf information"""
+    def __init__(self, corpus=None):
+        ''' This module lets you translate natural language expressions into predicative chunks, to analyse the
+        parts of sentence further.
 
-        lemmatized_text = corpus.lemmatized_text()
-        self.tdfidf = tdfidf_tool.tdfidf(lemmatized_text)
+        These chunks are dicts of other properties, that represent a part of the sentence with different properties.
+        A predicate for instance, contains
 
-        # small
+        >>> import spacy
+        >>> nlp = spacy.load('en_core_web_sm')
+        >>> P = Predication()
+        >>> text = nlp ('What is going on here?')
+        >>> pred = P.analyse_predication(doc=text, s_id='count_yourself')
+        >>> pred[0]['dep_']
+        ['nsubj', 'aux', 'ROOT', 'prt', 'advmod', 'punct']
+        >>> pred[0]['text']
+        ['What', 'is', 'going', 'on', 'here', '?']
+
+        :param corpus: a corpus_reader_object, to overlook the document once, to precompute all lemmata and
+        td-idf-values.
+        '''
+
+        if corpus:
+            lemmatized_text = corpus.lemmatized_text()
+            self.tdfidf = tdfidf_tool.tdfidf(lemmatized_text)
+        else:
+            self.tdfidf = tdfidf_tool.tdfidf("no text")
+
         options_file = './others_models/elmo_2x1024_128_2048cnn_1xhighway_options.json'
         weight_file = './others_models/elmo_2x1024_128_2048cnn_1xhighway_weights.hdf5'
         self.elmo = ElmoEmbedder(options_file=options_file, weight_file=weight_file)
 
-        self.attributive_arg_markers = ['amod', 'acl', 'prep', 'compound', 'appos']  # genitiv/dativ objects?
-        self.verbal_arg_markers = ['nsubjpass', 'nsubj', 'obj', 'dobj', 'iobj', 'pobj', 'attr']
-        self.attributive_too_deep_markers = ['punct', 'advcl']
-        self.verbal_too_deep_markers = ['punct', 'advcl', 'relcl']
-        self.ellipsis_too_deep_markers = ['cc']
+        self.attributive_arg_markers       = ['amod', 'acl', 'prep', 'compound', 'appos']  # genitiv/dativ objects?
+        self.verbal_arg_markers            = ['nsubjpass', 'nsubj', 'obj', 'dobj', 'iobj', 'pobj', 'attr']
+        self.attributive_too_deep_markers  = ['punct', 'advcl']
+        self.verbal_too_deep_markers       = ['punct', 'advcl', 'relcl']
+        self.ellipsis_too_deep_markers     = ['cc']
 
         self.uppercase_abc = list(string.ascii_uppercase)
         self.negation_list = word_definitions.logic_dict['~']
         self.logic_dict    = invert_dict(word_definitions.logic_dict)
         self.logic_dict    = {k: v[0] for (k, v) in self.logic_dict.items()}
 
-        def count_up():
-            i = 0
-            while (True):
-                yield i
-                i += 1
-
-        self.id_generator = count_up()
-        self.pred_key_gen = count_up()
-        self.arg_key_gen  = count_up()
+        self.s_id_generator = count_up()
+        self.id_generator   = count_up()
+        self.pred_key_gen   = count_up()
+        self.arg_key_gen    = count_up()
 
         if not self.negation_list:
             raise ValueError("give negation list")
@@ -103,11 +120,24 @@ class Predication():
     def dictize_spacy (self,ex):
         return {kind:fun(ex) for kind, fun in self.dict_of_fun}
 
-    def analyse_predication(self, doc=None, **kwargs):
-        """Analyses spacy doc and return all found predicates"""
-        if not doc or 's_id' not in kwargs:
-            raise KeyError("keyword arguments 'doc' and 's_id' must be given")
-        ps = self.collect_all_predicates(doc, **kwargs)
+    def analyse_predication(self, doc=None, s_id=None, **kwargs):
+        ''' Analyse a spacy doc for predications
+
+            :param doc: spacy doctument
+            :param s_id: id of sentence, use `s_id='count_yourself'` for not caring for this. In these cases, the td-idf
+            information is not possible to compute
+            :param kwargs:  :func:`~predcicatrix.Predication.collect_all_predicates`
+            :return: list of predicate_dicts
+
+        '''
+        if s_id == 'count_yourself':
+            s_id = next(self.s_id_generator)
+        if not doc:
+            raise KeyError("keyword argument 'doc'must be given")
+        if not s_id:
+            raise KeyError("keyword argument 's_id' must be given")
+
+        ps = self.collect_all_predicates(doc, s_id=s_id, **kwargs)
         return ps
 
     def get_attributive_roots(self,ex):
@@ -244,7 +274,7 @@ class Predication():
         p['negation_particle'] = [x for x in p['full_ex'] if x.text in self.negation_list]
         return None
 
-    def attribute_negation_in_shell_expression (self,ps):
+    def attribute_negation_sentence_predicates (self, ps):
         for s in ps:
             for p in s['part_predications']:
                 self.attribute_negation_particle(p)
@@ -393,8 +423,8 @@ class Predication():
             predicate["lemma_tag_"] = [ex[x].lemma_ + '_' + ex[x].tag_ for x in predicate["full_ex_i"]]
         return ps
 
-    def collect_all_predicates(self,ex, coref=None, s_id=None,  no_picture=False):
-        """ Extracts a multitude of properties from a natural language expression, including grammar
+    def collect_all_predicates(self,ex, coref=None, s_id=None,  paint_graph=True):
+        ''' Extracts a multitude of properties from a natural language expression, including grammar
         imformation, word2vec, some importance weight in the document, some kind of cursorily logical
         formula with a dictionary, to what expressions the constants in the formula belong to.
 
@@ -402,7 +432,7 @@ class Predication():
             string or spracy instance of the language expression
         :return:
             dictionary of properties of the expression
-        """
+        '''
         global nlp
 
         if not ex:
@@ -416,13 +446,15 @@ class Predication():
             return sum(listwrapper(ex),[])
 
 
-        print ("Predicates for '%s'," % str(ex))
+        logging.info ("predicates for '%s'," % str(ex))
 
         elmo_embeddings = self.elmo.embed_sentence([x.text for x in ex])
         try:
+
             importance = self.tdfidf.sentence2vec([x.lemma_ for x in ex])
         except AttributeError:
-            raise TypeError("You passed a tuple to 'collect_all_predicates'")
+            logging.warning("No td-idf information was precomputed for this expression, filling it up with 0")
+            importance = self.tdfidf.zero_importance([x.lemma_ for x in ex])
 
         ps = self.collect_all_simple_predicates(ex)
         if not ps:
@@ -446,7 +478,7 @@ class Predication():
                                          s_id)
 
         ps = self.attribute_contained_predicates(ps)
-        ps = self.attribute_negation_in_shell_expression(ps)
+        ps = self.attribute_negation_sentence_predicates(ps)
 
         for p in ps:
             p = self.formalize(p, elmo_embeddings, importance)
@@ -454,8 +486,9 @@ class Predication():
             text = " ".join([x.text for x in ex])
             logging.error("No predication found in expression: '%s'." % text )
 
-        self.draw_predicate_structure(ps,"./img/predicate chunks " + ps[0]['key']+".svg")
-        self.append_to_predicate_df(ps)
+        if paint_graph:
+            self.draw_predicate_structure(ps,"./img/predicate chunks " + ps[0]['key']+".svg")
+            self.append_to_predicate_df(ps)
         return ps
 
     def append_to_predicate_df (self, ps):
@@ -724,5 +757,6 @@ class TestPredicates(unittest.TestCase):
 
 
 
-if __name__ == '__main__':
-    unittest.main()
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()

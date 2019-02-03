@@ -117,31 +117,14 @@ class DataframeCursorilyLogician:
             and second it evaluates the similarity of these phrases, what would be the fitting counterpart for that one
 
         '''
-
         put_contradiction_into_gdb = self.put_into_gdb("contradiction")
 
-        def get_contradictions_from_row(x):
-            if x['horizon']:
-                return self.Contradictrix.find_contradictive(
-                      x['predication'],
-                      x['predications_in_range'],
-                      out='r',
-                      G=put_contradiction_into_gdb)
-            else:
-                return None
-        self.sentence_df['contradiction'] = self.sentence_df.apply(
-                                                   get_contradictions_from_row,
-                                                   result_type="reduce",
-                                                   axis=1)
-
-        def delete_none_findings (x):
-            return [y + x['s_id'] for y in x['contradiction']] \
-                if x['contradiction'] else None
-
-        self.sentence_df['contradiction'] = self.sentence_df.apply(
-                                                   delete_none_findings,
-                                                   result_type="reduce",
-                                                   axis=1)
+        for index, x in self.sentence_df.iterrows():
+            self.Contradictrix.find_contradictive(
+                x['predication'],
+                x['predications_in_range'],
+                out='ex',
+                graph_coro=put_contradiction_into_gdb)
 
 
     def get_correllation_preds(self, pred):
@@ -316,14 +299,14 @@ class DataframeCursorilyLogician:
         return None
 
 
-    def add_determed_expression (self, general_kind, special_kind, n1, n2):
+    def add_determined_expression (self, general_kind, special_kind, n1, n2):
         ''' Throws node data into neo4j by expanding data as dictionary.
 
-            :param general_kind: Property "GeneralKind" in the GDB
-            :param special_kind: Property "SpecialKind" in the GDB ('anonym'/'negation')
+            :param general_kind: some string property of all members, that are added by this function
+            :param special_kind: some string property of all members, that is special for the new members each
             :param n1: predicate dict 1
             :param n2: predicate dict 2
-            :return:
+
         '''
         if isinstance(n1, list):
             logging.warning("node data is list... taking first")
@@ -347,14 +330,14 @@ r"""               MERGE (a:Expression {id:'%s', s_id:'%s', text:'%s'})
     def put_into_gdb (self, general_kind):
         ''' This returns a subgraph of the graph, selected by the 'general_kind' param.
 
-        :param general_kind: Property "GeneralKind" in the GDB
+        :param general_kind: some string property of all members, that are added by this function
         :return: list of Predicate-dict-2tuples
         '''
         while True:
             data = (yield)
             if isinstance(data, tuple) and len(data) == 3:
                 n1, n2, special_kind =  data
-                self.add_determed_expression(general_kind, special_kind, n1, n2)
+                self.add_determined_expression(general_kind, special_kind, n1, n2)
             else:
                 logging.error('Value could not be set because I don\'t know how to deal with the type')
                 raise ValueError('Value could not be set because I don\'t know how to deal with the type')

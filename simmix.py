@@ -155,7 +155,7 @@ class Simmix:
                out=None,
                layout=None,
                n=None,
-               G=None,
+               graph_coro=None,
                type=None,
                output=False,
                minimize=False):
@@ -170,7 +170,7 @@ class Simmix:
             'r': only the indices of the right value are returned
             '2t': pairs of tuples (for building a graph
             'nx': directed networkxgraph
-        :param G:
+        :param graph_coro:
             graph_coroutine, that accepts a 3-tuple of two dictionaries and a `type` string
         :param type:
             If using `G`, one has to specify the type-argument,
@@ -317,8 +317,8 @@ class Simmix:
             # the clusters and concat all these
             # ex1 is comparable to all these
 
-        if not G == None:
-            self.write_to_graph (graph_coro=G, type=type, exs1=exs1, exs2=exs2, left_value=left_value, right_values=right_values)
+        if not graph_coro == None:
+            self.write_to_graph (graph_coro=graph_coro, type=type, exs1=exs1, exs2=exs2, left_value=left_value, right_values=right_values)
 
         if not out or out == 'ex':
             return Simmix.expressions_list(left_value, right_values, exs1, exs2)
@@ -335,9 +335,9 @@ class Simmix:
             i_s = Simmix.i_list(left_value, right_values)
             return Simmix.reduce_i_s_pair_tuples(i_s)
         elif out == 'nx':
-            if G == None:
-                raise ValueError("parameter G is required for use with a Graph!")
-            return G
+            if graph_coro == None:
+                raise ValueError("parameter graph_coro is required for use with a Graph!")
+            return graph_coro
         elif out == '(i,ex)':
             return (Simmix.i_list(left_value, right_values),
                     Simmix.expressions_list(left_value, right_values, exs1, exs2))
@@ -810,7 +810,9 @@ class Simmix:
     def write_to_graph(self, graph_coro, type, exs1, exs2, left_value, right_values):
         ''' Write a result to the graph using a coroutine
 
-        :param graph_coro: coroutine to send a (dict, dict, type)-tuple to
+        :param graph_coro:
+             coroutine to send a (dict, dict, type)-tuple to. This also can be a list con coroutines and the same
+             arguments will be applied to them
         :param type: the type added to the pair of dicts
         :param exs1: expression list 1
         :param exs2: expression list 2
@@ -819,6 +821,11 @@ class Simmix:
         :return: None
 
         '''
+        if isinstance(graph_coro, list):
+            for gc in graph_coro:
+                self.write_to_graph(gc, type, exs1, exs2, left_value, right_values)
+            return
+
         l_s = Simmix.expressions_list(left_value, right_values, exs1, exs2)
         t_s = Simmix.reduce_i_s_pair_tuples(l_s)
         if isinstance(exs1[0], dict) and isinstance(exs2[0], dict):

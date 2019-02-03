@@ -20,12 +20,12 @@ import logging
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 class tdfidf:
-    def __init__(self, corpus):
+    def __init__(self, corpus_lemmata):
         from sklearn.feature_extraction.text import TfidfTransformer
         transformer = TfidfTransformer(smooth_idf=False)
         from sklearn.feature_extraction.text import CountVectorizer
         vectorizer = CountVectorizer()
-        X = vectorizer.fit_transform([corpus])
+        X = vectorizer.fit_transform([corpus_lemmata])
         counts = X.toarray()
         self.tdf_idf = transformer.fit_transform(counts)
         self.tdf_idf_dict = {v:i for i, v in enumerate(vectorizer.get_feature_names())}
@@ -49,6 +49,10 @@ class tdfidf:
                 for w in str_list
                 if self.importance_of_word(w) > min_thr
                     and self.importance_of_word(w) < max_thr]
+
+
+    def zero_importance(self, str_list):
+        return np.array([0 for w in str_list])
 
 
 
