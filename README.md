@@ -10,15 +10,33 @@ To see, [how it works](explanation.html)
 
 ## Getting Started
 
-How to try it out on your own machine and mine in your own text.
+To get all dependencies, you have to get some Natural Language Processing tools with their models.
 
 ### Prerequisites
 
 You are going to need:
 
 * [Spacy](https://spacy.io)
+
+It is important, that you install the dependencies in a `virtualenv`, because of an incompatability with the version of 
+`spacy`. For the preprocessing with the Prepr0cessor, you need `spacy==2.0.12`, for S0krates you need 'spacy==2.1.0a4 '
+(= `spacy-nightly`), that must be silently installed over `spacy 2.0.18`. because AllenAI again uses the sentence 
+segmentation of spacy (just install `spacy-nightly` after `spacy`, to override it)
+
 * [NeuralCoref](https://github.com/huggingface/neuralcoref)
-* [AllenAI](https://allennlp.org)
+
+Use the model `en_coref_sm` in Prepr0cess0r.
+
+* [AllenAI's](https://allennlp.org) [Elmo Embedder](https://github.com/allenai/allennlp/blob/master/tutorials/how_to/elmo.md)
+
+For this I fetched the models with `wget` from the :
+
+    mkdir './others_models'
+    cd ./others_models
+    wget "https://s3-us-west-2.amazonaws.com/allennlp/models/elmo/2x4096_512_2048cnn_2xhighway/elmo_2x4096_512_2048cnn_2xhighway_options.json"
+    wget "https://s3-us-west-2.amazonaws.com/allennlp/models/elmo/2x4096_512_2048cnn_2xhighway/elmo_2x4096_512_2048cnn_2xhighway_weights.hdf5"
+
+
 * [NLTK](https://www.nltk.org)
 
 and the graph DataBase
