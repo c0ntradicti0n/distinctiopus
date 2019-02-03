@@ -2,6 +2,10 @@
 
 A tool for mining distinctions based on textlinguistic and rhetoric features of a text.
 
+![Image](/home/stefan/PycharmProjects/Sokrates3.1/img/contradiction -- new correlation36 -- 37.svg)
+<img src="img/contradiction -- new correlation36 -- 37.svg">
+
+
 This means, that this tool, when e.g. reading the Microsoft License Agreement and being informed, that in some cases you have
 limited warranty and in other cases you have no warranty, it looks for the concret cases, when you have warranty.
 
@@ -21,7 +25,7 @@ You are going to need:
 It is important, that you install the dependencies in a `virtualenv`, because of an incompatability with the version of 
 `spacy`. For the preprocessing with the Prepr0cessor, you need `spacy==2.0.12`, for S0krates you need 'spacy==2.1.0a4 '
 (= `spacy-nightly`), that must be silently installed over `spacy 2.0.18`. because AllenAI again uses the sentence 
-segmentation of spacy (just install `spacy-nightly` after `spacy`, to override it)
+segmentation of spacy, but checks for the installed version (this works, if you install `spacy-nightly` after `spacy==2.0.18`, to override it)
 
 * [NeuralCoref](https://github.com/huggingface/neuralcoref)
 
