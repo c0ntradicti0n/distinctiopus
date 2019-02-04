@@ -325,41 +325,7 @@
 <polygon fill="#000000" stroke="#000000" points="607.924,-974.01 609.07,-984.5427 614.7424,-975.5943 607.924,-974.01"/>
 <text text-anchor="middle" x="708.35" y="-692.6427" font-family="Times,serif" font-size="14.00" fill="#000000">compared with</text>
 </g>
-<!-- center1 -->
-<g id="node18" class="node">
-<title>center1</title>
-<ellipse fill="#ecfee8" stroke="#000000" cx="67.594" cy="-1860.5027" rx="67.6881" ry="18"/>
-<text text-anchor="middle" x="67.594" y="-1856.8027" font-family="Times,serif" font-size="14.00" fill="#000000">let&#39;s distinguish:</text>
-</g>
-<!-- 7 -->
-<g id="node19" class="node">
-<title>7</title>
-<ellipse fill="#9ffff5" stroke="#000000" cx="274.43" cy="-1860.5027" rx="90.5193" ry="48.1667"/>
-<text text-anchor="middle" x="274.43" y="-1879.3027" font-family="Times,serif" font-size="14.00" fill="#000000">Part 2 Forms of</text>
-<text text-anchor="middle" x="274.43" y="-1864.3027" font-family="Times,serif" font-size="14.00" fill="#000000">speech are either</text>
-<text text-anchor="middle" x="274.43" y="-1849.3027" font-family="Times,serif" font-size="14.00" fill="#000000">simple or composite</text>
-<text text-anchor="middle" x="274.43" y="-1834.3027" font-family="Times,serif" font-size="14.00" fill="#000000">.</text>
-</g>
-<!-- center1&#45;&gt;7 -->
-<g id="edge21" class="edge">
-<title>center1&#45;&gt;7</title>
-<path fill="none" stroke="#000000" d="M104.25,-1875.9027C139.55,-1890.0027 159.11,-1894.2027 188.05,-1888.4027"/>
-<polygon fill="#000000" stroke="#000000" points="188.8156,-1891.818 197.8,-1886.2027 187.2748,-1884.9897 188.8156,-1891.818"/>
-<text text-anchor="middle" x="100.75" y="-1893.6027" font-family="Times,serif" font-size="14.00" fill="#000000">side of distinction</text>
-</g>
-<!-- subjectarg131 -->
-<g id="node20" class="node">
-<title>subjectarg131</title>
-<ellipse fill="#5b6c5d" stroke="#000000" cx="514.07" cy="-1860.5027" rx="73" ry="27"/>
-<text text-anchor="middle" x="514.07" y="-1864.3027" font-family="Times,serif" font-size="14.00" fill="#000000">Part 2 Forms of</text>
-<text text-anchor="middle" x="514.07" y="-1849.3027" font-family="Times,serif" font-size="14.00" fill="#000000">speech</text>
-</g>
-<!-- 7&#45;&gt;subjectarg131 -->
-<g id="edge22" class="edge">
-<title>7&#45;&gt;subjectarg131</title>
-<path fill="none" stroke="#000000" d="M348.73,-1888.2027C388.79,-1900.5027 411.74,-1899.1027 454.73,-1883.8027"/>
-<polygon fill="#000000" stroke="#000000" points="456.0489,-1887.0468 464.22,-1880.3027 453.6266,-1880.4792 456.0489,-1887.0468"/>
-<text text-anchor="middle" x="387.97" y="-1884.6027" font-family="Times,serif" font-size="14.00" fill="#000000">subject</text>
-</g>
+
+
 </g>
 </svg>
