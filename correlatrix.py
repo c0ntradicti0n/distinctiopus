@@ -74,6 +74,7 @@ class Correlation(Pairix):
         def wrap (strs):
             return textwrap.fill(strs, 20)
 
+
         def add_possible_correlation_node (correlated, kind=None):
             key_co1 = kind + correlated['key']
             label = wrap(" ".join(correlated['text']))

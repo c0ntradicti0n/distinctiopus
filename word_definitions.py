@@ -1,3 +1,5 @@
+import doctest
+
 negation_list = ["no", "not", "none", "never", "nothing", "nobody", "nowhere", "neither", "nor", "non", "n't", "cannot", "prevent"]
 conjunction_list = ["and", "but"]
 disjunction_list = ["or"]
@@ -15,9 +17,24 @@ logic_dict = {
 #    'TE': existential_quantors
 }
 
-counterpart_words = [] # ['but', 'though']
+counterpart_words = []
 
-# 'be': ['differ'],
+def test_antonymdict():
+    ''' Check if the antonymdict hast correct shape
+
+        >>> all([isinstance(x, str) or isinstance(x, tuple)
+        ... for x in antonym_dict['lemma_'].keys()])
+        True
+
+        >>> all([isinstance(x, list)
+        ...     for x in antonym_dict['lemma_'].values()])
+        True
+        >>> all([isinstance(x, str) or isinstance(x, tuple)
+        ...      for lists in antonym_dict['lemma_'].values()
+        ...      for x in lists])
+        True
+    '''
+    pass
 
 antonym_dict = {'lemma_': {'part': ['wholly'],  'equivocally': ['unambiguously'], 'have': ['lack'],
 'common': ['individual', 'single', 'derive'], 'correspond': ['disagree'], 'differ': ['common', 'derive'], 'real':    ['unreal',
@@ -274,3 +291,8 @@ import dict_tools
 antonym_dict['lemma_'].update(additional_antonyms)
 antonym_dict['lemma_'] = \
     dict_tools.balance_complex_tuple_dict(antonym_dict['lemma_'])
+
+
+
+if __name__ == "__main__":
+    doctest.testmod()

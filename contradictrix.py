@@ -188,22 +188,6 @@ class TestContradictrix(unittest.TestCase):
         corpus = CorpusReader(corpus_path='./corpora/aristotle_categories/import_conll', only=[7,8,9])
         self.P = self.P =  Predication(corpus)
 
-    def test_try_out(self):
-
-
-    def test_antonym_dict(self):
-
-        type_keys = all([isinstance(x, str) or isinstance(x, tuple)
-                                  for x in word_definitions.antonym_dict['lemma_'].keys()])
-        type_values = \
-                    all([isinstance(x, list)
-                                  for x in word_definitions.antonym_dict['lemma_'].values()])
-        type_values_in_values = \
-                    all([isinstance(x,str) or isinstance(x,tuple)
-                                  for lists in word_definitions.antonym_dict['lemma_'].values()
-                                  for x in lists])
-        print (type_keys, type_values, type_values_in_values)
-        self.assertTrue(type_keys and type_values and type_values_in_values)
 
     def test_contradiction_symmetry(self):
         import networkx as nx
@@ -211,19 +195,6 @@ class TestContradictrix(unittest.TestCase):
 
         import matplotlib as plt
         plt.rcParams['interactive'] = True
-
-        """
-        exs = [
-            self.P.nlp("Of things themselves some are not predicable of a subject, and are never present in a subject."),
-            self.P.nlp("Some things, again, are present in a subject, but are never predicable of a subject."),
-            self.P.nlp("Other things, again, are both predicable of a subject and present in a subject."),
-            self.P.conll_over_spacy(
-                self.P.nlp("There is, lastly, a class of things which are neither present in a subject nor predicable of a subject, such as the individual man or the individual horse."),
-                "./corpus/import_conll/17.conll"),
-            self.P.nlp("On the other hand things are said to be named Univocally, which have the name and the definition answering to the name in common"),
-            self.P.nlp("Things are named Derivatively which derive their name from some other name but differ from it in termination"),
-            self.P.nlp("SECTION 1 Part 1 Things are said to be named Equivocally when though they have a common name the definition corresponding with the name differs for each"),
-        ]"""
 
         # combinations, that must have symmetrical results
         combis = itertools.combinations(exs[::-1], 2)
@@ -234,8 +205,7 @@ class TestContradictrix(unittest.TestCase):
             for  j,(ex1, ex2) in enumerate(itertools.permutations(combo,2)):
                 p1 = self.P.collect_all_predicates(ex1)
                 p2 = self.P.collect_all_predicates(ex2)
-                #self.P.draw_predicate_structure(p1, "p1.png")
-                #self.P.draw_predicate_structure(p2, 'p2.png')
+
                 if (len (p1) >1) or (len (p2) > 1):
                     self.P.print_predicates(p1)
                     self.P.print_predicates(p2)
