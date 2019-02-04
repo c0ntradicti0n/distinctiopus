@@ -1,4 +1,5 @@
+# Explanation of how it works
 
-![Image](./explanation/corralating_opposed_phrases_to_contradiction.svg)
-<img src="./explanation/corralating_opposed_phrases_to_contradiction.svg">
+![Image](./corralating_opposed_phrases_to_contradiction.svg)
+<img src="./corralating_opposed_phrases_to_contradiction.svg">
 

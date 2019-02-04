@@ -9,7 +9,7 @@ A tool for mining distinctions based on textlinguistic and rhetoric features of 
 This means, that this tool, when e.g. reading the Microsoft License Agreement and being informed, that in some cases you have
 limited warranty and in other cases you have no warranty, it looks for the concret cases, when you have warranty.
 
-To see, [how it works](explanation.html)
+To see, [how it works](./explanation/HowItWorks.md)
 
 
 ## Getting Started
