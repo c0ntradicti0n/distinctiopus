@@ -2,8 +2,8 @@
 
 A tool for mining distinctions based on textlinguistic and rhetoric features of a text.
 
-![Image](img/predicate chunks 13.svg)
-<img src="img/predicate chunks 13.svg">
+![Image](./distinctions.svg)
+<img src="./distinctions.svg">
 
 
 This means, that this tool, when e.g. reading the Microsoft License Agreement and being informed, that in some cases you have
