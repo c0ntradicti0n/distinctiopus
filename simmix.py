@@ -270,7 +270,7 @@ class Simmix:
             if minimize:
                 weighted_res = - weighted_res
             is_biggest_n = np.argpartition(weighted_res, -self.n)[-self.n:]
-            # and also nonzero!
+
             best_n = np.intersect1d(is_biggest_n, is_possible)
         else:
             best_n = is_possible
@@ -518,9 +518,10 @@ class Simmix:
         return text2 == text1, {}
     @standard_range(0, 1)
     def boolean_subsame_sim (ex1, ex2):
-        text1        = " ".join(ex1["text"])
-        text2        = " ".join(ex2["text"])
-        return (text2 in text1) or (text1 in text2), {}
+        text1        = ex1["text"]
+        text2        = ex2["text"]
+        #return (text2 in text1) or (text1 in text2), {}
+        return all(w in text1 for w in text2) or all(w in text2 for w in text1), {}
     @standard_range(0, 1)
     def sub_i (ex1, ex2):
         is1 = set(ex1["i"])

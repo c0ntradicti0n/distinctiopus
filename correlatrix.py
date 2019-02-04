@@ -11,18 +11,21 @@ class Correlation(Pairix):
 
         # This looks for relativly similar phrases to get some pairs that are possible modifiers to the contradiction
         self.correlative = \
-            Simmix([(18, Simmix.common_words_sim, 0.25, 1),
-                    (1, Simmix.dep_sim, 0.25, 1),
-                    (1, Simmix.pos_sim, 0.25, 1),
-                    # (1,Simmix.elmo_sim(), 0.5,1),
-                    # (1,Simmix.fuzzystr_sim, 0.5,1),
-                    (-100, Simmix.boolean_subsame_sim, 0, 0.1)
+            Simmix([(200, Simmix.common_words_sim, 0.35, 1),
+                    (1, Simmix.dep_sim, 0.95, 1),
+                    (1, Simmix.pos_sim, 0.95, 1),
+                    #(1, Simmix.elmo_sim(), 0.35,1),
+                    #(1,Simmix.fuzzystr_sim, 0.5,1),
+                    (-1000, Simmix.boolean_subsame_sim, 0, 0.1)
                     ],
                    )
 
         # That's a distinctive criterium, that the correlative keys can't be too similar to the contradicting pair
         self.distinct = \
-            Simmix([(1, Simmix.multi_sim(fun=Simmix.common_words_sim, n=7), 0, 0.6),
+            Simmix([(1, Simmix.multi_sim(fun=Simmix.common_words_sim, n=7), 0, 1),
+                    (1, Simmix.multi_sim(fun=Simmix.elmo_sim(), n=7), 0, 1),
+                    (1, Simmix.multi_sim(Simmix.dep_sim, 0.0, 1)),
+                    (1, Simmix.multi_sim(Simmix.pos_sim, 0.0, 1))
                     # (2,Simmix.elmo_multi_sim(), 0,0.4),
                     # (1, Simmix.multi_sim(fun=Simmix.sub_i, n=4), 0,0.3),
                     # (1, Simmix.multi_sim(fun=Simmix.longer_sim, n=4), 0, 0.7) \
@@ -34,22 +37,22 @@ class Correlation(Pairix):
 
 
     def annotate_correlations(self, *, contradiction=None, possible_to_correlate=None, graph_coro=None, save_graph=True):
-        '''Annotates the correlations, that means expressions that are similar to each other and are distinct from the
-           pair, that was found as excluding each other. For instance 'from the one side' and 'from the other side'.
+        ''' Annotates the correlations, that means expressions that are similar to each other and are distinct from the
+            pair, that was found as excluding each other. For instance 'from the one side' and 'from the other side'.
 
-           In part the graph is cleaned, because also exmaples can be marked as seemingly contradictions.
-           On the other side the same operation is done for additional (sub)predications in context, following
-           coreferential relations
+            In part the graph is cleaned, because also exmaples can be marked as seemingly contradictions.
+            On the other side the same operation is done for additional (sub)predications in context, following
+            coreferential relations
         '''
 
-        poss_correlations = self.correlative.choose(  # What correlates
+        poss_correlations = self.correlative.choose(           # What correlates
             possible_to_correlate,
             layout='1:1')
 
         if not poss_correlations:
             return []
 
-        correlation = self.distinct.choose(           # not too much
+        correlation = self.distinct.choose(                    # not too much
             ([contradiction],
              poss_correlations),
             n=1,
@@ -76,31 +79,33 @@ class Correlation(Pairix):
 
 
         def add_possible_correlation_node (correlated, kind=None):
-            key_co1 = kind + correlated['key']
+            key_co1 = kind + correlated['id']
             label = wrap(" ".join(correlated['text']))
             dig.add_node (key_co1, label=label, kind=kind)
 
         def add_possible_correlation_edge (correlated1, correlated2, label=None, kind = None):
-            key_co1 = kind + correlated1['key']
-            key_co2 = kind + correlated2['key']
+            key_co1 = kind + correlated1['id']
+            key_co2 = kind + correlated2['id']
             dig.add_edge(key_co1, key_co2, label=label)
 
-        for ex1, ex2 in possible_correlations:
-            add_possible_correlation_node(ex1[0], kind = 'poss new')
-            add_possible_correlation_node(ex2[0], kind = 'poss new')
-            add_possible_correlation_edge(ex1[0], ex2[0], label="possible new", kind="poss new")
+
 
         for ex1, ex2 in [contradiction]:
             add_possible_correlation_node(ex1[0], kind = 'contra')
             add_possible_correlation_node(ex2[0], kind = 'contra')
             add_possible_correlation_edge(ex1[0], ex2[0], label="contradiction", kind="contra")
 
+        for ex1, ex2 in possible_correlations:
+            add_possible_correlation_node(ex1[0], kind = 'poss new')
+            add_possible_correlation_node(ex2[0], kind = 'poss new')
+            add_possible_correlation_edge(ex1[0], ex2[0], label="possible new", kind="poss new")
+
         def add_edge_between (key_corr_i, key_trigg_i):
-            key_corr  = "poss new" + key_corr_i[0][1][0]['key']
-            key_trigg = "contra"   + contradiction[0][0]['key']
+            key_corr  = "poss new" + key_corr_i[0][1][0]['id']
+            key_trigg = "contra"   + contradiction[0][0]['id']
             dig.add_edge (key_corr, key_trigg, label = "correl")
-            key_corr  = "poss new" + key_corr_i[0][1][0]['key']
-            key_trigg = "contra"   + contradiction[1][0]['key']
+            key_corr  = "poss new" + key_corr_i[0][1][0]['id']
+            key_trigg = "contra"   + contradiction[1][0]['id']
             dig.add_edge (key_corr, key_trigg, label = "correl")
 
         for corr_i, trigg_i in correlation:
@@ -118,19 +123,22 @@ class Correlation(Pairix):
         G.graph['edges'] = {'arrowsize': '4.0'}
 
         A = nx.drawing.nx_agraph.to_agraph(G)
-        nbunch_pn =[n for n, d in G.nodes(data='kind') if d == 'poss new']
-        A.add_subgraph(nbunch=nbunch_pn,
+
+        # Add contradictions to graph as cluster
+        nbunch_cr = [n for n, d in G.nodes(data='kind') if d == 'contra']
+        A.add_subgraph (nbunch=nbunch_cr,
                         name="cluster1",
                         style='filled',
                         color='lightgrey',
-                        label='possible new correlations')
-        nbunch_cr = [n for n, d in G.nodes(data='kind') if d == 'contra']
+                        label='found contradictions')
 
-        A.add_subgraph (nbunch=nbunch_cr,
+        # Add correlations to graph as cluster
+        nbunch_pn =[n for n, d in G.nodes(data='kind') if d == 'poss new']
+        A.add_subgraph(nbunch=nbunch_pn,
                         name="cluster2",
                         style='filled',
                         color='lightgrey',
-                        label='found contradictions')
+                        label='possible new correlations')
 
         A.layout('dot')
 

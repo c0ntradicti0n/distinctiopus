@@ -18,7 +18,7 @@
 15.2	such	such	ADJ	JJ	_	15.3	amod	_	_
 15.3	expressions	expression	NOUN	NNS	_	15.1	attr	_	_
 15.4	as	as	ADP	IN	_	15.3	prep	_	_
-16	Man	man	PROPN	NNP	_	13	pobj	_	_
+16	Man	man	PROPN	NNP	_	15.4	pobj	_	_
 17	,	,	PUNCT	,	_	16	punct	_	_
 18	Ox	ox	PROPN	NNP	_	16	conj	_	_
 19	,	,	PUNCT	,	_	18	punct	_	_
