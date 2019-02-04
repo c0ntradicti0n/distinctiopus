@@ -1,0 +1,508 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>nested_list_tools &mdash; S0krates 5.0.0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> S0krates
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">S0krates</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>nested_list_tools</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for nested_list_tools</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">more_itertools</span> <span class="k">import</span> <span class="n">replace</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">operator</span>
+
+
+<div class="viewcode-block" id="flatten"><a class="viewcode-back" href="../nested_list_tools.html#nested_list_tools.flatten">[docs]</a><span class="k">def</span> <span class="nf">flatten</span><span class="p">(</span><span class="n">iterable</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">iterable</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Iterable</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">yield from</span> <span class="n">flatten</span><span class="p">(</span><span class="n">el</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">el</span></div>
+
+<div class="viewcode-block" id="flatten_reduce"><a class="viewcode-back" href="../nested_list_tools.html#nested_list_tools.flatten_reduce">[docs]</a><span class="k">def</span> <span class="nf">flatten_reduce</span><span class="p">(</span><span class="n">iterable</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">iterable</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">add</span><span class="p">,</span> <span class="n">iterable</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">iterable</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Value empty&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="flatten_list"><a class="viewcode-back" href="../nested_list_tools.html#nested_list_tools.flatten_list">[docs]</a><span class="k">def</span> <span class="nf">flatten_list</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">l</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">yield from</span> <span class="n">flatten_list</span><span class="p">(</span><span class="n">el</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">el</span></div>
+
+
+<div class="viewcode-block" id="curry"><a class="viewcode-back" href="../nested_list_tools.html#nested_list_tools.curry">[docs]</a><span class="k">def</span> <span class="nf">curry</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">fun_new</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">fun</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fun_new</span></div>
+
+<div class="viewcode-block" id="on_each_level"><a class="viewcode-back" href="../nested_list_tools.html#nested_list_tools.on_each_level">[docs]</a><span class="k">def</span> <span class="nf">on_each_level</span> <span class="p">(</span><span class="n">lol</span><span class="p">,</span> <span class="n">fun</span><span class="p">,</span> <span class="n">out</span> <span class="o">=</span> <span class="p">[]):</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">lol</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fun</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">on_each_level</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">fun</span><span class="p">,</span> <span class="p">[]))</span>
+    <span class="k">return</span> <span class="n">out</span></div>
+
+<span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="on_each_iterable_old"><a class="viewcode-back" href="../nested_list_tools.html#nested_list_tools.on_each_iterable_old">[docs]</a><span class="k">def</span> <span class="nf">on_each_iterable_old</span> <span class="p">(</span><span class="n">lol</span><span class="p">,</span> <span class="n">fun</span><span class="p">,</span> <span class="n">out</span> <span class="o">=</span> <span class="p">[]):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lol</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">lol</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">on_each_iterable</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">fun</span><span class="p">,</span> <span class="p">[]))</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">fun</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">lol</span>
+    <span class="k">return</span> <span class="n">out</span></div>
+<span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="on_each_iterable"><a class="viewcode-back" href="../nested_list_tools.html#nested_list_tools.on_each_iterable">[docs]</a><span class="k">def</span> <span class="nf">on_each_iterable</span> <span class="p">(</span><span class="n">lol</span><span class="p">,</span> <span class="n">fun</span><span class="p">):</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lol</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Iterable</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lol</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">lol</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">on_each_iterable</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">fun</span><span class="p">))</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">fun</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">lol</span>
+    <span class="k">return</span> <span class="n">out</span></div>
+
+<div class="viewcode-block" id="stack_matryoshka"><a class="viewcode-back" href="../nested_list_tools.html#nested_list_tools.stack_matryoshka">[docs]</a><span class="k">def</span> <span class="nf">stack_matryoshka</span><span class="p">(</span><span class="n">nesting_list</span><span class="p">):</span>
+    <span class="n">nesting_list</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">nesting_list</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nesting_list</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">to_fit_there</span> <span class="o">=</span> <span class="n">nesting_list</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+        <span class="n">flatted_to_fit_there</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">flatten</span><span class="p">(</span><span class="n">to_fit_there</span><span class="p">[:]))</span>
+
+        <span class="k">def</span> <span class="nf">is_fitting</span><span class="p">(</span><span class="o">*</span><span class="n">xs</span><span class="p">):</span>
+            <span class="n">flatted_compared</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">flatten</span><span class="p">(</span><span class="n">xs</span><span class="p">[:]))</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">flatted_compared</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="nb">object</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">decision</span> <span class="o">=</span> <span class="n">flatted_compared</span> <span class="o">==</span> <span class="nb">list</span><span class="p">(</span><span class="n">flatted_to_fit_there</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">return</span> <span class="n">decision</span>
+
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">nesting_list</span><span class="p">)):</span>
+            <span class="n">through</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nesting_list</span><span class="p">[</span><span class="n">m</span><span class="p">])</span>
+
+            <span class="k">def</span> <span class="nf">replacing_fun</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+                <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">replace</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">is_fitting</span><span class="p">,</span> <span class="p">[</span><span class="n">to_fit_there</span><span class="p">],</span> <span class="n">window_size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">to_fit_there</span><span class="p">)))</span>
+
+            <span class="n">nesting_list</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">on_each_iterable</span><span class="p">(</span><span class="n">through</span><span class="p">,</span> <span class="n">replacing_fun</span><span class="p">)</span>
+
+        <span class="n">n</span> <span class="o">=</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">nesting_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="replace_pattern"><a class="viewcode-back" href="../nested_list_tools.html#nested_list_tools.replace_pattern">[docs]</a><span class="k">def</span> <span class="nf">replace_pattern</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">pattern_sequence</span><span class="p">,</span> <span class="n">replacement</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">lst</span><span class="p">[:]</span>
+    <span class="n">len_difference</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">pattern_sequence</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">e</span><span class="p">):</span>
+            <span class="n">i1</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span> <span class="o">-</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">pattern_sequence</span><span class="p">):</span>
+                <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">fun_e1</span><span class="p">,</span> <span class="n">e2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">pattern_sequence</span><span class="p">,</span> <span class="n">lst</span><span class="p">[</span><span class="n">i</span><span class="p">:]):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">fun_e1</span><span class="p">(</span><span class="n">e2</span><span class="p">):</span>
+                    <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="k">break</span>
+                <span class="n">i1</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">f</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">out</span><span class="p">[</span><span class="n">i</span><span class="o">+</span> <span class="o">+</span><span class="n">len_difference</span> <span class="p">:</span> <span class="n">i1</span>  <span class="o">+</span> <span class="n">len_difference</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">expand</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">replacement</span><span class="p">):</span>
+                        <span class="n">out</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="n">len_difference</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">j</span><span class="p">,</span><span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">replacement</span><span class="p">)):</span>
+                        <span class="k">if</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span> <span class="ow">in</span> <span class="n">x</span><span class="p">:</span>
+                            <span class="n">n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                            <span class="n">out</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="n">j</span> <span class="o">+</span> <span class="n">len_difference</span><span class="p">,</span> <span class="n">lst</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">n</span><span class="p">])</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">out</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="n">j</span> <span class="o">+</span> <span class="n">len_difference</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+                    <span class="n">len_difference</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">replacement</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">pattern_sequence</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">out</span></div>
+
+<div class="viewcode-block" id="check_for_tuple_in_list"><a class="viewcode-back" href="../nested_list_tools.html#nested_list_tools.check_for_tuple_in_list">[docs]</a><span class="k">def</span> <span class="nf">check_for_tuple_in_list</span> <span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">wildcard</span> <span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">):</span>
+    <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">suspend</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">i1</span><span class="p">,</span> <span class="n">e1</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+        <span class="n">i2</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">i2</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+            <span class="k">break</span>
+        <span class="n">e2</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">i2</span><span class="p">]</span>
+
+        <span class="k">while</span> <span class="n">i1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+            <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">e1</span> <span class="o">==</span> <span class="n">e2</span><span class="p">:</span>
+                <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">i2</span><span class="o">+=</span><span class="mi">1</span>
+                <span class="k">if</span> <span class="n">i2</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+                <span class="n">e2</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">i2</span><span class="p">]</span>
+                <span class="n">i1</span><span class="o">+=</span><span class="mi">1</span>
+                <span class="k">if</span> <span class="n">i1</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+                <span class="n">e1</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="n">i1</span><span class="p">]</span>
+                <span class="c1">#if found == False:</span>
+                <span class="c1">#    #raise Warning(&quot;Python Bug?&quot;)</span>
+                <span class="k">continue</span>
+            <span class="k">elif</span> <span class="n">e2</span> <span class="o">==</span> <span class="n">wildcard</span><span class="p">:</span>
+                <span class="n">i2</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">i2</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+                <span class="n">e2</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">i2</span><span class="p">]</span>
+                <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">suspend</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">continue</span>
+            <span class="k">elif</span> <span class="n">suspend</span><span class="p">:</span>
+                <span class="n">i1</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">i1</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+                <span class="n">e1</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="n">i1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">found</span></div>
+
+
+<div class="viewcode-block" id="guess_seq_len"><a class="viewcode-back" href="../nested_list_tools.html#nested_list_tools.guess_seq_len">[docs]</a><span class="k">def</span> <span class="nf">guess_seq_len</span><span class="p">(</span><span class="n">seq</span><span class="p">):</span>
+    <span class="n">guess</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">max_len</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">max_len</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">seq</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">x</span><span class="p">]</span> <span class="o">==</span> <span class="n">seq</span><span class="p">[</span><span class="n">x</span><span class="p">:</span><span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="p">]</span> <span class="p">:</span>
+            <span class="k">return</span> <span class="n">x</span>
+    <span class="k">return</span> <span class="n">guess</span></div>
+
+
+<span class="kn">from</span> <span class="nn">suffix_trees</span> <span class="k">import</span> <span class="n">STree</span>
+<div class="viewcode-block" id="occurrence_of_string_sequence"><a class="viewcode-back" href="../nested_list_tools.html#nested_list_tools.occurrence_of_string_sequence">[docs]</a><span class="k">def</span> <span class="nf">occurrence_of_string_sequence</span> <span class="p">(</span><span class="n">strings</span><span class="p">,</span> <span class="n">min_len</span><span class="p">):</span>
+    <span class="n">st</span> <span class="o">=</span> <span class="n">STree</span><span class="o">.</span><span class="n">STree</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
+    <span class="n">longest</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">lcs</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">longest</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">min_len</span><span class="p">:</span>
+        <span class="n">occurrences</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="n">longest</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">occurrences</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span></div>
+
+
+<span class="n">_iterable_cache_</span> <span class="o">=</span> <span class="p">[]</span>
+<div class="viewcode-block" id="check_for_hash_teration"><a class="viewcode-back" href="../nested_list_tools.html#nested_list_tools.check_for_hash_teration">[docs]</a><span class="k">def</span> <span class="nf">check_for_hash_teration</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="c1">#global _iterable_cache_</span>
+    <span class="c1">#_iterable_cache_ += [str(hash(str(obj)))]</span>
+    <span class="c1">#if occurrence_of_string_sequence(_iterable_cache_, 16) &gt; 10:</span>
+    <span class="c1">#    _iterable_cache_ = []</span>
+    <span class="c1">#    return &quot;&lt;***&gt;&quot;</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+<span class="n">maximal_depth</span> <span class="o">=</span> <span class="mi">20</span>
+<div class="viewcode-block" id="type_spec_iterable"><a class="viewcode-back" href="../nested_list_tools.html#nested_list_tools.type_spec_iterable">[docs]</a><span class="k">def</span> <span class="nf">type_spec_iterable</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">max_depth</span><span class="o">=</span><span class="n">maximal_depth</span><span class="p">):</span>
+    <span class="n">depth</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">depth</span> <span class="o">&gt;</span> <span class="n">max_depth</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;?*&quot;</span>
+
+    <span class="n">check</span> <span class="o">=</span> <span class="n">check_for_hash_teration</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">check</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">check</span>
+
+    <span class="n">tps</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">type_spec</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">depth</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tps</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;&lt;&quot;</span> <span class="o">+</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">tps</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;&gt;&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;&lt;...&gt;&quot;</span></div>
+
+
+<div class="viewcode-block" id="type_spec_dict"><a class="viewcode-back" href="../nested_list_tools.html#nested_list_tools.type_spec_dict">[docs]</a><span class="k">def</span> <span class="nf">type_spec_dict</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">max_depth</span><span class="o">=</span><span class="n">maximal_depth</span><span class="p">):</span>
+    <span class="n">depth</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">depth</span> <span class="o">&gt;</span> <span class="n">max_depth</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;?*&quot;</span>
+
+    <span class="n">check</span> <span class="o">=</span> <span class="n">check_for_hash_teration</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">check</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">check</span>
+
+    <span class="n">tps</span> <span class="o">=</span> <span class="nb">set</span><span class="p">((</span><span class="n">type_spec</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">depth</span><span class="p">),</span> <span class="n">type_spec</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">depth</span><span class="p">))</span> <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+    <span class="n">keytypes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">tps</span><span class="p">)</span>
+    <span class="n">valtypes</span> <span class="o">=</span>  <span class="nb">set</span><span class="p">(</span><span class="n">v</span> <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">tps</span><span class="p">)</span>
+    <span class="n">kt</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">keytypes</span><span class="p">))</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">keytypes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;...&quot;</span>
+    <span class="n">vt</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">valtypes</span><span class="p">))</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">valtypes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;...&quot;</span>
+    <span class="k">return</span> <span class="s2">&quot;dict&lt;</span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">kt</span><span class="p">,</span> <span class="n">vt</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="type_spec_tuple"><a class="viewcode-back" href="../nested_list_tools.html#nested_list_tools.type_spec_tuple">[docs]</a><span class="k">def</span> <span class="nf">type_spec_tuple</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">max_depth</span><span class="o">=</span><span class="n">maximal_depth</span><span class="p">):</span>
+    <span class="n">depth</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">depth</span> <span class="o">&gt;</span> <span class="n">max_depth</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;?*&quot;</span>
+
+    <span class="n">check</span> <span class="o">=</span> <span class="n">check_for_hash_teration</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">check</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">check</span>
+    <span class="k">return</span> <span class="s2">&quot;tuple&lt;&quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">type_spec</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">depth</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;&gt;&quot;</span></div>
+
+
+<div class="viewcode-block" id="type_spec"><a class="viewcode-back" href="../nested_list_tools.html#nested_list_tools.type_spec">[docs]</a><span class="k">def</span> <span class="nf">type_spec</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">depth</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">max_depth</span><span class="o">=</span><span class="n">maximal_depth</span><span class="p">):</span>
+    <span class="n">depth</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">check</span> <span class="o">=</span> <span class="n">check_for_hash_teration</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">check</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">check</span>
+    <span class="k">if</span> <span class="n">depth</span> <span class="o">&gt;</span> <span class="n">max_depth</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;?*&quot;</span>
+
+    <span class="n">t</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="nb">int</span><span class="p">:</span> <span class="s2">&quot;int&quot;</span><span class="p">,</span>
+        <span class="nb">str</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span>
+        <span class="nb">bool</span><span class="p">:</span> <span class="s2">&quot;bool&quot;</span><span class="p">,</span>
+        <span class="nb">float</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">):</span> <span class="s2">&quot;(none)&quot;</span><span class="p">,</span>
+        <span class="nb">list</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">o</span><span class="p">:</span> <span class="n">type_spec_iterable</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="s1">&#39;list&#39;</span><span class="p">,</span> <span class="n">depth</span><span class="p">),</span>
+        <span class="nb">set</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">o</span><span class="p">:</span> <span class="n">type_spec_iterable</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="s1">&#39;set&#39;</span><span class="p">,</span> <span class="n">depth</span><span class="p">),</span>
+        <span class="nb">dict</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">o</span><span class="p">:</span> <span class="n">type_spec_dict</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">depth</span><span class="p">),</span>
+        <span class="nb">tuple</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">o</span><span class="p">:</span> <span class="n">type_spec_tuple</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">depth</span><span class="p">),</span>
+    <span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">o</span><span class="p">:</span> <span class="nb">type</span><span class="p">(</span><span class="n">o</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span> <span class="k">else</span> <span class="n">res</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span></div>
+
+
+<span class="c1">########################################</span>
+
+<span class="kn">import</span> <span class="nn">unittest</span>
+
+<div class="viewcode-block" id="TestNLT"><a class="viewcode-back" href="../nested_list_tools.html#nested_list_tools.TestNLT">[docs]</a><span class="k">class</span> <span class="nc">TestNLT</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestNLT.test_check_for_tuple_in_list"><a class="viewcode-back" href="../nested_list_tools.html#nested_list_tools.TestNLT.test_check_for_tuple_in_list">[docs]</a>    <span class="k">def</span> <span class="nf">test_check_for_tuple_in_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">l</span>  <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">]</span>
+        <span class="n">t1</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">t2</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">t3</span> <span class="o">=</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">t4</span> <span class="o">=</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">)</span>
+        <span class="n">t5</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">t6</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s1">&#39;*&#39;</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+
+        <span class="n">t7</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s1">&#39;*&#39;</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">t8</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s1">&#39;*&#39;</span><span class="p">,</span><span class="mi">9</span><span class="p">)</span>
+        <span class="n">t9</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="s1">&#39;*&#39;</span><span class="p">,</span><span class="mi">9</span><span class="p">)</span>
+        <span class="n">t10</span><span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="s1">&#39;*&#39;</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">t11</span><span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="s1">&#39;*&#39;</span><span class="p">,</span><span class="mi">7</span><span class="p">)</span>
+        <span class="n">t12</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span> <span class="p">(</span><span class="kc">True</span>  <span class="o">==</span> <span class="n">check_for_tuple_in_list</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">t1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span> <span class="p">(</span><span class="kc">False</span> <span class="o">==</span> <span class="n">check_for_tuple_in_list</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">t2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span> <span class="p">(</span><span class="kc">False</span> <span class="o">==</span> <span class="n">check_for_tuple_in_list</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">t3</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span> <span class="p">(</span><span class="kc">True</span>  <span class="o">==</span> <span class="n">check_for_tuple_in_list</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">t4</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span> <span class="p">(</span><span class="kc">False</span> <span class="o">==</span> <span class="n">check_for_tuple_in_list</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">t5</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span> <span class="p">(</span><span class="kc">True</span>  <span class="o">==</span> <span class="n">check_for_tuple_in_list</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">t6</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span> <span class="p">(</span><span class="kc">True</span>  <span class="o">==</span> <span class="n">check_for_tuple_in_list</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">t7</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span> <span class="p">(</span><span class="kc">True</span>  <span class="o">==</span> <span class="n">check_for_tuple_in_list</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">t8</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span> <span class="p">(</span><span class="kc">True</span>  <span class="o">==</span> <span class="n">check_for_tuple_in_list</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">t9</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span> <span class="p">(</span><span class="kc">False</span> <span class="o">==</span> <span class="n">check_for_tuple_in_list</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">t10</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span> <span class="p">(</span><span class="kc">True</span>  <span class="o">==</span> <span class="n">check_for_tuple_in_list</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">t11</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span> <span class="p">(</span><span class="kc">True</span>  <span class="o">==</span> <span class="n">check_for_tuple_in_list</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">t12</span><span class="p">))</span>
+
+
+        <span class="n">t12</span> <span class="o">=</span> <span class="s1">&#39;derive&#39;</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;have&#39;</span><span class="p">,</span> <span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="s1">&#39;the&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;the&#39;</span><span class="p">,</span> <span class="s1">&#39;definition&#39;</span><span class="p">,</span> <span class="s1">&#39;answer&#39;</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">,</span> <span class="s1">&#39;the&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;in&#39;</span><span class="p">,</span> <span class="s1">&#39;common&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span> <span class="p">(</span><span class="kc">False</span>  <span class="o">==</span> <span class="n">check_for_tuple_in_list</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">t12</span><span class="p">))</span></div></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Stefan Werner
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

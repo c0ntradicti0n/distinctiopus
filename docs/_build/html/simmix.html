@@ -1,0 +1,628 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>simmix module &mdash; S0krates 5.0.0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> S0krates
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">simmix module</a></li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">S0krates</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>simmix module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/simmix.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-simmix">
+<span id="simmix-module"></span><h1>simmix module<a class="headerlink" href="#module-simmix" title="Permalink to this headline">¶</a></h1>
+<p>This module is intended for overlapping an open-end variety of similarty measures on complex data in
+natural language processing. Its like an organ with different registers for text-comparisons.</p>
+<p>Choices are made from two lists of dict elements, that are representing some phrases. They are bundles
+of properties, as their text, grammar, also a logical formula to represent their logical structure (pyprover), semantical vectors (and syntactical, like elmo-embeddings from allen-nlp) , tdf-idf-importance and some more. These are predefined here, if you know some of your own,its possible to give custom functions.</p>
+<dl class="docutils">
+<dt>p1 =</dt>
+<dd>{
+‘text’: [‘The’, ‘cause’, ‘of’, ‘cancer’, ‘is’, ‘not’, ‘a’, ‘virus’, ‘and’, ‘the’, ‘cause’, ‘of’, ‘cancer’, ‘is’, ‘not’, ‘a’, ‘fungus’],
+‘<a href="#id1"><span class="problematic" id="id2">lemma_</span></a>’: [‘the’, ‘because’, ‘of’, ‘cancer’, ‘be’, ‘not’, ‘a’, ‘virus’, ‘and’, ‘the’, ‘because’, ‘of’, ‘cancer’, ‘be’, ‘not’, ‘a’, ‘fungus’],
+‘dep’,
+‘importance’: array([0.53395703, …  0.2       ])
+A ∧ ¬C ∧ B ∧ ¬D</dd>
+<dt>((((pyprover.A )) &amp; ~ pyprover.C ) &amp; (((pyprover.B )) &amp; ~ pyprover.D ))</dt>
+<dd>}</dd>
+</dl>
+<p>p2 = …
+q1 = …
+q2 = …
+ps = [p1,p2,p3 …]
+qs = [q1,q2,q3 …]</p>
+<p>Two list of these elements have to be provided for the Simmix.choose ((p1,p2))-function.</p>
+<p>Also there are functions in Simmix to compare these and different sorts of how choices can be made.</p>
+<p>The functions and parameters for computing the overall-similarity,, that should be used in a complex comparison
+have to be initialized like this:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>superficial_sim  =         Simmix([(1, Simmix.fuzzystr_sim, 0.72, 2.01), # fuzzy-string-comparison</dt>
+<dd>(1, Simmix.dep_sim, 0.4, 1)       # levensthein distance of the dependency measures
+])</dd>
+</dl>
+</div></blockquote>
+<p>The list of tuple parameter is represents a pipeline, what should be computed:
+1                     – The weight of their normalized results.
+Simmix.fuzzystr_sim   – which function
+0.72                  – minimum-score
+2.01                  – maximum-score</p>
+<dl class="class">
+<dt id="simmix.Simmix">
+<em class="property">class </em><code class="descclassname">simmix.</code><code class="descname">Simmix</code><span class="sig-paren">(</span><em>similarity_composition</em>, <em>n=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This module contains utils to overlap different similarity measures.</p>
+<dl class="method">
+<dt id="simmix.Simmix.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>similarity_composition</em>, <em>n=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up, which functions are taken to compute a similarity matrix to choose from</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>similarity_composition</strong> – <dl class="docutils">
+<dt>list of tuples (</dt>
+<dd>weight&lt;float&gt;,
+fun&lt;function, accepting expressiondicts as arguments&gt;,
+min-val&lt;float&gt;,
+max-val&lt;float&gt;)</dd>
+</dl>
+</li>
+<li><strong>n</strong> – number of results to return, can be overridden with choose(…)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.abtract_conrete_sim">
+<code class="descname">abtract_conrete_sim</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.abtract_conrete_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.abtract_conrete_sim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.apply_sim_fun">
+<code class="descname">apply_sim_fun</code><span class="sig-paren">(</span><em>fee</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.apply_sim_fun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.apply_sim_fun" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.beam_under_construction">
+<code class="descname">beam_under_construction</code><span class="sig-paren">(</span><em>ex2</em>, <em>info</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.beam_under_construction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.beam_under_construction" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.boolean_same_sim">
+<code class="descname">boolean_same_sim</code><span class="sig-paren">(</span><em>ex2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.boolean_same_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.boolean_same_sim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.boolean_sim">
+<code class="descname">boolean_sim</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.boolean_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.boolean_sim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.boolean_subsame_sim">
+<code class="descname">boolean_subsame_sim</code><span class="sig-paren">(</span><em>ex2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.boolean_subsame_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.boolean_subsame_sim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.choose">
+<code class="descname">choose</code><span class="sig-paren">(</span><em>data</em>, <em>out=None</em>, <em>layout=None</em>, <em>n=None</em>, <em>graph_coro=None</em>, <em>type=None</em>, <em>output=False</em>, <em>minimize=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.choose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.choose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Choose in different manners building a similarity matrix.</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\sum_{i=1}^{\infty} x_{i}\]</div>
+<p>The similarity matrix is computed by a cartesian product of the two samples of expressions as two vectors and
+a vector valued function,</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\overrightarrow{f}(x_{1,n}, x_{2,m}) = \langle f_1(x_{1,n}, x_{2,m}), f_2(x{1,n}, x_{2,m}), \dots f_k(x_{1,n}, x_{2,m}) \]</div>
+</div></blockquote>
+</div></blockquote>
+<p>angle   </p>
+<blockquote>
+<div><p>the resulting matrix then is:</p>
+<img alt="_images/aslant_matrix.png" src="_images/aslant_matrix.png" />
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param data:</th><td class="field-body"><p class="first">tuple of lists of expressions, meaning the dictionaries or what is compared for you</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param out:</th><td class="field-body"><p class="first">defines the structure of the returned value
+default=None: the chosed expressions are returned
+‘i’: only the indices
+‘r’: only the indices of the right value are returned
+‘2t’: pairs of tuples (for building a graph
+‘nx’: directed networkxgraph</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">param graph_coro:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"><p class="first">graph_coroutine, that accepts a 3-tuple of two dictionaries and a <cite>type</cite> string</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param type:</th><td class="field-body"><dl class="first docutils">
+<dt>If using <cite>G</cite>, one has to specify the type-argument,</dt>
+<dd><ul class="first last simple">
+<li>either in case of input lists as data a string,</li>
+<li>or a 3tuple <cite>(type_l_pair, type_r_pair, type_between)=type</cite> in case of input datatypes like the</li>
+</ul>
+</dd>
+</dl>
+<p>list-tuple-list-dict, that this module returns</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">param layout:</th><td class="field-body"><p class="first">default=None behavior like n=1
+‘1:1’ means for each one element of the one expression is eactly one chosen from the other
+‘n:m’ for samples of n elements are fitting m other elements chosen from the other expression</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param n:</th><td class="field-body"><p class="first">default=1
+count of best n solutions, also clusters of expressions of the one are chosen to fit to a cluster of the other</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">return:</th><td class="field-body"><p class="first last">list of tuples of lists of ints or indexed expressions, according to the chosen ‘out’ parameter</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.common_words_sim">
+<code class="descname">common_words_sim</code><span class="sig-paren">(</span><em>ex2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.common_words_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.common_words_sim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.convolve_sim">
+<code class="descname">convolve_sim</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.convolve_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.convolve_sim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.dep_sim">
+<code class="descname">dep_sim</code><span class="sig-paren">(</span><em>ex2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.dep_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.dep_sim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="simmix.Simmix.do_logic">
+<em class="property">classmethod </em><code class="descname">do_logic</code><span class="sig-paren">(</span><em>formulas=None</em>, <em>key_rel=None</em>, <em>negate_one=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.do_logic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.do_logic" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function does the logic and returns true, it can generate a contradiction</p>
+<p>It renames the keys in the formula: These keys, that don’t belong to each other, get some other name.
+The relationated keys get the same key.</p>
+<p>If  negate_one` is set, then for one relationated key a negation is added. That is used, if the expression, that
+this key stands for contains a negation</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>formulas</strong> – formulas 1 and 2 as tuple</li>
+<li><strong>key_rel</strong> – the keys to combine</li>
+<li><strong>negate_one</strong> – add a negation to one of the keys of key_rel</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">1 for a contradiction, 0 for no one</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.elmo_layer_sim">
+<code class="descname">elmo_layer_sim</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.elmo_layer_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.elmo_layer_sim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.elmo_multi_sim">
+<code class="descname">elmo_multi_sim</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.elmo_multi_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.elmo_multi_sim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.elmo_sim">
+<code class="descname">elmo_sim</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.elmo_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.elmo_sim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.elmo_weighted_sim">
+<code class="descname">elmo_weighted_sim</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.elmo_weighted_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.elmo_weighted_sim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.excluding_pair_boolean_sim">
+<code class="descname">excluding_pair_boolean_sim</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.excluding_pair_boolean_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.excluding_pair_boolean_sim" title="Permalink to this definition">¶</a></dt>
+<dd><p>The defined pair of values mustn’t occur in one of the statements at once and in the other.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.expressions_list">
+<code class="descname">expressions_list</code><span class="sig-paren">(</span><em>right_values</em>, <em>exs1</em>, <em>exs2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.expressions_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.expressions_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.formula_contradicts">
+<code class="descname">formula_contradicts</code><span class="sig-paren">(</span><em>symmetric=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.formula_contradicts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.formula_contradicts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.formula_prooves">
+<code class="descname">formula_prooves</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.formula_prooves"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.formula_prooves" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.fuzzystr_sim">
+<code class="descname">fuzzystr_sim</code><span class="sig-paren">(</span><em>ex2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.fuzzystr_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.fuzzystr_sim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.i_list">
+<code class="descname">i_list</code><span class="sig-paren">(</span><em>right_values</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.i_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.i_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="simmix.Simmix.key_regex">
+<code class="descname">key_regex</code><em class="property"> = re.compile(&quot;pyprover\\.logic\\.Prop\\(\\'([a-zA-Z0-9])+\\'\\)&quot;)</em><a class="headerlink" href="#simmix.Simmix.key_regex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.lemma_sim">
+<code class="descname">lemma_sim</code><span class="sig-paren">(</span><em>ex2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.lemma_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.lemma_sim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.longer_sim">
+<code class="descname">longer_sim</code><span class="sig-paren">(</span><em>ex2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.longer_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.longer_sim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.multi_sim">
+<code class="descname">multi_sim</code><span class="sig-paren">(</span><em>n=4</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.multi_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.multi_sim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.nextleft_sim">
+<code class="descname">nextleft_sim</code><span class="sig-paren">(</span><em>ex2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.nextleft_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.nextleft_sim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.nextright_sim">
+<code class="descname">nextright_sim</code><span class="sig-paren">(</span><em>ex2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.nextright_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.nextright_sim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.one_to_one">
+<code class="descname">one_to_one</code><span class="sig-paren">(</span><em>exs1</em>, <em>exs2</em>, <em>mask</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.one_to_one"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.one_to_one" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute combinations of input-lists with a solution connecting one to one expression.
+Solved with the hungarian method, filtered by the mask of acceptable solutions within the allowed range of values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>exs1</strong> – list of comparaed values  in x direction</li>
+<li><strong>exs2</strong> – list of compared values   in y direction</li>
+<li><strong>mask</strong> – np boolean mask of fine solutions</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">tuple of list of indices to the exs1 list and of indices of the exs2 list</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.pos_sim">
+<code class="descname">pos_sim</code><span class="sig-paren">(</span><em>ex2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.pos_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.pos_sim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.print_exs">
+<code class="descname">print_exs</code><span class="sig-paren">(</span><em>ex2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.print_exs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.print_exs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.reduce_i_s_pair_tuples">
+<code class="descname">reduce_i_s_pair_tuples</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.reduce_i_s_pair_tuples"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.reduce_i_s_pair_tuples" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.reduce_i_s_right_values">
+<code class="descname">reduce_i_s_right_values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.reduce_i_s_right_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.reduce_i_s_right_values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.standard_range">
+<code class="descname">standard_range</code><span class="sig-paren">(</span><em>maxim</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.standard_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.standard_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator for similarity computing functions, it is later used for normalisation</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>maxim</strong> – maximum value</li>
+<li><strong>maxim</strong> – minimum value</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">decorated function</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.sub_i">
+<code class="descname">sub_i</code><span class="sig-paren">(</span><em>ex2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.sub_i"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.sub_i" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.tag_sim">
+<code class="descname">tag_sim</code><span class="sig-paren">(</span><em>ex2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.tag_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.tag_sim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.vecs_sim">
+<code class="descname">vecs_sim</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.vecs_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.vecs_sim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.write_to_graph">
+<code class="descname">write_to_graph</code><span class="sig-paren">(</span><em>graph_coro</em>, <em>type</em>, <em>exs1</em>, <em>exs2</em>, <em>left_value</em>, <em>right_values</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.write_to_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.write_to_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write a result to the graph using a coroutine</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>graph_coro</strong> – coroutine to send a (dict, dict, type)-tuple to. This also can be a list con coroutines and the same
+arguments will be applied to them</li>
+<li><strong>type</strong> – the type added to the pair of dicts</li>
+<li><strong>exs1</strong> – expression list 1</li>
+<li><strong>exs2</strong> – expression list 2</li>
+<li><strong>left_value</strong> – list of left indices</li>
+<li><strong>right_values</strong> – list of right indices</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="simmix.TestSimmix">
+<em class="property">class </em><code class="descclassname">simmix.</code><code class="descname">TestSimmix</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#TestSimmix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.TestSimmix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="simmix.TestSimmix.test_antonym_dict_for_symmetry">
+<code class="descname">test_antonym_dict_for_symmetry</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#TestSimmix.test_antonym_dict_for_symmetry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.TestSimmix.test_antonym_dict_for_symmetry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.TestSimmix.test_excluding_pair">
+<code class="descname">test_excluding_pair</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#TestSimmix.test_excluding_pair"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.TestSimmix.test_excluding_pair" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.TestSimmix.test_one_to_one_complex">
+<code class="descname">test_one_to_one_complex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#TestSimmix.test_one_to_one_complex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.TestSimmix.test_one_to_one_complex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.TestSimmix.test_one_to_one_simple">
+<code class="descname">test_one_to_one_simple</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#TestSimmix.test_one_to_one_simple"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.TestSimmix.test_one_to_one_simple" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="simmix.cartesian_product_itertools">
+<code class="descclassname">simmix.</code><code class="descname">cartesian_product_itertools</code><span class="sig-paren">(</span><em>arrays</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#cartesian_product_itertools"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.cartesian_product_itertools" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cartesian product, that works with functions and combinations of parameters and returns an ordered output, that
+can be sliced with numpy and axis-indexing</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Stefan Werner
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

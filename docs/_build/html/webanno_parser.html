@@ -1,0 +1,435 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>webanno_parser module &mdash; S0krates 5.0.0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> S0krates
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">webanno_parser module</a></li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">S0krates</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>webanno_parser module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/webanno_parser.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-webanno_parser">
+<span id="webanno-parser-module"></span><h1>webanno_parser module<a class="headerlink" href="#module-webanno_parser" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="webanno_parser.Webanno_Parser">
+<em class="property">class </em><code class="descclassname">webanno_parser.</code><code class="descname">Webanno_Parser</code><span class="sig-paren">(</span><em>path</em>, <em>dist_parts_col='Distinctionparts_is'</em>, <em>dist_sipas_Link_col='Distinctionparts_ROLE_webanno.custom.Distinctionparts:for_webanno.custom.DistinctionpartsForLink'</em>, <em>dist_level_BT_col='Distinctionlevel_BT_webanno.custom.Distinctionparts'</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webanno_parser.html#Webanno_Parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webanno_parser.Webanno_Parser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="class">
+<dt id="webanno_parser.Webanno_Parser.DistlevelRelation">
+<em class="property">class </em><code class="descname">DistlevelRelation</code><span class="sig-paren">(</span><em>vertex</em>, <em>chain</em>, <em>labels1</em>, <em>labels2</em><span class="sig-paren">)</span><a class="headerlink" href="#webanno_parser.Webanno_Parser.DistlevelRelation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="attribute">
+<dt id="webanno_parser.Webanno_Parser.DistlevelRelation.chain">
+<code class="descname">chain</code><a class="headerlink" href="#webanno_parser.Webanno_Parser.DistlevelRelation.chain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="webanno_parser.Webanno_Parser.DistlevelRelation.labels1">
+<code class="descname">labels1</code><a class="headerlink" href="#webanno_parser.Webanno_Parser.DistlevelRelation.labels1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="webanno_parser.Webanno_Parser.DistlevelRelation.labels2">
+<code class="descname">labels2</code><a class="headerlink" href="#webanno_parser.Webanno_Parser.DistlevelRelation.labels2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="webanno_parser.Webanno_Parser.DistlevelRelation.vertex">
+<code class="descname">vertex</code><a class="headerlink" href="#webanno_parser.Webanno_Parser.DistlevelRelation.vertex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="webanno_parser.Webanno_Parser.DistpartRelation">
+<em class="property">class </em><code class="descname">DistpartRelation</code><span class="sig-paren">(</span><em>pred</em>, <em>arg</em>, <em>edges</em>, <em>labels1</em>, <em>labels2</em><span class="sig-paren">)</span><a class="headerlink" href="#webanno_parser.Webanno_Parser.DistpartRelation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="attribute">
+<dt id="webanno_parser.Webanno_Parser.DistpartRelation.arg">
+<code class="descname">arg</code><a class="headerlink" href="#webanno_parser.Webanno_Parser.DistpartRelation.arg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="webanno_parser.Webanno_Parser.DistpartRelation.edges">
+<code class="descname">edges</code><a class="headerlink" href="#webanno_parser.Webanno_Parser.DistpartRelation.edges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="webanno_parser.Webanno_Parser.DistpartRelation.labels1">
+<code class="descname">labels1</code><a class="headerlink" href="#webanno_parser.Webanno_Parser.DistpartRelation.labels1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="webanno_parser.Webanno_Parser.DistpartRelation.labels2">
+<code class="descname">labels2</code><a class="headerlink" href="#webanno_parser.Webanno_Parser.DistpartRelation.labels2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="webanno_parser.Webanno_Parser.DistpartRelation.pred">
+<code class="descname">pred</code><a class="headerlink" href="#webanno_parser.Webanno_Parser.DistpartRelation.pred" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="webanno_parser.Webanno_Parser.GraphEvaluation">
+<em class="property">class </em><code class="descname">GraphEvaluation</code><span class="sig-paren">(</span><em>whole_graph</em>, <em>sub_levels_graph</em>, <em>sub_parts_graph</em>, <em>labels1</em>, <em>labels2</em>, <em>connected_distparts</em>, <em>connected_distlevels</em>, <em>text_dict</em>, <em>kind_dict</em>, <em>grouped_df</em>, <em>merged_df</em>, <em>graph_df</em><span class="sig-paren">)</span><a class="headerlink" href="#webanno_parser.Webanno_Parser.GraphEvaluation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="attribute">
+<dt id="webanno_parser.Webanno_Parser.GraphEvaluation.connected_distlevels">
+<code class="descname">connected_distlevels</code><a class="headerlink" href="#webanno_parser.Webanno_Parser.GraphEvaluation.connected_distlevels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 6</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="webanno_parser.Webanno_Parser.GraphEvaluation.connected_distparts">
+<code class="descname">connected_distparts</code><a class="headerlink" href="#webanno_parser.Webanno_Parser.GraphEvaluation.connected_distparts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 5</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="webanno_parser.Webanno_Parser.GraphEvaluation.graph_df">
+<code class="descname">graph_df</code><a class="headerlink" href="#webanno_parser.Webanno_Parser.GraphEvaluation.graph_df" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 11</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="webanno_parser.Webanno_Parser.GraphEvaluation.grouped_df">
+<code class="descname">grouped_df</code><a class="headerlink" href="#webanno_parser.Webanno_Parser.GraphEvaluation.grouped_df" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 9</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="webanno_parser.Webanno_Parser.GraphEvaluation.kind_dict">
+<code class="descname">kind_dict</code><a class="headerlink" href="#webanno_parser.Webanno_Parser.GraphEvaluation.kind_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 8</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="webanno_parser.Webanno_Parser.GraphEvaluation.labels1">
+<code class="descname">labels1</code><a class="headerlink" href="#webanno_parser.Webanno_Parser.GraphEvaluation.labels1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="webanno_parser.Webanno_Parser.GraphEvaluation.labels2">
+<code class="descname">labels2</code><a class="headerlink" href="#webanno_parser.Webanno_Parser.GraphEvaluation.labels2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="webanno_parser.Webanno_Parser.GraphEvaluation.merged_df">
+<code class="descname">merged_df</code><a class="headerlink" href="#webanno_parser.Webanno_Parser.GraphEvaluation.merged_df" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 10</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="webanno_parser.Webanno_Parser.GraphEvaluation.sub_levels_graph">
+<code class="descname">sub_levels_graph</code><a class="headerlink" href="#webanno_parser.Webanno_Parser.GraphEvaluation.sub_levels_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="webanno_parser.Webanno_Parser.GraphEvaluation.sub_parts_graph">
+<code class="descname">sub_parts_graph</code><a class="headerlink" href="#webanno_parser.Webanno_Parser.GraphEvaluation.sub_parts_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="webanno_parser.Webanno_Parser.GraphEvaluation.text_dict">
+<code class="descname">text_dict</code><a class="headerlink" href="#webanno_parser.Webanno_Parser.GraphEvaluation.text_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 7</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="webanno_parser.Webanno_Parser.GraphEvaluation.whole_graph">
+<code class="descname">whole_graph</code><a class="headerlink" href="#webanno_parser.Webanno_Parser.GraphEvaluation.whole_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="method">
+<dt id="webanno_parser.Webanno_Parser.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>path</em>, <em>dist_parts_col='Distinctionparts_is'</em>, <em>dist_sipas_Link_col='Distinctionparts_ROLE_webanno.custom.Distinctionparts:for_webanno.custom.DistinctionpartsForLink'</em>, <em>dist_level_BT_col='Distinctionlevel_BT_webanno.custom.Distinctionparts'</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webanno_parser.html#Webanno_Parser.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webanno_parser.Webanno_Parser.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="webanno_parser.Webanno_Parser.extract_distlevel_relations">
+<code class="descname">extract_distlevel_relations</code><span class="sig-paren">(</span><em>df</em>, <em>dist_level_col</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webanno_parser.html#Webanno_Parser.extract_distlevel_relations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webanno_parser.Webanno_Parser.extract_distlevel_relations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="webanno_parser.Webanno_Parser.extract_distpart_relations">
+<code class="descname">extract_distpart_relations</code><span class="sig-paren">(</span><em>df</em>, <em>dist_parts_col</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webanno_parser.html#Webanno_Parser.extract_distpart_relations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webanno_parser.Webanno_Parser.extract_distpart_relations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="webanno_parser.Webanno_Parser.getdf">
+<code class="descname">getdf</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/webanno_parser.html#Webanno_Parser.getdf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webanno_parser.Webanno_Parser.getdf" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="webanno_parser.Webanno_Parser.hierarchy_graph_df">
+<code class="descname">hierarchy_graph_df</code><span class="sig-paren">(</span><em>df</em>, <em>distparts</em>, <em>distlevels</em>, <em>dist_parts_col</em>, <em>dist_sipas_Link_col</em>, <em>dist_level_col</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webanno_parser.html#Webanno_Parser.hierarchy_graph_df"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webanno_parser.Webanno_Parser.hierarchy_graph_df" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="webanno_parser.Webanno_Parser.load_df">
+<code class="descname">load_df</code><span class="sig-paren">(</span><em>csv_file</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webanno_parser.html#Webanno_Parser.load_df"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webanno_parser.Webanno_Parser.load_df" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="webanno_parser.Webanno_Parser.paint_graphviz">
+<code class="descname">paint_graphviz</code><span class="sig-paren">(</span><em>path</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webanno_parser.html#Webanno_Parser.paint_graphviz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webanno_parser.Webanno_Parser.paint_graphviz" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="webanno_parser.Webanno_Parser.string_nan">
+<code class="descname">string_nan</code><em class="property"> = ':)'</em><a class="headerlink" href="#webanno_parser.Webanno_Parser.string_nan" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="webanno_parser.Webanno_Parser.tsv2csv">
+<code class="descname">tsv2csv</code><span class="sig-paren">(</span><em>tsv_file</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webanno_parser.html#Webanno_Parser.tsv2csv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webanno_parser.Webanno_Parser.tsv2csv" title="Permalink to this definition">¶</a></dt>
+<dd><p>translate the tsv to a common csv-file with tab-separation,
+causes side_effects:</p>
+<blockquote>
+<div>list self.header
+list self.pred_arg_header</div></blockquote>
+<p>are set</p>
+<p>caveto:
+the feature names in Webanno shouldn’t end with “Link”</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="webanno_parser.flatten">
+<code class="descclassname">webanno_parser.</code><code class="descname">flatten</code><span class="sig-paren">(</span><em>l</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webanno_parser.html#flatten"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webanno_parser.flatten" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="webanno_parser.main">
+<code class="descclassname">webanno_parser.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/webanno_parser.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webanno_parser.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="webanno_parser.split_expand">
+<code class="descclassname">webanno_parser.</code><code class="descname">split_expand</code><span class="sig-paren">(</span><em>df</em>, <em>lst_col</em>, <em>delim</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webanno_parser.html#split_expand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webanno_parser.split_expand" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="webanno_parser.to_edges">
+<code class="descclassname">webanno_parser.</code><code class="descname">to_edges</code><span class="sig-paren">(</span><em>l</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webanno_parser.html#to_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webanno_parser.to_edges" title="Permalink to this definition">¶</a></dt>
+<dd><p>treat <cite>l</cite> as a Graph and returns it’s edges
+to_edges([‘a’,’b’,’c’,’d’]) -&gt; [(a,b), (b,c),(c,d)]</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="webanno_parser.to_graph">
+<code class="descclassname">webanno_parser.</code><code class="descname">to_graph</code><span class="sig-paren">(</span><em>l</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webanno_parser.html#to_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webanno_parser.to_graph" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Stefan Werner
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

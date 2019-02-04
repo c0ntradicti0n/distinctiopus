@@ -1,0 +1,325 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>dict_tools &mdash; S0krates 5.0.0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> S0krates
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">S0krates</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>dict_tools</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for dict_tools</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">collections</span>
+
+
+
+<div class="viewcode-block" id="invert_dict"><a class="viewcode-back" href="../dict_tools.html#dict_tools.invert_dict">[docs]</a><span class="k">def</span> <span class="nf">invert_dict</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Get the anti-dict, where the keys become the values and the values become the keys.</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">            &gt;&gt;&gt; from dict_tools import *</span>
+<span class="sd">            &gt;&gt;&gt; d = {</span>
+<span class="sd">            ...             1:[1,2,3],</span>
+<span class="sd">            ...             6:[3,4,1]</span>
+<span class="sd">            ...     }</span>
+<span class="sd">            &gt;&gt;&gt; invert_dict(d)</span>
+<span class="sd">            {1: [1, 6], 2: [1], 3: [1, 6], 4: [6]}</span>
+
+<span class="sd">        :param d: dict of keyable values (also with lists)</span>
+<span class="sd">        :return: inverted dict</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">inverse</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="c1"># Go through until a list in the dict:</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
+                <span class="c1"># Check if in the inverted dict the key exists</span>
+                <span class="k">if</span> <span class="n">item</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">inverse</span><span class="p">:</span>
+                    <span class="c1"># If not create a new list</span>
+                    <span class="n">inverse</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">inverse</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">inverse</span></div>
+
+
+
+<div class="viewcode-block" id="balance_complex_tuple_dict"><a class="viewcode-back" href="../dict_tools.html#dict_tools.balance_complex_tuple_dict">[docs]</a><span class="k">def</span> <span class="nf">balance_complex_tuple_dict</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">_sort</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Balancing a complex dict, meaning, that the keys and tghe values point transitive to another.</span>
+
+<span class="sd">        The dict can have strings, lists of strings and tuples of strings as keys. The lists are split up</span>
+<span class="sd">        when rearranging the keys and combined, if packed to a value-of the balanced dict.</span>
+
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">            &gt;&gt;&gt; from dict_tools import *</span>
+<span class="sd">            &gt;&gt;&gt; d = {</span>
+<span class="sd">            ...             (&#39;differ&#39;):[&#39;equal&#39;],</span>
+<span class="sd">            ...             (&#39;have&#39;,&#39;*&#39;,&#39;in&#39;, &#39;common&#39;):[(&#39;differ&#39;,&#39;in&#39;), &#39;differ&#39;, &#39;derive&#39;]</span>
+<span class="sd">            ...     }</span>
+<span class="sd">            &gt;&gt;&gt; balance_complex_tuple_dict(dict(d), _sort=True)</span>
+<span class="sd">            {&#39;differ&#39;: [(&#39;have&#39;, &#39;*&#39;, &#39;in&#39;, &#39;common&#39;), &#39;equal&#39;], (&#39;have&#39;, &#39;*&#39;, &#39;in&#39;, &#39;common&#39;): [(&#39;differ&#39;, &#39;in&#39;), &#39;differ&#39;, &#39;derive&#39;], &#39;equal&#39;: [&#39;differ&#39;], (&#39;differ&#39;, &#39;in&#39;): [(&#39;have&#39;, &#39;*&#39;, &#39;in&#39;, &#39;common&#39;)], &#39;derive&#39;: [(&#39;have&#39;, &#39;*&#39;, &#39;in&#39;, &#39;common&#39;)]}</span>
+
+<span class="sd">        :param d:</span>
+<span class="sd">            dict with strings and lists and lists of tuples in it, that will be balanced</span>
+<span class="sd">        :return:</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">inverse</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+        <span class="c1"># Go through the list that is saved in the dict:</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
+            <span class="c1"># Check if in the inverted dict the key exists</span>
+            <span class="k">if</span> <span class="n">item</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">inverse</span><span class="p">:</span>
+                <span class="c1"># If not create a new list</span>
+                <span class="n">inverse</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">item</span> <span class="o">==</span> <span class="n">key</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="n">inverse</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">_sort</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="n">v</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">hash</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">inverse</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">inverse</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">inverse</span></div>
+
+
+<div class="viewcode-block" id="dict_compare"><a class="viewcode-back" href="../dict_tools.html#dict_tools.dict_compare">[docs]</a><span class="k">def</span> <span class="nf">dict_compare</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">,</span> <span class="n">ignore_order</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; This function compares two dicts.</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &gt;&gt;&gt; d1 = dict(zip(range(0,10), [list(range(x-1,x+2)) for x in range(10,20)]))</span>
+<span class="sd">        &gt;&gt;&gt; d2 = dict(zip(range(1,9), [list(range(x+2,x-1,-1)) for x in range(10,20)]))</span>
+<span class="sd">        &gt;&gt;&gt; d1</span>
+<span class="sd">        {0: [9, 10, 11], 1: [10, 11, 12], 2: [11, 12, 13], 3: [12, 13, 14], 4: [13, 14, 15], 5: [14, 15, 16], 6: [15, 16, 17], 7: [16, 17, 18], 8: [17, 18, 19], 9: [18, 19, 20]}</span>
+<span class="sd">        &gt;&gt;&gt; d2</span>
+<span class="sd">        {1: [12, 11, 10], 2: [13, 12, 11], 3: [14, 13, 12], 4: [15, 14, 13], 5: [16, 15, 14], 6: [17, 16, 15], 7: [18, 17, 16], 8: [19, 18, 17]}</span>
+<span class="sd">        &gt;&gt;&gt; dict_compare(d1,d2)</span>
+<span class="sd">        ({0, 9}, set(), {1: ([10, 11, 12], [12, 11, 10]), 2: ([11, 12, 13], [13, 12, 11]), 3: ([12, 13, 14], [14, 13, 12]), 4: ([13, 14, 15], [15, 14, 13]), 5: ([14, 15, 16], [16, 15, 14]), 6: ([15, 16, 17], [17, 16, 15]), 7: ([16, 17, 18], [18, 17, 16]), 8: ([17, 18, 19], [19, 18, 17])}, set())</span>
+
+<span class="sd">    :param d1: dict</span>
+<span class="sd">    :param d2: dict</span>
+<span class="sd">    :param ignore_order: ignore the order of the keys</span>
+<span class="sd">    :return:</span>
+<span class="sd">         4-tuple of set: added, removed, modified, same</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">d1_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">d1</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">d2_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">d2</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">intersect_keys</span> <span class="o">=</span> <span class="n">d1_keys</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">d2_keys</span><span class="p">)</span>
+    <span class="n">added</span> <span class="o">=</span> <span class="n">d1_keys</span> <span class="o">-</span> <span class="n">d2_keys</span>
+    <span class="n">removed</span> <span class="o">=</span> <span class="n">d2_keys</span> <span class="o">-</span> <span class="n">d1_keys</span>
+    <span class="n">modified</span> <span class="o">=</span> <span class="p">{</span><span class="n">o</span> <span class="p">:</span> <span class="p">(</span><span class="n">d1</span><span class="p">[</span><span class="n">o</span><span class="p">],</span> <span class="n">d2</span><span class="p">[</span><span class="n">o</span><span class="p">])</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">intersect_keys</span> <span class="k">if</span> <span class="n">d1</span><span class="p">[</span><span class="n">o</span><span class="p">]</span> <span class="o">!=</span> <span class="n">d2</span><span class="p">[</span><span class="n">o</span><span class="p">]}</span>
+    <span class="k">if</span> <span class="n">ignore_order</span><span class="p">:</span>
+        <span class="n">modified</span> <span class="o">=</span> <span class="p">{</span><span class="n">o</span> <span class="p">:</span> <span class="p">(</span><span class="n">d1</span><span class="p">[</span><span class="n">o</span><span class="p">],</span> <span class="n">d2</span><span class="p">[</span><span class="n">o</span><span class="p">])</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">intersect_keys</span>
+                    <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">d1</span><span class="p">[</span><span class="n">o</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">set</span><span class="p">(</span><span class="n">d2</span><span class="p">[</span><span class="n">o</span><span class="p">])}</span>
+
+    <span class="n">same</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">o</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">intersect_keys</span> <span class="k">if</span> <span class="n">d1</span><span class="p">[</span><span class="n">o</span><span class="p">]</span> <span class="o">==</span> <span class="n">d2</span><span class="p">[</span><span class="n">o</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">added</span><span class="p">,</span> <span class="n">removed</span><span class="p">,</span> <span class="n">modified</span><span class="p">,</span> <span class="n">same</span></div>
+
+
+<div class="viewcode-block" id="update"><a class="viewcode-back" href="../dict_tools.html#dict_tools.update">[docs]</a><span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">u</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">u</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Mapping</span><span class="p">):</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">update</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="p">{}),</span> <span class="n">v</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="k">return</span> <span class="n">d</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">doctest</span>
+    <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Stefan Werner
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,423 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>contradictrix &mdash; S0krates 5.0.0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> S0krates
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">S0krates</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>contradictrix</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for contradictrix</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="kn">from</span> <span class="nn">corutine_utils</span> <span class="k">import</span> <span class="n">coroutine</span>
+<span class="kn">from</span> <span class="nn">generator_tools</span> <span class="k">import</span> <span class="n">count_up</span>
+<span class="kn">from</span> <span class="nn">predicatrix2</span> <span class="k">import</span> <span class="n">Predication</span>
+<span class="kn">import</span> <span class="nn">word_definitions</span>
+<span class="kn">from</span> <span class="nn">simmix</span> <span class="k">import</span> <span class="n">Simmix</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">textwrap</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">captureWarnings</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Contradiction"><a class="viewcode-back" href="../contradictrix.html#contradictrix.Contradiction">[docs]</a><span class="k">class</span> <span class="nc">Contradiction</span><span class="p">:</span>
+<div class="viewcode-block" id="Contradiction.__init__"><a class="viewcode-back" href="../contradictrix.html#contradictrix.Contradiction.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; This module lets you find the contradictions between the predicates.</span>
+
+<span class="sd">        The constructor sets up the filters to find them.</span>
+<span class="sd">        Call then :func:`~contradix.Contradiction.find_contradcitions` on predicates</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        Get some annotated text data...</span>
+
+<span class="sd">        &gt;&gt;&gt; from corpus_reader import CorpusReader</span>
+<span class="sd">        &gt;&gt;&gt; corpus = CorpusReader(corpus_path=&#39;./corpora/aristotle_categories/import_conll&#39;, only=[10, 11, 12, 13, 14, 15, 16, 17])</span>
+<span class="sd">        &gt;&gt;&gt; from predicatrix2 import Predication</span>
+
+<span class="sd">        Extract some predicates:</span>
+
+<span class="sd">        &gt;&gt;&gt; P = Predication(corpus)</span>
+<span class="sd">        &gt;&gt;&gt; predications1 = P.predicate_df.iloc[0,1,2,3,4]</span>
+<span class="sd">        &gt;&gt;&gt; predications2 = P.predicate_df.iloc[3,4,5,6,6,7]</span>
+<span class="sd">        &gt;&gt;&gt; C = Contradiction()</span>
+
+<span class="sd">        Get the contradiction from them:</span>
+
+<span class="sd">        &gt;&gt;&gt; C.find_contradictive(predicates1=predications1, predicates2=predications2)</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">fit_mix_neg</span> <span class="o">=</span> \
+             <span class="n">Simmix</span> <span class="p">(</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="n">Simmix</span><span class="o">.</span><span class="n">elmo_sim</span><span class="p">(),</span> <span class="mf">0.4</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
+                       <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">common_words_sim</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
+                        <span class="p">],</span>
+                      <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Contra_Neg</span>  <span class="o">=</span> \
+            <span class="n">Simmix</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">formula_contradicts</span><span class="p">(</span><span class="n">fit_mix_neg</span><span class="p">),</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="p">,(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">sub_i</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.1</span><span class="p">)</span>
+                    <span class="p">],</span> <span class="n">n</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+
+        <span class="n">fit_mix_ant</span> <span class="o">=</span> \
+             <span class="n">Simmix</span> <span class="p">(</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="n">Simmix</span><span class="o">.</span><span class="n">elmo_sim</span><span class="p">(),</span> <span class="mf">0.55</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                       <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">excluding_pair_boolean_sim</span><span class="p">(</span><span class="n">word_definitions</span><span class="o">.</span><span class="n">antonym_dict</span><span class="p">),</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                       <span class="p">],</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Contra_Anto</span> <span class="o">=</span> \
+            <span class="n">Simmix</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">formula_prooves</span><span class="p">(</span><span class="n">fit_mix_ant</span><span class="p">),</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="p">],</span> <span class="n">n</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">contra_counter</span> <span class="o">=</span> <span class="n">count_up</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Contradiction.find_contradictive"><a class="viewcode-back" href="../contradictrix.html#contradictrix.Contradiction.find_contradictive">[docs]</a>    <span class="k">def</span> <span class="nf">find_contradictive</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicates1</span><span class="p">,</span> <span class="n">predicates2</span><span class="p">,</span> <span class="n">graph_coro</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">paint_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Tbis function  searches in two lists of predicate-dict for contradictions, that are caused by antonym- and</span>
+<span class="sd">            negation.</span>
+
+<span class="sd">            These Predicate have a special distribution of negation particles.</span>
+<span class="sd">            See :func:`~predcicatrix.Predication.attribute_negation_sentence_predicates`</span>
+
+<span class="sd">            Antonyms come from nltk.WordNet and there is a list in `word_definitions`.</span>
+<span class="sd">            See :data:`~word_definitions.antonym_dict`</span>
+
+
+<span class="sd">            :param predicates1: list of predicate-dicts</span>
+<span class="sd">            :param predicates2: list of predicate-dicts</span>
+<span class="sd">            :param paint_graph: If a picture should be saved</span>
+<span class="sd">            :param kwargs: keyword-args are propagated to :func:`~simmix.Simmix.choose`</span>
+
+<span class="sd">            :return: Combined list of predicate-tuples</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">predicates1</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">predicates2</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;no predicate found as noticed&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">paint_graph</span><span class="p">:</span>
+            <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+            <span class="n">put_into_nx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">put_into_nx</span><span class="p">(</span><span class="n">general_kind</span><span class="o">=</span><span class="s1">&#39;contradiction&#39;</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="n">G</span><span class="p">)</span>
+            <span class="n">graph_coro</span> <span class="o">=</span> <span class="p">[</span><span class="n">graph_coro</span><span class="p">,</span> <span class="n">put_into_nx</span> <span class="p">]</span>
+
+        <span class="n">negation_contradictions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Contra_Neg</span><span class="o">.</span><span class="n">choose</span> <span class="p">((</span><span class="n">predicates1</span><span class="p">,</span> <span class="n">predicates2</span><span class="p">),</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;negation&#39;</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="s1">&#39;n&#39;</span><span class="p">,</span> <span class="n">graph_coro</span><span class="o">=</span><span class="n">graph_coro</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">antonym_contradictions</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Contra_Anto</span><span class="o">.</span><span class="n">choose</span><span class="p">((</span><span class="n">predicates1</span><span class="p">,</span> <span class="n">predicates2</span><span class="p">),</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;antonym&#39;</span><span class="p">,</span>  <span class="n">layout</span><span class="o">=</span><span class="s1">&#39;n&#39;</span><span class="p">,</span> <span class="n">graph_coro</span><span class="o">=</span><span class="n">graph_coro</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;contradictions by antonym : </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">str</span> <span class="p">(</span><span class="n">antonym_contradictions</span><span class="p">))</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;contradictions by negation: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">str</span> <span class="p">(</span><span class="n">negation_contradictions</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">paint_graph</span><span class="p">:</span>
+            <span class="n">put_into_nx</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s1">&#39;draw&#39;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span>  <span class="n">negation_contradictions</span> <span class="o">+</span> <span class="n">antonym_contradictions</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">negation_contradictions</span><span class="p">,</span> <span class="n">antonym_contradictions</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Contradiction.wrap"><a class="viewcode-back" href="../contradictrix.html#contradictrix.Contradiction.wrap">[docs]</a>    <span class="k">def</span> <span class="nf">wrap</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Contradiction.add_possible_correlation_node"><a class="viewcode-back" href="../contradictrix.html#contradictrix.Contradiction.add_possible_correlation_node">[docs]</a>    <span class="k">def</span> <span class="nf">add_possible_correlation_node</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">predicate_dict</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">key_co1</span> <span class="o">=</span> <span class="n">kind</span> <span class="o">+</span> <span class="n">predicate_dict</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">]</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">predicate_dict</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]))</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_node</span> <span class="p">(</span><span class="n">key_co1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Contradiction.add_correlation_edge"><a class="viewcode-back" href="../contradictrix.html#contradictrix.Contradiction.add_correlation_edge">[docs]</a>    <span class="k">def</span> <span class="nf">add_correlation_edge</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">predicate_dict1</span><span class="p">,</span> <span class="n">predicate_dict2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kind</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">key_co1</span> <span class="o">=</span> <span class="n">kind</span> <span class="o">+</span> <span class="n">predicate_dict1</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">]</span>
+        <span class="n">key_co2</span> <span class="o">=</span> <span class="n">kind</span> <span class="o">+</span> <span class="n">predicate_dict2</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">]</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">key_co1</span><span class="p">,</span> <span class="n">key_co2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Contradiction.add_determined_expression_nx"><a class="viewcode-back" href="../contradictrix.html#contradictrix.Contradiction.add_determined_expression_nx">[docs]</a>    <span class="k">def</span> <span class="nf">add_determined_expression_nx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">general_kind</span><span class="p">,</span> <span class="n">special_kind</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Throws node data into neo4j by expanding data as dictionary.</span>
+
+<span class="sd">            :param general_kind: Property &quot;GeneralKind&quot; in the GDB</span>
+<span class="sd">            :param special_kind: Property &quot;SpecialKind&quot; in the GDB (&#39;anonym&#39;/&#39;negation&#39;)</span>
+<span class="sd">            :param n1: predicate dict 1</span>
+<span class="sd">            :param n2: predicate dict 2</span>
+<span class="sd">            :return:</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;node data is list... taking first&quot;</span><span class="p">)</span>
+            <span class="n">n1</span> <span class="o">=</span> <span class="n">n1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;node data is list... taking first&quot;</span><span class="p">)</span>
+            <span class="n">n2</span> <span class="o">=</span> <span class="n">n2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">def</span> <span class="nf">add_nx_node</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">add_node</span> <span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">s_id</span><span class="o">=</span><span class="n">n</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">],</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="p">)</span>
+        <span class="k">def</span> <span class="nf">add_nx_edge</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">):</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span> <span class="p">(</span><span class="n">n1</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">n2</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">general_kind</span><span class="o">=</span><span class="n">general_kind</span><span class="p">,</span> <span class="n">special_kind</span><span class="o">=</span><span class="n">special_kind</span> <span class="p">)</span>
+        <span class="n">add_nx_node</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">n1</span><span class="p">)</span>
+        <span class="n">add_nx_node</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">n1</span><span class="p">)</span>
+        <span class="n">add_nx_edge</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">n1</span><span class="p">,</span><span class="n">n2</span><span class="p">)</span></div>
+
+
+    <span class="nd">@coroutine</span>
+    <span class="k">def</span> <span class="nf">put_into_nx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">general_kind</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; This returns a subgraph of the graph, selected by the &#39;general_kind&#39; param.</span>
+
+<span class="sd">        :param general_kind: some string property of all members, that are added by this function</span>
+<span class="sd">        :return: list of Predicate-dict-2tuples</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="k">yield</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">special_kind</span> <span class="o">=</span> <span class="n">data</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_determined_expression_nx</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">general_kind</span><span class="p">,</span> <span class="n">special_kind</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">data</span><span class="o">==</span><span class="s1">&#39;draw&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">draw_key_graphs</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Value could not be set because I don</span><span class="se">\&#39;</span><span class="s1">t know how to deal with the type&#39;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Value could not be set because I don</span><span class="se">\&#39;</span><span class="s1">t know how to deal with the type&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="Contradiction.draw_key_graphs"><a class="viewcode-back" href="../contradictrix.html#contradictrix.Contradiction.draw_key_graphs">[docs]</a>    <span class="k">def</span> <span class="nf">draw_key_graphs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">G</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">pylab</span> <span class="k">as</span> <span class="nn">plt</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;./img/contradicting_key_correlation&#39;</span> <span class="o">+</span>  <span class="nb">str</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contra_counter</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;.svg&quot;</span>
+
+        <span class="n">G</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s1">&#39;graph&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;rankdir&#39;</span><span class="p">:</span> <span class="s1">&#39;LR&#39;</span><span class="p">,</span><span class="s1">&#39;splines&#39;</span><span class="p">:</span><span class="s1">&#39;curved&#39;</span><span class="p">}</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s1">&#39;edges&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;arrowsize&#39;</span><span class="p">:</span> <span class="s1">&#39;4.0&#39;</span><span class="p">}</span>
+
+        <span class="n">A</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">drawing</span><span class="o">.</span><span class="n">nx_agraph</span><span class="o">.</span><span class="n">to_agraph</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+        <span class="n">A</span><span class="o">.</span><span class="n">layout</span><span class="p">(</span><span class="s1">&#39;dot&#39;</span><span class="p">)</span>
+        <span class="n">A</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span></div></div>
+
+
+<span class="kn">import</span> <span class="nn">unittest</span>
+<span class="kn">from</span> <span class="nn">corpus_reader</span> <span class="k">import</span> <span class="n">CorpusReader</span>
+
+
+<div class="viewcode-block" id="TestContradictrix"><a class="viewcode-back" href="../contradictrix.html#contradictrix.TestContradictrix">[docs]</a><span class="k">class</span> <span class="nc">TestContradictrix</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestContradictrix.__init__"><a class="viewcode-back" href="../contradictrix.html#contradictrix.TestContradictrix.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TestContradictrix</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_C</span> <span class="o">=</span> <span class="n">Contradiction</span><span class="p">()</span>
+        <span class="n">corpus</span> <span class="o">=</span> <span class="n">CorpusReader</span><span class="p">(</span><span class="n">corpus_path</span><span class="o">=</span><span class="s1">&#39;./corpora/aristotle_categories/import_conll&#39;</span><span class="p">,</span> <span class="n">only</span><span class="o">=</span><span class="p">[</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">P</span> <span class="o">=</span>  <span class="n">Predication</span><span class="p">(</span><span class="n">corpus</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestContradictrix.test_contradiction_symmetry"><a class="viewcode-back" href="../contradictrix.html#contradictrix.TestContradictrix.test_contradiction_symmetry">[docs]</a>    <span class="k">def</span> <span class="nf">test_contradiction_symmetry</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+        <span class="kn">import</span> <span class="nn">itertools</span>
+
+        <span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">plt</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;interactive&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># combinations, that must have symmetrical results</span>
+        <span class="n">combis</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">exs</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">graphs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">combo</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">combis</span><span class="p">):</span>
+            <span class="n">graphs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span>  <span class="n">j</span><span class="p">,(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">permutations</span><span class="p">(</span><span class="n">combo</span><span class="p">,</span><span class="mi">2</span><span class="p">)):</span>
+                <span class="n">p1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">P</span><span class="o">.</span><span class="n">collect_all_predicates</span><span class="p">(</span><span class="n">ex1</span><span class="p">)</span>
+                <span class="n">p2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">P</span><span class="o">.</span><span class="n">collect_all_predicates</span><span class="p">(</span><span class="n">ex2</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="nb">len</span> <span class="p">(</span><span class="n">p1</span><span class="p">)</span> <span class="o">&gt;</span><span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">len</span> <span class="p">(</span><span class="n">p2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">P</span><span class="o">.</span><span class="n">print_predicates</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">P</span><span class="o">.</span><span class="n">print_predicates</span><span class="p">(</span><span class="n">p2</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span> <span class="p">(</span><span class="s2">&quot;More than one mother predicate for sentence.&quot;</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+                <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">default_C</span><span class="o">.</span><span class="n">find_contradictive</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="n">p2</span><span class="p">,</span> <span class="n">out</span> <span class="o">=</span> <span class="s1">&#39;nx&#39;</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="n">G</span><span class="p">)</span>
+
+                <span class="n">graphs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">j</span><span class="p">:{</span><span class="s2">&quot;combo&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span><span class="n">ex2</span><span class="p">),</span> <span class="s2">&quot;graph&quot;</span><span class="p">:</span><span class="n">G</span><span class="p">,</span> <span class="s2">&quot;nodes&quot;</span><span class="p">:</span><span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">),</span> <span class="s2">&quot;edges&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">)}})</span>
+            <span class="nb">print</span> <span class="p">(</span><span class="n">graphs</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">is_isomorphic</span><span class="p">(</span><span class="n">graphs</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;graph&quot;</span><span class="p">],</span> <span class="n">graphs</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="s2">&quot;graph&quot;</span><span class="p">]))</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Stefan Werner
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

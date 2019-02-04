@@ -1,0 +1,445 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>CursorilyLogician module &mdash; S0krates 5.0.0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> S0krates
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">CursorilyLogician module</a></li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">S0krates</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>CursorilyLogician module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/CursorilyLogician.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-CursorilyLogician">
+<span id="cursorilylogician-module"></span><h1>CursorilyLogician module<a class="headerlink" href="#module-CursorilyLogician" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="CursorilyLogician.DataframeCursorilyLogician">
+<em class="property">class </em><code class="descclassname">CursorilyLogician.</code><code class="descname">DataframeCursorilyLogician</code><span class="sig-paren">(</span><em>corpus</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CursorilyLogician.html#DataframeCursorilyLogician"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CursorilyLogician.DataframeCursorilyLogician" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This module handles all the databases for the operations on the text and does some transactions in between.</p>
+<ul class="simple">
+<li>a DataFrame in the corpus, representing the grammatical information read from the input files, one</li>
+</ul>
+<p>line per word.
+* a DataFrame with all the predicative substructures of the sentences
+* a DataFrame with the actual sentences in it.
+and
+* a GraphDatabase (neo4j) for storing the results of the operations on the text as well as for querying for
+certain connections of such superficial rhetorical relations in the text</p>
+<dl class="method">
+<dt id="CursorilyLogician.DataframeCursorilyLogician.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>corpus</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CursorilyLogician.html#DataframeCursorilyLogician.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CursorilyLogician.DataframeCursorilyLogician.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up all the textsuntactical models and the graph database</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>corpus</strong> – corpus instance with loaded conlls</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CursorilyLogician.DataframeCursorilyLogician.add_determined_expression">
+<code class="descname">add_determined_expression</code><span class="sig-paren">(</span><em>general_kind</em>, <em>special_kind</em>, <em>n1</em>, <em>n2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CursorilyLogician.html#DataframeCursorilyLogician.add_determined_expression"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CursorilyLogician.DataframeCursorilyLogician.add_determined_expression" title="Permalink to this definition">¶</a></dt>
+<dd><p>Throws node data into neo4j by expanding data as dictionary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>general_kind</strong> – some string property of all members, that are added by this function</li>
+<li><strong>special_kind</strong> – some string property of all members, that is special for the new members each</li>
+<li><strong>n1</strong> – predicate dict 1</li>
+<li><strong>n2</strong> – predicate dict 2</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CursorilyLogician.DataframeCursorilyLogician.annotate_contradictions">
+<code class="descname">annotate_contradictions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/CursorilyLogician.html#DataframeCursorilyLogician.annotate_contradictions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CursorilyLogician.DataframeCursorilyLogician.annotate_contradictions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Looks first for pairs of phrases with negations and antonyms in an horizon
+and second it evaluates the similarity of these phrases, what would be the fitting counterpart for that one</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CursorilyLogician.DataframeCursorilyLogician.annotate_correlations">
+<code class="descname">annotate_correlations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/CursorilyLogician.html#DataframeCursorilyLogician.annotate_correlations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CursorilyLogician.DataframeCursorilyLogician.annotate_correlations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look for pairs of hypotactical and paratactical and anaphorical expressions with similar semantics and
+modalities</p>
+<p>That means expressions, that both talk about examples or that both give reasons or are a modifyer to the
+seemingly contradictions, that are found.</p>
+<p>These routines reclassify some of the contradictions, because also talking about examples can seem to be
+anithetical, if the explanation of the instanciated concept is repeated.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CursorilyLogician.DataframeCursorilyLogician.annotate_horizon">
+<code class="descname">annotate_horizon</code><span class="sig-paren">(</span><em>horizon=3</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CursorilyLogician.html#DataframeCursorilyLogician.annotate_horizon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CursorilyLogician.DataframeCursorilyLogician.annotate_horizon" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CursorilyLogician.DataframeCursorilyLogician.annotate_predicates">
+<code class="descname">annotate_predicates</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/CursorilyLogician.html#DataframeCursorilyLogician.annotate_predicates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CursorilyLogician.DataframeCursorilyLogician.annotate_predicates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CursorilyLogician.DataframeCursorilyLogician.annotate_subjects_and_aspects">
+<code class="descname">annotate_subjects_and_aspects</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/CursorilyLogician.html#DataframeCursorilyLogician.annotate_subjects_and_aspects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CursorilyLogician.DataframeCursorilyLogician.annotate_subjects_and_aspects" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look for some common arguments of the contradicting and correlating predications.
+These may may they be the logical subjects, the pre”“”</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CursorilyLogician.DataframeCursorilyLogician.draw_as_dot_digraph">
+<code class="descname">draw_as_dot_digraph</code><span class="sig-paren">(</span><em>digraph</em>, <em>path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CursorilyLogician.html#DataframeCursorilyLogician.draw_as_dot_digraph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CursorilyLogician.DataframeCursorilyLogician.draw_as_dot_digraph" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="CursorilyLogician.DataframeCursorilyLogician.edge_label_map">
+<code class="descname">edge_label_map</code><em class="property"> = {'exclusive': 'side of distinction', 'subject': 'subject', 'predicate': 'sentence', 'example': 'example', 'explanation': 'explanation', 'differential_layer': 'aspect', 'correl': 'correlating part', 'center': &quot;let's distinguish&quot;, 'contra': 'contradicting part', 'computed': 'compared with', None: '?'}</em><a class="headerlink" href="#CursorilyLogician.DataframeCursorilyLogician.edge_label_map" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CursorilyLogician.DataframeCursorilyLogician.get_addressed_coref">
+<code class="descname">get_addressed_coref</code><span class="sig-paren">(</span><em>coref</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CursorilyLogician.html#DataframeCursorilyLogician.get_addressed_coref"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CursorilyLogician.DataframeCursorilyLogician.get_addressed_coref" title="Permalink to this definition">¶</a></dt>
+<dd><p>Analyses a coref mention and looks it up in the Database for predications.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>coref</strong> – dict  with sentence id, start and end of the mention</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CursorilyLogician.DataframeCursorilyLogician.get_coreferenced_preds">
+<code class="descname">get_coreferenced_preds</code><span class="sig-paren">(</span><em>pred</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CursorilyLogician.html#DataframeCursorilyLogician.get_coreferenced_preds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CursorilyLogician.DataframeCursorilyLogician.get_coreferenced_preds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the predicates, that are coreferenced by the coreference tags of another preducate.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pred</strong> – predication tuple</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list oft predicate dicts</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CursorilyLogician.DataframeCursorilyLogician.get_correllation_preds">
+<code class="descname">get_correllation_preds</code><span class="sig-paren">(</span><em>pred</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CursorilyLogician.html#DataframeCursorilyLogician.get_correllation_preds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CursorilyLogician.DataframeCursorilyLogician.get_correllation_preds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Collect the predicates, that can be modifyers to the predicate.</p>
+<p>These are either in the same sentence or the coreferenced predicates or in the sentence after</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pred</strong> – the predicate</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of predicate_tuples</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CursorilyLogician.DataframeCursorilyLogician.get_from_gdb">
+<code class="descname">get_from_gdb</code><span class="sig-paren">(</span><em>kind</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CursorilyLogician.html#DataframeCursorilyLogician.get_from_gdb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CursorilyLogician.DataframeCursorilyLogician.get_from_gdb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns pairs of in certain way connected nodes from neo4j</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>kind</strong> – this certain kind of connection; its a property of the graph edges</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Yield:</th><td class="field-body">tuples of contradicting predicates</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CursorilyLogician.DataframeCursorilyLogician.get_opposed_constellation_gdb">
+<code class="descname">get_opposed_constellation_gdb</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/CursorilyLogician.html#DataframeCursorilyLogician.get_opposed_constellation_gdb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CursorilyLogician.DataframeCursorilyLogician.get_opposed_constellation_gdb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the pattern, that gave a contradiction-opposition-pair</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">2tuple-2tuple-list-predicate-dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CursorilyLogician.DataframeCursorilyLogician.get_part_predication">
+<code class="descname">get_part_predication</code><span class="sig-paren">(</span><em>s_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CursorilyLogician.html#DataframeCursorilyLogician.get_part_predication"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CursorilyLogician.DataframeCursorilyLogician.get_part_predication" title="Permalink to this definition">¶</a></dt>
+<dd><p>Collect all particular predications in that sentence. It also looks, if there were more blocks of predicates
+found.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>s_id</strong> – id of the sentense</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of predicate dicts.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CursorilyLogician.DataframeCursorilyLogician.get_predicates_in_horizon">
+<code class="descname">get_predicates_in_horizon</code><span class="sig-paren">(</span><em>s_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CursorilyLogician.html#DataframeCursorilyLogician.get_predicates_in_horizon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CursorilyLogician.DataframeCursorilyLogician.get_predicates_in_horizon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Collects the predicates, that are in the annotatet range, befor and after the sentence, where to look for
+intresting expressions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>s_id</strong> – id of the sentence</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of super-predicates, means they all have the property of having ‘part_predications’ under it</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CursorilyLogician.DataframeCursorilyLogician.get_predication">
+<code class="descname">get_predication</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CursorilyLogician.html#DataframeCursorilyLogician.get_predication"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CursorilyLogician.DataframeCursorilyLogician.get_predication" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the predicate dict, that a special id belongs to by looking it up in the DataFrame in the Predication-
+module.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>id</strong> – id of that predicate</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">predicate-dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="CursorilyLogician.DataframeCursorilyLogician.kind_color_map">
+<code class="descname">kind_color_map</code><em class="property"> = {'center': '#ECFEE8', 'contra': '#EF6F6C', 'correl': '#465775', 'differential_layer': 'crimson', 'example': '#59C9A5', 'explanation': '#56E39F', 'predicate': '#9FFFF5', 'subject': '#5B6C5D'}</em><a class="headerlink" href="#CursorilyLogician.DataframeCursorilyLogician.kind_color_map" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CursorilyLogician.DataframeCursorilyLogician.put_into_gdb">
+<code class="descname">put_into_gdb</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#CursorilyLogician.DataframeCursorilyLogician.put_into_gdb" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CursorilyLogician.DataframeCursorilyLogician.query_distinctions">
+<code class="descname">query_distinctions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/CursorilyLogician.html#DataframeCursorilyLogician.query_distinctions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CursorilyLogician.DataframeCursorilyLogician.query_distinctions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Stefan Werner
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

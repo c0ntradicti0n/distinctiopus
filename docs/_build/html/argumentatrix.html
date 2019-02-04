@@ -1,0 +1,248 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>argumentatrix module &mdash; S0krates 5.0.0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> S0krates
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">argumentatrix module</a></li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">S0krates</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>argumentatrix module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/argumentatrix.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-argumentatrix">
+<span id="argumentatrix-module"></span><h1>argumentatrix module<a class="headerlink" href="#module-argumentatrix" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="argumentatrix.Arguments">
+<em class="property">class </em><code class="descclassname">argumentatrix.</code><code class="descname">Arguments</code><span class="sig-paren">(</span><em>corpus</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/argumentatrix.html#Arguments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#argumentatrix.Arguments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pairix.html#pairix.Pairix" title="pairix.Pairix"><code class="xref py py-class docutils literal notranslate"><span class="pre">pairix.Pairix</span></code></a></p>
+<dl class="method">
+<dt id="argumentatrix.Arguments.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>corpus</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/argumentatrix.html#Arguments.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#argumentatrix.Arguments.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>This module looks for pairwise expressions in the horizon of a predicate.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="argumentatrix.Arguments.annotate">
+<code class="descname">annotate</code><span class="sig-paren">(</span><em>*</em>, <em>original_pair=None</em>, <em>graph_coro=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/argumentatrix.html#Arguments.annotate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#argumentatrix.Arguments.annotate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Annotates the pair, that means expressions that are similar to each other and are distinct from the
+pair, that was found as excluding each other.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="argumentatrix.Arguments.draw_correlations">
+<code class="descname">draw_correlations</code><span class="sig-paren">(</span><em>G</em>, <em>source</em>, <em>target</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/argumentatrix.html#Arguments.draw_correlations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#argumentatrix.Arguments.draw_correlations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="argumentatrix.TestArgumentatrix">
+<em class="property">class </em><code class="descclassname">argumentatrix.</code><code class="descname">TestArgumentatrix</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/argumentatrix.html#TestArgumentatrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#argumentatrix.TestArgumentatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="argumentatrix.TestArgumentatrix.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/argumentatrix.html#TestArgumentatrix.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#argumentatrix.TestArgumentatrix.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an instance of the class that will use the named test
+method when executed. Raises a ValueError if the instance does
+not have a method with the specified name.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="argumentatrix.TestArgumentatrix.test_modifix">
+<code class="descname">test_modifix</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/argumentatrix.html#TestArgumentatrix.test_modifix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#argumentatrix.TestArgumentatrix.test_modifix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Stefan Werner
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,480 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>grammarannotator &mdash; S0krates 5.0.0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> S0krates
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">S0krates</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>grammarannotator</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for grammarannotator</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+
+
+<span class="kn">import</span> <span class="nn">spacy</span>
+<span class="n">nlp</span> <span class="o">=</span> <span class="n">spacy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;en_core_web_sm&#39;</span><span class="p">)</span>
+
+<span class="n">quotes</span> <span class="o">=</span> <span class="p">{}</span>
+<div class="viewcode-block" id="Replacement"><a class="viewcode-back" href="../grammarannotator.html#grammarannotator.Replacement">[docs]</a><span class="k">class</span> <span class="nc">Replacement</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Replacement.__init__"><a class="viewcode-back" href="../grammarannotator.html#grammarannotator.Replacement.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">fun</span><span class="p">,</span> <span class="n">replacement</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">replacement</span> <span class="o">=</span> <span class="n">replacement</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">occurrences</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dict</span>        <span class="o">=</span> <span class="nb">dict</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fun</span>         <span class="o">=</span> <span class="n">fun</span></div>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
+        <span class="k">global</span> <span class="n">quotes</span>
+        <span class="n">matched</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">replaced</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fun</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">replacement</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">matched</span><span class="p">:</span><span class="n">replaced</span><span class="p">})</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">occurrences</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">matched</span><span class="p">,</span> <span class="n">replaced</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">replaced</span></div>
+
+
+<span class="k">def</span> <span class="nf">split_data_frame_list</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">target_column</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Splits a column with lists into rows</span>
+<span class="sd">    </span>
+<span class="sd">    Keyword arguments:</span>
+<span class="sd">        df -- dataframe</span>
+<span class="sd">        target_column -- name of column that contains lists        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># create a new dataframe with each item in a seperate column, dropping rows with missing values</span>
+    <span class="n">col_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">target_column</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span><span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="n">target_column</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+
+    <span class="c1"># create a series with columns stacked as rows         </span>
+    <span class="n">stacked</span> <span class="o">=</span> <span class="n">col_df</span><span class="o">.</span><span class="n">stack</span><span class="p">()</span>
+
+    <span class="c1"># rename last column to &#39;idx&#39;</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="n">stacked</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="s2">&quot;idx&quot;</span><span class="p">,</span> <span class="n">level</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">new_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">stacked</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">target_column</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">new_df</span>
+
+
+<div class="viewcode-block" id="split_data_frame_list_beware"><a class="viewcode-back" href="../grammarannotator.html#grammarannotator.split_data_frame_list_beware">[docs]</a><span class="k">def</span> <span class="nf">split_data_frame_list_beware</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> 
+                       <span class="n">target_column</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; </span>
+<span class="sd">    Accepts a column with multiple types and splits list variables to several rows.</span>
+
+<span class="sd">    df: dataframe to split</span>
+<span class="sd">    target_column: the column containing the values to split</span>
+<span class="sd">    output_type: type of all outputs</span>
+<span class="sd">    returns: a dataframe with each entry for the target column separated, with each element moved into a new row. </span>
+<span class="sd">    The values in the other columns are duplicated across the newly divided rows.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">row_accumulator</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">def</span> <span class="nf">split_list_to_rows</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+        <span class="n">split_row</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">target_column</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">split_row</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Iterable</span><span class="p">):</span>
+          <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">split_row</span><span class="p">):</span>
+              <span class="n">new_row</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+              <span class="n">new_row</span><span class="p">[</span><span class="n">target_column</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
+              <span class="n">new_row</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;idx&#39;</span><span class="p">:</span><span class="n">i</span><span class="p">})</span>  
+              <span class="n">row_accumulator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_row</span><span class="p">)</span>
+          <span class="k">if</span> <span class="n">split_row</span> <span class="o">==</span> <span class="p">[]:</span>
+              <span class="n">new_row</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+              <span class="n">new_row</span><span class="p">[</span><span class="n">target_column</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+              <span class="n">new_row</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;idx&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">})</span>  
+              <span class="n">row_accumulator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_row</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+          <span class="n">new_row</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+          <span class="n">new_row</span><span class="p">[</span><span class="n">target_column</span><span class="p">]</span> <span class="o">=</span> <span class="n">split_row</span>
+          <span class="n">new_row</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;idx&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">})</span>  
+          <span class="n">row_accumulator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_row</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">split_list_to_rows</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">new_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">row_accumulator</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">new_df</span></div>
+
+<div class="viewcode-block" id="df2tuples"><a class="viewcode-back" href="../grammarannotator.html#grammarannotator.df2tuples">[docs]</a><span class="k">def</span> <span class="nf">df2tuples</span> <span class="p">(</span><span class="n">df</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">values</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="split_data_frame_list"><a class="viewcode-back" href="../grammarannotator.html#grammarannotator.split_data_frame_list">[docs]</a><span class="k">def</span> <span class="nf">split_data_frame_list</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">target_column</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Splits a column with lists into rows</span>
+<span class="sd">    </span>
+<span class="sd">    Keyword arguments:</span>
+<span class="sd">        df -- dataframe</span>
+<span class="sd">        target_column -- name of column that contains lists        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># create a new dataframe with each item in a seperate column, dropping rows with missing values</span>
+    <span class="n">col_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">target_column</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span><span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="n">target_column</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+
+    <span class="c1"># create a series with columns stacked as rows         </span>
+    <span class="n">stacked</span> <span class="o">=</span> <span class="n">col_df</span><span class="o">.</span><span class="n">stack</span><span class="p">()</span>
+
+    <span class="c1"># rename last column to &#39;idx&#39;</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="n">stacked</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="s2">&quot;idx&quot;</span><span class="p">,</span> <span class="n">level</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">new_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">stacked</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">target_column</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">new_df</span></div>
+
+
+<div class="viewcode-block" id="GrammarAnnotator"><a class="viewcode-back" href="../grammarannotator.html#grammarannotator.GrammarAnnotator">[docs]</a><span class="k">class</span> <span class="nc">GrammarAnnotator</span><span class="p">:</span>
+<div class="viewcode-block" id="GrammarAnnotator.__init__"><a class="viewcode-back" href="../grammarannotator.html#grammarannotator.GrammarAnnotator.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">import_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">import_dir</span> <span class="o">=</span> <span class="n">import_dir</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">import_dir</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sentence_df</span> <span class="o">=</span> <span class="n">GrammarAnnotator</span><span class="o">.</span><span class="n">import_parses</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">import_dir</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sentence_df</span><span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_parses</span> <span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="GrammarAnnotator.dump"><a class="viewcode-back" href="../grammarannotator.html#grammarannotator.GrammarAnnotator.dump">[docs]</a>    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">sentence_df</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">((</span><span class="n">sentence_df</span><span class="p">),</span> <span class="nb">open</span><span class="p">(</span> <span class="s2">&quot;save.p&quot;</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span> <span class="p">)</span> <span class="p">)</span></div>
+        
+<div class="viewcode-block" id="GrammarAnnotator.load"><a class="viewcode-back" href="../grammarannotator.html#grammarannotator.GrammarAnnotator.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+        <span class="n">df</span><span class="p">,</span> <span class="n">sentence_df</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span> <span class="nb">open</span><span class="p">(</span> <span class="s2">&quot;save.p&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span> <span class="p">)</span> <span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span><span class="p">,</span> <span class="n">sentence_df</span></div>
+
+<div class="viewcode-block" id="GrammarAnnotator.collapse_sentences"><a class="viewcode-back" href="../grammarannotator.html#grammarannotator.GrammarAnnotator.collapse_sentences">[docs]</a>    <span class="k">def</span> <span class="nf">collapse_sentences</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;merges a token df to single senetences by groupung thenm by a column &#39;sentence_id&#39;&quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">parse_coref_str</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="n">mfas</span> <span class="o">=</span> <span class="p">[</span><span class="n">re</span><span class="o">.</span><span class="n">finditer</span> <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;((?P&lt;s_id&gt;\d+)-&gt;\[(?P&lt;m_start&gt;\d+):(?P&lt;m_end&gt;\d+)\])+&quot;</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+            <span class="k">def</span> <span class="nf">parse_ints</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+                <span class="k">return</span> <span class="p">{</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+            <span class="k">return</span>  <span class="p">[[</span><span class="n">parse_ints</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">groupdict</span><span class="p">())</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">mfa</span><span class="p">]</span> <span class="k">if</span> <span class="n">mfa</span> <span class="k">else</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">mfa</span> <span class="ow">in</span> <span class="n">mfas</span> <span class="p">]</span>
+
+        <span class="n">sentence_df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;s_id&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">({</span><span class="s1">&#39;text&#39;</span><span class="p">:</span>  <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>
+                                              <span class="s1">&#39;coref&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">parse_coref_str</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+                                              <span class="p">})</span>
+
+        <span class="n">sentence_df</span> <span class="o">=</span> <span class="n">sentence_df</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
+        <span class="n">sentence_df</span> <span class="o">=</span> <span class="n">sentence_df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">sentence_df</span></div>
+
+<div class="viewcode-block" id="GrammarAnnotator.add_parses"><a class="viewcode-back" href="../grammarannotator.html#grammarannotator.GrammarAnnotator.add_parses">[docs]</a>    <span class="k">def</span> <span class="nf">add_parses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">sentence_df</span> <span class="o">=</span> <span class="n">GrammarAnnotator</span><span class="o">.</span><span class="n">collapse_sentences</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="n">sentence_df</span><span class="p">[</span><span class="s1">&#39;spacy_doc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sentence_df</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">nlp</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="k">def</span> <span class="nf">f</span> <span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="n">df_for_sentence</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">]]</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_conll_over_spacy_doc</span><span class="p">(</span>
+                <span class="n">x</span><span class="p">[</span><span class="s1">&#39;spacy_doc&#39;</span><span class="p">],</span>
+                <span class="n">df_for_sentence</span><span class="o">=</span><span class="n">df_for_sentence</span><span class="p">)</span>
+
+        <span class="n">y</span> <span class="o">=</span> <span class="n">sentence_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">sentence_df</span><span class="p">[</span><span class="s1">&#39;spacy_doc&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">GrammarAnnotator</span><span class="o">.</span><span class="n">merge_sentence_df</span> <span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">sentence_df</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GrammarAnnotator.export_parses"><a class="viewcode-back" href="../grammarannotator.html#grammarannotator.GrammarAnnotator.export_parses">[docs]</a>    <span class="k">def</span> <span class="nf">export_parses</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">sentence_df</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="n">sentence_df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+        <span class="n">sentence_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">GrammarAnnotator</span><span class="o">.</span><span class="n">save_conll</span><span class="p">(</span>
+            <span class="n">path</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.conll&#39;</span><span class="p">,</span>
+               <span class="n">x</span><span class="p">[</span><span class="s1">&#39;spacy_doc&#39;</span><span class="p">]</span> 
+               <span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GrammarAnnotator.import_parses"><a class="viewcode-back" href="../grammarannotator.html#grammarannotator.GrammarAnnotator.import_parses">[docs]</a>    <span class="k">def</span> <span class="nf">import_parses</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; import parse tree information like head and dep_ from a directory containing conll-files, that have the &#39;sentence_id&#39; as filename and &#39;conll&#39; as suffix.</span>
+<span class="sd">        These files can be produced by GrammarAnnotator.export_parses</span>
+<span class="sd">        # conll editor: https://arborator.ilpga.fr/q.cgi</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sentence_df</span> <span class="o">=</span> <span class="n">GrammarAnnotator</span><span class="o">.</span><span class="n">collapse_sentences</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+
+        <span class="n">sentence_df</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sentence_df</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">GrammarAnnotator</span><span class="o">.</span><span class="n">clean_text</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="n">sentence_df</span><span class="p">[</span><span class="s1">&#39;spacy_doc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sentence_df</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">nlp</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+        <span class="n">sentence_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">GrammarAnnotator</span><span class="o">.</span><span class="n">load_conll_over_spacy_doc</span><span class="p">(</span>
+            <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39;.conll&#39;</span><span class="p">,</span>
+               <span class="n">x</span><span class="p">[</span><span class="s1">&#39;spacy_doc&#39;</span><span class="p">]</span> 
+               <span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">GrammarAnnotator</span><span class="o">.</span><span class="n">merge_sentence_df</span> <span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">sentence_df</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GrammarAnnotator.merge_sentence_df"><a class="viewcode-back" href="../grammarannotator.html#grammarannotator.GrammarAnnotator.merge_sentence_df">[docs]</a>    <span class="k">def</span> <span class="nf">merge_sentence_df</span> <span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">sentence_df</span><span class="p">,</span> <span class="n">debug</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="n">splitted</span> <span class="o">=</span> <span class="n">split_data_frame_list_beware</span><span class="p">(</span><span class="n">sentence_df</span><span class="p">,</span> <span class="n">target_column</span><span class="o">=</span><span class="s1">&#39;spacy_doc&#39;</span><span class="p">)</span>
+        <span class="n">splitted</span> <span class="o">=</span> <span class="n">splitted</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+        <span class="n">splitted</span><span class="p">[</span><span class="s1">&#39;idx&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">splitted</span><span class="p">[</span><span class="s1">&#39;idx&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">splitted</span><span class="p">[</span><span class="s1">&#39;spacy_token&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">splitted</span><span class="p">[</span><span class="s1">&#39;spacy_doc&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">splitted</span><span class="p">[</span><span class="s1">&#39;spacy_dep_&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">splitted</span><span class="p">[</span><span class="s1">&#39;spacy_doc&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">dep_</span><span class="p">)</span>
+        <span class="n">splitted</span><span class="p">[</span><span class="s1">&#39;spacy_lemma_&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">splitted</span><span class="p">[</span><span class="s1">&#39;spacy_doc&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">lemma_</span><span class="p">)</span>
+        <span class="n">splitted</span><span class="p">[</span><span class="s1">&#39;new_swid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">splitted</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span> <span class="o">+</span><span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">splitted</span><span class="p">[</span><span class="s1">&#39;idx&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">splitted</span><span class="p">,</span> <span class="n">left_on</span><span class="o">=</span><span class="s1">&#39;s_id&#39;</span><span class="p">,</span> <span class="n">right_on</span><span class="o">=</span><span class="s1">&#39;s_id&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;outer&#39;</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;s_id&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span><span class="p">,</span> <span class="n">sentence_df</span></div>
+
+    <span class="n">conll_format</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="se">\t</span><span class="si">%s</span><span class="se">\t</span><span class="si">%s</span><span class="se">\t</span><span class="si">%s</span><span class="se">\t</span><span class="si">%s</span><span class="se">\t</span><span class="si">%s</span><span class="se">\t</span><span class="si">%d</span><span class="se">\t</span><span class="si">%s</span><span class="se">\t</span><span class="si">%s</span><span class="se">\t</span><span class="si">%s</span><span class="s2">&quot;</span>
+<div class="viewcode-block" id="GrammarAnnotator.doc2conll"><a class="viewcode-back" href="../grammarannotator.html#grammarannotator.GrammarAnnotator.doc2conll">[docs]</a>    <span class="k">def</span> <span class="nf">doc2conll</span> <span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">word</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">word</span><span class="o">.</span><span class="n">head</span> <span class="ow">is</span> <span class="n">word</span><span class="p">:</span>
+                <span class="n">head_idx</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">head_idx</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+
+            <span class="k">yield</span> <span class="p">(</span><span class="n">GrammarAnnotator</span><span class="o">.</span><span class="n">conll_format</span> <span class="o">%</span> <span class="p">(</span>
+                     <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="c1"># There&#39;s a word.i attr that&#39;s position in *doc*</span>
+                     <span class="n">word</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
+                     <span class="s1">&#39;_&#39;</span><span class="p">,</span>
+                     <span class="n">word</span><span class="o">.</span><span class="n">pos_</span><span class="p">,</span> <span class="c1"># Coarse-grained tag</span>
+                     <span class="n">word</span><span class="o">.</span><span class="n">tag_</span><span class="p">,</span> <span class="c1"># Fine-grained tag</span>
+                     <span class="s1">&#39;_&#39;</span><span class="p">,</span>
+                     <span class="n">head_idx</span><span class="p">,</span>
+                     <span class="n">word</span><span class="o">.</span><span class="n">dep_</span><span class="p">,</span> <span class="c1"># Relation</span>
+                     <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="GrammarAnnotator.save_conll"><a class="viewcode-back" href="../grammarannotator.html#grammarannotator.GrammarAnnotator.save_conll">[docs]</a>    <span class="k">def</span> <span class="nf">save_conll</span><span class="p">(</span><span class="n">conll_path</span><span class="p">,</span> <span class="n">doc</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">conll_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="nb">print</span> <span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GrammarAnnotator</span><span class="o">.</span><span class="n">doc2conll</span><span class="p">(</span><span class="n">doc</span><span class="p">)))</span></div>
+
+<div class="viewcode-block" id="GrammarAnnotator.load_conll_over_spacy_doc"><a class="viewcode-back" href="../grammarannotator.html#grammarannotator.GrammarAnnotator.load_conll_over_spacy_doc">[docs]</a>    <span class="k">def</span> <span class="nf">load_conll_over_spacy_doc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">df_for_sentence</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; read conll_files over a spacy document with same length. they may be manipulated.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">df_for_sentence</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;no DataFrame with conll_information&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df_for_sentence</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+             <span class="n">i</span> <span class="o">=</span> <span class="n">row</span> <span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+             <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="ow">or</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;head_id&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+                 <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> not in doc </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">doc</span><span class="p">)))</span>
+                 <span class="k">return</span> <span class="n">doc</span>
+             <span class="n">doc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">head</span>   <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;head_id&#39;</span><span class="p">]]</span>
+             <span class="n">doc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dep_</span>   <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;dep_&quot;</span><span class="p">]</span>
+             <span class="n">doc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">tag_</span>   <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;tag_&quot;</span><span class="p">]</span>
+             <span class="n">doc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">pos_</span>   <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;pos_&quot;</span><span class="p">]</span>
+             <span class="n">doc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">lemma_</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;lemma&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">doc</span></div>
+
+    <span class="n">conll_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+                            <span class="sa">r</span><span class="sd">&quot;&quot;&quot;(?P&lt;id&gt;\d+)((?:\.)?(?P&lt;hidden&gt;\d+))?      # i (as well es hidden node-ids in conll-u format)</span>
+<span class="sd">                                 \t(?P&lt;text&gt;.*?)    </span>
+<span class="sd">                                 \t(?P&lt;lemma&gt;.*?)  </span>
+<span class="sd">                                 \t(?P&lt;pos_&gt;.*?) </span>
+<span class="sd">                                 \t(?P&lt;tag_&gt;.*?)</span>
+<span class="sd">                                 \t(?P&lt;nothing2&gt;.*?)</span>
+<span class="sd">                                 \t(?P&lt;head_id&gt;\d+)((?:\.)?(?P&lt;head_hidden&gt;\d+))?</span>
+<span class="sd">                                 \t(?P&lt;dep_&gt;.*?)</span>
+<span class="sd">                                 \t(?P&lt;spacy_i&gt;.*?)</span>
+<span class="sd">                                 \t(?P&lt;coref&gt;.*)</span>
+<span class="sd">                                     &quot;&quot;&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span>
+                              <span class="p">)</span>
+<div class="viewcode-block" id="GrammarAnnotator.conll_line2match"><a class="viewcode-back" href="../grammarannotator.html#grammarannotator.GrammarAnnotator.conll_line2match">[docs]</a>    <span class="k">def</span> <span class="nf">conll_line2match</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">GrammarAnnotator</span><span class="o">.</span><span class="n">conll_pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">match</span></div>
+
+<div class="viewcode-block" id="GrammarAnnotator.clean_text"><a class="viewcode-back" href="../grammarannotator.html#grammarannotator.GrammarAnnotator.clean_text">[docs]</a>    <span class="k">def</span> <span class="nf">clean_text</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+        <span class="k">global</span> <span class="n">quotes</span>
+        <span class="c1"># Text cleaning</span>
+        <span class="c1">#string = string.lower()                                                              # big letters</span>
+        <span class="c1">#string = re.sub(ur&quot;([‚‘])&quot;,                              &quot;&#39;&quot;, string)</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&quot;&quot;e\.g\.&quot;&quot;&quot;</span><span class="p">,</span>                            <span class="s2">&quot; exempli gratia &quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&quot;&quot;e\.g&quot;&quot;&quot;</span><span class="p">,</span>                              <span class="s2">&quot; exempli gratia &quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+
+        <span class="n">string</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&quot;&quot;([\d]+[\w]+.)&quot;&quot;&quot;</span><span class="p">,</span>                     <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+
+        <span class="n">string</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&quot;&quot;(\{[\(\)A-Za-z,.;:\-\s&quot;&#39;]*\})&quot;&quot;&quot;</span><span class="p">,</span>     <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span><span class="c1"># original text annotations</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&quot;&quot;(\([\w‚‘\s,.;:&quot;&#39;]+\))&quot;&quot;&quot;</span>        <span class="p">,</span>     <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span><span class="c1"># text in parentheses</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&quot;&quot;\[([A-Za-z,.;:\-\s&quot;&#39;]*)\]&quot;&quot;&quot;</span><span class="p">,</span>         <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">1&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span><span class="c1"># own manipulation</span>
+
+        <span class="k">def</span> <span class="nf">modifier</span><span class="p">(</span><span class="n">s</span><span class="p">):</span> <span class="k">return</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">replace_the_cites</span> <span class="o">=</span> <span class="n">Replacement</span> <span class="p">(</span><span class="n">quotes</span><span class="p">,</span> <span class="n">modifier</span><span class="p">,</span> <span class="s2">&quot; </span><span class="se">\\</span><span class="s2">2&quot;</span><span class="p">)</span>                                <span class="c1"># other language layer by quoting</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&quot;&quot;(?:^|\s)([&quot;&#39;])((?:\\.|[^\\])*?)(\1)&quot;&quot;&quot;</span><span class="p">,</span> 
+                                                   <span class="n">replace_the_cites</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>   
+        <span class="c1">#for matched, replaced in replace_the_cites.occurrences:</span>
+        <span class="c1">#    print (matched, &#39;=&gt;&#39;, replaced)</span>
+
+        <span class="n">string</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;[:;]&quot;</span><span class="p">,</span>                                   <span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span><span class="c1"># punctuation of sentences</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span>                              <span class="s2">&quot;&quot;</span><span class="p">)</span>                                   <span class="c1"># dashs </span>
+        <span class="n">string</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;—&quot;</span><span class="p">,</span>                              <span class="s2">&quot;, &quot;</span><span class="p">)</span> 
+        
+        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>                                 <span class="c1"># all kinds of whitespaces, tabs --&gt; one space</span>
+        <span class="k">return</span> <span class="n">string</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Stefan Werner
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

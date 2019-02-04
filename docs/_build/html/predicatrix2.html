@@ -1,0 +1,483 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>predicatrix2 module &mdash; S0krates 5.0.0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> S0krates
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">predicatrix2 module</a></li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">S0krates</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>predicatrix2 module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/predicatrix2.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-predicatrix2">
+<span id="predicatrix2-module"></span><h1>predicatrix2 module<a class="headerlink" href="#module-predicatrix2" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="predicatrix2.Predication">
+<em class="property">class </em><code class="descclassname">predicatrix2.</code><code class="descname">Predication</code><span class="sig-paren">(</span><em>corpus=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="predicatrix2.Predication.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>corpus=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>This module lets you translate natural language expressions into predicative chunks, to analyse the
+parts of sentence further.</p>
+<p>These chunks are dicts of other properties, that represent a part of the sentence with different properties.
+A predicate for instance, contains</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">spacy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nlp</span> <span class="o">=</span> <span class="n">spacy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;en_core_web_sm&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">P</span> <span class="o">=</span> <span class="n">Predication</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">text</span> <span class="o">=</span> <span class="n">nlp</span> <span class="p">(</span><span class="s1">&#39;What is going on here?&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pred</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">analyse_predication</span><span class="p">(</span><span class="n">doc</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">s_id</span><span class="o">=</span><span class="s1">&#39;count_yourself&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pred</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;dep_&#39;</span><span class="p">]</span>
+<span class="go">[&#39;nsubj&#39;, &#39;aux&#39;, &#39;ROOT&#39;, &#39;prt&#39;, &#39;advmod&#39;, &#39;punct&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pred</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;text&#39;</span><span class="p">]</span>
+<span class="go">[&#39;What&#39;, &#39;is&#39;, &#39;going&#39;, &#39;on&#39;, &#39;here&#39;, &#39;?&#39;]</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>corpus</strong> – a corpus_reader_object, to overlook the document once, to precompute all lemmata and</td>
+</tr>
+</tbody>
+</table>
+<p>td-idf-values.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.analyse_predication">
+<code class="descname">analyse_predication</code><span class="sig-paren">(</span><em>doc=None</em>, <em>s_id=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.analyse_predication"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.analyse_predication" title="Permalink to this definition">¶</a></dt>
+<dd><p>Analyse a spacy doc for predications</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>doc</strong> – spacy doctument</li>
+<li><strong>s_id</strong> – id of sentence, use <cite>s_id=’count_yourself’</cite> for not caring for this. In these cases, the td-idf</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>information is not possible to compute
+:param kwargs:  <code class="xref py py-func docutils literal notranslate"><span class="pre">collect_all_predicates()</span></code>
+:return: list of predicate_dicts</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.append_to_predicate_df">
+<code class="descname">append_to_predicate_df</code><span class="sig-paren">(</span><em>ps</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.append_to_predicate_df"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.append_to_predicate_df" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.attribute_contained_predicates">
+<code class="descname">attribute_contained_predicates</code><span class="sig-paren">(</span><em>ps</em>, <em>expand=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.attribute_contained_predicates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.attribute_contained_predicates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.attribute_negation_particle">
+<code class="descname">attribute_negation_particle</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.attribute_negation_particle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.attribute_negation_particle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.attribute_negation_sentence_predicates">
+<code class="descname">attribute_negation_sentence_predicates</code><span class="sig-paren">(</span><em>ps</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.attribute_negation_sentence_predicates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.attribute_negation_sentence_predicates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.build_predicate">
+<code class="descname">build_predicate</code><span class="sig-paren">(</span><em>predicate_i</em>, <em>arguments_i</em>, <em>full_ex_i</em>, <em>logicatom_i</em>, <em>doc</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.build_predicate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.build_predicate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.collect_all_predicates">
+<code class="descname">collect_all_predicates</code><span class="sig-paren">(</span><em>ex</em>, <em>coref=None</em>, <em>s_id=None</em>, <em>paint_graph=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.collect_all_predicates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.collect_all_predicates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts a multitude of properties from a natural language expression, including grammar
+imformation, word2vec, some importance weight in the document, some kind of cursorily logical
+formula with a dictionary, to what expressions the constants in the formula belong to.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ex</strong> – string or spracy instance of the language expression</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">dictionary of properties of the expression</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.collect_all_simple_predicates">
+<code class="descname">collect_all_simple_predicates</code><span class="sig-paren">(</span><em>ex</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.collect_all_simple_predicates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.collect_all_simple_predicates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.collect_predicates">
+<code class="descname">collect_predicates</code><span class="sig-paren">(</span><em>root_token</em>, <em>arg_markers</em>, <em>too_deep_markers</em>, <em>ellipsis_resolution=True</em>, <em>no_zero_args=True</em>, <em>mother=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.collect_predicates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.collect_predicates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.dictize_spacy">
+<code class="descname">dictize_spacy</code><span class="sig-paren">(</span><em>ex</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.dictize_spacy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.dictize_spacy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.draw_predicate_structure">
+<code class="descname">draw_predicate_structure</code><span class="sig-paren">(</span><em>ps</em>, <em>path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.draw_predicate_structure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.draw_predicate_structure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.formalize">
+<code class="descname">formalize</code><span class="sig-paren">(</span><em>pred</em>, <em>elmo_embeddings</em>, <em>importance</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.formalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.formalize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.get_attributive_roots">
+<code class="descname">get_attributive_roots</code><span class="sig-paren">(</span><em>ex</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.get_attributive_roots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.get_attributive_roots" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.get_sentence_roots">
+<code class="descname">get_sentence_roots</code><span class="sig-paren">(</span><em>ex</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.get_sentence_roots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.get_sentence_roots" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.get_verbal_roots">
+<code class="descname">get_verbal_roots</code><span class="sig-paren">(</span><em>ex</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.get_verbal_roots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.get_verbal_roots" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="predicatrix2.Predication.p_counter">
+<code class="descname">p_counter</code><em class="property"> = count(0)</em><a class="headerlink" href="#predicatrix2.Predication.p_counter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.p_to_file">
+<code class="descname">p_to_file</code><span class="sig-paren">(</span><em>fp</em>, <em>predicate</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.p_to_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.p_to_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.pprint_key_dict">
+<code class="descname">pprint_key_dict</code><span class="sig-paren">(</span><em>predicate</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.pprint_key_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.pprint_key_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.print_predicate">
+<code class="descname">print_predicate</code><span class="sig-paren">(</span><em>predicate</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.print_predicate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.print_predicate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.print_predicates">
+<code class="descname">print_predicates</code><span class="sig-paren">(</span><em>predicates</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.print_predicates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.print_predicates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.ps_to_file">
+<code class="descname">ps_to_file</code><span class="sig-paren">(</span><em>fp</em>, <em>ps</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.ps_to_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.ps_to_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.sp_imp_elmo_dictize_ex">
+<code class="descname">sp_imp_elmo_dictize_ex</code><span class="sig-paren">(</span><em>ex</em>, <em>elmo_embeddings</em>, <em>importance</em>, <em>s_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.sp_imp_elmo_dictize_ex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.sp_imp_elmo_dictize_ex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.spacy_dep">
+<code class="descname">spacy_dep</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.spacy_dep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.spacy_dep" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.spacy_dep_">
+<code class="descname">spacy_dep_</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.spacy_dep_"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.spacy_dep_" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.spacy_i">
+<code class="descname">spacy_i</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.spacy_i"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.spacy_i" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.spacy_lemma">
+<code class="descname">spacy_lemma</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.spacy_lemma"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.spacy_lemma" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.spacy_lemma_">
+<code class="descname">spacy_lemma_</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.spacy_lemma_"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.spacy_lemma_" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.spacy_pos">
+<code class="descname">spacy_pos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.spacy_pos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.spacy_pos" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.spacy_pos_">
+<code class="descname">spacy_pos_</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.spacy_pos_"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.spacy_pos_" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.spacy_tag">
+<code class="descname">spacy_tag</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.spacy_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.spacy_tag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.spacy_tag_">
+<code class="descname">spacy_tag_</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.spacy_tag_"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.spacy_tag_" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.spacy_text">
+<code class="descname">spacy_text</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.spacy_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.spacy_text" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="predicatrix2.TestPredicates">
+<em class="property">class </em><code class="descclassname">predicatrix2.</code><code class="descname">TestPredicates</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#TestPredicates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.TestPredicates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="predicatrix2.TestPredicates.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#TestPredicates.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.TestPredicates.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an instance of the class that will use the named test
+method when executed. Raises a ValueError if the instance does
+not have a method with the specified name.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.TestPredicates.gen_dummy_dependent_information">
+<code class="descname">gen_dummy_dependent_information</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#TestPredicates.gen_dummy_dependent_information"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.TestPredicates.gen_dummy_dependent_information" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.TestPredicates.test_all_keys_in_formula">
+<code class="descname">test_all_keys_in_formula</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#TestPredicates.test_all_keys_in_formula"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.TestPredicates.test_all_keys_in_formula" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.TestPredicates.test_attribute_predicate">
+<code class="descname">test_attribute_predicate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#TestPredicates.test_attribute_predicate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.TestPredicates.test_attribute_predicate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.TestPredicates.test_attribute_predicate_before_behind">
+<code class="descname">test_attribute_predicate_before_behind</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#TestPredicates.test_attribute_predicate_before_behind"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.TestPredicates.test_attribute_predicate_before_behind" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.TestPredicates.test_coin">
+<code class="descname">test_coin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#TestPredicates.test_coin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.TestPredicates.test_coin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.TestPredicates.test_negation">
+<code class="descname">test_negation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#TestPredicates.test_negation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.TestPredicates.test_negation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.TestPredicates.test_negations">
+<code class="descname">test_negations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#TestPredicates.test_negations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.TestPredicates.test_negations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.TestPredicates.test_num_of_predicates">
+<code class="descname">test_num_of_predicates</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#TestPredicates.test_num_of_predicates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.TestPredicates.test_num_of_predicates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Stefan Werner
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

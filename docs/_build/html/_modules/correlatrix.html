@@ -1,0 +1,344 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>correlatrix &mdash; S0krates 5.0.0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> S0krates
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">S0krates</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>correlatrix</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for correlatrix</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+
+<span class="kn">from</span> <span class="nn">pairix</span> <span class="k">import</span> <span class="n">Pairix</span>
+<span class="kn">from</span> <span class="nn">simmix</span> <span class="k">import</span> <span class="n">Simmix</span>
+
+<div class="viewcode-block" id="Correlation"><a class="viewcode-back" href="../correlatrix.html#correlatrix.Correlation">[docs]</a><span class="k">class</span> <span class="nc">Correlation</span><span class="p">(</span><span class="n">Pairix</span><span class="p">):</span>
+<div class="viewcode-block" id="Correlation.__init__"><a class="viewcode-back" href="../correlatrix.html#correlatrix.Correlation.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; This module looks for pairwise modifying expressions in the horizon of a predicate</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># https://en.wikipedia.org/wiki/Grammatical_modifier</span>
+
+        <span class="c1"># This looks for relativly similar phrases to get some pairs that are possible modifiers to the contradiction</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">correlative</span> <span class="o">=</span> \
+            <span class="n">Simmix</span><span class="p">([(</span><span class="mi">200</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">common_words_sim</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">dep_sim</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">pos_sim</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                    <span class="c1">#(1, Simmix.elmo_sim(), 0.35,1),</span>
+                    <span class="c1">#(1,Simmix.fuzzystr_sim, 0.5,1),</span>
+                    <span class="p">(</span><span class="o">-</span><span class="mi">1000</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">boolean_subsame_sim</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+                    <span class="p">],</span>
+                   <span class="p">)</span>
+
+        <span class="c1"># That&#39;s a distinctive criterium, that the correlative keys can&#39;t be too similar to the contradicting pair</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distinct</span> <span class="o">=</span> \
+            <span class="n">Simmix</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">multi_sim</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="n">Simmix</span><span class="o">.</span><span class="n">common_words_sim</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">multi_sim</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="n">Simmix</span><span class="o">.</span><span class="n">elmo_sim</span><span class="p">(),</span> <span class="n">n</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">multi_sim</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="n">Simmix</span><span class="o">.</span><span class="n">dep_sim</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">multi_sim</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="n">Simmix</span><span class="o">.</span><span class="n">pos_sim</span><span class="p">,</span><span class="n">n</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="c1"># (2,Simmix.elmo_multi_sim(), 0,0.4),</span>
+                    <span class="c1"># (1, Simmix.multi_sim(fun=Simmix.sub_i, n=4), 0,0.3),</span>
+                    <span class="c1"># (1, Simmix.multi_sim(fun=Simmix.longer_sim, n=4), 0, 0.7) \</span>
+                    <span class="p">],</span>
+                   <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="c1"># TODO define a stringer contraint to detect the actually modifying bindings</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Correlation.annotate_correlations"><a class="viewcode-back" href="../correlatrix.html#correlatrix.Correlation.annotate_correlations">[docs]</a>    <span class="k">def</span> <span class="nf">annotate_correlations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">contradiction</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">possible_to_correlate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">graph_coro</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">save_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Annotates the correlations, that means expressions that are similar to each other and are distinct from the</span>
+<span class="sd">            pair, that was found as excluding each other. For instance &#39;from the one side&#39; and &#39;from the other side&#39;.</span>
+
+<span class="sd">            In part the graph is cleaned, because also exmaples can be marked as seemingly contradictions.</span>
+<span class="sd">            On the other side the same operation is done for additional (sub)predications in context, following</span>
+<span class="sd">            coreferential relations</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">poss_correlations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">correlative</span><span class="o">.</span><span class="n">choose</span><span class="p">(</span>           <span class="c1"># What correlates</span>
+            <span class="n">possible_to_correlate</span><span class="p">,</span>
+            <span class="n">layout</span><span class="o">=</span><span class="s1">&#39;1:1&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">poss_correlations</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="n">correlation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">distinct</span><span class="o">.</span><span class="n">choose</span><span class="p">(</span>                    <span class="c1"># not too much</span>
+            <span class="p">([</span><span class="n">contradiction</span><span class="p">],</span>
+             <span class="n">poss_correlations</span><span class="p">),</span>
+            <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">minimize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">layout</span><span class="o">=</span><span class="s1">&#39;n&#39;</span><span class="p">,</span>
+            <span class="n">out</span><span class="o">=</span><span class="s1">&#39;ex&#39;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;opposed&quot;</span><span class="p">,</span> <span class="s2">&quot;opposed&quot;</span><span class="p">,</span> <span class="s2">&quot;correlated&quot;</span><span class="p">),</span>
+            <span class="n">graph_coro</span><span class="o">=</span><span class="n">graph_coro</span><span class="p">)</span>                             <span class="c1"># Put it in the graph</span>
+
+
+        <span class="k">if</span> <span class="n">save_graph</span><span class="p">:</span>
+            <span class="n">G</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">correl_to_nxdigraph</span><span class="p">(</span><span class="n">contradiction</span><span class="p">,</span> <span class="n">poss_correlations</span><span class="p">,</span> <span class="n">correlation</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">draw_correlations</span><span class="p">(</span><span class="n">G</span><span class="o">=</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">contradiction</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">target</span><span class="o">=</span><span class="n">contradiction</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">correlation</span></div>
+
+
+<div class="viewcode-block" id="Correlation.correl_to_nxdigraph"><a class="viewcode-back" href="../correlatrix.html#correlatrix.Correlation.correl_to_nxdigraph">[docs]</a>    <span class="k">def</span> <span class="nf">correl_to_nxdigraph</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">contradiction</span><span class="p">,</span> <span class="n">possible_correlations</span><span class="p">,</span> <span class="n">correlation</span><span class="p">):</span>
+        <span class="n">dig</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+        <span class="kn">import</span> <span class="nn">textwrap</span>
+
+        <span class="k">def</span> <span class="nf">wrap</span> <span class="p">(</span><span class="n">strs</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">strs</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+
+
+        <span class="k">def</span> <span class="nf">add_possible_correlation_node</span> <span class="p">(</span><span class="n">correlated</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="n">key_co1</span> <span class="o">=</span> <span class="n">kind</span> <span class="o">+</span> <span class="n">correlated</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">wrap</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">correlated</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]))</span>
+            <span class="n">dig</span><span class="o">.</span><span class="n">add_node</span> <span class="p">(</span><span class="n">key_co1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">add_possible_correlation_edge</span> <span class="p">(</span><span class="n">correlated1</span><span class="p">,</span> <span class="n">correlated2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kind</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">key_co1</span> <span class="o">=</span> <span class="n">kind</span> <span class="o">+</span> <span class="n">correlated1</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+            <span class="n">key_co2</span> <span class="o">=</span> <span class="n">kind</span> <span class="o">+</span> <span class="n">correlated2</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+            <span class="n">dig</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">key_co1</span><span class="p">,</span> <span class="n">key_co2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+
+
+
+        <span class="k">for</span> <span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span> <span class="ow">in</span> <span class="p">[</span><span class="n">contradiction</span><span class="p">]:</span>
+            <span class="n">add_possible_correlation_node</span><span class="p">(</span><span class="n">ex1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">kind</span> <span class="o">=</span> <span class="s1">&#39;contra&#39;</span><span class="p">)</span>
+            <span class="n">add_possible_correlation_node</span><span class="p">(</span><span class="n">ex2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">kind</span> <span class="o">=</span> <span class="s1">&#39;contra&#39;</span><span class="p">)</span>
+            <span class="n">add_possible_correlation_edge</span><span class="p">(</span><span class="n">ex1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ex2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;contradiction&quot;</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;contra&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span> <span class="ow">in</span> <span class="n">possible_correlations</span><span class="p">:</span>
+            <span class="n">add_possible_correlation_node</span><span class="p">(</span><span class="n">ex1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">kind</span> <span class="o">=</span> <span class="s1">&#39;poss new&#39;</span><span class="p">)</span>
+            <span class="n">add_possible_correlation_node</span><span class="p">(</span><span class="n">ex2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">kind</span> <span class="o">=</span> <span class="s1">&#39;poss new&#39;</span><span class="p">)</span>
+            <span class="n">add_possible_correlation_edge</span><span class="p">(</span><span class="n">ex1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ex2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;possible new&quot;</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;poss new&quot;</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">add_edge_between</span> <span class="p">(</span><span class="n">key_corr_i</span><span class="p">,</span> <span class="n">key_trigg_i</span><span class="p">):</span>
+            <span class="n">key_corr</span>  <span class="o">=</span> <span class="s2">&quot;poss new&quot;</span> <span class="o">+</span> <span class="n">key_corr_i</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+            <span class="n">key_trigg</span> <span class="o">=</span> <span class="s2">&quot;contra&quot;</span>   <span class="o">+</span> <span class="n">contradiction</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+            <span class="n">dig</span><span class="o">.</span><span class="n">add_edge</span> <span class="p">(</span><span class="n">key_corr</span><span class="p">,</span> <span class="n">key_trigg</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;correl&quot;</span><span class="p">)</span>
+            <span class="n">key_corr</span>  <span class="o">=</span> <span class="s2">&quot;poss new&quot;</span> <span class="o">+</span> <span class="n">key_corr_i</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+            <span class="n">key_trigg</span> <span class="o">=</span> <span class="s2">&quot;contra&quot;</span>   <span class="o">+</span> <span class="n">contradiction</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+            <span class="n">dig</span><span class="o">.</span><span class="n">add_edge</span> <span class="p">(</span><span class="n">key_corr</span><span class="p">,</span> <span class="n">key_trigg</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;correl&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">corr_i</span><span class="p">,</span> <span class="n">trigg_i</span> <span class="ow">in</span> <span class="n">correlation</span><span class="p">:</span>
+           <span class="n">add_edge_between</span><span class="p">(</span><span class="n">corr_i</span><span class="p">,</span> <span class="n">trigg_i</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dig</span></div>
+
+
+<div class="viewcode-block" id="Correlation.draw_correlations"><a class="viewcode-back" href="../correlatrix.html#correlatrix.Correlation.draw_correlations">[docs]</a>    <span class="k">def</span> <span class="nf">draw_correlations</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">pylab</span> <span class="k">as</span> <span class="nn">P</span>
+        <span class="kn">import</span> <span class="nn">textwrap</span>
+
+        <span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;./img/contradiction -- new correlation&#39;</span><span class="o">+</span> <span class="n">source</span> <span class="o">+</span><span class="s2">&quot; -- &quot;</span><span class="o">+</span> <span class="n">target</span> <span class="o">+</span><span class="s2">&quot;.svg&quot;</span>
+
+        <span class="n">G</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s1">&#39;graph&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;rankdir&#39;</span><span class="p">:</span> <span class="s1">&#39;LR&#39;</span><span class="p">,</span> <span class="s1">&#39;splines&#39;</span><span class="p">:</span><span class="s1">&#39;line&#39;</span><span class="p">}</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s1">&#39;edges&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;arrowsize&#39;</span><span class="p">:</span> <span class="s1">&#39;4.0&#39;</span><span class="p">}</span>
+
+        <span class="n">A</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">drawing</span><span class="o">.</span><span class="n">nx_agraph</span><span class="o">.</span><span class="n">to_agraph</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+
+        <span class="c1"># Add contradictions to graph as cluster</span>
+        <span class="n">nbunch_cr</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;kind&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="s1">&#39;contra&#39;</span><span class="p">]</span>
+        <span class="n">A</span><span class="o">.</span><span class="n">add_subgraph</span> <span class="p">(</span><span class="n">nbunch</span><span class="o">=</span><span class="n">nbunch_cr</span><span class="p">,</span>
+                        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;cluster1&quot;</span><span class="p">,</span>
+                        <span class="n">style</span><span class="o">=</span><span class="s1">&#39;filled&#39;</span><span class="p">,</span>
+                        <span class="n">color</span><span class="o">=</span><span class="s1">&#39;lightgrey&#39;</span><span class="p">,</span>
+                        <span class="n">label</span><span class="o">=</span><span class="s1">&#39;found contradictions&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Add correlations to graph as cluster</span>
+        <span class="n">nbunch_pn</span> <span class="o">=</span><span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;kind&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="s1">&#39;poss new&#39;</span><span class="p">]</span>
+        <span class="n">A</span><span class="o">.</span><span class="n">add_subgraph</span><span class="p">(</span><span class="n">nbunch</span><span class="o">=</span><span class="n">nbunch_pn</span><span class="p">,</span>
+                        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;cluster2&quot;</span><span class="p">,</span>
+                        <span class="n">style</span><span class="o">=</span><span class="s1">&#39;filled&#39;</span><span class="p">,</span>
+                        <span class="n">color</span><span class="o">=</span><span class="s1">&#39;lightgrey&#39;</span><span class="p">,</span>
+                        <span class="n">label</span><span class="o">=</span><span class="s1">&#39;possible new correlations&#39;</span><span class="p">)</span>
+
+        <span class="n">A</span><span class="o">.</span><span class="n">layout</span><span class="p">(</span><span class="s1">&#39;dot&#39;</span><span class="p">)</span>
+
+        <span class="n">A</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">P</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Stefan Werner
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

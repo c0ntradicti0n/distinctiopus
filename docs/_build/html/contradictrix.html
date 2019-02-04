@@ -1,0 +1,331 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>contradictrix module &mdash; S0krates 5.0.0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> S0krates
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">contradictrix module</a></li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">S0krates</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>contradictrix module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/contradictrix.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-contradictrix">
+<span id="contradictrix-module"></span><h1>contradictrix module<a class="headerlink" href="#module-contradictrix" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="contradictrix.Contradiction">
+<em class="property">class </em><code class="descclassname">contradictrix.</code><code class="descname">Contradiction</code><a class="reference internal" href="_modules/contradictrix.html#Contradiction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#contradictrix.Contradiction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="contradictrix.Contradiction.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/contradictrix.html#Contradiction.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#contradictrix.Contradiction.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>This module lets you find the contradictions between the predicates.</p>
+<p>The constructor sets up the filters to find them.
+Call then <code class="xref py py-func docutils literal notranslate"><span class="pre">find_contradcitions()</span></code> on predicates</p>
+<p>Get some annotated text data…</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">corpus_reader</span> <span class="k">import</span> <span class="n">CorpusReader</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">corpus</span> <span class="o">=</span> <span class="n">CorpusReader</span><span class="p">(</span><span class="n">corpus_path</span><span class="o">=</span><span class="s1">&#39;./corpora/aristotle_categories/import_conll&#39;</span><span class="p">,</span> <span class="n">only</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">17</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">predicatrix2</span> <span class="k">import</span> <span class="n">Predication</span>
+</pre></div>
+</div>
+<p>Extract some predicates:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">P</span> <span class="o">=</span> <span class="n">Predication</span><span class="p">(</span><span class="n">corpus</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predications1</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">predicate_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predications2</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">predicate_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">C</span> <span class="o">=</span> <span class="n">Contradiction</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Get the contradiction from them:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">C</span><span class="o">.</span><span class="n">find_contradictive</span><span class="p">(</span><span class="n">predicates1</span><span class="o">=</span><span class="n">predications1</span><span class="p">,</span> <span class="n">predicates2</span><span class="o">=</span><span class="n">predications2</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="contradictrix.Contradiction.add_correlation_edge">
+<code class="descname">add_correlation_edge</code><span class="sig-paren">(</span><em>G</em>, <em>predicate_dict1</em>, <em>predicate_dict2</em>, <em>label=None</em>, <em>kind=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/contradictrix.html#Contradiction.add_correlation_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#contradictrix.Contradiction.add_correlation_edge" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="contradictrix.Contradiction.add_determined_expression_nx">
+<code class="descname">add_determined_expression_nx</code><span class="sig-paren">(</span><em>G</em>, <em>general_kind</em>, <em>special_kind</em>, <em>n1</em>, <em>n2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/contradictrix.html#Contradiction.add_determined_expression_nx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#contradictrix.Contradiction.add_determined_expression_nx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Throws node data into neo4j by expanding data as dictionary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>general_kind</strong> – Property “GeneralKind” in the GDB</li>
+<li><strong>special_kind</strong> – Property “SpecialKind” in the GDB (‘anonym’/’negation’)</li>
+<li><strong>n1</strong> – predicate dict 1</li>
+<li><strong>n2</strong> – predicate dict 2</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="contradictrix.Contradiction.add_possible_correlation_node">
+<code class="descname">add_possible_correlation_node</code><span class="sig-paren">(</span><em>G</em>, <em>predicate_dict</em>, <em>kind=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/contradictrix.html#Contradiction.add_possible_correlation_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#contradictrix.Contradiction.add_possible_correlation_node" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="contradictrix.Contradiction.draw_key_graphs">
+<code class="descname">draw_key_graphs</code><span class="sig-paren">(</span><em>G</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/contradictrix.html#Contradiction.draw_key_graphs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#contradictrix.Contradiction.draw_key_graphs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="contradictrix.Contradiction.find_contradictive">
+<code class="descname">find_contradictive</code><span class="sig-paren">(</span><em>predicates1</em>, <em>predicates2</em>, <em>graph_coro=None</em>, <em>paint_graph=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/contradictrix.html#Contradiction.find_contradictive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#contradictrix.Contradiction.find_contradictive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tbis function  searches in two lists of predicate-dict for contradictions, that are caused by antonym- and
+negation.</p>
+<p>These Predicate have a special distribution of negation particles.
+See <code class="xref py py-func docutils literal notranslate"><span class="pre">attribute_negation_sentence_predicates()</span></code></p>
+<p>Antonyms come from nltk.WordNet and there is a list in <cite>word_definitions</cite>.
+See <code class="xref py py-data docutils literal notranslate"><span class="pre">antonym_dict</span></code></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>predicates1</strong> – list of predicate-dicts</li>
+<li><strong>predicates2</strong> – list of predicate-dicts</li>
+<li><strong>paint_graph</strong> – If a picture should be saved</li>
+<li><strong>kwargs</strong> – keyword-args are propagated to <a class="reference internal" href="simmix.html#simmix.Simmix.choose" title="simmix.Simmix.choose"><code class="xref py py-func docutils literal notranslate"><span class="pre">choose()</span></code></a></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Combined list of predicate-tuples</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="contradictrix.Contradiction.put_into_nx">
+<code class="descname">put_into_nx</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#contradictrix.Contradiction.put_into_nx" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="contradictrix.Contradiction.wrap">
+<code class="descname">wrap</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/contradictrix.html#Contradiction.wrap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#contradictrix.Contradiction.wrap" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="contradictrix.TestContradictrix">
+<em class="property">class </em><code class="descclassname">contradictrix.</code><code class="descname">TestContradictrix</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/contradictrix.html#TestContradictrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#contradictrix.TestContradictrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="contradictrix.TestContradictrix.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/contradictrix.html#TestContradictrix.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#contradictrix.TestContradictrix.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an instance of the class that will use the named test
+method when executed. Raises a ValueError if the instance does
+not have a method with the specified name.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="contradictrix.TestContradictrix.test_contradiction_symmetry">
+<code class="descname">test_contradiction_symmetry</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/contradictrix.html#TestContradictrix.test_contradiction_symmetry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#contradictrix.TestContradictrix.test_contradiction_symmetry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Stefan Werner
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

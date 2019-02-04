@@ -1,0 +1,280 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>subj_and_aspectrix module &mdash; S0krates 5.0.0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> S0krates
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">subj_and_aspectrix module</a></li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">S0krates</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>subj_and_aspectrix module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/subj_and_aspectrix.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-subj_and_aspectrix">
+<span id="subj-and-aspectrix-module"></span><h1>subj_and_aspectrix module<a class="headerlink" href="#module-subj_and_aspectrix" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="subj_and_aspectrix.Subjects_and_aspects">
+<em class="property">class </em><code class="descclassname">subj_and_aspectrix.</code><code class="descname">Subjects_and_aspects</code><span class="sig-paren">(</span><em>corpus</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/subj_and_aspectrix.html#Subjects_and_aspects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#subj_and_aspectrix.Subjects_and_aspects" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="argumentatrix.html#argumentatrix.Arguments" title="argumentatrix.Arguments"><code class="xref py py-class docutils literal notranslate"><span class="pre">argumentatrix.Arguments</span></code></a></p>
+<p>This module finds pairs of arguments</p>
+<dl class="method">
+<dt id="subj_and_aspectrix.Subjects_and_aspects.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>corpus</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/subj_and_aspectrix.html#Subjects_and_aspects.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#subj_and_aspectrix.Subjects_and_aspects.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>This module looks for pairwise expressions in the horizon of a predicate.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="subj_and_aspectrix.Subjects_and_aspects.annotate">
+<code class="descname">annotate</code><span class="sig-paren">(</span><em>opposed_pair_pair=None</em>, <em>graph_coro_subj_asp=None</em>, <em>graph_coro_arg_binding=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/subj_and_aspectrix.html#Subjects_and_aspects.annotate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#subj_and_aspectrix.Subjects_and_aspects.annotate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Annotates the correlations, that means expressions that are similar to each other and are distinct from the
+pair, that was found as excluding each other. For instance ‘from the one side’ and ‘from the other side’.</p>
+<p>In part the graph is cleaned, because also exmaples can be marked as seemingly contradictions.
+On the other side the same operation is done for additional (sub)predications in context, following
+coreferential relations</p>
+<p>What is a subject and what a subject is decided on the sequence in respect to the theme-rheme-distinction.
+What you speak about, comes first, the subject. With what you want to divide this thing up, is the aspect.
+If you change the direction of explanation, this also changes. E.g. If you are in the first sentence talking
+about microsoft warranties, and secondly you explain different cases, you speak about warranty. If you
+start with these cases and then tell, that in one case you have in the other not warranty, you speak about
+these cases.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>opposed_pair_pair</strong> – 2tuple-2tuple-list-predicate-dicts, so 4 predicates in contradicting/corralating
+constellation</li>
+<li><strong>graph_coro</strong> – coroutine to connect the subjects and aspects to debug their bindings</li>
+<li><strong>graph_coro_arg_binding</strong> – coroutine to connect subject and aspects to their predicates</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="subj_and_aspectrix.Subjects_and_aspects.get_arguments">
+<code class="descname">get_arguments</code><span class="sig-paren">(</span><em>pred</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/subj_and_aspectrix.html#Subjects_and_aspects.get_arguments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#subj_and_aspectrix.Subjects_and_aspects.get_arguments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the arguments of the predicate</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pred</strong> – predicate-dict</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">argument-dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="subj_and_aspectrix.Subjects_and_aspects.get_correlated">
+<code class="descname">get_correlated</code><span class="sig-paren">(</span><em>oppo</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/subj_and_aspectrix.html#Subjects_and_aspects.get_correlated"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#subj_and_aspectrix.Subjects_and_aspects.get_correlated" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns pairs of similar arguments</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>oppo</strong> – opposed pair of predicate-dict-2tuples</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">correlated argument-dict-2tuples</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Stefan Werner
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

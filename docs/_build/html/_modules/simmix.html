@@ -1,0 +1,1156 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>simmix &mdash; S0krates 5.0.0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> S0krates
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">S0krates</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>simmix</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for simmix</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&#39;&#39;&#39; This module is intended for overlapping an open-end variety of similarty measures on complex data in</span>
+<span class="sd">    natural language processing. Its like an organ with different registers for text-comparisons.</span>
+
+<span class="sd">    Choices are made from two lists of dict elements, that are representing some phrases. They are bundles</span>
+<span class="sd">    of properties, as their text, grammar, also a logical formula to represent their logical structure (pyprover), semantical vectors (and syntactical, like elmo-embeddings from allen-nlp) , tdf-idf-importance and some more. These are predefined here, if you know some of your own,its possible to give custom functions.</span>
+
+<span class="sd">    p1 =</span>
+<span class="sd">      {</span>
+<span class="sd">      &#39;text&#39;: [&#39;The&#39;, &#39;cause&#39;, &#39;of&#39;, &#39;cancer&#39;, &#39;is&#39;, &#39;not&#39;, &#39;a&#39;, &#39;virus&#39;, &#39;and&#39;, &#39;the&#39;, &#39;cause&#39;, &#39;of&#39;, &#39;cancer&#39;, &#39;is&#39;, &#39;not&#39;, &#39;a&#39;, &#39;fungus&#39;],</span>
+<span class="sd">      &#39;lemma_&#39;: [&#39;the&#39;, &#39;because&#39;, &#39;of&#39;, &#39;cancer&#39;, &#39;be&#39;, &#39;not&#39;, &#39;a&#39;, &#39;virus&#39;, &#39;and&#39;, &#39;the&#39;, &#39;because&#39;, &#39;of&#39;, &#39;cancer&#39;, &#39;be&#39;, &#39;not&#39;, &#39;a&#39;, &#39;fungus&#39;],</span>
+<span class="sd">      &#39;dep&#39;,</span>
+<span class="sd">      &#39;importance&#39;: array([0.53395703, ...  0.2       ])</span>
+<span class="sd">      A ∧ ¬C ∧ B ∧ ¬D</span>
+<span class="sd">    ((((pyprover.A )) &amp; ~ pyprover.C ) &amp; (((pyprover.B )) &amp; ~ pyprover.D ))</span>
+<span class="sd">      }</span>
+
+<span class="sd">    p2 = ...</span>
+<span class="sd">    q1 = ...</span>
+<span class="sd">    q2 = ...</span>
+<span class="sd">    ps = [p1,p2,p3 ...]</span>
+<span class="sd">    qs = [q1,q2,q3 ...]</span>
+
+<span class="sd">    Two list of these elements have to be provided for the Simmix.choose ((p1,p2))-function.</span>
+
+
+<span class="sd">    Also there are functions in Simmix to compare these and different sorts of how choices can be made.</span>
+
+<span class="sd">    The functions and parameters for computing the overall-similarity,, that should be used in a complex comparison</span>
+<span class="sd">    have to be initialized like this:</span>
+
+<span class="sd">     superficial_sim  = \</span>
+<span class="sd">        Simmix([(1, Simmix.fuzzystr_sim, 0.72, 2.01), # fuzzy-string-comparison</span>
+<span class="sd">                (1, Simmix.dep_sim, 0.4, 1)       # levensthein distance of the dependency measures</span>
+<span class="sd">                ])</span>
+
+<span class="sd">    The list of tuple parameter is represents a pipeline, what should be computed:</span>
+<span class="sd">    1                     -- The weight of their normalized results.</span>
+<span class="sd">    Simmix.fuzzystr_sim   -- which function</span>
+<span class="sd">    0.72                  -- minimum-score</span>
+<span class="sd">    2.01                  -- maximum-score</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">types</span>
+<span class="kn">import</span> <span class="nn">scipy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy_indexed</span> <span class="k">as</span> <span class="nn">npi</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="k">import</span> <span class="n">preprocessing</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">pyprover</span>
+<span class="kn">import</span> <span class="nn">string</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">pyxdameraulevenshtein</span> <span class="k">import</span> <span class="n">damerau_levenshtein_distance</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">nested_list_tools</span> <span class="k">import</span> <span class="n">check_for_tuple_in_list</span><span class="p">,</span> <span class="n">flatten</span><span class="p">,</span>  <span class="n">flatten_reduce</span><span class="p">,</span> <span class="n">flatten_list</span><span class="p">,</span> <span class="n">type_spec</span>
+<span class="kn">import</span> <span class="nn">dict_tools</span>
+<span class="kn">import</span> <span class="nn">abstractness_estimator</span>
+
+
+<span class="n">uppercase_abc</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_uppercase</span><span class="p">)</span>
+<span class="n">uppercase_bca</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_uppercase</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="cartesian_product_itertools"><a class="viewcode-back" href="../simmix.html#simmix.cartesian_product_itertools">[docs]</a><span class="k">def</span> <span class="nf">cartesian_product_itertools</span><span class="p">(</span><span class="n">arrays</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Cartesian product, that works with functions and combinations of parameters and returns an ordered output, that</span>
+<span class="sd">        can be sliced with numpy and axis-indexing</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># https://stackoverflow.com/questions/11144513/numpy-cartesian-product-of-x-and-y-array-points-into-single-array-of-2d-points</span>
+    <span class="c1"># Generalized N-dimensional products</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="n">arrays</span><span class="p">)))</span></div>
+
+
+<div class="viewcode-block" id="Simmix"><a class="viewcode-back" href="../simmix.html#simmix.Simmix">[docs]</a><span class="k">class</span> <span class="nc">Simmix</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;This module contains utils to overlap different similarity measures.&#39;&#39;&#39;</span>
+<div class="viewcode-block" id="Simmix.__init__"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">similarity_composition</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Set up, which functions are taken to compute a similarity matrix to choose from</span>
+
+<span class="sd">            :param similarity_composition:</span>
+<span class="sd">                list of tuples (</span>
+<span class="sd">                    weight&lt;float&gt;,</span>
+<span class="sd">                    fun&lt;function, accepting expressiondicts as arguments&gt;,</span>
+<span class="sd">                    min-val&lt;float&gt;,</span>
+<span class="sd">                    max-val&lt;float&gt;)</span>
+<span class="sd">            :param n:</span>
+<span class="sd">                number of results to return, can be overridden with choose(...)</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">funs</span>           <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">similarity_composition</span><span class="p">)</span> 
+        <span class="n">weights</span>        <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">similarity_composition</span><span class="p">)</span> 
+        <span class="n">thresholds_min</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">similarity_composition</span><span class="p">)</span> 
+        <span class="n">thresholds_max</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">similarity_composition</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">composition_tuple</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">similarity_composition</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">composition_tuple</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="p">(</span><span class="n">weight</span><span class="p">,</span> <span class="n">fun</span><span class="p">)</span> <span class="o">=</span> <span class="n">composition_tuple</span>
+                <span class="n">funs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>       <span class="o">=</span> <span class="n">fun</span>
+                <span class="n">weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>    <span class="o">=</span> <span class="n">weight</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">composition_tuple</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="p">(</span><span class="n">weight</span><span class="p">,</span> <span class="n">fun</span><span class="p">,</span>  <span class="n">threshold_min</span><span class="p">,</span> <span class="n">threshold_max</span><span class="p">)</span> <span class="o">=</span> <span class="n">composition_tuple</span>
+                <span class="n">funs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>           <span class="o">=</span> <span class="n">fun</span>
+                <span class="n">weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>        <span class="o">=</span> <span class="n">weight</span>
+                <span class="n">thresholds_min</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">threshold_min</span>
+                <span class="n">thresholds_max</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">threshold_max</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;len of tuples must be 2, (weight, fun) or 3 (weight, fun, threshold_min, threshold_max)&quot;</span> <span class="o">+</span>
+                                 <span class="nb">str</span><span class="p">(</span><span class="n">similarity_composition</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span>              <span class="o">=</span> <span class="n">n</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">funs</span>           <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">funs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weights</span>        <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thresholds_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">thresholds_min</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thresholds_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">thresholds_max</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">mins</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">min</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">funs</span><span class="p">]</span>
+            <span class="n">maxs</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">max</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">funs</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">minmax_defaults</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">mins</span><span class="p">,</span><span class="n">maxs</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span> <span class="p">(</span><span class="s2">&quot;At least one of the funs doesn&#39;t have standard_range decorator! </span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span> <span class="p">(</span><span class="n">funs</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scaler</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">MinMaxScaler</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Simmix.standard_range"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.standard_range">[docs]</a>    <span class="k">def</span> <span class="nf">standard_range</span> <span class="p">(</span><span class="n">minim</span><span class="p">,</span> <span class="n">maxim</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Decorator for similarity computing functions, it is later used for normalisation</span>
+
+<span class="sd">        :param maxim: maximum value</span>
+<span class="sd">        :param maxim: minimum value</span>
+<span class="sd">        :return: decorated function</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">min</span> <span class="o">=</span> <span class="n">minim</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="n">maxim</span>
+            <span class="k">return</span> <span class="n">f</span>
+        <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+<div class="viewcode-block" id="Simmix.apply_sim_fun"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.apply_sim_fun">[docs]</a>    <span class="k">def</span> <span class="nf">apply_sim_fun</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fee</span><span class="p">):</span>
+        <span class="n">fun</span> <span class="o">=</span> <span class="n">fee</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">ex1</span> <span class="o">=</span> <span class="n">fee</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">ex2</span> <span class="o">=</span> <span class="n">fee</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">res</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">fun</span><span class="p">(</span><span class="n">ex1</span><span class="p">,</span><span class="n">ex2</span><span class="p">)</span>
+            <span class="n">dict_tools</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span> <span class="p">(</span><span class="s2">&quot;Function doesn&#39;t return beam. </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">fun</span><span class="p">(</span><span class="n">ex1</span><span class="p">,</span><span class="n">ex2</span><span class="p">)),</span> <span class="nb">str</span><span class="p">(</span><span class="n">fun</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="Simmix.choose"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.choose">[docs]</a>    <span class="k">def</span> <span class="nf">choose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span>
+               <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">layout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">graph_coro</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">output</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+               <span class="n">minimize</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Choose in different manners building a similarity matrix.</span>
+
+
+<span class="sd">        .. math:: \sum_{i=1}^{\\infty} x_{i}</span>
+
+<span class="sd">        The similarity matrix is computed by a cartesian product of the two samples of expressions as two vectors and</span>
+<span class="sd">        a vector valued function,</span>
+
+<span class="sd">           .. math:: \overrightarrow{f}(x_{1,n}, x_{2,m}) = \langle f_1(x_{1,n}, x_{2,m}), f_2(x{1,n}, x_{2,m}), \dots f_k(x_{1,n}, x_{2,m}) \rangle   \\</span>
+
+<span class="sd">        the resulting matrix then is:</span>
+
+<span class="sd">        .. image:: /_static/doc_external/aslant_matrix.png</span>
+
+<span class="sd">        :param data:</span>
+<span class="sd">            tuple of lists of expressions, meaning the dictionaries or what is compared for you</span>
+<span class="sd">        :param out:</span>
+<span class="sd">            defines the structure of the returned value</span>
+<span class="sd">            default=None: the chosed expressions are returned</span>
+<span class="sd">            &#39;i&#39;: only the indices</span>
+<span class="sd">            &#39;r&#39;: only the indices of the right value are returned</span>
+<span class="sd">            &#39;2t&#39;: pairs of tuples (for building a graph</span>
+<span class="sd">            &#39;nx&#39;: directed networkxgraph</span>
+<span class="sd">        :param graph_coro:</span>
+<span class="sd">            graph_coroutine, that accepts a 3-tuple of two dictionaries and a `type` string</span>
+<span class="sd">        :param type:</span>
+<span class="sd">            If using `G`, one has to specify the type-argument,</span>
+<span class="sd">                * either in case of input lists as data a string,</span>
+<span class="sd">                * or a 3tuple `(type_l_pair, type_r_pair, type_between)=type` in case of input datatypes like the</span>
+<span class="sd">            list-tuple-list-dict, that this module returns</span>
+<span class="sd">        :param layout:</span>
+<span class="sd">            default=None behavior like n=1</span>
+<span class="sd">            &#39;1:1&#39; means for each one element of the one expression is eactly one chosen from the other</span>
+<span class="sd">            &#39;n:m&#39; for samples of n elements are fitting m other elements chosen from the other expression</span>
+<span class="sd">        :param n:</span>
+<span class="sd">            default=1</span>
+<span class="sd">            count of best n solutions, also clusters of expressions of the one are chosen to fit to a cluster of the other</span>
+<span class="sd">        :return:</span>
+<span class="sd">            list of tuples of lists of ints or indexed expressions, according to the chosen &#39;out&#39; parameter</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">exs1</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">exs2</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beam</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">n</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">n</span>
+        <span class="k">if</span> <span class="n">layout</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span> <span class="p">(</span><span class="s2">&quot;&#39;layout&#39; must be given&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">GeneratorType</span><span class="p">):</span>
+            <span class="n">tuples</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                <span class="n">tuples</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">choose</span><span class="p">(</span><span class="n">tup</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="n">layout</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">tuples</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">exs1</span><span class="p">,</span> <span class="n">exs2</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="c1"># expressions1 * expressions2 * funs</span>
+        <span class="n">sim_cube</span> <span class="o">=</span> <span class="n">cartesian_product_itertools</span><span class="p">([</span>
+            <span class="n">exs1</span><span class="p">,</span>
+            <span class="n">exs2</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">funs</span>
+        <span class="p">])</span>
+
+        <span class="c1"># apply funs   res_cube.reshape(len(exs1), len(exs2), -1)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">res_cube</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">apply_along_axis</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">apply_sim_fun</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sim_cube</span><span class="p">)</span>
+            <span class="n">res_cube</span> <span class="o">=</span> <span class="n">res_cube</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">exs1</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">exs2</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">np</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">_internal</span><span class="o">.</span><span class="n">AxisError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;expression is empty </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">((</span><span class="n">exs1</span><span class="p">,</span> <span class="n">exs2</span><span class="p">))))</span>
+
+        <span class="c1"># get cubic shape back and floating points for the numbers</span>
+        <span class="n">res_cube</span> <span class="o">=</span> <span class="n">res_cube</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">funs</span><span class="p">)))</span>
+        <span class="n">res_cube</span> <span class="o">=</span> <span class="n">res_cube</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+        <span class="c1"># add some minmax_vectors to have comparable scaling for normalization</span>
+        <span class="c1"># but first, check, if these values</span>
+        <span class="n">exceeds_min</span> <span class="o">=</span> <span class="n">res_cube</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">minmax_defaults</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">exceeds_max</span> <span class="o">=</span> <span class="n">res_cube</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">minmax_defaults</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">exceeds_min</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="ow">or</span> <span class="n">exceeds_max</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="n">exceeds_range_msg</span> <span class="o">=</span> \
+                <span class="p">(</span><span class="s2">&quot;Similarity results exceed minmax defaults, required for constant scaling in normalization.&quot;</span>
+                 <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">funs=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">funs</span><span class="p">)</span>
+                 <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">minmax_defaults=&quot;</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minmax_defaults</span><span class="p">,</span>
+                                                          <span class="n">formatter</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;float_kind&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%.2f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">x</span><span class="p">})</span>
+                 <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">cube=</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="n">res_cube</span><span class="p">,</span> <span class="n">formatter</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;float_kind&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%.2f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">x</span><span class="p">})</span>
+                 <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">min on mask </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">exceeds_min</span><span class="p">)</span>
+                 <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">max on mask </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">exceeds_max</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">exceeds_range_msg</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">exceeds_range_msg</span><span class="p">)</span>
+            <span class="c1"># raise ValueError(&quot;Similarity results exceed minmax defaults, required for constant scaling in normalization. Info printet above.&quot;)</span>
+
+        <span class="n">res_cube</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">res_cube</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">minmax_defaults</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># scale</span>
+        <span class="n">trans_cube</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scaler</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">res_cube</span><span class="p">)</span>
+        <span class="c1"># reshape matrix</span>
+        <span class="n">trans_cube</span> <span class="o">=</span> <span class="n">trans_cube</span><span class="p">[:</span><span class="n">trans_cube</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="k">if</span> <span class="n">output</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">trans_cube</span><span class="p">)</span>
+
+        <span class="c1"># apply weights: matrix dot vector = summed up vector with one value for each vector</span>
+        <span class="n">weighted_res</span> <span class="o">=</span> <span class="n">trans_cube</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">)</span>  <span class="c1"># Matrix times weight</span>
+        <span class="n">weighted</span> <span class="o">=</span> <span class="n">weighted_res</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">exs1</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">exs2</span><span class="p">))</span>
+        <span class="c1"># apply filters</span>
+        <span class="c1"># they are not boolean mask, because the max_n function returns only indices</span>
+        <span class="c1"># if we got some nan</span>
+        <span class="n">is_possible</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">([</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">weighted_res</span><span class="p">)])[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># within epsilon intervall: [min ... max]</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">thresholds_min</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="n">is_above_lower_boundary</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">trans_cube</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">thresholds_min</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">is_possible</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">is_above_lower_boundary</span><span class="p">,</span> <span class="n">is_possible</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">thresholds_max</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="n">is_under_upper_boundary</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">trans_cube</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">thresholds_max</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">is_possible</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">is_under_upper_boundary</span><span class="p">,</span> <span class="n">is_possible</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">!=</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">weighted_res</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">minimize</span><span class="p">:</span>
+                <span class="n">weighted_res</span> <span class="o">=</span> <span class="o">-</span> <span class="n">weighted_res</span>
+            <span class="n">is_biggest_n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argpartition</span><span class="p">(</span><span class="n">weighted_res</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)[</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">:]</span>
+
+            <span class="n">best_n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">is_biggest_n</span><span class="p">,</span> <span class="n">is_possible</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">best_n</span> <span class="o">=</span> <span class="n">is_possible</span>
+
+        <span class="n">left_value</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">right_values</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">layout</span> <span class="o">==</span> <span class="s2">&quot;1:1&quot;</span><span class="p">:</span>
+            <span class="n">weighted_res</span> <span class="o">=</span> <span class="n">weighted_res</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">exs1</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">exs2</span><span class="p">)))</span>
+
+            <span class="c1"># check which values are within the realm of the thresholds</span>
+            <span class="n">higher</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">weighted_res</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>  <span class="c1"># building some boolean mask</span>
+            <span class="n">lower</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">weighted_res</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">thresholds_min</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>  <span class="c1"># lower and higher catch are true, if it&#39;s within, if all is false, there can be no result</span>
+                <span class="n">lower</span> <span class="o">=</span> <span class="n">trans_cube</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">thresholds_min</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">thresholds_max</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+                <span class="n">higher</span> <span class="o">=</span> <span class="n">trans_cube</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">thresholds_max</span>
+
+            <span class="c1"># higher and lower are masks on the normalized 3-d matrix</span>
+            <span class="c1"># weighted_res is the summed up and weighted 2 d matrix</span>
+
+            <span class="n">is_within_thresholds</span> <span class="o">=</span> <span class="p">(</span><span class="n">higher</span> <span class="o">&amp;</span> <span class="n">lower</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">is_within_thresholds</span> <span class="o">=</span> <span class="n">is_within_thresholds</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">exs1</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">exs2</span><span class="p">)))</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_within_thresholds</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+                <span class="k">return</span> <span class="p">[]</span>
+
+            <span class="k">if</span> <span class="n">weighted_res</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">is_within_thresholds</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">higher</span><span class="p">,</span> <span class="n">lower</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Some mismatch between the shapes of the weighted result and the thresholds. shape= </span><span class="si">%s</span><span class="s2">, </span><span class="se">\n</span><span class="s2">exs1 = </span><span class="si">%s</span><span class="s2">, </span><span class="se">\n</span><span class="s2">exs2 = </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="nb">str</span><span class="p">((</span><span class="n">weighted_res</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">is_within_thresholds</span><span class="o">.</span><span class="n">shape</span><span class="p">)),</span> <span class="nb">str</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">exs1</span><span class="p">]),</span>
+                    <span class="nb">str</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">exs2</span><span class="p">])))</span>
+
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">is_within_thresholds</span>
+            <span class="n">left_value</span><span class="p">,</span> <span class="n">right_values</span> <span class="o">=</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">one_to_one</span><span class="p">(</span><span class="n">weighted_res</span><span class="p">,</span> <span class="n">exs1</span><span class="p">,</span> <span class="n">exs2</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">layout</span> <span class="o">==</span> <span class="s1">&#39;n&#39;</span><span class="p">:</span>
+            <span class="n">chords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divmod</span><span class="p">(</span><span class="n">best_n</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">exs2</span><span class="p">))</span>
+            <span class="n">chords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">(</span><span class="n">chords</span><span class="p">)</span>
+            <span class="n">left_value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">chords</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>  <span class="c1"># unique values, centers of different</span>
+            <span class="c1"># clusters</span>
+            <span class="n">right_values</span> <span class="o">=</span> <span class="n">npi</span><span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="n">chords</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">chords</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>  <span class="c1"># groupby the other values, that form</span>
+            <span class="c1"># the clusters and concat all these</span>
+            <span class="c1"># ex1 is comparable to all these</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">graph_coro</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_to_graph</span> <span class="p">(</span><span class="n">graph_coro</span><span class="o">=</span><span class="n">graph_coro</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span> <span class="n">exs1</span><span class="o">=</span><span class="n">exs1</span><span class="p">,</span> <span class="n">exs2</span><span class="o">=</span><span class="n">exs2</span><span class="p">,</span> <span class="n">left_value</span><span class="o">=</span><span class="n">left_value</span><span class="p">,</span> <span class="n">right_values</span><span class="o">=</span><span class="n">right_values</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">out</span> <span class="ow">or</span> <span class="n">out</span> <span class="o">==</span> <span class="s1">&#39;ex&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">expressions_list</span><span class="p">(</span><span class="n">left_value</span><span class="p">,</span> <span class="n">right_values</span><span class="p">,</span> <span class="n">exs1</span><span class="p">,</span> <span class="n">exs2</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">out</span> <span class="o">==</span> <span class="s1">&#39;i&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">i_list</span><span class="p">(</span><span class="n">left_value</span><span class="p">,</span> <span class="n">right_values</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">out</span> <span class="o">==</span> <span class="s1">&#39;r&#39;</span><span class="p">:</span>
+            <span class="n">i_s</span> <span class="o">=</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">i_list</span><span class="p">(</span><span class="n">left_value</span><span class="p">,</span> <span class="n">right_values</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">reduce_i_s_right_values</span><span class="p">(</span><span class="n">i_s</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">out</span> <span class="o">==</span> <span class="s1">&#39;lx&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">exs1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">left_value</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">out</span> <span class="o">==</span> <span class="s1">&#39;rx&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">exs1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">right_values</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">r</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">out</span> <span class="o">==</span> <span class="s1">&#39;2t&#39;</span><span class="p">:</span>
+            <span class="n">i_s</span> <span class="o">=</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">i_list</span><span class="p">(</span><span class="n">left_value</span><span class="p">,</span> <span class="n">right_values</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">reduce_i_s_pair_tuples</span><span class="p">(</span><span class="n">i_s</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">out</span> <span class="o">==</span> <span class="s1">&#39;nx&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">graph_coro</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;parameter graph_coro is required for use with a Graph!&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">graph_coro</span>
+        <span class="k">elif</span> <span class="n">out</span> <span class="o">==</span> <span class="s1">&#39;(i,ex)&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">Simmix</span><span class="o">.</span><span class="n">i_list</span><span class="p">(</span><span class="n">left_value</span><span class="p">,</span> <span class="n">right_values</span><span class="p">),</span>
+                    <span class="n">Simmix</span><span class="o">.</span><span class="n">expressions_list</span><span class="p">(</span><span class="n">left_value</span><span class="p">,</span> <span class="n">right_values</span><span class="p">,</span> <span class="n">exs1</span><span class="p">,</span> <span class="n">exs2</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;What the else could out be returned? Wrong parameter for &#39;out&#39;&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Simmix.one_to_one"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.one_to_one">[docs]</a>    <span class="k">def</span> <span class="nf">one_to_one</span><span class="p">(</span><span class="n">weighted_res</span><span class="p">,</span> <span class="n">exs1</span><span class="p">,</span> <span class="n">exs2</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Compute combinations of input-lists with a solution connecting one to one expression.</span>
+<span class="sd">            Solved with the hungarian method, filtered by the mask of acceptable solutions within the allowed range of values.</span>
+
+<span class="sd">            :param exs1:  list of comparaed values  in x direction</span>
+<span class="sd">            :param exs2:  list of compared values   in y direction</span>
+<span class="sd">            :param mask:  np boolean mask of fine solutions</span>
+<span class="sd">            :return:      tuple of list of indices to the exs1 list and of indices of the exs2 list</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">optimize</span><span class="o">.</span><span class="n">linear_sum_assignment</span><span class="p">(</span><span class="o">-</span><span class="n">weighted_res</span><span class="p">)</span>
+        <span class="n">res_mask</span> <span class="o">=</span> <span class="n">mask</span><span class="p">[</span><span class="n">res</span><span class="p">]</span>
+        <span class="n">l_values</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">res_mask</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">r_values</span> <span class="o">=</span> <span class="p">[[</span><span class="n">r</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">res_mask</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()]</span>
+        <span class="k">return</span> <span class="n">l_values</span><span class="p">,</span> <span class="n">r_values</span></div>
+
+<div class="viewcode-block" id="Simmix.expressions_list"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.expressions_list">[docs]</a>    <span class="k">def</span> <span class="nf">expressions_list</span> <span class="p">(</span><span class="n">left_value</span><span class="p">,</span> <span class="n">right_values</span><span class="p">,</span> <span class="n">exs1</span><span class="p">,</span> <span class="n">exs2</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[([</span><span class="n">exs1</span><span class="p">[</span><span class="n">left_value</span><span class="p">[</span><span class="n">l</span><span class="p">]]],</span> <span class="p">[</span><span class="n">exs2</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">right_values</span><span class="p">[</span><span class="n">l</span><span class="p">]])</span>
+                  <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">left_value</span><span class="p">))]</span></div>
+<div class="viewcode-block" id="Simmix.i_list"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.i_list">[docs]</a>    <span class="k">def</span> <span class="nf">i_list</span> <span class="p">(</span><span class="n">left_value</span><span class="p">,</span> <span class="n">right_values</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[([</span><span class="n">left_value</span><span class="p">[</span><span class="n">l</span><span class="p">]],</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">right_values</span><span class="p">[</span><span class="n">l</span><span class="p">]])</span>
+                  <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">left_value</span><span class="p">))]</span></div>
+
+<div class="viewcode-block" id="Simmix.reduce_i_s_right_values"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.reduce_i_s_right_values">[docs]</a>    <span class="k">def</span> <span class="nf">reduce_i_s_right_values</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">x</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">flatten</span><span class="p">(</span><span class="n">r</span> <span class="k">for</span> <span class="n">l</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">x</span> <span class="k">if</span> <span class="n">x</span><span class="p">))</span></div>
+<div class="viewcode-block" id="Simmix.reduce_i_s_pair_tuples"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.reduce_i_s_pair_tuples">[docs]</a>    <span class="k">def</span> <span class="nf">reduce_i_s_pair_tuples</span> <span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">x</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">((</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">)</span> <span class="k">for</span> <span class="n">l</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">x</span> <span class="k">if</span> <span class="n">x</span> <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">r</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">l</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Simmix.print_exs"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.print_exs">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">print_exs</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;ex1&quot;</span><span class="p">,</span> <span class="n">ex1</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">ex1</span><span class="p">))</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;ex2&quot;</span><span class="p">,</span> <span class="n">ex2</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">ex2</span><span class="p">))</span>
+        <span class="nb">print</span> <span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">lemma_</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ex1</span><span class="p">])</span>
+        <span class="nb">print</span> <span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">lemma_</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ex2</span><span class="p">])</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">,</span> <span class="p">{}</span></div>
+<div class="viewcode-block" id="Simmix.pos_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.pos_sim">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">pos_sim</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
+        <span class="n">grammar1</span>  <span class="o">=</span> <span class="n">ex1</span><span class="p">[</span><span class="s1">&#39;pos&#39;</span><span class="p">]</span>
+        <span class="n">grammar2</span>  <span class="o">=</span> <span class="n">ex2</span><span class="p">[</span><span class="s1">&#39;pos&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">damerau_levenshtein_distance</span><span class="p">(</span><span class="n">grammar1</span><span class="p">,</span> <span class="n">grammar2</span><span class="p">)</span> <span class="o">/</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ex1</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">ex2</span><span class="p">)),</span> <span class="p">{}</span></div>
+<div class="viewcode-block" id="Simmix.dep_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.dep_sim">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">dep_sim</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
+        <span class="n">grammar1</span>  <span class="o">=</span> <span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;dep&quot;</span><span class="p">]</span>
+        <span class="n">grammar2</span>  <span class="o">=</span> <span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;dep&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">damerau_levenshtein_distance</span><span class="p">(</span><span class="n">grammar1</span><span class="p">,</span> <span class="n">grammar2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ex1</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">ex2</span><span class="p">))</span> <span class="p">,</span> <span class="p">{}</span></div>
+<div class="viewcode-block" id="Simmix.lemma_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.lemma_sim">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">lemma_sim</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
+        <span class="n">grammar1</span>  <span class="o">=</span> <span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;lemma&quot;</span><span class="p">]</span>
+        <span class="n">grammar2</span>  <span class="o">=</span> <span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;lemma&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">damerau_levenshtein_distance</span><span class="p">(</span><span class="n">grammar1</span><span class="p">,</span> <span class="n">grammar2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ex1</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">ex2</span><span class="p">)),</span> <span class="p">{}</span></div>
+<div class="viewcode-block" id="Simmix.tag_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.tag_sim">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">tag_sim</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
+        <span class="n">grammar1</span>  <span class="o">=</span> <span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;tag&quot;</span><span class="p">]</span>
+        <span class="n">grammar2</span>  <span class="o">=</span> <span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;tag&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">damerau_levenshtein_distance</span><span class="p">(</span><span class="n">grammar1</span><span class="p">,</span> <span class="n">grammar2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ex1</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">ex2</span><span class="p">))</span> <span class="p">,</span> <span class="p">{}</span></div>
+<div class="viewcode-block" id="Simmix.fuzzystr_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.fuzzystr_sim">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">fuzzystr_sim</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
+        <span class="n">str1</span>  <span class="o">=</span> <span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span>
+        <span class="n">str2</span>  <span class="o">=</span> <span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">damerau_levenshtein_distance</span><span class="p">(</span><span class="n">str1</span><span class="p">,</span> <span class="n">str2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ex1</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">ex2</span><span class="p">))</span> <span class="p">,</span> <span class="p">{}</span></div>
+<div class="viewcode-block" id="Simmix.common_words_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.common_words_sim">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="o">-</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">common_words_sim</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
+        <span class="n">str1</span>  <span class="o">=</span> <span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;lemma&quot;</span><span class="p">]</span>
+        <span class="n">str2</span>  <span class="o">=</span> <span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;lemma&quot;</span><span class="p">]</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">([</span><span class="n">ex1</span><span class="p">[</span><span class="s1">&#39;importance&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">str1</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">str2</span><span class="p">])</span> <span class="o">+</span>
+               <span class="nb">len</span><span class="p">([</span><span class="n">ex2</span><span class="p">[</span><span class="s1">&#39;importance&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">str2</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">str1</span><span class="p">])</span> <span class="o">-</span>
+               <span class="nb">len</span><span class="p">([</span><span class="n">ex1</span><span class="p">[</span><span class="s1">&#39;importance&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">str1</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">str2</span><span class="p">])</span> <span class="o">-</span>
+               <span class="nb">len</span><span class="p">([</span><span class="n">ex2</span><span class="p">[</span><span class="s1">&#39;importance&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">str2</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">str1</span><span class="p">]))</span><span class="o">/</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ex1</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">ex2</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">res</span><span class="p">,</span> <span class="p">{}</span></div>
+
+<div class="viewcode-block" id="Simmix.convolve_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.convolve_sim">[docs]</a>    <span class="k">def</span> <span class="nf">convolve_sim</span><span class="p">(</span><span class="n">layer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">scipy.signal</span> <span class="k">as</span> <span class="nn">sg</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">layer</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;layers must be set!&#39;</span><span class="p">)</span>
+        <span class="nd">@Simmix</span><span class="o">.</span><span class="n">standard_range</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">_convolve_sim</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
+            <span class="n">vectors1</span> <span class="o">=</span> <span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;elmo_embeddings_full&quot;</span><span class="p">]</span>
+            <span class="n">vectors2</span> <span class="o">=</span> <span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;elmo_embeddings_full&quot;</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">sg</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">vectors1</span><span class="p">,</span> <span class="n">vectors2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">_convolve_sim</span></div>
+
+
+<div class="viewcode-block" id="Simmix.vecs_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.vecs_sim">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="o">-</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">vecs_sim</span> <span class="p">(</span><span class="n">gensim_model</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">vecs_sim_</span><span class="p">(</span><span class="n">ex1</span><span class="p">,</span><span class="n">ex2</span><span class="p">):</span>
+            <span class="n">lemmata1</span>  <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">lemma_</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ex1</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">lemma_</span> <span class="ow">in</span> <span class="n">gensim_model</span><span class="o">.</span><span class="n">wv</span><span class="o">.</span><span class="n">vocab</span><span class="p">]</span>
+            <span class="n">lemmata2</span> <span class="o">=</span>  <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">lemma_</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ex2</span>  <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">lemma_</span> <span class="ow">in</span> <span class="n">gensim_model</span><span class="o">.</span><span class="n">wv</span><span class="o">.</span><span class="n">vocab</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">lemmata1</span> <span class="ow">and</span> <span class="n">lemmata2</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">gensim_model</span><span class="o">.</span><span class="n">wv</span><span class="o">.</span><span class="n">n_similarity</span><span class="p">(</span><span class="n">lemmata1</span><span class="p">,</span> <span class="n">lemmata2</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10000</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">nlemmata1</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">lemma_</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ex1</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">lemma_</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">gensim_model</span><span class="o">.</span><span class="n">wv</span><span class="o">.</span><span class="n">vocab</span><span class="p">]</span>
+                <span class="n">nlemmata2</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">lemma_</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ex2</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">lemma_</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">gensim_model</span><span class="o">.</span><span class="n">wv</span><span class="o">.</span><span class="n">vocab</span><span class="p">]</span>
+                <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span> <span class="p">(</span><span class="s2">&quot;gensim meager, words are missing: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nlemmata1</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nlemmata2</span><span class="p">)</span> <span class="p">)</span>
+                <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">vecs_sim_</span></div>
+<div class="viewcode-block" id="Simmix.elmo_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.elmo_sim">[docs]</a>    <span class="k">def</span> <span class="nf">elmo_sim</span><span class="p">():</span>
+        <span class="nd">@Simmix</span><span class="o">.</span><span class="n">standard_range</span><span class="p">(</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">elmo_sim_generated</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span><span class="n">ex2</span><span class="p">):</span>
+            <span class="n">vectors1</span> <span class="o">=</span> <span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;elmo_embeddings&quot;</span><span class="p">]</span>
+            <span class="n">vectors2</span> <span class="o">=</span> <span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;elmo_embeddings&quot;</span><span class="p">]</span>
+            <span class="n">total_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;full_ex&quot;</span><span class="p">]),</span> <span class="nb">len</span> <span class="p">(</span><span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;full_ex&quot;</span><span class="p">]))</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> \
+                    <span class="o">-</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span> <span class="p">(</span><span class="n">total_length</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">e</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">e</span><span class="p">))</span> <span class="o">*</span>
+                     <span class="n">scipy</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">cosine</span><span class="p">(</span><span class="n">vectors1</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span><span class="n">vectors2</span><span class="p">[</span><span class="mi">0</span><span class="p">,:])</span><span class="o">+</span>
+                     <span class="n">scipy</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">cosine</span><span class="p">(</span><span class="n">vectors1</span><span class="p">[</span><span class="mi">1</span><span class="p">,:],</span><span class="n">vectors2</span><span class="p">[</span><span class="mi">1</span><span class="p">,:])</span><span class="o">+</span>
+                     <span class="n">scipy</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">cosine</span><span class="p">(</span><span class="n">vectors1</span><span class="p">[</span><span class="mi">2</span><span class="p">,:],</span><span class="n">vectors2</span><span class="p">[</span><span class="mi">2</span><span class="p">,:])),</span> <span class="p">{}</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span>
+        <span class="k">return</span> <span class="n">elmo_sim_generated</span></div>
+<div class="viewcode-block" id="Simmix.elmo_multi_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.elmo_multi_sim">[docs]</a>    <span class="k">def</span> <span class="nf">elmo_multi_sim</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        <span class="nd">@Simmix</span><span class="o">.</span><span class="n">standard_range</span><span class="p">(</span><span class="o">-</span><span class="mi">6</span><span class="o">*</span><span class="n">n</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">n</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">elmo_sim_generated</span> <span class="p">(</span><span class="n">exs1</span><span class="p">,</span><span class="n">exs2</span><span class="p">):</span>
+            <span class="n">sim</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">flatten_reduce</span><span class="p">(</span><span class="n">exs1</span><span class="p">),</span> <span class="n">flatten_reduce</span><span class="p">(</span><span class="n">exs2</span><span class="p">)):</span>
+                <span class="n">vectors1</span> <span class="o">=</span> <span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;elmo_embeddings&quot;</span><span class="p">]</span>
+                <span class="n">vectors2</span> <span class="o">=</span> <span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;elmo_embeddings&quot;</span><span class="p">]</span>
+                <span class="n">total_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;full_ex&quot;</span><span class="p">]),</span> <span class="nb">len</span> <span class="p">(</span><span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;full_ex&quot;</span><span class="p">]))</span>
+
+                <span class="n">sim</span> <span class="o">=</span> <span class="n">sim</span> <span class="o">+</span> \
+                    <span class="o">-</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span> <span class="p">(</span><span class="n">total_length</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">e</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">e</span><span class="p">))</span> <span class="o">*</span>
+                      <span class="n">scipy</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">cosine</span><span class="p">(</span><span class="n">vectors1</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span><span class="n">vectors2</span><span class="p">[</span><span class="mi">0</span><span class="p">,:])</span><span class="o">+</span>
+                      <span class="n">scipy</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">cosine</span><span class="p">(</span><span class="n">vectors1</span><span class="p">[</span><span class="mi">1</span><span class="p">,:],</span><span class="n">vectors2</span><span class="p">[</span><span class="mi">1</span><span class="p">,:])</span><span class="o">+</span>
+                      <span class="n">scipy</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">cosine</span><span class="p">(</span><span class="n">vectors1</span><span class="p">[</span><span class="mi">2</span><span class="p">,:],</span><span class="n">vectors2</span><span class="p">[</span><span class="mi">2</span><span class="p">,:])</span>
+                      <span class="p">)</span>
+            <span class="k">return</span> <span class="n">sim</span><span class="p">,</span> <span class="p">{}</span>
+        <span class="k">return</span> <span class="n">elmo_sim_generated</span></div>
+<div class="viewcode-block" id="Simmix.elmo_layer_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.elmo_layer_sim">[docs]</a>    <span class="k">def</span> <span class="nf">elmo_layer_sim</span><span class="p">(</span><span class="n">layer</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]):</span>
+        <span class="nd">@Simmix</span><span class="o">.</span><span class="n">standard_range</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">layer</span><span class="p">),</span> <span class="mf">0.5</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">layer</span><span class="p">))</span>
+        <span class="k">def</span> <span class="nf">elmo_sim_generated</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span><span class="n">ex2</span><span class="p">):</span>
+            <span class="n">vectors1</span> <span class="o">=</span> <span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;elmo_embeddings&quot;</span><span class="p">]</span>
+            <span class="n">vectors2</span> <span class="o">=</span> <span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;elmo_embeddings&quot;</span><span class="p">]</span>
+            <span class="n">total_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;full_ex&quot;</span><span class="p">]),</span> <span class="nb">len</span> <span class="p">(</span><span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;full_ex&quot;</span><span class="p">]))</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> \
+                    <span class="o">-</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span> <span class="p">(</span><span class="n">total_length</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">e</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">e</span><span class="p">))</span>
+                       <span class="o">*</span> <span class="nb">sum</span><span class="p">(</span>
+                          <span class="n">scipy</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">cosine</span><span class="p">(</span><span class="n">vectors1</span><span class="p">[</span><span class="n">l</span><span class="p">,:],</span><span class="n">vectors2</span><span class="p">[</span><span class="n">l</span><span class="p">,:])</span>
+                          <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">layer</span><span class="p">)),</span> <span class="p">{}</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span>
+        <span class="k">return</span> <span class="n">elmo_sim_generated</span></div>
+<div class="viewcode-block" id="Simmix.elmo_weighted_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.elmo_weighted_sim">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="o">-</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">elmo_weighted_sim</span><span class="p">():</span>
+        <span class="k">def</span> <span class="nf">elmo_sim_generated</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span><span class="n">ex2</span><span class="p">):</span>
+            <span class="n">total_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;full_ex&quot;</span><span class="p">]),</span> <span class="nb">len</span> <span class="p">(</span><span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;full_ex&quot;</span><span class="p">]))</span>
+            <span class="n">vector1</span>  <span class="o">=</span> <span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;elmo_embeddings_per_word&quot;</span><span class="p">]</span>
+            <span class="n">weights1</span> <span class="o">=</span> <span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;importance&quot;</span><span class="p">]</span>
+            <span class="n">vector2</span>  <span class="o">=</span> <span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;elmo_embeddings_per_word&quot;</span><span class="p">]</span>
+            <span class="n">weights2</span> <span class="o">=</span> <span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;importance&quot;</span><span class="p">]</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> \
+                    <span class="o">-</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span> <span class="p">(</span><span class="n">total_length</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">e</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">e</span><span class="p">))</span> <span class="o">*</span>
+                     <span class="p">(</span><span class="c1">#scipy.spatial.distance.cosine( vector1[0,:,:].sum(axis=0), vector2[0,:,:].sum(axis=0))+</span>
+                      <span class="c1">#scipy.spatial.distance.cosine( vector1[1,:,:].sum(axis=0), vector2[1,:,:].sum(axis=0))+</span>
+                      <span class="n">scipy</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">cosine</span><span class="p">(</span> <span class="n">weights1</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">vector1</span><span class="p">[</span><span class="mi">2</span><span class="p">,:,:])</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">weights2</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">vector2</span><span class="p">[</span><span class="mi">2</span><span class="p">,:,:])</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+                            <span class="p">)),</span> <span class="p">{}</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span>
+        <span class="k">return</span> <span class="n">elmo_sim_generated</span></div>
+<div class="viewcode-block" id="Simmix.boolean_same_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.boolean_same_sim">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">boolean_same_sim</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
+        <span class="n">text1</span>        <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">])</span>
+        <span class="n">text2</span>        <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">text2</span> <span class="o">==</span> <span class="n">text1</span><span class="p">,</span> <span class="p">{}</span></div>
+<div class="viewcode-block" id="Simmix.boolean_subsame_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.boolean_subsame_sim">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">boolean_subsame_sim</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
+        <span class="n">text1</span>        <span class="o">=</span> <span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span>
+        <span class="n">text2</span>        <span class="o">=</span> <span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span>
+        <span class="c1">#return (text2 in text1) or (text1 in text2), {}</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">w</span> <span class="ow">in</span> <span class="n">text1</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">text2</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">all</span><span class="p">(</span><span class="n">w</span> <span class="ow">in</span> <span class="n">text2</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">text1</span><span class="p">),</span> <span class="p">{}</span></div>
+<div class="viewcode-block" id="Simmix.sub_i"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.sub_i">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">sub_i</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
+        <span class="n">is1</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;i&quot;</span><span class="p">])</span>
+        <span class="n">is2</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;i&quot;</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">is2</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">is1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">ex1</span><span class="p">[</span><span class="s1">&#39;doc&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">ex2</span><span class="p">[</span><span class="s1">&#39;doc&#39;</span><span class="p">],</span> <span class="p">{}</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span> <span class="p">(</span><span class="s2">&quot;Why is there no &#39;doc&#39;-key? Proceed... &quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">is2</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">is1</span><span class="p">),</span> <span class="p">{}</span></div>
+<div class="viewcode-block" id="Simmix.longer_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.longer_sim">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">longer_sim</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
+        <span class="n">is1</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;i&quot;</span><span class="p">])</span>
+        <span class="n">is2</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;i&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="o">-</span><span class="nb">len</span> <span class="p">(</span><span class="n">is1</span><span class="p">)</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">is2</span><span class="p">),</span> <span class="p">{}</span></div>
+<div class="viewcode-block" id="Simmix.multi_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.multi_sim">[docs]</a>    <span class="k">def</span> <span class="nf">multi_sim</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fun</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;fun must be given&quot;</span><span class="p">)</span>
+        <span class="nd">@Simmix</span><span class="o">.</span><span class="n">standard_range</span><span class="p">(</span><span class="n">fun</span><span class="o">.</span><span class="n">min</span><span class="o">*</span><span class="n">n</span><span class="p">,</span><span class="n">fun</span><span class="o">.</span><span class="n">max</span><span class="o">*</span><span class="n">n</span><span class="p">)</span>  <span class="c1"># depends on fun!</span>
+        <span class="k">def</span> <span class="nf">multi_generated</span> <span class="p">(</span><span class="n">exs1</span><span class="p">,</span><span class="n">exs2</span><span class="p">):</span>
+            <span class="n">sim</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">exs1</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">exs2</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span> <span class="p">(</span><span class="s2">&quot;one of the expressions is empty&quot;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">flatten_reduce</span><span class="p">(</span><span class="n">exs1</span><span class="p">),</span> <span class="n">flatten_reduce</span><span class="p">(</span><span class="n">exs2</span><span class="p">)):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">res</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">fun</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">NotImplementedError</span> <span class="p">(</span><span class="s2">&quot;return beam from the distance measure!&quot;</span><span class="p">)</span>
+                <span class="n">sim</span> <span class="o">+=</span> <span class="n">res</span>
+                <span class="n">b</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">sim</span><span class="p">,</span> <span class="n">b</span>
+        <span class="k">return</span> <span class="n">multi_generated</span></div>
+
+
+<div class="viewcode-block" id="Simmix.nextleft_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.nextleft_sim">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="o">-</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">nextleft_sim</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
+        <span class="n">minL1</span>  <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;i&quot;</span><span class="p">])</span>
+        <span class="n">maxL2</span>  <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;i&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">minL1</span> <span class="o">-</span> <span class="n">maxL2</span><span class="p">,</span> <span class="p">{}</span></div>
+<div class="viewcode-block" id="Simmix.nextright_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.nextright_sim">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="o">-</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">nextright_sim</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
+        <span class="n">maxR1</span>  <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;i&quot;</span><span class="p">])</span>
+        <span class="n">minL2</span>  <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;i&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">maxR1</span> <span class="o">-</span> <span class="n">minL2</span><span class="p">,</span> <span class="p">{}</span></div>
+<div class="viewcode-block" id="Simmix.boolean_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.boolean_sim">[docs]</a>    <span class="k">def</span> <span class="nf">boolean_sim</span> <span class="p">(</span><span class="n">attrib_dict</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">attrib_dict</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Dictionary of atrributes and values can&#39;t be &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">attrib_dict</span><span class="p">))</span>
+        <span class="nd">@Simmix</span><span class="o">.</span><span class="n">standard_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">boolean_sim_</span><span class="p">(</span><span class="n">ex1</span><span class="p">,</span><span class="n">ex2</span><span class="p">):</span>
+            <span class="n">cost</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">single_attrib_dict</span> <span class="ow">in</span> <span class="n">attrib_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">single_attrib_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">attr</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ex1</span><span class="p">]:</span>
+                        <span class="n">that_key_cost</span> <span class="o">=</span>  <span class="nb">int</span><span class="p">(</span><span class="n">item</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">attr</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ex2</span><span class="p">])</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span><span class="nb">list</span><span class="p">):</span>
+                            <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">item</span><span class="p">:</span>
+                                <span class="n">that_key_cost</span> <span class="o">+=</span>  <span class="nb">int</span><span class="p">(</span><span class="n">it</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">attr</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ex2</span><span class="p">])</span>
+                        <span class="n">cost</span> <span class="o">+=</span> <span class="n">that_key_cost</span>
+            <span class="k">return</span> <span class="n">cost</span><span class="p">,</span> <span class="p">{}</span>
+        <span class="k">return</span> <span class="n">boolean_sim_</span></div>
+<div class="viewcode-block" id="Simmix.excluding_pair_boolean_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.excluding_pair_boolean_sim">[docs]</a>    <span class="k">def</span> <span class="nf">excluding_pair_boolean_sim</span> <span class="p">(</span><span class="n">attrib_dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; The defined pair of values mustn&#39;t occur in one of the statements at once and in the other. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">attrib_dict</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Dictionary of atrributes and values can&#39;t be &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">attrib_dict</span><span class="p">))</span>
+        <span class="nd">@Simmix</span><span class="o">.</span><span class="n">standard_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">excluding_pair_boolean_sim_generated</span><span class="p">(</span><span class="n">ex1</span><span class="p">,</span><span class="n">ex2</span><span class="p">):</span>
+            <span class="n">cost</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">ex1</span> <span class="o">=</span> <span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;full_ex&quot;</span><span class="p">]</span>
+            <span class="n">ex2</span> <span class="o">=</span> <span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;full_ex&quot;</span><span class="p">]</span>
+            <span class="k">def</span> <span class="nf">match</span> <span class="p">(</span><span class="n">needle</span><span class="p">,</span> <span class="n">stack</span><span class="p">):</span>
+                <span class="n">val</span>  <span class="o">=</span> <span class="p">(</span><span class="n">needle</span> <span class="ow">in</span> <span class="n">stack</span> <span class="ow">or</span>
+                        <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">needle</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="n">check_for_tuple_in_list</span><span class="p">(</span><span class="n">stack</span><span class="p">,</span><span class="n">needle</span><span class="p">)))</span>
+                <span class="k">return</span> <span class="n">val</span>
+
+            <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">single_attrib_dict</span> <span class="ow">in</span> <span class="n">attrib_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">comp_elements1</span> <span class="o">=</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ex1</span><span class="p">]</span>
+
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">single_attrib_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">match</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">comp_elements1</span><span class="p">)):</span>
+                            <span class="n">comp_elements2</span> <span class="o">=</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">attr</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ex2</span><span class="p">]</span>
+                            <span class="n">that_key_cost</span> <span class="o">=</span>  <span class="nb">int</span><span class="p">(</span><span class="n">item</span> <span class="ow">in</span> <span class="n">comp_elements2</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span><span class="nb">list</span><span class="p">):</span>
+                                <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">item</span><span class="p">:</span>
+                                    <span class="k">if</span> <span class="p">(</span><span class="n">match</span><span class="p">(</span><span class="n">it</span><span class="p">,</span><span class="n">comp_elements2</span><span class="p">)</span>
+                                       <span class="ow">and</span> <span class="ow">not</span>  <span class="n">match</span><span class="p">(</span><span class="n">it</span><span class="p">,</span>  <span class="n">comp_elements1</span><span class="p">)</span>    <span class="c1"># decisive point, that the antonympair should not itself appear in the one or other phrase</span>
+                                       <span class="ow">and</span> <span class="ow">not</span>  <span class="n">match</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">comp_elements2</span><span class="p">)</span>
+                                       <span class="p">):</span>
+                                        <span class="n">actual_cost</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">it</span> <span class="ow">in</span> <span class="n">comp_elements2</span>
+                                                             <span class="ow">or</span>
+                                                             <span class="nb">isinstance</span><span class="p">(</span><span class="n">it</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="n">check_for_tuple_in_list</span><span class="p">(</span>
+                                                             <span class="n">comp_elements2</span><span class="p">,</span> <span class="n">it</span><span class="p">))</span>
+                                        <span class="n">that_key_cost</span> <span class="o">+=</span> <span class="n">actual_cost</span>
+                                        <span class="k">if</span> <span class="n">actual_cost</span><span class="p">:</span>
+                                            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;pair of antonyms found -- &quot;</span><span class="si">%s</span><span class="s1">&quot; and &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">it</span><span class="p">))</span>
+
+
+                            <span class="n">cost</span> <span class="o">+=</span> <span class="n">that_key_cost</span>
+
+
+            <span class="k">return</span> <span class="n">cost</span><span class="p">,</span> <span class="p">{}</span>
+        <span class="k">return</span> <span class="n">excluding_pair_boolean_sim_generated</span></div>
+<div class="viewcode-block" id="Simmix.formula_prooves"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.formula_prooves">[docs]</a>    <span class="k">def</span> <span class="nf">formula_prooves</span><span class="p">(</span><span class="n">fit_mix</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">pyprover</span>
+        <span class="nd">@Simmix</span><span class="o">.</span><span class="n">standard_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">formula_prooves_generated</span><span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            :param ex1:</span>
+<span class="sd">            :param ex2:</span>
+<span class="sd">                    pyproover formulas with &quot;pyproover.&quot; prefix for proposition &quot;A&quot;</span>
+
+<span class="sd">            :return:</span>
+<span class="sd">                    1 True for both, 0.7 for one direction of contradicting, 0 for nothing</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">f1</span> <span class="o">=</span> <span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;wff_comp_and&quot;</span><span class="p">][:]</span>
+            <span class="n">f2</span> <span class="o">=</span> <span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;wff_comp_and&quot;</span><span class="p">][:]</span>
+            <span class="n">keys1</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;wff_dict&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="n">keys2</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;wff_dict&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+            <span class="n">key_to_key</span> <span class="o">=</span> <span class="n">fit_mix</span><span class="o">.</span><span class="n">choose</span><span class="p">((</span><span class="n">keys1</span><span class="p">,</span> <span class="n">keys2</span><span class="p">),</span> <span class="n">out</span><span class="o">=</span><span class="s2">&quot;ex&quot;</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;1:1&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="n">flatten</span><span class="p">(</span><span class="n">key_to_key</span><span class="p">[:])</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">key_to_key</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No antonyms found!&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="p">{}</span>
+
+            <span class="n">key_char_to_key_char</span> <span class="o">=</span> <span class="p">{</span><span class="n">k1</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;key&quot;</span><span class="p">]:</span> <span class="n">k2</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;key&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">k1</span><span class="p">,</span> <span class="n">k2</span> <span class="ow">in</span> <span class="n">key_to_key</span><span class="p">}</span>
+
+            <span class="n">cost</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">triggers</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">for</span> <span class="n">k1</span><span class="p">,</span> <span class="n">k2</span> <span class="ow">in</span> <span class="n">key_to_key</span><span class="p">:</span>
+                <span class="n">new_cost</span> <span class="o">=</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">do_logic</span><span class="p">(</span>
+                    <span class="n">formulas</span> <span class="o">=</span> <span class="p">(</span><span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">),</span>
+                    <span class="n">key_rel</span> <span class="o">=</span> <span class="p">{</span><span class="n">k1</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;key&#39;</span><span class="p">]:</span> <span class="n">k2</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;key&#39;</span><span class="p">]},</span>
+                    <span class="n">negate_one</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">new_cost</span><span class="p">:</span>
+                    <span class="n">triggers</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">k1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">k2</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+                <span class="n">cost</span> <span class="o">+=</span> <span class="n">new_cost</span>
+
+            <span class="n">beam</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">if</span> <span class="n">cost</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;contradiction by antonyms&quot;</span><span class="p">)</span>
+                <span class="n">beam</span> <span class="o">=</span> <span class="p">{</span><span class="n">ex1</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]:</span>
+                            <span class="p">{</span><span class="n">ex2</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]:</span>
+                                 <span class="p">{</span><span class="s2">&quot;trigger&quot;</span>   <span class="p">:</span> <span class="n">triggers</span><span class="p">,</span>
+                                  <span class="s2">&quot;key_to_key&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">key_char_to_key_char</span><span class="p">),</span>
+                                 <span class="p">}</span>
+                            <span class="p">}</span>
+                        <span class="p">}</span>
+            <span class="k">return</span> <span class="n">cost</span><span class="p">,</span> <span class="n">beam</span>
+        <span class="k">return</span> <span class="n">formula_prooves_generated</span></div>
+
+<div class="viewcode-block" id="Simmix.formula_contradicts"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.formula_contradicts">[docs]</a>    <span class="k">def</span> <span class="nf">formula_contradicts</span> <span class="p">(</span><span class="n">fit_mix</span><span class="p">,</span> <span class="n">symmetric</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">fit_keys</span> <span class="o">=</span> <span class="n">fit_mix</span>
+        <span class="nd">@Simmix</span><span class="o">.</span><span class="n">standard_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">formula_contradicts_generated</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span><span class="n">ex2</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            :param ex1:</span>
+<span class="sd">            :param ex2:</span>
+<span class="sd">                    pyproover formulas with &quot;pyproover.&quot; prefix for proposition &quot;A&quot;</span>
+
+<span class="sd">            :return:</span>
+<span class="sd">                    1 True for both, 0.7 for one direction of contradicting, 0 for nothing</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">symmetric</span><span class="p">:</span>
+                <span class="n">res1</span><span class="p">,</span> <span class="n">b1</span> <span class="o">=</span> <span class="n">formula_contradicts_generated</span><span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">)</span>
+                <span class="n">res2</span><span class="p">,</span> <span class="n">b2</span> <span class="o">=</span> <span class="n">formula_contradicts_generated</span><span class="p">(</span><span class="n">ex2</span><span class="p">,</span> <span class="n">ex1</span><span class="p">)</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">res1</span><span class="o">+</span><span class="n">res2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">b1</span>
+
+            <span class="n">f1</span> <span class="o">=</span> <span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;wff_comp_and&quot;</span><span class="p">][:]</span>
+            <span class="n">f2</span> <span class="o">=</span> <span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;wff_comp_and&quot;</span><span class="p">][:]</span>
+            <span class="n">keys1</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;wff_dict&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="n">keys2</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;wff_dict&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+            <span class="n">key_to_key</span> <span class="o">=</span> <span class="n">fit_keys</span><span class="o">.</span><span class="n">choose</span><span class="p">((</span><span class="n">keys1</span><span class="p">,</span> <span class="n">keys2</span><span class="p">),</span> <span class="n">out</span><span class="o">=</span><span class="s2">&quot;ex&quot;</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;1:1&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="n">flatten</span><span class="p">(</span><span class="n">key_to_key</span><span class="p">[:])</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">key_to_key</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;empty negation result?&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="p">{}</span>
+
+            <span class="n">key_char_to_key_char</span> <span class="o">=</span> <span class="p">{</span><span class="n">k1</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;key&quot;</span><span class="p">]:</span> <span class="n">k2</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;key&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">k1</span><span class="p">,</span> <span class="n">k2</span> <span class="ow">in</span> <span class="n">key_to_key</span><span class="p">}</span>
+
+            <span class="n">cost</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">triggers</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">for</span> <span class="n">k1</span><span class="p">,</span> <span class="n">k2</span> <span class="ow">in</span> <span class="n">key_to_key</span><span class="p">:</span>
+                <span class="n">new_cost</span> <span class="o">=</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">do_logic</span><span class="p">(</span>
+                    <span class="n">formulas</span> <span class="o">=</span> <span class="p">(</span><span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">),</span>
+                    <span class="n">key_rel</span> <span class="o">=</span> <span class="p">{</span><span class="n">k1</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;key&#39;</span><span class="p">]:</span> <span class="n">k2</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;key&#39;</span><span class="p">]}</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">new_cost</span><span class="p">:</span>
+                    <span class="n">triggers</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">k1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">k2</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+                <span class="n">cost</span> <span class="o">+=</span> <span class="n">new_cost</span>
+
+            <span class="n">beam</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">if</span> <span class="n">cost</span> <span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;contradiction by negation&quot;</span><span class="p">)</span>
+                <span class="n">beam</span> <span class="o">=</span> <span class="p">{</span><span class="n">ex1</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]:</span>
+                            <span class="p">{</span><span class="n">ex2</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]:</span>
+                                 <span class="p">{</span><span class="s2">&quot;trigger&quot;</span>   <span class="p">:</span> <span class="n">triggers</span><span class="p">,</span>
+                                  <span class="s2">&quot;key_to_key&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">key_char_to_key_char</span><span class="p">),</span>
+                                 <span class="p">}</span>
+                            <span class="p">}</span>
+                        <span class="p">}</span>
+            <span class="k">return</span> <span class="n">cost</span><span class="p">,</span> <span class="n">beam</span>
+        <span class="k">return</span> <span class="n">formula_contradicts_generated</span></div>
+
+
+    <span class="n">key_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;pyprover\.logic\.Prop\(</span><span class="se">\\</span><span class="s2">&#39;([a-zA-Z0-9])+</span><span class="se">\\</span><span class="s2">&#39;\)&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="Simmix.do_logic"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.do_logic">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">do_logic</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">formulas</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">key_rel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">negate_one</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; This function does the logic and returns true, it can generate a contradiction</span>
+
+<span class="sd">            It renames the keys in the formula: These keys, that don&#39;t belong to each other, get some other name.</span>
+<span class="sd">            The relationated keys get the same key.</span>
+
+<span class="sd">            If  negate_one` is set, then for one relationated key a negation is added. That is used, if the expression, that</span>
+<span class="sd">            this key stands for contains a negation</span>
+
+<span class="sd">            :param formulas:   formulas 1 and 2 as tuple</span>
+<span class="sd">            :param key_rel:    the keys to combine</span>
+<span class="sd">            :param negate_one: add a negation to one of the keys of key_rel</span>
+<span class="sd">            :return: 1 for a contradiction, 0 for no one</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">f1</span><span class="p">,</span> <span class="n">f2</span> <span class="o">=</span>  <span class="n">formulas</span>
+
+        <span class="n">k_in_1</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">Simmix</span><span class="o">.</span><span class="n">key_regex</span><span class="p">,</span> <span class="n">f1</span><span class="p">)</span>
+        <span class="n">k_in_2</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">Simmix</span><span class="o">.</span><span class="n">key_regex</span><span class="p">,</span> <span class="n">f2</span><span class="p">)</span>
+
+        <span class="n">k_to_correlate_1</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">key_rel</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">k_to_correlate_2</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">key_rel</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+        <span class="n">k_not_to_correlate_1</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">k_in_1</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">k_to_correlate_1</span><span class="p">))</span>
+        <span class="n">k_not_to_correlate_2</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">k_in_2</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">k_to_correlate_2</span><span class="p">))</span>
+
+        <span class="n">not_in_other_formula</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span>
+            <span class="s2">&quot;(x for x in uppercase_bca)&quot;</span><span class="p">)</span>  <span class="c1"># `eval` because there is a complication,</span>
+                                           <span class="c1"># that the generator is really created every call of this function</span>
+        <span class="n">in_other_formula</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span>
+            <span class="s2">&quot;(x for x in uppercase_abc)&quot;</span><span class="p">)</span>  <span class="c1"># the same</span>
+
+        <span class="k">def</span> <span class="nf">pyprover_key</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s2">&quot;pyprover.logic.Prop(&#39;&quot;</span> <span class="o">+</span> <span class="n">k</span> <span class="o">+</span> <span class="s2">&quot;&#39;)&quot;</span>
+        <span class="k">for</span> <span class="n">k1</span> <span class="ow">in</span> <span class="n">k_not_to_correlate_1</span><span class="p">:</span>
+            <span class="n">f1</span> <span class="o">=</span> <span class="n">f1</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">pyprover_key</span><span class="p">(</span><span class="n">k1</span><span class="p">),</span> <span class="n">pyprover_key</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">not_in_other_formula</span><span class="p">)))</span>
+        <span class="k">for</span> <span class="n">k2</span> <span class="ow">in</span> <span class="n">k_not_to_correlate_2</span><span class="p">:</span>
+            <span class="n">f2</span> <span class="o">=</span> <span class="n">f2</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">pyprover_key</span><span class="p">(</span><span class="n">k2</span><span class="p">),</span> <span class="n">pyprover_key</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">not_in_other_formula</span><span class="p">)))</span>
+
+        <span class="n">relevant_keys</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">k1</span><span class="p">,</span> <span class="n">k2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">k_to_correlate_1</span><span class="p">,</span> <span class="n">k_to_correlate_2</span><span class="p">):</span>
+            <span class="n">shared_key</span> <span class="o">=</span> <span class="n">pyprover_key</span><span class="p">(</span><span class="s2">&quot;common&quot;</span> <span class="o">+</span> <span class="nb">next</span><span class="p">(</span><span class="n">in_other_formula</span><span class="p">))</span>
+            <span class="n">f1</span> <span class="o">=</span> <span class="n">f1</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">pyprover_key</span><span class="p">(</span><span class="n">k1</span><span class="p">),</span> <span class="n">shared_key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">negate_one</span><span class="p">:</span>
+                <span class="n">shared_key</span> <span class="o">=</span> <span class="s1">&#39;~&#39;</span> <span class="o">+</span> <span class="n">shared_key</span>
+            <span class="n">f2</span> <span class="o">=</span> <span class="n">f2</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">pyprover_key</span><span class="p">(</span><span class="n">k2</span><span class="p">),</span> <span class="n">shared_key</span><span class="p">)</span>
+            <span class="n">relevant_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">shared_key</span><span class="p">)</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="s1">&#39;(&#39;</span> <span class="o">+</span> <span class="n">f1</span> <span class="o">+</span> <span class="s1">&#39;) &amp; (&#39;</span> <span class="o">+</span> <span class="n">f2</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>
+
+        <span class="n">cost</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">pyprover</span><span class="o">.</span><span class="n">proves</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="n">f</span><span class="p">),</span> <span class="n">pyprover</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">false</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">cost</span></div>
+
+
+<div class="viewcode-block" id="Simmix.beam_under_construction"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.beam_under_construction">[docs]</a>    <span class="k">def</span> <span class="nf">beam_under_construction</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">ex1</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]:</span>
+                    <span class="p">{</span><span class="n">ex2</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]:</span>
+                         <span class="n">info</span>
+                     <span class="p">}</span>
+                <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="Simmix.abtract_conrete_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.abtract_conrete_sim">[docs]</a>    <span class="k">def</span> <span class="nf">abtract_conrete_sim</span><span class="p">():</span>
+        <span class="n">ae</span> <span class="o">=</span> <span class="n">abstractness_estimator</span><span class="o">.</span><span class="n">AbstractnessEstimator</span><span class="p">()</span>
+
+        <span class="nd">@Simmix</span><span class="o">.</span><span class="n">standard_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">_abstract_conrete_sim</span><span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
+            <span class="n">most_important1</span> <span class="o">=</span> <span class="n">ex1</span><span class="p">[</span><span class="s1">&#39;importance&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>
+            <span class="n">most_important2</span> <span class="o">=</span> <span class="n">ex2</span><span class="p">[</span><span class="s1">&#39;importance&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>
+            <span class="n">word1</span> <span class="o">=</span> <span class="n">ex1</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">][</span><span class="n">most_important1</span><span class="p">]</span>
+            <span class="n">word2</span> <span class="o">=</span> <span class="n">ex2</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">][</span><span class="n">most_important2</span><span class="p">]</span>
+            <span class="n">beam</span> <span class="o">=</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">beam_under_construction</span><span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">,</span> <span class="p">(</span><span class="n">word1</span><span class="p">,</span> <span class="n">word2</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">ae</span><span class="o">.</span><span class="n">estimate</span><span class="p">(</span><span class="n">word1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">ae</span><span class="o">.</span><span class="n">estimate</span><span class="p">(</span><span class="n">word2</span><span class="p">),</span> <span class="n">beam</span>
+        <span class="k">return</span> <span class="n">_abstract_conrete_sim</span></div>
+
+
+<div class="viewcode-block" id="Simmix.write_to_graph"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.write_to_graph">[docs]</a>    <span class="k">def</span> <span class="nf">write_to_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph_coro</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">exs1</span><span class="p">,</span> <span class="n">exs2</span><span class="p">,</span> <span class="n">left_value</span><span class="p">,</span> <span class="n">right_values</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Write a result to the graph using a coroutine</span>
+
+<span class="sd">        :param graph_coro:</span>
+<span class="sd">             coroutine to send a (dict, dict, type)-tuple to. This also can be a list con coroutines and the same</span>
+<span class="sd">             arguments will be applied to them</span>
+<span class="sd">        :param type: the type added to the pair of dicts</span>
+<span class="sd">        :param exs1: expression list 1</span>
+<span class="sd">        :param exs2: expression list 2</span>
+<span class="sd">        :param left_value: list of left indices</span>
+<span class="sd">        :param right_values: list of right indices</span>
+<span class="sd">        :return: None</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">graph_coro</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">gc</span> <span class="ow">in</span> <span class="n">graph_coro</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">write_to_graph</span><span class="p">(</span><span class="n">gc</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">exs1</span><span class="p">,</span> <span class="n">exs2</span><span class="p">,</span> <span class="n">left_value</span><span class="p">,</span> <span class="n">right_values</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">l_s</span> <span class="o">=</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">expressions_list</span><span class="p">(</span><span class="n">left_value</span><span class="p">,</span> <span class="n">right_values</span><span class="p">,</span> <span class="n">exs1</span><span class="p">,</span> <span class="n">exs2</span><span class="p">)</span>
+        <span class="n">t_s</span> <span class="o">=</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">reduce_i_s_pair_tuples</span><span class="p">(</span><span class="n">l_s</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exs1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exs2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">all_triggers</span> <span class="o">=</span> <span class="n">flatten_list</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="p">[</span><span class="n">ex1</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]][</span><span class="n">ex2</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]][</span><span class="s1">&#39;trigger&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span> <span class="ow">in</span> <span class="n">t_s</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">trigger</span> <span class="ow">in</span> <span class="n">all_triggers</span><span class="p">:</span>
+                <span class="n">graph_coro</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">trigger</span> <span class="o">+</span> <span class="p">(</span><span class="nb">type</span><span class="p">,))</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exs1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="p">(</span><span class="n">type_l_pair</span><span class="p">,</span> <span class="n">type_r_pair</span><span class="p">,</span> <span class="n">type_between</span><span class="p">)</span> <span class="o">=</span> <span class="nb">type</span>
+            <span class="k">for</span> <span class="n">trigger</span> <span class="ow">in</span> <span class="n">t_s</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">ex11</span> <span class="o">=</span> <span class="n">trigger</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">ex12</span> <span class="o">=</span> <span class="n">trigger</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">ex21</span> <span class="o">=</span> <span class="n">trigger</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">ex22</span> <span class="o">=</span> <span class="n">trigger</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+                    <span class="n">lr1_edge</span> <span class="o">=</span> <span class="p">(</span><span class="n">ex11</span><span class="p">,</span> <span class="n">ex21</span><span class="p">)</span>
+                    <span class="n">lr2_edge</span> <span class="o">=</span> <span class="p">(</span><span class="n">ex12</span><span class="p">,</span> <span class="n">ex22</span><span class="p">)</span>
+                    <span class="n">orig_l_edge</span> <span class="o">=</span> <span class="p">(</span><span class="n">ex11</span><span class="p">,</span> <span class="n">ex12</span><span class="p">)</span>
+                    <span class="n">orig_r_edge</span> <span class="o">=</span> <span class="p">(</span><span class="n">ex21</span><span class="p">,</span> <span class="n">ex22</span><span class="p">)</span>
+
+                    <span class="n">graph_coro</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">orig_l_edge</span> <span class="o">+</span> <span class="p">(</span><span class="n">type_l_pair</span><span class="p">,))</span>
+                    <span class="n">graph_coro</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">orig_r_edge</span> <span class="o">+</span> <span class="p">(</span><span class="n">type_r_pair</span><span class="p">,))</span>
+                    <span class="n">graph_coro</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">lr1_edge</span> <span class="o">+</span> <span class="p">(</span><span class="n">type_between</span><span class="p">,))</span>
+                    <span class="n">graph_coro</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">lr2_edge</span> <span class="o">+</span> <span class="p">(</span><span class="n">type_between</span><span class="p">,))</span>
+                <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                        <span class="s2">&quot;one of the edges didn&#39;t have the list-tuple-dict-list-specification</span><span class="se">\n</span><span class="s2">&quot;</span>
+                        <span class="s2">&quot;types: </span><span class="se">\n</span><span class="si">%s</span><span class="s2">,</span><span class="se">\n</span><span class="si">%s</span><span class="s2">,</span><span class="se">\n</span><span class="si">%s</span><span class="s2">,</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
+                        <span class="p">(</span><span class="n">type_spec</span><span class="p">(</span><span class="n">orig_l_edge</span><span class="p">),</span>
+                         <span class="n">type_spec</span><span class="p">(</span><span class="n">orig_r_edge</span><span class="p">),</span>
+                         <span class="n">type_spec</span><span class="p">(</span><span class="n">lr1_edge</span><span class="p">),</span>
+                         <span class="n">type_spec</span><span class="p">(</span><span class="n">lr2_edge</span><span class="p">)))</span></div></div>
+
+
+<span class="kn">import</span> <span class="nn">unittest</span>
+
+<div class="viewcode-block" id="TestSimmix"><a class="viewcode-back" href="../simmix.html#simmix.TestSimmix">[docs]</a><span class="k">class</span> <span class="nc">TestSimmix</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestSimmix.test_one_to_one_simple"><a class="viewcode-back" href="../simmix.html#simmix.TestSimmix.test_one_to_one_simple">[docs]</a>    <span class="k">def</span> <span class="nf">test_one_to_one_simple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">nested_list_tools</span>
+        <span class="n">exs2</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+        <span class="n">exs1</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">weighted_res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">]])</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="n">Simmix</span><span class="o">.</span><span class="n">one_to_one</span><span class="p">(</span><span class="n">weighted_res</span><span class="p">,</span> <span class="n">exs1</span><span class="p">,</span> <span class="n">exs2</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">Simmix</span><span class="o">.</span><span class="n">one_to_one</span><span class="p">(</span><span class="n">weighted_res</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">exs2</span><span class="p">,</span> <span class="n">exs1</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span> <span class="p">(</span>
+                <span class="nb">set</span><span class="p">(</span><span class="n">nested_list_tools</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">Simmix</span><span class="o">.</span><span class="n">one_to_one</span><span class="p">(</span><span class="n">weighted_res</span><span class="p">,</span> <span class="n">exs1</span><span class="p">,</span> <span class="n">exs2</span><span class="p">)))</span> \
+                <span class="o">==</span> \
+                <span class="nb">set</span><span class="p">(</span><span class="n">nested_list_tools</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">Simmix</span><span class="o">.</span><span class="n">one_to_one</span><span class="p">(</span><span class="n">weighted_res</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">exs2</span><span class="p">,</span> <span class="n">exs1</span><span class="p">))))</span></div>
+
+
+<div class="viewcode-block" id="TestSimmix.test_one_to_one_complex"><a class="viewcode-back" href="../simmix.html#simmix.TestSimmix.test_one_to_one_complex">[docs]</a>    <span class="k">def</span> <span class="nf">test_one_to_one_complex</span> <span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">weighted_res</span> <span class="o">=</span>\
+             <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.97233996</span><span class="p">,</span>   <span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.95478777</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.4</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.3</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">]]</span> <span class="p">)</span>
+        <span class="n">exs1</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">]</span>
+        <span class="n">exs2</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="n">Simmix</span><span class="o">.</span><span class="n">one_to_one</span><span class="p">(</span><span class="n">weighted_res</span><span class="p">,</span> <span class="n">exs1</span><span class="p">,</span> <span class="n">exs2</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">Simmix</span><span class="o">.</span><span class="n">one_to_one</span><span class="p">(</span><span class="n">weighted_res</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">exs2</span><span class="p">,</span> <span class="n">exs1</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="TestSimmix.test_excluding_pair"><a class="viewcode-back" href="../simmix.html#simmix.TestSimmix.test_excluding_pair">[docs]</a>    <span class="k">def</span> <span class="nf">test_excluding_pair</span> <span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">spacy</span>
+        <span class="n">nlp</span> <span class="o">=</span> <span class="n">spacy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;en_core_web_sm&#39;</span><span class="p">)</span>
+        <span class="kn">from</span> <span class="nn">dict_tools</span> <span class="k">import</span> <span class="n">balance_complex_tuple_dict</span>
+        <span class="kn">import</span> <span class="nn">word_definitions</span>
+
+        <span class="n">s1</span> <span class="o">=</span> <span class="n">nlp</span><span class="p">(</span><span class="s2">&quot;On the other hand things are said to be named Univocally, which have both the name the definition answering to the name in common&quot;</span><span class="p">)</span>
+        <span class="n">s2</span> <span class="o">=</span> <span class="n">nlp</span><span class="p">(</span><span class="s1">&#39;Things are said to be named Equivocally when though they have a common name the definition corresponding with the name differs for each&#39;</span><span class="p">)</span>
+        <span class="n">p1</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;full_ex&quot;</span><span class="p">:</span><span class="n">s1</span><span class="p">[</span><span class="mi">13</span><span class="p">:</span><span class="mi">25</span><span class="p">]}</span>
+        <span class="n">p2</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;full_ex&quot;</span><span class="p">:</span><span class="n">s2</span><span class="p">[</span><span class="mi">8</span><span class="p">:</span><span class="mi">24</span><span class="p">]}</span>
+
+
+        <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;differ&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s1">&#39;differ&#39;</span><span class="p">,</span> <span class="s1">&#39;in&#39;</span><span class="p">),</span> <span class="s1">&#39;differ&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;have&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;in&#39;</span><span class="p">,</span> <span class="s1">&#39;common&#39;</span><span class="p">)]}</span>
+        <span class="n">d</span> <span class="o">=</span>  <span class="n">balance_complex_tuple_dict</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="c1">#fun = Simmix.excluding_pair_boolean_sim({&#39;lemma_&#39;:d})</span>
+        <span class="n">fun</span> <span class="o">=</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">excluding_pair_boolean_sim</span><span class="p">(</span><span class="n">word_definitions</span><span class="o">.</span><span class="n">antonym_dict</span><span class="p">)</span>
+
+        <span class="nb">print</span> <span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="n">p2</span><span class="p">,</span> <span class="p">)</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="n">fun</span><span class="p">(</span><span class="n">p2</span><span class="p">,</span><span class="n">p1</span><span class="p">))</span>
+
+        <span class="nb">print</span> <span class="p">(</span><span class="n">fun</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="n">p2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span> <span class="p">(</span><span class="n">fun</span><span class="p">(</span><span class="n">p2</span><span class="p">,</span><span class="n">p1</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span> <span class="p">(</span><span class="n">fun</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="n">p2</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">test_antonym_dict_for_symmetry</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">word_definitions</span>
+        <span class="kn">from</span> <span class="nn">dict_tools</span> <span class="k">import</span> <span class="n">dict_compare</span>
+
+        <span class="n">d1</span> <span class="o">=</span> <span class="n">dict_tools</span><span class="o">.</span><span class="n">invert_dict</span><span class="p">(</span><span class="n">word_definitions</span><span class="o">.</span><span class="n">antonym_dict</span><span class="p">[</span><span class="s1">&#39;lemma_&#39;</span><span class="p">])</span>
+        <span class="n">d2</span> <span class="o">=</span> <span class="n">word_definitions</span><span class="o">.</span><span class="n">antonym_dict</span><span class="p">[</span><span class="s1">&#39;lemma_&#39;</span><span class="p">]</span>
+
+        <span class="n">added</span><span class="p">,</span> <span class="n">removed</span><span class="p">,</span> <span class="n">modified</span><span class="p">,</span> <span class="n">same</span><span class="o">=</span>\
+            <span class="n">dict_compare</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">,</span> <span class="n">ignore_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span> <span class="p">(</span><span class="ow">not</span> <span class="n">added</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">removed</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">modified</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span>  <span class="p">(</span><span class="ow">not</span> <span class="n">added</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">removed</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">modified</span><span class="p">):</span>
+            <span class="nb">print</span> <span class="p">(</span><span class="n">dict_compare</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span><span class="n">d2</span><span class="p">,</span> <span class="n">ignore_order</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+
+<div class="viewcode-block" id="TestSimmix.test_antonym_dict_for_symmetry"><a class="viewcode-back" href="../simmix.html#simmix.TestSimmix.test_antonym_dict_for_symmetry">[docs]</a>    <span class="k">def</span> <span class="nf">test_antonym_dict_for_symmetry</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">word_definitions</span>
+
+        <span class="k">def</span> <span class="nf">key_in_val</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+            <span class="nb">print</span> <span class="p">([(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">)</span>  <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">v</span><span class="p">])</span>
+            <span class="k">return</span> <span class="p">(</span><span class="nb">any</span> <span class="p">([</span><span class="n">k</span> <span class="ow">in</span> <span class="n">v</span>  <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span> <span class="p">(</span><span class="n">key_in_val</span><span class="p">(</span><span class="n">word_definitions</span><span class="o">.</span><span class="n">antonym_dict</span><span class="p">[</span><span class="s1">&#39;lemma_&#39;</span><span class="p">]))</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Stefan Werner
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

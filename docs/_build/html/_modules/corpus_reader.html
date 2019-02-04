@@ -1,0 +1,536 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>corpus_reader &mdash; S0krates 5.0.0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> S0krates
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">S0krates</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>corpus_reader</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for corpus_reader</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="k">import</span> <span class="n">count</span>
+<span class="kn">from</span> <span class="nn">nested_list_tools</span> <span class="k">import</span> <span class="n">flatten_reduce</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">NullHandler</span><span class="p">())</span>
+
+
+<span class="kn">import</span> <span class="nn">grammarannotator</span>
+
+<div class="viewcode-block" id="find_position_in_doc_by_approx"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.find_position_in_doc_by_approx">[docs]</a><span class="k">def</span> <span class="nf">find_position_in_doc_by_approx</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">text_token</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">deviation</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">deviator</span> <span class="o">=</span> <span class="n">iterate_away</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">deviation</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">deviator</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">p</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">p</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">text_token</span> <span class="o">==</span> <span class="n">doc</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">.</span><span class="n">text</span> <span class="ow">or</span> <span class="p">((</span><span class="n">text_token</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;’&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">text_token</span><span class="p">)</span><span class="o">&lt;</span><span class="mi">2</span><span class="p">)</span> <span class="ow">and</span> <span class="n">text_token</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">p</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Token &#39;</span><span class="si">%s</span><span class="s2">&#39; not seen in spacy doc (search tokens: &#39;</span><span class="si">%s</span><span class="s2">&#39;)! returning starting position, &#39;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
+                      <span class="p">(</span><span class="n">text_token</span><span class="p">,</span>
+                       <span class="nb">str</span><span class="p">([</span><span class="n">w</span><span class="o">.</span><span class="n">text</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">[</span><span class="n">pos</span> <span class="o">-</span> <span class="n">deviation</span><span class="p">:</span><span class="n">pos</span> <span class="o">+</span> <span class="n">deviation</span><span class="p">]]),</span>
+                       <span class="nb">str</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="n">pos</span><span class="p">])))</span>
+        <span class="k">return</span> <span class="n">pos</span></div>
+
+<div class="viewcode-block" id="iterate_away"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.iterate_away">[docs]</a><span class="k">def</span> <span class="nf">iterate_away</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">deviation</span><span class="p">):</span>
+    <span class="k">yield</span> <span class="n">pos</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">deviation</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">pos</span> <span class="o">+</span> <span class="n">d</span>
+        <span class="k">yield</span> <span class="n">pos</span> <span class="o">-</span> <span class="n">d</span></div>
+
+<div class="viewcode-block" id="CorpusReader"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader">[docs]</a><span class="k">class</span> <span class="nc">CorpusReader</span><span class="p">:</span>
+<div class="viewcode-block" id="CorpusReader.__init__"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">corpus_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">only</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">corpus_path</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Export dir must be given!&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corpus_path</span> <span class="o">=</span> <span class="n">corpus_path</span>
+        <span class="n">all_sentences</span><span class="p">,</span> <span class="n">all_conlls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_all_conlls</span><span class="p">(</span><span class="n">corpus_path</span><span class="p">,</span> <span class="n">only</span><span class="o">=</span><span class="n">only</span><span class="p">)</span>
+        <span class="n">flatt_conll_dicts</span> <span class="o">=</span> <span class="n">flatten_reduce</span><span class="p">(</span><span class="n">all_conlls</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">flatt_conll_dicts</span><span class="p">))</span>
+
+        <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">({</span><span class="s1">&#39;text&#39;</span><span class="p">:</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]),</span>
+                              <span class="s1">&#39;s_id&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;sent_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                             <span class="p">})</span>
+
+        <span class="c1"># translate also normal conll-nodes as well as invisible knodes to some nice id</span>
+        <span class="k">def</span> <span class="nf">renumerate_word_ids</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="n">invisible_nodes_translation_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;inv_id&#39;</span><span class="p">],</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)))))</span>
+            <span class="n">x</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">invisible_nodes_translation_dict</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+            <span class="n">x</span><span class="p">[</span><span class="s1">&#39;head_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span> <span class="n">invisible_nodes_translation_dict</span><span class="p">[</span><span class="n">h</span><span class="p">]</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;inv_head_id&#39;</span><span class="p">]]</span>
+            <span class="k">return</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;s_id&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">renumerate_word_ids</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;sent_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">]</span>
+        <span class="n">num_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;s_id&quot;</span><span class="p">,</span> <span class="s2">&quot;head_id&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">num_cols</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">num_cols</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">)</span>
+
+        <span class="n">Grammarian</span> <span class="o">=</span> <span class="n">grammarannotator</span><span class="o">.</span><span class="n">GrammarAnnotator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sentence_df</span> <span class="o">=</span> <span class="n">Grammarian</span><span class="o">.</span><span class="n">sentence_df</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="CorpusReader.lemmatized_text"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader.lemmatized_text">[docs]</a>    <span class="k">def</span> <span class="nf">lemmatized_text</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;lemma&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="CorpusReader.read_one_conll"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader.read_one_conll">[docs]</a>    <span class="k">def</span> <span class="nf">read_one_conll</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">fname</span><span class="p">,</span> <span class="n">s_id_dict</span><span class="p">):</span>
+        <span class="n">sentence</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">conll_lines</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span> <span class="p">(</span><span class="n">fh</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">sentence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(?:^\d+\.?\d*\t)([^\t]+)&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="n">conll_line_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conll_line2match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span>
+                    <span class="n">conll_line_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">s_id_dict</span><span class="p">)</span>
+                    <span class="n">conll_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">conll_line_dict</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span>
+                        <span class="s2">&quot;wrong syntax in file </span><span class="si">%s</span><span class="s2">, line no. </span><span class="si">%d</span><span class="s2"> line:</span><span class="se">\n</span><span class="s2">&#39;</span><span class="si">%s</span><span class="s2">&#39; (Maybe an empty&quot;</span>
+                        <span class="s2">&quot;line at the end of your conll&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span><span class="p">))</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                    <span class="n">line</span> <span class="o">=</span> <span class="n">last</span>
+                    <span class="k">break</span>
+                <span class="n">last</span> <span class="o">=</span> <span class="n">line</span>
+                <span class="k">pass</span>
+
+        <span class="k">return</span> <span class="n">conll_lines</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CorpusReader.load_all_conlls"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader.load_all_conlls">[docs]</a>    <span class="k">def</span> <span class="nf">load_all_conlls</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">only</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">all_sentences</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">all_conlls</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="kn">import</span> <span class="nn">fnmatch</span>
+
+        <span class="k">def</span> <span class="nf">hasNumbers</span><span class="p">(</span><span class="n">inputString</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">char</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">inputString</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">key</span> <span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">isdigit</span> <span class="p">,</span> <span class="n">x</span><span class="p">)))</span> <span class="k">if</span> <span class="n">hasNumbers</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;*.conll&#39;</span><span class="p">):</span>
+                <span class="n">s_id_dict</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;(?P&lt;s_id&gt;[0-9]+)&quot;</span> <span class="p">,</span> <span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">only</span> <span class="ow">and</span> <span class="nb">int</span> <span class="p">(</span><span class="n">s_id_dict</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">])</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">only</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+                <span class="n">conll_lines</span><span class="p">,</span> <span class="n">sentence</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_one_conll</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">s_id_dict</span><span class="p">)</span>
+                <span class="n">all_sentences</span><span class="o">.</span><span class="n">append</span> <span class="p">(</span><span class="n">sentence</span><span class="p">)</span>
+                <span class="n">all_conlls</span><span class="o">.</span><span class="n">append</span> <span class="p">(</span><span class="n">conll_lines</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">all_sentences</span><span class="p">,</span> <span class="n">all_conlls</span></div>
+
+<div class="viewcode-block" id="CorpusReader.load_conll"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader.load_conll">[docs]</a>    <span class="k">def</span> <span class="nf">load_conll</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">corpus_path</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">docs</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">i</span><span class="p">:</span>
+                <span class="nb">print</span> <span class="p">(</span><span class="n">j</span><span class="p">)</span>
+                <span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">load_conll</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">corpus_path</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">docs</span>
+
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">corpus_path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="nb">str</span> <span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.conll&#39;</span>
+        <span class="n">sentence</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">last</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fh</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">sentence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(?:^\d+\t)([^\t]+)&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                    <span class="nb">print</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;&#39;&quot;</span><span class="o">+</span><span class="n">line</span><span class="o">+</span><span class="s2">&quot;&#39;&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                    <span class="n">line</span> <span class="o">=</span> <span class="n">last</span>
+                    <span class="k">break</span>
+                <span class="n">last</span> <span class="o">=</span> <span class="n">line</span>
+
+                <span class="k">pass</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nlp</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sentence</span><span class="p">))</span>
+        <span class="n">new_doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conll_over_spacy</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_doc</span></div>
+
+    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>   <span class="sa">r</span><span class="s2">&quot;&quot;&quot;(?P&lt;inv_id&gt;(?P&lt;id&gt;\d+)((?:\.)?(?P&lt;hidden&gt;\d+))?)      # i (as well es hidden node-ids in conll-u format)</span>
+<span class="s2">                                 \t(?P&lt;text&gt;.*?)    # whitespace, next bar, n1</span>
+<span class="s2">                                 \t(?P&lt;lemma&gt;.*?)   # whitespace, next bar, n1</span>
+<span class="s2">                                 \t(?P&lt;pos_&gt;.*?)    # whitespace, next bar, n2</span>
+<span class="s2">                                 \t(?P&lt;tag_&gt;.*?)    # whitespace, next bar, n1</span>
+<span class="s2">                                 \t(?P&lt;nothing2&gt;.*?)# whitespace, next bar, n1</span>
+<span class="s2">                                 \t(?P&lt;inv_head_id&gt;(?P&lt;head_id&gt;\d+)((?:\.)?(?P&lt;head_hidden&gt;\d+))?)   # head_id (as well es hidden node-ids in conll-u format)</span>
+<span class="s2">                                 \t(?P&lt;dep_&gt;.*?)    # whitespace, next bar, n2</span>
+<span class="s2">                                 \t(?P&lt;spacy_i&gt;.*?)# whitespace, next bar, n1</span>
+<span class="s2">                                 \t(?P&lt;coref&gt;.*)# whitespace, next bar, n1</span>
+<span class="s2">                                 &quot;&quot;&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CorpusReader.conll_line2match"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader.conll_line2match">[docs]</a>    <span class="k">def</span> <span class="nf">conll_line2match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">match</span></div>
+
+    <span class="n">col_set</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;i&#39;</span><span class="p">,</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="s1">&#39;lemma&#39;</span><span class="p">,</span><span class="s1">&#39;pos&#39;</span><span class="p">,</span><span class="s1">&#39;tag&#39;</span><span class="p">,</span><span class="s1">&#39;nothing&#39;</span><span class="p">,</span><span class="s1">&#39;head&#39;</span><span class="p">,</span><span class="s1">&#39;dep&#39;</span><span class="p">,</span><span class="s1">&#39;spacy_i&#39;</span><span class="p">,</span><span class="s1">&#39;coref&#39;</span><span class="p">]</span>
+<div class="viewcode-block" id="CorpusReader.conll_over_spacy"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader.conll_over_spacy">[docs]</a>    <span class="k">def</span> <span class="nf">conll_over_spacy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="nb">dir</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">no_cols</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="n">to_change</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">col_set</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">no_cols</span><span class="p">)</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="nb">str</span> <span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.conll&#39;</span>
+        <span class="n">path</span>  <span class="o">=</span> <span class="nb">dir</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">fname</span>
+
+        <span class="c1"># read conll_files, may manipulated over spacy</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conll_line2match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="n">head_i</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;head_id&quot;</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="n">doc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_extension</span><span class="p">(</span><span class="s1">&#39;coref&#39;</span><span class="p">,</span> <span class="n">default</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(),</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="s1">&#39;head&#39;</span> <span class="ow">in</span> <span class="n">to_change</span><span class="p">:</span>
+                        <span class="n">doc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">head</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">head_i</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="s1">&#39;lemma&#39;</span> <span class="ow">in</span> <span class="n">to_change</span><span class="p">:</span>
+                        <span class="n">doc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">lemma_</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;pos_&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="s1">&#39;pos&#39;</span> <span class="ow">in</span> <span class="n">to_change</span><span class="p">:</span>
+                        <span class="n">doc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">pos_</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;pos_&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="s1">&#39;tag&#39;</span> <span class="ow">in</span> <span class="n">to_change</span><span class="p">:</span>
+                        <span class="n">doc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">tag_</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;tag_&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="s1">&#39;dep&#39;</span> <span class="ow">in</span> <span class="n">to_change</span><span class="p">:</span>
+                        <span class="n">doc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dep_</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;dep_&quot;</span><span class="p">)</span>
+                    <span class="c1">#if &#39;spacy_i&#39; in to_change:</span>
+                    <span class="c1">#    doc[i].i      = match.group(&quot;spacy_i&quot;)</span>
+                    <span class="k">if</span> <span class="s1">&#39;coref&#39;</span> <span class="ow">in</span> <span class="n">to_change</span><span class="p">:</span>
+                        <span class="n">doc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">_</span><span class="o">.</span><span class="n">coref</span><span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;coref&quot;</span><span class="p">)</span>
+
+                <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Shape of the spacy doc and conll file incongruent, look for the number of tokens! &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">doc</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">doc</span></div>
+
+<div class="viewcode-block" id="CorpusReader.coref_lookup"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader.coref_lookup">[docs]</a>    <span class="k">def</span> <span class="nf">coref_lookup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">corefs</span><span class="p">,</span> <span class="n">what</span><span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">corefs</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">coref</span> <span class="ow">in</span> <span class="n">corefs</span><span class="p">:</span>
+            <span class="n">s_id</span> <span class="o">=</span> <span class="n">coref</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">]</span>
+            <span class="n">m_start</span> <span class="o">=</span> <span class="n">coref</span><span class="p">[</span><span class="s1">&#39;m_start&#39;</span><span class="p">]</span>
+            <span class="n">m_end</span> <span class="o">=</span> <span class="n">coref</span><span class="p">[</span><span class="s1">&#39;m_end&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">what</span> <span class="o">==</span><span class="s2">&quot;sub_pred&quot;</span><span class="p">:</span>
+                <span class="n">all_subpreds</span> <span class="o">=</span> <span class="n">flatten_reduce</span><span class="p">(</span><span class="n">flatten_reduce</span><span class="p">(</span>
+                    <span class="p">[[</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;part_predications&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ps</span><span class="p">]</span>
+                     <span class="k">for</span> <span class="n">ps</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sentence_df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;s_id == @s_id&quot;</span><span class="p">)[</span><span class="s1">&#39;predication&#39;</span><span class="p">]]</span>
+                <span class="p">))</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">sp</span> <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="n">all_subpreds</span> <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">m</span> <span class="ow">in</span> <span class="n">sp</span><span class="p">[</span><span class="s1">&#39;full_ex_i&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m_start</span><span class="p">,</span> <span class="n">m_end</span><span class="p">)])]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sentence_df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;s_id == @s_id&quot;</span><span class="p">)[</span><span class="s1">&#39;spacy_doc&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">m_start</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="n">m_end</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+
+    <span class="n">conll_format</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="se">\t</span><span class="si">%s</span><span class="se">\t</span><span class="si">%s</span><span class="se">\t</span><span class="si">%s</span><span class="se">\t</span><span class="si">%s</span><span class="se">\t</span><span class="si">%s</span><span class="se">\t</span><span class="si">%d</span><span class="se">\t</span><span class="si">%s</span><span class="se">\t</span><span class="si">%s</span><span class="se">\t</span><span class="si">%s</span><span class="s2">&quot;</span>
+<div class="viewcode-block" id="CorpusReader.export_dict"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader.export_dict">[docs]</a>    <span class="k">def</span> <span class="nf">export_dict</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">w_counter</span> <span class="o">=</span> <span class="n">count</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">w_counter</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">word</span><span class="o">.</span><span class="n">head</span> <span class="ow">is</span> <span class="n">word</span><span class="p">:</span>
+                <span class="n">head_idx</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">head_idx</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+            <span class="c1">#coref = self.extract_coref_from_spacy_neucoref (doc, word, i)</span>
+
+            <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                          <span class="p">{</span>  <span class="s1">&#39;s_id&#39;</span>   <span class="p">:</span> <span class="n">index</span><span class="p">,</span>
+                             <span class="s1">&#39;i&#39;</span>      <span class="p">:</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span>
+                             <span class="s1">&#39;text&#39;</span>   <span class="p">:</span> <span class="n">word</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
+                             <span class="s1">&#39;lemma&#39;</span>  <span class="p">:</span> <span class="n">word</span><span class="o">.</span><span class="n">lemma_</span><span class="p">,</span>
+                             <span class="s1">&#39;pos&#39;</span>    <span class="p">:</span> <span class="n">word</span><span class="o">.</span><span class="n">pos_</span><span class="p">,</span> <span class="c1">#</span>
+                             <span class="s1">&#39;tag&#39;</span>    <span class="p">:</span> <span class="n">word</span><span class="o">.</span><span class="n">tag_</span><span class="p">,</span> <span class="c1">#</span>
+                             <span class="s1">&#39;unknown&#39;</span><span class="p">:</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;head&#39;</span>   <span class="p">:</span> <span class="n">head_idx</span><span class="p">,</span>
+                             <span class="s1">&#39;dep&#39;</span>    <span class="p">:</span> <span class="n">word</span><span class="o">.</span><span class="n">dep_</span><span class="p">,</span> <span class="c1"># Relation</span>
+                             <span class="s1">&#39;corp_id&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">index</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;-&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">word</span><span class="o">.</span><span class="n">i</span><span class="p">),</span> <span class="c1"># Generation_i</span>
+                             <span class="s1">&#39;doc_i&#39;</span>  <span class="p">:</span> <span class="n">word</span><span class="o">.</span><span class="n">i</span><span class="p">,</span>
+                             <span class="c1">#&#39;coref&#39;  : coref</span>
+                          <span class="p">}</span>
+                      <span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+
+<div class="viewcode-block" id="CorpusReader.commonize_values"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader.commonize_values">[docs]</a>    <span class="k">def</span> <span class="nf">commonize_values</span> <span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">col_with_lists</span><span class="p">,</span> <span class="n">col_to_index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Select rows with overlapping values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="n">col_with_lists</span><span class="p">)</span>
+        <span class="n">common_cols</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_x != </span><span class="si">%s</span><span class="s1">_y&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">col_to_index</span><span class="p">,</span> <span class="n">col_to_index</span><span class="p">))</span> <span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">col_to_index</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">common_cols</span><span class="p">)]</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">col_to_index</span><span class="p">)[</span><span class="n">col_with_lists</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CorpusReader.explode"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader.explode">[docs]</a>    <span class="k">def</span> <span class="nf">explode</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">column_to_explode</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Similar to Hive&#39;s EXPLODE function, take a column with iterable elements, and flatten the iterable to one element</span>
+<span class="sd">        per observation in the output table</span>
+
+<span class="sd">        :param df: A dataframe to explod</span>
+<span class="sd">        :type df: pandas.DataFrame</span>
+<span class="sd">        :param column_to_explode:</span>
+<span class="sd">        :type column_to_explode: str</span>
+<span class="sd">        :return: An exploded data frame</span>
+<span class="sd">        :rtype: pandas.DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Create a list of new observations</span>
+        <span class="n">new_observations</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+        <span class="c1"># Iterate through existing observations</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s1">&#39;records&#39;</span><span class="p">):</span>
+
+            <span class="c1"># Take out the exploding iterable</span>
+            <span class="n">explode_values</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">column_to_explode</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">row</span><span class="p">[</span><span class="n">column_to_explode</span><span class="p">]</span>
+
+            <span class="c1"># Create a new observation for every entry in the exploding iterable &amp; add all of the other columns</span>
+            <span class="k">for</span> <span class="n">explode_value</span> <span class="ow">in</span> <span class="n">explode_values</span><span class="p">:</span>
+                <span class="c1"># Deep copy existing observation</span>
+                <span class="n">new_observation</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+
+                <span class="c1"># Add one (newly flattened) value from exploding iterable</span>
+                <span class="n">new_observation</span><span class="p">[</span><span class="n">column_to_explode</span><span class="p">]</span> <span class="o">=</span> <span class="n">explode_value</span>
+
+                <span class="c1"># Add to the list of new observations</span>
+                <span class="n">new_observations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_observation</span><span class="p">)</span>
+
+        <span class="c1"># Create a DataFrame</span>
+        <span class="n">return_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">new_observations</span><span class="p">)</span>
+
+        <span class="c1"># Return</span>
+        <span class="k">return</span> <span class="n">return_df</span></div>
+
+<div class="viewcode-block" id="CorpusReader.annotate_corefs"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader.annotate_corefs">[docs]</a>    <span class="k">def</span> <span class="nf">annotate_corefs</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;coref&#39;</span><span class="p">]</span> <span class="o">=</span>  <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">))]</span>
+
+        <span class="k">def</span> <span class="nf">element_rest</span> <span class="p">(</span><span class="n">l</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span>  <span class="nb">enumerate</span> <span class="p">(</span><span class="n">l</span><span class="p">):</span>
+                <span class="k">yield</span> <span class="n">e</span><span class="p">,</span> <span class="n">l</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="n">l</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="k">def</span> <span class="nf">ref_from_row</span> <span class="p">(</span><span class="n">r</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">row</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;doc_i in @r&#39;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;not found?&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span> <span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">s_id</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">:</span>
+                <span class="n">ba</span> <span class="o">=</span><span class="s1">&#39; ta&#39;</span>
+                <span class="k">return</span> <span class="s1">&#39;out of range?&#39;</span>
+            <span class="k">return</span>  <span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">s_id</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;-&gt;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">i</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+            <span class="k">return</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">other_sents</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">doc</span><span class="o">.</span><span class="n">_</span><span class="o">.</span><span class="n">has_coref</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">cl</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">_</span><span class="o">.</span><span class="n">coref_clusters</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">ment</span><span class="p">,</span> <span class="n">rest_ments</span> <span class="ow">in</span> <span class="n">element_rest</span> <span class="p">(</span><span class="n">cl</span><span class="p">):</span>
+                    <span class="n">ids</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">ment</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">ment</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
+                    <span class="n">other_sents</span> <span class="o">=</span> <span class="p">[</span><span class="n">ref_from_row</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">end</span><span class="p">))</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rest_ments</span><span class="p">]</span>
+                    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;doc_i&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">ids</span><span class="p">),</span> <span class="s1">&#39;coref&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">other_sents</span>
+
+        <span class="n">df</span><span class="o">.</span><span class="n">coref</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">coref</span><span class="o">.</span><span class="n">apply</span> <span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="k">else</span> <span class="s1">&#39;_&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="CorpusReader.write_conll_by_df_group"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader.write_conll_by_df_group">[docs]</a>    <span class="k">def</span> <span class="nf">write_conll_by_df_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="n">conll_lines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">itertuples</span><span class="p">():</span>
+            <span class="n">conll_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CorpusReader</span><span class="o">.</span><span class="n">conll_format</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">row</span><span class="o">.</span><span class="n">i</span><span class="p">,</span>  <span class="c1"># There&#39;s a word.i attr that&#39;s position in *doc*</span>
+                <span class="n">row</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
+                <span class="n">row</span><span class="o">.</span><span class="n">lemma</span><span class="p">,</span>
+                <span class="n">row</span><span class="o">.</span><span class="n">pos</span><span class="p">,</span>  <span class="c1"># Coarse-grained tag</span>
+                <span class="n">row</span><span class="o">.</span><span class="n">tag</span><span class="p">,</span>  <span class="c1"># Fine-grained tag</span>
+                <span class="n">row</span><span class="o">.</span><span class="n">unknown</span><span class="p">,</span>
+                <span class="n">row</span><span class="o">.</span><span class="n">head</span><span class="p">,</span>
+                <span class="n">row</span><span class="o">.</span><span class="n">dep</span><span class="p">,</span>  <span class="c1"># Relation</span>
+                <span class="n">row</span><span class="o">.</span><span class="n">corp_id</span><span class="p">,</span>  <span class="c1"># Generation_i</span>
+                <span class="n">row</span><span class="o">.</span><span class="n">coref</span><span class="p">))</span>
+
+        <span class="n">conll_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_dir</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">sent_id</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.conll&#39;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">conll_path</span><span class="p">,</span> <span class="s1">&#39;w+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span> <span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span><span class="n">conll_lines</span><span class="p">)</span> <span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div></div>
+
+
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Stefan Werner
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

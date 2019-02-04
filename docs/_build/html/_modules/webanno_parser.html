@@ -1,0 +1,647 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>webanno_parser &mdash; S0krates 5.0.0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> S0krates
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">S0krates</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>webanno_parser</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for webanno_parser</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">regex</span> <span class="k">as</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">networkx.algorithms.components.connected</span> <span class="k">import</span> <span class="n">connected_components</span>
+<span class="kn">from</span> <span class="nn">networkx.drawing.nx_agraph</span> <span class="k">import</span> <span class="n">graphviz_layout</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="kn">import</span> <span class="nn">pylab</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">textwrap</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="k">import</span> <span class="n">StringIO</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
+
+
+<span class="c1"># anaphoras, ellipsis(either-or), comparison (more-than, most-else), exclusion (except-alone) are all things, that import information of the text</span>
+
+
+<div class="viewcode-block" id="to_graph"><a class="viewcode-back" href="../webanno_parser.html#webanno_parser.to_graph">[docs]</a><span class="k">def</span> <span class="nf">to_graph</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">l</span><span class="p">:</span>
+        <span class="c1"># each sublist is a bunch of nodes</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
+        <span class="c1"># it also imlies a number of edges:</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">to_edges</span><span class="p">(</span><span class="n">part</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+
+
+<div class="viewcode-block" id="to_edges"><a class="viewcode-back" href="../webanno_parser.html#webanno_parser.to_edges">[docs]</a><span class="k">def</span> <span class="nf">to_edges</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        treat `l` as a Graph and returns it&#39;s edges</span>
+<span class="sd">        to_edges([&#39;a&#39;,&#39;b&#39;,&#39;c&#39;,&#39;d&#39;]) -&gt; [(a,b), (b,c),(c,d)]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">it</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+    <span class="n">last</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">it</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">current</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">last</span><span class="p">,</span> <span class="n">current</span>
+        <span class="n">last</span> <span class="o">=</span> <span class="n">current</span></div>
+
+
+<div class="viewcode-block" id="flatten"><a class="viewcode-back" href="../webanno_parser.html#webanno_parser.flatten">[docs]</a><span class="k">def</span> <span class="nf">flatten</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">l</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="split_expand"><a class="viewcode-back" href="../webanno_parser.html#webanno_parser.split_expand">[docs]</a><span class="k">def</span> <span class="nf">split_expand</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">lst_col</span><span class="p">,</span> <span class="n">delim</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">lst_col</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="n">lst_col</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">delim</span><span class="p">)})</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+        <span class="n">col</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="n">lst_col</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">len</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">difference</span><span class="p">([</span><span class="n">lst_col</span><span class="p">])</span>
+    <span class="p">})</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">lst_col</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">lst_col</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)})[</span><span class="n">x</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">()]</span></div>
+
+
+<div class="viewcode-block" id="Webanno_Parser"><a class="viewcode-back" href="../webanno_parser.html#webanno_parser.Webanno_Parser">[docs]</a><span class="k">class</span> <span class="nc">Webanno_Parser</span><span class="p">:</span>
+    <span class="n">string_nan</span> <span class="o">=</span> <span class="s2">&quot;:)&quot;</span>
+
+<div class="viewcode-block" id="Webanno_Parser.__init__"><a class="viewcode-back" href="../webanno_parser.html#webanno_parser.Webanno_Parser.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">path</span><span class="p">,</span>
+                 <span class="n">dist_parts_col</span><span class="o">=</span><span class="s1">&#39;Distinctionparts_is&#39;</span><span class="p">,</span>
+                 <span class="n">dist_sipas_Link_col</span><span class="o">=</span><span class="s1">&#39;Distinctionparts_ROLE_webanno.custom.Distinctionparts:for_webanno.custom.DistinctionpartsForLink&#39;</span><span class="p">,</span>
+                 <span class="n">dist_level_BT_col</span><span class="o">=</span><span class="s1">&#39;Distinctionlevel_BT_webanno.custom.Distinctionparts&#39;</span><span class="p">,</span>
+                 <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">csv_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsv2csv</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_df</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">csv_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generalrels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">extract_distpart_relations</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="n">dist_parts_col</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="n">debug</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distlevels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_distlevel_relations</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="n">dist_level_BT_col</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="n">debug</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">distparts</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">generalrels</span> <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">pred</span> <span class="o">==</span> <span class="n">dist_sipas_Link_col</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Probably wrong column name for Distinction Parts</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generalrels</span><span class="p">))</span>
+
+            <span class="k">raise</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hierarchy_graph_df</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">distparts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">distlevels</span><span class="p">,</span>
+                                                  <span class="n">dist_parts_col</span><span class="p">,</span> <span class="n">dist_sipas_Link_col</span><span class="p">,</span> <span class="n">dist_level_BT_col</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="n">debug</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[[</span><span class="s1">&#39;sentence_id&#39;</span><span class="p">,</span> <span class="s1">&#39;word_id&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;swid&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[[</span><span class="s1">&#39;sentence_id&#39;</span><span class="p">,</span> <span class="s1">&#39;word_id&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[[</span><span class="s1">&#39;sentence_id&#39;</span><span class="p">,</span> <span class="s1">&#39;word_id&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Webanno_Parser.getdf"><a class="viewcode-back" href="../webanno_parser.html#webanno_parser.Webanno_Parser.getdf">[docs]</a>    <span class="k">def</span> <span class="nf">getdf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span></div>
+
+<div class="viewcode-block" id="Webanno_Parser.tsv2csv"><a class="viewcode-back" href="../webanno_parser.html#webanno_parser.Webanno_Parser.tsv2csv">[docs]</a>    <span class="k">def</span> <span class="nf">tsv2csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tsv_file</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        translate the tsv to a common csv-file with tab-separation,</span>
+<span class="sd">        causes side_effects:</span>
+<span class="sd">            list self.header</span>
+<span class="sd">            list self.pred_arg_header</span>
+<span class="sd">        are set</span>
+
+<span class="sd">        caveto:</span>
+<span class="sd">        the feature names in Webanno shouldn&#39;t end with &quot;Link&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">csv_file</span> <span class="o">=</span> <span class="n">tsv_file</span> <span class="o">+</span> <span class="s2">&quot;.csv&quot;</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">pred_arg_header</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">header_read</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">header_line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(?&lt;=custom\.)(\w+)(?:\|([\w\.\:^\|]+))+&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">tsv_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">infile</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">csv_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">infile</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">s</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;#&quot;</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">header_read</span><span class="p">:</span>
+                            <span class="n">m</span> <span class="o">=</span> <span class="n">header_line</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
+                                <span class="n">heads</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+                                <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                                    <span class="nb">print</span><span class="p">(</span><span class="n">heads</span><span class="p">)</span>
+
+                                <span class="k">def</span> <span class="nf">realistic_column_namespan_beginning</span><span class="p">(</span><span class="n">h</span><span class="p">):</span>
+                                    <span class="k">return</span> <span class="n">h</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+                                <span class="n">new</span> <span class="o">=</span> <span class="p">[</span><span class="n">heads</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">h</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">heads</span><span class="p">[</span><span class="mi">1</span><span class="p">:]]</span>
+                                <span class="n">pred_arg_header</span> <span class="o">+=</span> <span class="p">[(</span>
+                                    <span class="n">heads</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">h</span><span class="p">,</span>
+                                    <span class="n">heads</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">heads</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                                <span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">h</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">heads</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                                    <span class="k">if</span> <span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;Link&quot;</span><span class="p">)</span>
+                                        <span class="ow">and</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)]</span>
+                                <span class="n">header</span> <span class="o">+=</span> <span class="n">new</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="n">header_read</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                        <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;swid&#39;</span><span class="p">,</span> <span class="s1">&#39;span&#39;</span><span class="p">,</span> <span class="s1">&#39;token&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">header</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+                    <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">s</span><span class="p">)</span>
+                    <span class="n">header_read</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;swid&#39;</span><span class="p">,</span> <span class="s1">&#39;span&#39;</span><span class="p">,</span> <span class="s1">&#39;token&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">header</span>
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;self.header&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pred_arg_header</span> <span class="o">=</span> <span class="n">pred_arg_header</span>
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;pred_arg_header&quot;</span><span class="p">,</span> <span class="n">pred_arg_header</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">csv_file</span></div>
+
+<div class="viewcode-block" id="Webanno_Parser.load_df"><a class="viewcode-back" href="../webanno_parser.html#webanno_parser.Webanno_Parser.load_df">[docs]</a>    <span class="k">def</span> <span class="nf">load_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csv_file</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csv_file</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">+&#39;</span><span class="p">,</span> <span class="n">na_values</span><span class="o">=</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;python&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;READ CSV&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;columns&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">string_nan</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span></div>
+
+    <span class="n">DistpartRelation</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;DistpartRelation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;pred&#39;</span><span class="p">,</span> <span class="s1">&#39;arg&#39;</span><span class="p">,</span> <span class="s1">&#39;edges&#39;</span><span class="p">,</span> <span class="s1">&#39;labels1&#39;</span><span class="p">,</span> <span class="s1">&#39;labels2&#39;</span><span class="p">])</span>
+
+<div class="viewcode-block" id="Webanno_Parser.extract_distpart_relations"><a class="viewcode-back" href="../webanno_parser.html#webanno_parser.Webanno_Parser.extract_distpart_relations">[docs]</a>    <span class="k">def</span> <span class="nf">extract_distpart_relations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">dist_parts_col</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pred_arg_header</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">pred</span><span class="p">,</span> <span class="n">arg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pred_arg_header</span><span class="p">:</span>
+
+            <span class="n">a</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">pred</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="s2">&quot;(?P&lt;pointing_name&gt;\w+)&gt;(?P&lt;to_name&gt;\w+)\[(?P&lt;pointing_addr&gt;\d+)\]&quot;</span><span class="p">)</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">arg</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="s2">&quot;(?&lt;!_)\[(?P&lt;to_addr&gt;\d+)\]&quot;</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;outer&#39;</span><span class="p">,</span> <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Could not find relations for </span><span class="se">\n</span><span class="s2">    &quot;</span> <span class="o">+</span> <span class="n">pred</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">and</span><span class="se">\n</span><span class="s2">    &quot;</span> <span class="o">+</span> <span class="n">arg</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;RESULT&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+
+            <span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+
+            <span class="n">all_relation_edges</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s1">&#39;pointing_addr&#39;</span><span class="p">],</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;to_addr&#39;</span><span class="p">]))</span>
+
+            <span class="n">node_label_tuples</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s1">&#39;pointing_addr&#39;</span><span class="p">],</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;pointing_name&#39;</span><span class="p">]))</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span>
+                <span class="nb">zip</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s1">&#39;to_addr&#39;</span><span class="p">],</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;to_name&#39;</span><span class="p">]))</span>
+            <span class="n">node_labels_dict1</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="n">kind</span><span class="p">}</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">kind</span> <span class="ow">in</span>
+                                 <span class="n">node_label_tuples</span><span class="p">}</span>  <span class="c1"># as nested dict {node: {attr: label}}</span>
+            <span class="n">node_labels_dict2</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="n">kind</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">kind</span> <span class="ow">in</span> <span class="n">node_label_tuples</span><span class="p">}</span>  <span class="c1"># as simple dict {node: label}</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">DistpartRelation</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">arg</span><span class="p">,</span> <span class="n">all_relation_edges</span><span class="p">,</span> <span class="n">node_labels_dict1</span><span class="p">,</span> <span class="n">node_labels_dict2</span><span class="p">)</span></div>
+
+    <span class="n">DistlevelRelation</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;DistlevelRelation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;vertex&#39;</span><span class="p">,</span> <span class="s1">&#39;chain&#39;</span><span class="p">,</span> <span class="s1">&#39;labels1&#39;</span><span class="p">,</span> <span class="s1">&#39;labels2&#39;</span><span class="p">])</span>
+
+<div class="viewcode-block" id="Webanno_Parser.extract_distlevel_relations"><a class="viewcode-back" href="../webanno_parser.html#webanno_parser.Webanno_Parser.extract_distlevel_relations">[docs]</a>    <span class="k">def</span> <span class="nf">extract_distlevel_relations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">dist_level_col</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">filtered_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">dist_level_col</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">string_nan</span><span class="p">]</span>
+        <span class="n">extracted_df</span> <span class="o">=</span> <span class="n">filtered_df</span><span class="p">[</span><span class="n">dist_level_col</span><span class="p">]</span> \
+            <span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="s2">&quot;.+\[(?P&lt;this_token&gt;\d+)\_(?P&lt;other_token&gt;\d+)\]&quot;</span><span class="p">)</span> \
+            <span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">extracted_df</span><span class="p">)</span>
+        <span class="n">pair_distinctions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">extracted_df</span><span class="p">[</span><span class="s1">&#39;this_token&#39;</span><span class="p">],</span> <span class="n">extracted_df</span><span class="p">[</span><span class="s1">&#39;other_token&#39;</span><span class="p">]))</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="n">to_graph</span><span class="p">(</span><span class="n">pair_distinctions</span><span class="p">)</span>
+        <span class="n">grouped_distinctions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">([</span><span class="nb">list</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">connected_components</span><span class="p">(</span><span class="n">graph</span><span class="p">)])</span>
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">grouped_distinctions</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">level_node_name</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">l</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s1">&#39;Distinction &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>  <span class="c1"># + &quot;~&quot;.join(l)</span>
+
+        <span class="n">distinction_level_edges</span> <span class="o">=</span> <span class="n">flatten</span><span class="p">(</span>
+            <span class="p">[[(</span><span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">level_node_name</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">group</span><span class="p">))</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">group</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">grouped_distinctions</span><span class="p">)])</span>
+        <span class="n">distlevel_labels_dict1</span> <span class="o">=</span> <span class="p">{</span><span class="n">level_node_name</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">group</span><span class="p">):</span> <span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;level&#39;</span><span class="p">}</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span>
+                                  <span class="nb">enumerate</span><span class="p">(</span><span class="n">grouped_distinctions</span><span class="p">)}</span>
+        <span class="n">distlevel_labels_dict2</span> <span class="o">=</span> <span class="p">{</span><span class="n">level_node_name</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">group</span><span class="p">):</span> <span class="s1">&#39;level&#39;</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">grouped_distinctions</span><span class="p">)}</span>
+
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;RELATION EDGES parts_of_distinctions&quot;</span><span class="p">,</span> <span class="n">distinction_level_edges</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PAIR DISTINCTIONS&quot;</span><span class="p">,</span> <span class="n">pair_distinctions</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;RELATION NODE LABELS&quot;</span><span class="p">,</span> <span class="n">distlevel_labels_dict1</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;RELATION LABEL DICT&quot;</span><span class="p">,</span> <span class="n">distlevel_labels_dict2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">DistlevelRelation</span><span class="p">(</span><span class="n">distinction_level_edges</span><span class="p">,</span> <span class="n">pair_distinctions</span><span class="p">,</span> <span class="n">distlevel_labels_dict1</span><span class="p">,</span>
+                                      <span class="n">distlevel_labels_dict2</span><span class="p">)</span></div>
+
+    <span class="n">GraphEvaluation</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;GraphEvaluation&#39;</span><span class="p">,</span> <span class="p">[</span>
+        <span class="s1">&#39;whole_graph&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;sub_levels_graph&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;sub_parts_graph&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;labels1&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;labels2&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;connected_distparts&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;connected_distlevels&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;text_dict&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;kind_dict&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;grouped_df&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;merged_df&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;graph_df&#39;</span><span class="p">])</span>
+
+<div class="viewcode-block" id="Webanno_Parser.hierarchy_graph_df"><a class="viewcode-back" href="../webanno_parser.html#webanno_parser.Webanno_Parser.hierarchy_graph_df">[docs]</a>    <span class="k">def</span> <span class="nf">hierarchy_graph_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">distparts</span><span class="p">,</span> <span class="n">distlevels</span><span class="p">,</span> <span class="n">dist_parts_col</span><span class="p">,</span> <span class="n">dist_sipas_Link_col</span><span class="p">,</span> <span class="n">dist_level_col</span><span class="p">,</span>
+                           <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">distparts</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">distlevels</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">append_dict</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span> <span class="o">**</span><span class="n">d2</span><span class="p">);</span>
+            <span class="n">d4</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">d3</span><span class="p">)</span>
+
+        <span class="n">labels1</span> <span class="o">=</span> <span class="n">append_dict</span><span class="p">(</span><span class="n">distparts</span><span class="o">.</span><span class="n">labels1</span><span class="p">,</span> <span class="n">distlevels</span><span class="o">.</span><span class="n">labels1</span><span class="p">)</span>
+        <span class="n">labels2</span> <span class="o">=</span> <span class="n">append_dict</span><span class="p">(</span><span class="n">distparts</span><span class="o">.</span><span class="n">labels2</span><span class="p">,</span> <span class="n">distlevels</span><span class="o">.</span><span class="n">labels2</span><span class="p">)</span>
+        <span class="n">all_edges</span> <span class="o">=</span> <span class="n">distparts</span><span class="o">.</span><span class="n">edges</span> <span class="o">+</span> <span class="n">distlevels</span><span class="o">.</span><span class="n">vertex</span>
+
+        <span class="n">whole_graph</span> <span class="o">=</span> <span class="n">to_graph</span><span class="p">(</span><span class="n">all_edges</span><span class="p">)</span>
+        <span class="n">sub_levels_graph</span> <span class="o">=</span> <span class="n">to_graph</span><span class="p">(</span><span class="n">distlevels</span><span class="o">.</span><span class="n">chain</span><span class="p">)</span>
+        <span class="n">sub_parts_graph</span> <span class="o">=</span> <span class="n">to_graph</span><span class="p">(</span><span class="n">distparts</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span>
+
+        <span class="n">nx</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">(</span><span class="n">whole_graph</span><span class="p">,</span> <span class="n">labels1</span><span class="p">)</span>
+
+        <span class="n">connected_distparts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">([</span><span class="nb">list</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">connected_components</span><span class="p">(</span><span class="n">sub_parts_graph</span><span class="p">)])</span>
+        <span class="n">connected_distlevels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">([</span><span class="nb">list</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">connected_components</span><span class="p">(</span><span class="n">sub_levels_graph</span><span class="p">)])</span>
+
+        <span class="c1"># find the text for the nodes in the dataframe</span>
+        <span class="c1"># step 1: first df with only the layers enumerated and a list of the nodes that belong to that</span>
+        <span class="n">graph_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;sidesoflevels&#39;</span><span class="p">:</span> <span class="n">connected_distlevels</span><span class="p">,</span> <span class="s1">&#39;layer&#39;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">connected_distlevels</span><span class="p">))})</span>
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">graph_df</span><span class="p">)</span>
+
+        <span class="c1"># step 2: expand these lists and that we call that the levels,</span>
+        <span class="c1">#         with these levels nodes are meant that belong to the different connected sides of the distinctionparts</span>
+        <span class="n">graph_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="p">[(</span><span class="n">d</span><span class="p">,</span> <span class="n">tup</span><span class="o">.</span><span class="n">layer</span><span class="p">,</span> <span class="n">tup</span><span class="o">.</span><span class="n">sidesoflevels</span><span class="p">)</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">graph_df</span><span class="o">.</span><span class="n">itertuples</span><span class="p">()</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">tup</span><span class="o">.</span><span class="n">sidesoflevels</span><span class="p">])</span>
+        <span class="n">graph_df</span> <span class="o">=</span> <span class="n">graph_df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;level&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;layer&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;sidesoflevels&#39;</span><span class="p">})</span>
+
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">graph_df</span><span class="p">)</span>
+
+        <span class="c1"># step 3: to this we find the lists of nodes of the connected sides of the distinctionparts</span>
+        <span class="k">def</span> <span class="nf">sublist_if_intersection</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">flatten</span><span class="p">([</span><span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">connected_distparts</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">l</span><span class="p">])</span>
+
+        <span class="c1"># step 4: we expand again these new lists of connected components</span>
+        <span class="n">graph_df</span><span class="p">[</span><span class="s1">&#39;partsofsides&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">graph_df</span><span class="p">[</span><span class="s1">&#39;level&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">sublist_if_intersection</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">graph_df</span><span class="p">)</span>
+
+        <span class="n">graph_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([(</span><span class="n">d</span><span class="p">,</span> <span class="n">tup</span><span class="o">.</span><span class="n">level</span><span class="p">,</span> <span class="n">tup</span><span class="o">.</span><span class="n">layer</span><span class="p">,</span> <span class="n">tup</span><span class="o">.</span><span class="n">sidesoflevels</span><span class="p">,</span> <span class="n">tup</span><span class="o">.</span><span class="n">partsofsides</span><span class="p">)</span>
+                                 <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">graph_df</span><span class="o">.</span><span class="n">itertuples</span><span class="p">()</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">tup</span><span class="o">.</span><span class="n">partsofsides</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">graph_df</span><span class="p">)</span>
+        <span class="n">graph_df</span> <span class="o">=</span> <span class="n">graph_df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;part&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;level&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;layer&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;levels&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;distinction_parts&#39;</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">graph_df</span><span class="p">)</span>
+
+        <span class="n">graph_df</span><span class="p">[</span><span class="s1">&#39;this_distinction_part&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">graph_df</span><span class="p">[</span><span class="s1">&#39;part&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">labels2</span><span class="p">[</span><span class="n">x</span><span class="p">],</span> <span class="s1">&#39;[&#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="s1">&#39;]&#39;</span><span class="p">]))</span>  <span class="c1"># for merging</span>
+        <span class="n">graph_df</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">graph_df</span><span class="p">[</span><span class="s1">&#39;part&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">labels2</span><span class="p">[</span><span class="n">x</span><span class="p">])</span>  <span class="c1"># for colouring</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">split_expand</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">dist_parts_col</span><span class="p">,</span> <span class="s1">&#39;|&#39;</span><span class="p">)</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="n">graph_df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">right_on</span><span class="o">=</span><span class="n">dist_parts_col</span><span class="p">,</span> <span class="n">left_on</span><span class="o">=</span><span class="s1">&#39;this_distinction_part&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;outer&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">string_nan</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+        <span class="n">interesting_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;layer&#39;</span><span class="p">,</span> <span class="s1">&#39;level&#39;</span><span class="p">,</span> <span class="s1">&#39;part&#39;</span><span class="p">]</span>
+
+        <span class="n">grouped_token</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">interesting_cols</span><span class="p">)[</span><span class="s1">&#39;token&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="n">grouped_token</span> <span class="o">=</span> <span class="n">grouped_token</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">string_nan</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">grouped_token</span> <span class="o">=</span> <span class="n">grouped_token</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+
+        <span class="n">text_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">grouped_token</span><span class="p">[</span><span class="s1">&#39;part&#39;</span><span class="p">],</span> <span class="n">grouped_token</span><span class="p">[</span><span class="s1">&#39;token&#39;</span><span class="p">]))</span>
+
+        <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="n">t</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">text_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">string_nan</span><span class="p">}</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">dist_parts_col</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s1">&#39;[&#39;</span> <span class="o">+</span> <span class="n">node</span> <span class="o">+</span> <span class="s1">&#39;]&#39;</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">mask</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;[&#39;</span> <span class="o">+</span> <span class="n">node</span> <span class="o">+</span> <span class="s1">&#39;]&#39;</span><span class="p">)</span>
+                <span class="n">text_dict</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="s1">&#39;token&#39;</span><span class="p">]))</span>
+
+        <span class="n">grouped_kind</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">interesting_cols</span><span class="p">)[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="n">grouped_kind</span> <span class="o">=</span> <span class="n">grouped_kind</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">string_nan</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">grouped_kind</span> <span class="o">=</span> <span class="n">grouped_kind</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+
+        <span class="n">kind_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">grouped_kind</span><span class="p">[</span><span class="s1">&#39;part&#39;</span><span class="p">],</span> <span class="n">grouped_kind</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]))</span>
+
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">text_dict</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="n">pd</span><span class="o">.</span><span class="n">option_context</span><span class="p">(</span><span class="s1">&#39;display.max_rows&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;display.max_columns&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;display.latex.multirow&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">grouped_token</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">GraphEvaluation</span><span class="p">(</span>
+            <span class="n">whole_graph</span><span class="p">,</span>
+            <span class="n">sub_levels_graph</span><span class="p">,</span>
+            <span class="n">sub_parts_graph</span><span class="p">,</span>
+            <span class="n">labels1</span><span class="p">,</span>
+            <span class="n">labels2</span><span class="p">,</span>
+            <span class="n">connected_distparts</span><span class="p">,</span>
+            <span class="n">connected_distlevels</span><span class="p">,</span>
+            <span class="n">text_dict</span><span class="p">,</span>
+            <span class="n">kind_dict</span><span class="p">,</span>
+            <span class="n">grouped_token</span><span class="p">,</span>
+            <span class="n">res</span><span class="p">,</span>
+            <span class="n">graph_df</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Webanno_Parser.paint_graphviz"><a class="viewcode-back" href="../webanno_parser.html#webanno_parser.Webanno_Parser.paint_graphviz">[docs]</a>    <span class="k">def</span> <span class="nf">paint_graphviz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_info</span><span class="o">.</span><span class="n">whole_graph</span>
+        <span class="n">text_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">35</span><span class="p">)</span>
+                     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_info</span><span class="o">.</span><span class="n">text_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                     <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">({</span><span class="n">n</span><span class="p">:</span> <span class="n">t</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">text_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">string_nan</span><span class="p">}</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span>
+        <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="n">t</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">text_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">string_nan</span><span class="p">}</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>  <span class="c1"># df is the DataFrame</span>
+                <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">))</span>
+                            <span class="nb">print</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="p">((</span><span class="s1">&#39;[&#39;</span> <span class="o">+</span> <span class="n">node</span> <span class="o">+</span> <span class="s1">&#39;]&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)))):</span>
+                        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span>
+                            <span class="k">break</span>
+
+        <span class="n">kind_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_info</span><span class="o">.</span><span class="n">kind_dict</span>
+
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">kind_dict</span><span class="p">)</span>
+        <span class="n">color_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;entity&#39;</span><span class="p">:</span> <span class="s1">&#39;cornflowerblue&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;predicate&#39;</span><span class="p">:</span> <span class="s1">&#39;darkorange&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;modificator&#39;</span><span class="p">:</span> <span class="s1">&#39;forestgreen&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;example&#39;</span><span class="p">:</span> <span class="s1">&#39;olive&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;marker&#39;</span><span class="p">:</span> <span class="s1">&#39;teal&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;what?&#39;</span><span class="p">:</span> <span class="s1">&#39;purple&#39;</span>
+        <span class="p">}</span>
+        <span class="n">color_map</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">kind_dict</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s1">&#39;Distinction&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+                    <span class="n">color_map</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;node &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; not classified as distinction part&#39;</span><span class="p">)</span>
+                    <span class="n">color_map</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;magenta&#39;</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">kind_dict</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="ow">in</span> <span class="n">color_dict</span><span class="p">:</span>
+                <span class="n">color_map</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">color_dict</span><span class="p">[</span><span class="n">kind_dict</span><span class="p">[</span><span class="n">node</span><span class="p">]])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">color_map</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;yellow&#39;</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">35</span><span class="p">,</span> <span class="mi">23</span><span class="p">))</span>
+        <span class="n">nodeFontSize</span> <span class="o">=</span> <span class="mi">6</span>
+        <span class="n">nodeSize</span> <span class="o">=</span> <span class="mi">300</span>
+        <span class="n">nodeColorList</span> <span class="o">=</span> <span class="n">color_map</span>
+        <span class="c1"># edgeColorList   = getEdgeColor(graph.edges())</span>
+
+        <span class="c1"># Graphiz tunning</span>
+        <span class="n">prog</span> <span class="o">=</span> <span class="s1">&#39;dot&#39;</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="s1">&#39; -Gdpi=250 -Gnodesep=3 -Granksep=6 -Gpad=1.9 -Grankdir=TD &#39;</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">graphviz_layout</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">prog</span><span class="o">=</span><span class="s1">&#39;neato&#39;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span>
+                <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span>
+                <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">node_color</span><span class="o">=</span><span class="n">nodeColorList</span><span class="p">,</span>
+                <span class="c1"># edge_color  = edgeColorList,</span>
+                <span class="n">font_size</span><span class="o">=</span><span class="n">nodeFontSize</span><span class="p">,</span>
+                <span class="n">node_size</span><span class="o">=</span><span class="n">nodeSize</span><span class="p">,</span> <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pos</span><span class="p">:</span>
+            <span class="n">yOffSet</span> <span class="o">=</span> <span class="o">-</span><span class="mi">10</span>
+            <span class="n">xOffSet</span> <span class="o">=</span> <span class="mi">10</span>
+            <span class="n">pos</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">xOffSet</span><span class="p">,</span> <span class="n">pos</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">yOffSet</span><span class="p">)</span>
+
+        <span class="n">labelDescr</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_labels</span><span class="p">(</span>
+            <span class="n">graph</span><span class="p">,</span>
+            <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span>
+            <span class="c1"># labels     = label_dict,</span>
+            <span class="n">labels</span><span class="o">=</span><span class="n">text_dict</span><span class="p">,</span>
+            <span class="n">font_size</span><span class="o">=</span><span class="n">nodeFontSize</span><span class="p">,</span> <span class="p">)</span>
+
+        <span class="c1"># for n,t in labelDescr.items():</span>
+        <span class="c1">#    finDegree = 70</span>
+        <span class="c1">#    t.set_rotation(finDegree)</span>
+
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph_info</span><span class="o">.</span><span class="n">connected_distparts</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph_info</span><span class="o">.</span><span class="n">connected_distlevels</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="nb">list</span><span class="p">([</span><span class="nb">list</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">connected_components</span><span class="p">(</span><span class="n">graph</span><span class="p">)]))</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div></div>
+
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../webanno_parser.html#webanno_parser.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">img_folder</span> <span class="o">=</span> <span class="s1">&#39;./printedphraphs/&#39;</span>
+    <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+    <span class="n">webannoparsed</span> <span class="o">=</span> <span class="n">Webanno_Parser</span><span class="p">(</span><span class="s2">&quot;corpus/aristotle-categories-edghill-spell-checked.tsv&quot;</span><span class="p">)</span>
+    <span class="n">webannoparsed</span><span class="o">.</span><span class="n">paint_graphviz</span><span class="p">(</span><span class="n">img_folder</span> <span class="o">+</span> <span class="s2">&quot;graphviz &quot;</span> <span class="o">+</span> <span class="s1">&#39;_graphviz.png&#39;</span><span class="p">)</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">webannoparsed</span><span class="o">.</span><span class="n">getdf</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[[</span><span class="s1">&#39;token&#39;</span><span class="p">,</span> <span class="s1">&#39;swid&#39;</span><span class="p">,</span> <span class="s1">&#39;sentence_id&#39;</span><span class="p">,</span> <span class="s1">&#39;word_id&#39;</span><span class="p">]])</span></div>
+    <span class="c1"># &quot;&quot;&quot;+ now.strftime(&quot;%Y-%m-%d %H:%M:%S&quot;)&quot;&quot;&quot;</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Stefan Werner
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,325 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>subj_and_aspectrix &mdash; S0krates 5.0.0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> S0krates
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">S0krates</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>subj_and_aspectrix</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for subj_and_aspectrix</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">argumentatrix</span> <span class="k">import</span> <span class="n">Arguments</span>
+<span class="kn">from</span> <span class="nn">simmix</span> <span class="k">import</span> <span class="n">Simmix</span>
+
+
+<div class="viewcode-block" id="Subjects_and_aspects"><a class="viewcode-back" href="../subj_and_aspectrix.html#subj_and_aspectrix.Subjects_and_aspects">[docs]</a><span class="k">class</span> <span class="nc">Subjects_and_aspects</span><span class="p">(</span><span class="n">Arguments</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; This module finds pairs of arguments</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+<div class="viewcode-block" id="Subjects_and_aspects.__init__"><a class="viewcode-back" href="../subj_and_aspectrix.html#subj_and_aspectrix.Subjects_and_aspects.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">corpus</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">corpus</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">similar</span> <span class="o">=</span> \
+            <span class="n">Simmix</span><span class="p">([(</span><span class="mi">18</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">common_words_sim</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">dep_sim</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">pos_sim</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                    <span class="c1"># (1,Simmix.elmo_sim(), 0.5,1),</span>
+                    <span class="c1"># (1,Simmix.fuzzystr_sim, 0.5,1),</span>
+                    <span class="c1">#(-100, Simmix.boolean_subsame_sim, 0, 0.1)</span>
+                    <span class="p">],</span>
+                   <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">filter</span> <span class="o">=</span> \
+            <span class="n">Simmix</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">multi_sim</span><span class="p">(</span><span class="n">Simmix</span><span class="o">.</span><span class="n">elmo_layer_sim</span><span class="p">(</span><span class="n">layer</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+                                         <span class="p">),</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="p">],</span>
+                   <span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">concrete_abstract</span> <span class="o">=</span> \
+             <span class="n">Simmix</span> <span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">multi_sim</span><span class="p">(</span><span class="n">Simmix</span><span class="o">.</span><span class="n">abtract_conrete_sim</span><span class="p">()),</span> <span class="mf">0.0</span><span class="p">,</span><span class="mi">1</span><span class="p">)],</span>
+                      <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pattern_pair_ent</span> <span class="o">=</span> <span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">standard_entity_exs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">standard_entity_exs</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pattern_pair_asp</span> <span class="o">=</span> <span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">standard_aspect_exs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">standard_aspect_exs</span><span class="p">)]</span></div>
+
+
+<div class="viewcode-block" id="Subjects_and_aspects.get_arguments"><a class="viewcode-back" href="../subj_and_aspectrix.html#subj_and_aspectrix.Subjects_and_aspects.get_arguments">[docs]</a>    <span class="k">def</span> <span class="nf">get_arguments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Gets the arguments of the predicate</span>
+
+<span class="sd">            :param pred: predicate-dict</span>
+<span class="sd">            :return: argument-dict</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">pred</span><span class="p">[</span><span class="s1">&#39;arguments&#39;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="Subjects_and_aspects.get_correlated"><a class="viewcode-back" href="../subj_and_aspectrix.html#subj_and_aspectrix.Subjects_and_aspects.get_correlated">[docs]</a>    <span class="k">def</span> <span class="nf">get_correlated</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">oppo</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Returns pairs of similar arguments</span>
+
+<span class="sd">            :param oppo: opposed pair of predicate-dict-2tuples</span>
+<span class="sd">            :return: correlated argument-dict-2tuples</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">arguments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_arguments</span><span class="p">(</span><span class="n">oppo</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_arguments</span><span class="p">(</span><span class="n">oppo</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">similar</span><span class="o">.</span><span class="n">choose</span><span class="p">(</span>                                     <span class="c1"># What correlates</span>
+            <span class="n">arguments</span><span class="p">,</span>
+            <span class="n">layout</span><span class="o">=</span><span class="s1">&#39;1:1&#39;</span><span class="p">,</span>
+            <span class="n">out</span><span class="o">=</span><span class="s1">&#39;ex&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Subjects_and_aspects.annotate"><a class="viewcode-back" href="../subj_and_aspectrix.html#subj_and_aspectrix.Subjects_and_aspects.annotate">[docs]</a>    <span class="k">def</span> <span class="nf">annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opposed_pair_pair</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">graph_coro_subj_asp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">graph_coro_arg_binding</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Annotates the correlations, that means expressions that are similar to each other and are distinct from the</span>
+<span class="sd">            pair, that was found as excluding each other. For instance &#39;from the one side&#39; and &#39;from the other side&#39;.</span>
+
+<span class="sd">            In part the graph is cleaned, because also exmaples can be marked as seemingly contradictions.</span>
+<span class="sd">            On the other side the same operation is done for additional (sub)predications in context, following</span>
+<span class="sd">            coreferential relations</span>
+
+<span class="sd">            What is a subject and what a subject is decided on the sequence in respect to the theme-rheme-distinction.</span>
+<span class="sd">            What you speak about, comes first, the subject. With what you want to divide this thing up, is the aspect.</span>
+<span class="sd">            If you change the direction of explanation, this also changes. E.g. If you are in the first sentence talking</span>
+<span class="sd">            about microsoft warranties, and secondly you explain different cases, you speak about warranty. If you</span>
+<span class="sd">            start with these cases and then tell, that in one case you have in the other not warranty, you speak about</span>
+<span class="sd">            these cases.</span>
+
+<span class="sd">            :param opposed_pair_pair: 2tuple-2tuple-list-predicate-dicts, so 4 predicates in contradicting/corralating</span>
+<span class="sd">                constellation</span>
+<span class="sd">            :param graph_coro: coroutine to connect the subjects and aspects to debug their bindings</span>
+<span class="sd">            :param graph_coro_arg_binding: coroutine to connect subject and aspects to their predicates</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">oppo1</span><span class="p">,</span> <span class="n">oppo2</span> <span class="o">=</span> <span class="n">opposed_pair_pair</span>
+        <span class="n">poss_correlates1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_correlated</span><span class="p">(</span><span class="n">oppo1</span><span class="p">)</span>
+        <span class="n">poss_correlates2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_correlated</span><span class="p">(</span><span class="n">oppo2</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">poss_correlates1</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">poss_correlates2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="k">def</span> <span class="nf">filter_possibilities</span> <span class="p">(</span><span class="n">poss_correlates</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">choose</span><span class="p">(</span>                    <span class="c1"># not too much</span>
+                <span class="p">(</span><span class="n">poss_correlates</span><span class="p">,</span>
+                 <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pattern_pair_ent</span><span class="p">)),</span>
+                <span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="s1">&#39;lx&#39;</span><span class="p">,</span>
+                <span class="n">layout</span><span class="o">=</span><span class="s1">&#39;n&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="n">poss_subjects1</span> <span class="o">=</span> <span class="n">filter_possibilities</span><span class="p">(</span><span class="n">poss_correlates1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pattern_pair_ent</span><span class="p">)</span>
+        <span class="n">poss_aspects1</span>  <span class="o">=</span> <span class="n">filter_possibilities</span><span class="p">(</span><span class="n">poss_correlates1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pattern_pair_ent</span><span class="p">)</span>
+        <span class="n">poss_subjects2</span> <span class="o">=</span> <span class="n">filter_possibilities</span><span class="p">(</span><span class="n">poss_correlates2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pattern_pair_asp</span><span class="p">)</span>
+        <span class="n">poss_aspects2</span>  <span class="o">=</span> <span class="n">filter_possibilities</span><span class="p">(</span><span class="n">poss_correlates2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pattern_pair_asp</span><span class="p">)</span>
+
+        <span class="n">subjects_aspects</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">concrete_abstract</span><span class="o">.</span><span class="n">choose</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">poss_subjects1</span> <span class="o">+</span> <span class="n">poss_subjects2</span><span class="p">,</span><span class="n">poss_aspects2</span> <span class="o">+</span> <span class="n">poss_aspects1</span><span class="p">),</span>
+            <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">minimize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">layout</span><span class="o">=</span><span class="s1">&#39;n&#39;</span><span class="p">,</span>
+            <span class="n">out</span><span class="o">=</span><span class="s1">&#39;ex&#39;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;subjects&quot;</span><span class="p">,</span> <span class="s2">&quot;aspects&quot;</span><span class="p">,</span> <span class="s2">&quot;compared&quot;</span><span class="p">),</span>
+            <span class="n">graph_coro</span><span class="o">=</span><span class="n">graph_coro_subj_asp</span><span class="p">)</span>                             <span class="c1"># Put it in the graph</span>
+
+        <span class="n">subject1</span> <span class="o">=</span> <span class="n">subjects_aspects</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">subject2</span> <span class="o">=</span> <span class="n">subjects_aspects</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">aspect1</span>  <span class="o">=</span> <span class="n">subjects_aspects</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">aspect2</span>  <span class="o">=</span> <span class="n">subjects_aspects</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">pred1</span>    <span class="o">=</span> <span class="n">oppo1</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">pred2</span>    <span class="o">=</span> <span class="n">oppo1</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">pred3</span>    <span class="o">=</span> <span class="n">oppo2</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">pred4</span>    <span class="o">=</span> <span class="n">oppo2</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">graph_coro_arg_binding</span><span class="o">.</span><span class="n">send</span> <span class="p">((</span><span class="n">pred1</span><span class="p">,</span> <span class="n">subject1</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;subject&#39;</span><span class="p">,))</span>
+        <span class="n">graph_coro_arg_binding</span><span class="o">.</span><span class="n">send</span> <span class="p">((</span><span class="n">pred2</span><span class="p">,</span> <span class="n">subject2</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;subject&#39;</span><span class="p">,))</span>
+
+        <span class="n">graph_coro_arg_binding</span><span class="o">.</span><span class="n">send</span> <span class="p">((</span><span class="n">pred3</span><span class="p">,</span> <span class="n">aspect1</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;aspect&#39;</span><span class="p">,))</span>
+        <span class="n">graph_coro_arg_binding</span><span class="o">.</span><span class="n">send</span> <span class="p">((</span><span class="n">pred4</span><span class="p">,</span> <span class="n">aspect2</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;aspect&#39;</span><span class="p">,))</span>
+
+        <span class="k">return</span> <span class="n">subjects_aspects</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Stefan Werner
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
