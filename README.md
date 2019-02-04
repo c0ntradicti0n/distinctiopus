@@ -15,7 +15,7 @@ The output are subgraphs, that represent distinctions. To have a picture for bet
 
 ## Getting Started
 
-To get all dependencies, you have to get some Natural Language Processing tools with their models.
+First there are some Natural Language Processing tools to install with the AI-models, that belong to them.
 
 ### Prerequisites
 
