@@ -159,8 +159,20 @@ class Simmix:
                type=None,
                output=False,
                minimize=False):
-        '''Choose in different manners
-/
+        '''Choose in different manners building a similarity matrix.
+
+
+        .. math:: \sum_{i=1}^{\\infty} x_{i}
+
+        The similarity matrix is computed by a cartesian product of the two samples of expressions as two vectors and
+        a vector valued function,
+
+           .. math:: \overrightarrow{f}(x_{1,n}, x_{2,m}) = \langle f_1(x_{1,n}, x_{2,m}), f_2(x{1,n}, x_{2,m}), \dots f_k(x_{1,n}, x_{2,m}) \rangle   \\
+
+        the resulting matrix then is:
+
+        .. image:: /_static/doc_external/aslant_matrix.png
+
         :param data:
             tuple of lists of expressions, meaning the dictionaries or what is compared for you
         :param out:
@@ -363,6 +375,7 @@ class Simmix:
     def expressions_list (left_value, right_values, exs1, exs2):
         return [([exs1[left_value[l]]], [exs2[r] for r in right_values[l]])
                   for l in range(len(left_value))]
+
     def i_list (left_value, right_values):
         return [([left_value[l]], [r for r in right_values[l]])
                   for l in range(len(left_value))]

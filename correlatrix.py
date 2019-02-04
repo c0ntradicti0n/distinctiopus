@@ -96,20 +96,21 @@ class Correlation(Pairix):
             add_possible_correlation_edge(ex1[0], ex2[0], label="contradiction", kind="contra")
 
         for ex1, ex2 in possible_correlations:
-            add_possible_correlation_node(ex1[0], kind = 'poss new')
-            add_possible_correlation_node(ex2[0], kind = 'poss new')
-            add_possible_correlation_edge(ex1[0], ex2[0], label="possible new", kind="poss new")
+            add_possible_correlation_node(ex1[0], kind = 'poss_new')
+            add_possible_correlation_node(ex2[0], kind = 'poss_new')
+            add_possible_correlation_edge(ex1[0], ex2[0], label="possible new", kind="poss_new")
 
-        def add_edge_between (key_corr_i, key_trigg_i):
-            key_corr  = "poss new" + key_corr_i[0][1][0]['id']
-            key_trigg = "contra"   + contradiction[0][0]['id']
-            dig.add_edge (key_corr, key_trigg, label = "correl")
-            key_corr  = "poss new" + key_corr_i[0][1][0]['id']
-            key_trigg = "contra"   + contradiction[1][0]['id']
+        def add_edge_between (contradicting_pred, correlated_pred):
+            key_corr  = "poss_new" + correlated_pred    [0][0][0]['id']
+            key_trigg = "contra"   + contradicting_pred [0][0][0]['id']
             dig.add_edge (key_corr, key_trigg, label = "correl")
 
-        for corr_i, trigg_i in correlation:
-           add_edge_between(corr_i, trigg_i)
+            key_corr  = "poss_new" + correlated_pred    [0][1][0]['id']
+            key_trigg = "contra"   + contradicting_pred [0][1][0]['id']
+            dig.add_edge (key_corr, key_trigg, label = "correl")
+
+        for contra, correl in correlation:
+           add_edge_between(contra, correl)
         return dig
 
 
@@ -133,7 +134,7 @@ class Correlation(Pairix):
                         label='found contradictions')
 
         # Add correlations to graph as cluster
-        nbunch_pn =[n for n, d in G.nodes(data='kind') if d == 'poss new']
+        nbunch_pn =[n for n, d in G.nodes(data='kind') if d == 'poss_new']
         A.add_subgraph(nbunch=nbunch_pn,
                         name="cluster2",
                         style='filled',
