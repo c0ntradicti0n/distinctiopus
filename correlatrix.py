@@ -24,8 +24,8 @@ class Correlation(Pairix):
         self.distinct = \
             Simmix([(1, Simmix.multi_sim(fun=Simmix.common_words_sim, n=7), 0, 1),
                     (1, Simmix.multi_sim(fun=Simmix.elmo_sim(), n=7), 0, 1),
-                    (1, Simmix.multi_sim(Simmix.dep_sim, 0.0, 1)),
-                    (1, Simmix.multi_sim(Simmix.pos_sim, 0.0, 1))
+                    (1, Simmix.multi_sim(fun=Simmix.dep_sim, n=7), 0.0, 1),
+                    (1, Simmix.multi_sim(fun=Simmix.pos_sim,n=7), 0.0, 1)
                     # (2,Simmix.elmo_multi_sim(), 0,0.4),
                     # (1, Simmix.multi_sim(fun=Simmix.sub_i, n=4), 0,0.3),
                     # (1, Simmix.multi_sim(fun=Simmix.longer_sim, n=4), 0, 0.7) \
