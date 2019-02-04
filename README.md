@@ -97,9 +97,9 @@ Give an example
 
 ## Deployment
 
-To see the docs, go here:
+To see the docs, go along here:
 
-*[Module Documentation](./docs/index.html)
+* [Module Documentation](./docs/_build/html/index.html)
 
 ## Built With
 
