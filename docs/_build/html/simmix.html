@@ -189,11 +189,61 @@ Simmix.fuzzystr_sim   – which function
 <dt id="simmix.Simmix">
 <em class="property">class </em><code class="descclassname">simmix.</code><code class="descname">Simmix</code><span class="sig-paren">(</span><em>similarity_composition</em>, <em>n=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>This module contains utils to overlap different similarity measures.</p>
+<p>This module allows to overlap different similarity measures. Give it two lists or two lists of pairs of expressions and it find the ones, that belong together in a way, how you defined ‘belonging together’.</p>
 <dl class="method">
 <dt id="simmix.Simmix.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>similarity_composition</em>, <em>n=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set up, which functions are taken to compute a similarity matrix to choose from</p>
+<dd><p>Setup, which functions are taken to compute a similarity matrix to choose from some natural language expressions, that are already analysed in the manner of <a class="reference internal" href="predicatrix2.html#predicatrix2.Predication" title="predicatrix2.Predication"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Predication</span></code></a>.</p>
+<p>Under the hood a similarity matrix is computed by a cartesian product of the two samples of expressions as
+two vectors and a vector valued function,</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\overrightarrow{f}(x_{1,n}, x_{2,m}) = \langle f_1(x_{1,n}, x_{2,m}), f_2(x_{1,n}, x_{2,m}), \dots f_k(x_{1,n}, x_{2,m}) \rangle\]</div>
+</div></blockquote>
+<p>The function matrix then is:</p>
+<img alt="_images/aslant_matrix.png" src="_images/aslant_matrix.png" />
+<p>Then the sum of the results of the matrix are normalized by attaching two vectors for minimum and maximum of the functions to each of the planes.
+Then the results are normalized.
+And the added maximum and miminum vectors are taken off.</p>
+<p>Then the matrix is weighted by building the scalar product.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\overrightarrow{w} \bullet \sum D\overrightarrow{f}(\overrightarrow{x_1}, \overrightarrow{x_2})  \Delta n = \overrightarrow{w} \bullet
+\begin{bmatrix}
+     \sum_{n=1}^l f_n(x_{1,1}, x_{2,1}) &amp; \sum_{n=1}^l f_n(x_{1,2}, x_{2,1}) &amp; \cdots &amp; \sum_{n=1}^l f_n(x_{1,x}, x_{2,1})\\
+     \sum_{n=1}^l f_n(x_{1,1}, x_{2,2}) &amp; \sum_{n=1}^l f_n(x_{1,2}, x_{2,2}) &amp; \cdots &amp; \sum_{n=1}^l f_n(x_{1,x}, x_{2,2})\\
+      \vdots  &amp; \vdots  &amp; \ddots &amp; \vdots  \\
+     \sum_{n=1}^l f_n(x_{1,1}, x_{2,y}) &amp; \sum_{n=1}^l f_n(x_{1,2}, x_{2,y}) &amp; \cdots &amp; \sum_{n=1}^l f_n(x_{1,x}, x_{2,y})
+ \end{bmatrix}\end{split}\]</div>
+<p>You can set a range of valid results of the similarity functions. If the value for one function, the expression is excluded.</p>
+<p>After this, one can adjust different modes, how to make a choice based on this similarity matrix.
+Either to take exactly one with the maximal similarity, or to take the best n, or get an optimal 1:1 alignment.</p>
+<p>And in the last there are different possibilities, how to get back the results.</p>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>the expressions pairs, that are the chosen</dt>
+<dd><ul class="first last">
+<li><a class="reference internal" href="#simmix.Simmix.expressions_list" title="simmix.Simmix.expressions_list"><code class="xref py py-func docutils literal notranslate"><span class="pre">expressions_list()</span></code></a></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>just the indices of the input expressions or just of the left resp. right expression list.</dt>
+<dd><ul class="first last">
+<li><code class="xref py py-func docutils literal notranslate"><span class="pre">i_list()</span></code></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>write it into a graph, if you present a routinr for writing in a graph (a coroutine, to receive the result with <cite>data=(yield) and send with `corou.send(data…)</cite> send).</dt>
+<dd><ul class="first last">
+<li><a class="reference internal" href="#simmix.Simmix.write_to_graph" title="simmix.Simmix.write_to_graph"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_to_graph()</span></code></a></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -249,65 +299,42 @@ max-val&lt;float&gt;)</dd>
 <dt id="simmix.Simmix.choose">
 <code class="descname">choose</code><span class="sig-paren">(</span><em>data</em>, <em>out=None</em>, <em>layout=None</em>, <em>n=None</em>, <em>graph_coro=None</em>, <em>type=None</em>, <em>output=False</em>, <em>minimize=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.choose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.choose" title="Permalink to this definition">¶</a></dt>
 <dd><p>Choose in different manners building a similarity matrix.</p>
-<blockquote>
-<div><div class="math notranslate nohighlight">
-\[\sum_{i=1}^{\infty} x_{i}\]</div>
-<p>The similarity matrix is computed by a cartesian product of the two samples of expressions as two vectors and
-a vector valued function,</p>
-<blockquote>
-<div><div class="math notranslate nohighlight">
-\[\overrightarrow{f}(x_{1,n}, x_{2,m}) = \langle f_1(x_{1,n}, x_{2,m}), f_2(x{1,n}, x_{2,m}), \dots f_k(x_{1,n}, x_{2,m}) \]</div>
-</div></blockquote>
-</div></blockquote>
-<p>angle   </p>
-<blockquote>
-<div><p>the resulting matrix then is:</p>
-<img alt="_images/aslant_matrix.png" src="_images/aslant_matrix.png" />
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">param data:</th><td class="field-body"><p class="first">tuple of lists of expressions, meaning the dictionaries or what is compared for you</p>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">param out:</th><td class="field-body"><p class="first">defines the structure of the returned value
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> – tuple of lists of expressions, meaning the dictionaries or what is compared for you</li>
+<li><strong>out</strong> – defines the structure of the returned value
 default=None: the chosed expressions are returned
 ‘i’: only the indices
 ‘r’: only the indices of the right value are returned
 ‘2t’: pairs of tuples (for building a graph
-‘nx’: directed networkxgraph</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">param graph_coro:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body"><p class="first">graph_coroutine, that accepts a 3-tuple of two dictionaries and a <cite>type</cite> string</p>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">param type:</th><td class="field-body"><dl class="first docutils">
+‘nx’: directed networkxgraph</li>
+<li><strong>graph_coro</strong> – graph_coroutine, that accepts a 3-tuple of two dictionaries and a <cite>type</cite> string</li>
+<li><strong>type</strong> – <dl class="docutils">
 <dt>If using <cite>G</cite>, one has to specify the type-argument,</dt>
-<dd><ul class="first last simple">
+<dd><ul class="first last">
 <li>either in case of input lists as data a string,</li>
 <li>or a 3tuple <cite>(type_l_pair, type_r_pair, type_between)=type</cite> in case of input datatypes like the</li>
 </ul>
 </dd>
 </dl>
 <p>list-tuple-list-dict, that this module returns</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">param layout:</th><td class="field-body"><p class="first">default=None behavior like n=1
+</li>
+<li><strong>layout</strong> – default=None behavior like n=1
 ‘1:1’ means for each one element of the one expression is eactly one chosen from the other
-‘n:m’ for samples of n elements are fitting m other elements chosen from the other expression</p>
+‘n:m’ for samples of n elements are fitting m other elements chosen from the other expression</li>
+<li><strong>n</strong> – default=1
+count of best n solutions, also clusters of expressions of the one are chosen to fit to a cluster of the other</li>
+</ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">param n:</th><td class="field-body"><p class="first">default=1
-count of best n solutions, also clusters of expressions of the one are chosen to fit to a cluster of the other</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">return:</th><td class="field-body"><p class="first last">list of tuples of lists of ints or indexed expressions, according to the chosen ‘out’ parameter</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">list of tuples of lists of ints or indexed expressions, according to the chosen ‘out’ parameter</p>
 </td>
 </tr>
 </tbody>
 </table>
-</div></blockquote>
 </dd></dl>
 
 <dl class="method">
@@ -399,7 +426,7 @@ this key stands for contains a negation</p>
 
 <dl class="method">
 <dt id="simmix.Simmix.i_list">
-<code class="descname">i_list</code><span class="sig-paren">(</span><em>right_values</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.i_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.i_list" title="Permalink to this definition">¶</a></dt>
+<code class="descname">i_list</code><span class="sig-paren">(</span><em>left_value</em>, <em>right_values</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.i_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.i_list" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">

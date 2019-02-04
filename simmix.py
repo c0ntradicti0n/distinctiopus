@@ -75,9 +75,49 @@ def cartesian_product_itertools(arrays):
 
 
 class Simmix:
-    '''This module contains utils to overlap different similarity measures.'''
+    '''This module allows to overlap different similarity measures. Give it two lists or two lists of pairs of expressions and it find the ones, that belong together in a way, how you defined 'belonging together'. '''
+
     def __init__ (self, similarity_composition, n=1):
-        ''' Set up, which functions are taken to compute a similarity matrix to choose from
+        r''' Setup, which functions are taken to compute a similarity matrix to choose from some natural language expressions, that are already analysed in the manner of :mod:`~predicatrix2.Predication`.
+
+            Under the hood a similarity matrix is computed by a cartesian product of the two samples of expressions as
+            two vectors and a vector valued function,
+
+               .. math:: \overrightarrow{f}(x_{1,n}, x_{2,m}) = \langle f_1(x_{1,n}, x_{2,m}), f_2(x_{1,n}, x_{2,m}), \dots f_k(x_{1,n}, x_{2,m}) \rangle
+
+            The function matrix then is:
+
+            .. image:: /_static/doc_external/aslant_matrix.png
+
+            Then the sum of the results of the matrix are normalized by attaching two vectors for minimum and maximum of the functions to each of the planes.
+            Then the results are normalized.
+            And the added maximum and miminum vectors are taken off.
+
+            Then the matrix is weighted by building the scalar product.
+
+            .. math::
+
+                \overrightarrow{w} \bullet \sum D\overrightarrow{f}(\overrightarrow{x_1}, \overrightarrow{x_2})  \Delta n = \overrightarrow{w} \bullet
+                \begin{bmatrix}
+                     \sum_{n=1}^l f_n(x_{1,1}, x_{2,1}) & \sum_{n=1}^l f_n(x_{1,2}, x_{2,1}) & \cdots & \sum_{n=1}^l f_n(x_{1,x}, x_{2,1})\\
+                     \sum_{n=1}^l f_n(x_{1,1}, x_{2,2}) & \sum_{n=1}^l f_n(x_{1,2}, x_{2,2}) & \cdots & \sum_{n=1}^l f_n(x_{1,x}, x_{2,2})\\
+                      \vdots  & \vdots  & \ddots & \vdots  \\
+                     \sum_{n=1}^l f_n(x_{1,1}, x_{2,y}) & \sum_{n=1}^l f_n(x_{1,2}, x_{2,y}) & \cdots & \sum_{n=1}^l f_n(x_{1,x}, x_{2,y})
+                 \end{bmatrix}
+
+            You can set a range of valid results of the similarity functions. If the value for one function, the expression is excluded.
+
+            After this, one can adjust different modes, how to make a choice based on this similarity matrix.
+            Either to take exactly one with the maximal similarity, or to take the best n, or get an optimal 1:1 alignment.
+
+            And in the last there are different possibilities, how to get back the results.
+
+            * the expressions pairs, that are the chosen
+                - :func:`~simmix.Simmix.expressions_list`
+            * just the indices of the input expressions or just of the left resp. right expression list.
+                - :func:`~simmix.Simmix.expressions.i_list`
+            * write it into a graph, if you present a routinr for writing in a graph (a coroutine, to receive the result with `data=(yield) and send with `corou.send(data...)` send).
+                - :func:`~simmix.Simmix.write_to_graph`
 
             :param similarity_composition:
                 list of tuples (
@@ -131,6 +171,7 @@ class Simmix:
         :param maxim: maximum value
         :param maxim: minimum value
         :return: decorated function
+
         '''
         def wrapper(f):
             f.min = minim
@@ -161,18 +202,6 @@ class Simmix:
                minimize=False):
         '''Choose in different manners building a similarity matrix.
 
-
-        .. math:: \sum_{i=1}^{\\infty} x_{i}
-
-        The similarity matrix is computed by a cartesian product of the two samples of expressions as two vectors and
-        a vector valued function,
-
-           .. math:: \overrightarrow{f}(x_{1,n}, x_{2,m}) = \langle f_1(x_{1,n}, x_{2,m}), f_2(x{1,n}, x_{2,m}), \dots f_k(x_{1,n}, x_{2,m}) \rangle   \\
-
-        the resulting matrix then is:
-
-        .. image:: /_static/doc_external/aslant_matrix.png
-
         :param data:
             tuple of lists of expressions, meaning the dictionaries or what is compared for you
         :param out:
@@ -198,8 +227,8 @@ class Simmix:
             count of best n solutions, also clusters of expressions of the one are chosen to fit to a cluster of the other
         :return:
             list of tuples of lists of ints or indexed expressions, according to the chosen 'out' parameter
-        '''
 
+        '''
         exs1 = None
         exs2 = None
         self.beam = {}
@@ -335,23 +364,23 @@ class Simmix:
         if not out or out == 'ex':
             return Simmix.expressions_list(left_value, right_values, exs1, exs2)
         elif out == 'i':
-            return Simmix.i_list(left_value, right_values)
+            return self.i_list(left_value, right_values)
         elif out == 'r':
-            i_s = Simmix.i_list(left_value, right_values)
+            i_s = self.i_list(left_value, right_values)
             return Simmix.reduce_i_s_right_values(i_s)
         elif out == 'lx':
             return [exs1[i] for i in left_value]
         elif out == 'rx':
             return [exs1[i] for r in right_values for i in r]
         elif out == '2t':
-            i_s = Simmix.i_list(left_value, right_values)
+            i_s = self.i_list(left_value, right_values)
             return Simmix.reduce_i_s_pair_tuples(i_s)
         elif out == 'nx':
             if graph_coro == None:
                 raise ValueError("parameter graph_coro is required for use with a Graph!")
             return graph_coro
         elif out == '(i,ex)':
-            return (Simmix.i_list(left_value, right_values),
+            return (self.i_list(left_value, right_values),
                     Simmix.expressions_list(left_value, right_values, exs1, exs2))
         else:
             raise NotImplementedError("What the else could out be returned? Wrong parameter for 'out'")
@@ -376,7 +405,7 @@ class Simmix:
         return [([exs1[left_value[l]]], [exs2[r] for r in right_values[l]])
                   for l in range(len(left_value))]
 
-    def i_list (left_value, right_values):
+    def i_list (self, left_value, right_values):
         return [([left_value[l]], [r for r in right_values[l]])
                   for l in range(len(left_value))]
 

@@ -1,5 +1,14 @@
 from argumentatrix import Arguments
+from corutine_utils import coroutine
+from generator_tools import count_up
 from simmix import Simmix
+
+import networkx as nx
+import textwrap
+
+import logging
+logging.captureWarnings(True)
+logging.getLogger().setLevel(logging.INFO)
 
 
 class Subjects_and_aspects(Arguments):
@@ -32,6 +41,8 @@ class Subjects_and_aspects(Arguments):
         self.pattern_pair_ent = [(self.standard_entity_exs, self.standard_entity_exs)]
         self.pattern_pair_asp = [(self.standard_aspect_exs, self.standard_aspect_exs)]
 
+        self.subjasp_counter = count_up()
+
 
     def get_arguments(self, pred):
         ''' Gets the arguments of the predicate
@@ -57,7 +68,7 @@ class Subjects_and_aspects(Arguments):
             out='ex')
 
 
-    def annotate(self, opposed_pair_pair=None, graph_coro_subj_asp=None, graph_coro_arg_binding=None):
+    def annotate(self, opposed_pair_pair=None, graph_coro_subj_asp=None, graph_coro_arg_binding=None, paint_graph=True):
         ''' Annotates the correlations, that means expressions that are similar to each other and are distinct from the
             pair, that was found as excluding each other. For instance 'from the one side' and 'from the other side'.
 
@@ -78,6 +89,11 @@ class Subjects_and_aspects(Arguments):
             :param graph_coro_arg_binding: coroutine to connect subject and aspects to their predicates
 
         '''
+        if paint_graph:
+            G = nx.DiGraph()
+            put_into_nx = self.put_into_nx(general_kind='contradiction', G=G)
+            graph_coro_subj_asp = [graph_coro_subj_asp, put_into_nx ]
+
         oppo1, oppo2 = opposed_pair_pair
         poss_correlates1 = self.get_correlated(oppo1)
         poss_correlates2 = self.get_correlated(oppo2)
@@ -124,4 +140,85 @@ class Subjects_and_aspects(Arguments):
         graph_coro_arg_binding.send ((pred3, aspect1) + ('aspect',))
         graph_coro_arg_binding.send ((pred4, aspect2) + ('aspect',))
 
+        if paint_graph:
+            put_into_nx.send('draw')
+
         return subjects_aspects
+
+
+    def wrap (self, line):
+        return textwrap.fill(line, 20)
+
+    def add_possible_correlation_node (self, G, predicate_dict, kind=None):
+        key_co1 = kind + predicate_dict['key']
+        label = self.wrap(" ".join(predicate_dict['text']))
+        G.add_node (key_co1, label=label, kind=kind)
+
+    def add_correlation_edge (self, G, predicate_dict1, predicate_dict2, label=None, kind = None):
+        key_co1 = kind + predicate_dict1['key']
+        key_co2 = kind + predicate_dict2['key']
+        G.add_edge(key_co1, key_co2, label=label)
+
+    def add_determined_expression_nx(self, G, general_kind, special_kind, n1, n2):
+        ''' Throws node data into neo4j by expanding data as dictionary.
+
+            :param general_kind: Property "GeneralKind" in the GDB
+            :param special_kind: Property "SpecialKind" in the GDB ('anonym'/'negation')
+            :param n1: predicate dict 1
+            :param n2: predicate dict 2
+            :return:
+        '''
+        if isinstance(n1, list):
+            logging.warning("node data is list... taking first")
+            n1 = n1[0]
+        if isinstance(n2, list):
+            logging.warning("node data is list... taking first")
+            n2 = n2[0]
+
+        def add_nx_node(G, n):
+            G.add_node (n['id'],
+                        s_id=n['s_id'],
+                        label=" ".join(n['text']).replace("'", "") )
+        def add_nx_edge(G, n1, n2):
+            G.add_edge (n1['id'], n2['id'],
+                        general_kind=general_kind,
+                        special_kind=special_kind,
+                        label = general_kind + ' ' + special_kind )
+
+        add_nx_node(G,n1)
+        add_nx_node(G,n1)
+        add_nx_edge(G,n1,n2)
+
+
+    @coroutine
+    def put_into_nx(self, G, general_kind):
+        ''' This returns a subgraph of the graph, selected by the 'general_kind' param.
+
+        :param general_kind: some string property of all members, that are added by this function
+        :return: list of Predicate-dict-2tuples
+
+        '''
+        while True:
+            data = (yield)
+            if isinstance(data, tuple) and len(data) == 3:
+                n1, n2, special_kind = data
+                self.add_determined_expression_nx(G, general_kind, special_kind, n1, n2)
+            elif isinstance(data, str) and data=='draw':
+                self.draw_key_graphs(G)
+            else:
+                logging.error('Value could not be set because I don\'t know how to deal with the type')
+                raise ValueError('Value could not be set because I don\'t know how to deal with the type')
+        return None
+
+
+    def draw_key_graphs(self, G):
+        import pylab as plt
+        path = './img/subject_aspects' +  str(next(self.subjasp_counter)) + ".svg"
+
+        G.graph['graph'] = {'rankdir': 'LR','splines':'line'}
+        G.graph['edges'] = {'arrowsize': '4.0'}
+
+        A = nx.drawing.nx_agraph.to_agraph(G)
+        A.layout('dot')
+        A.draw(path)
+        plt.clf()

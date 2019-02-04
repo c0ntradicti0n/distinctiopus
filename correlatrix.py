@@ -88,26 +88,24 @@ class Correlation(Pairix):
             key_co2 = kind + correlated2['id']
             dig.add_edge(key_co1, key_co2, label=label)
 
-
-
         for ex1, ex2 in [contradiction]:
             add_possible_correlation_node(ex1[0], kind = 'contra')
             add_possible_correlation_node(ex2[0], kind = 'contra')
-            add_possible_correlation_edge(ex1[0], ex2[0], label="contradiction", kind="contra")
+            add_possible_correlation_edge(ex1[0], ex2[0], label="contradicting", kind="contra")
 
         for ex1, ex2 in possible_correlations:
             add_possible_correlation_node(ex1[0], kind = 'poss_new')
             add_possible_correlation_node(ex2[0], kind = 'poss_new')
-            add_possible_correlation_edge(ex1[0], ex2[0], label="possible new", kind="poss_new")
+            add_possible_correlation_edge(ex1[0], ex2[0], label="possibly correlated", kind="poss_new")
 
         def add_edge_between (contradicting_pred, correlated_pred):
             key_corr  = "poss_new" + correlated_pred    [0][0][0]['id']
             key_trigg = "contra"   + contradicting_pred [0][0][0]['id']
-            dig.add_edge (key_corr, key_trigg, label = "correl")
+            dig.add_edge (key_corr, key_trigg, label = "now opposed")
 
             key_corr  = "poss_new" + correlated_pred    [0][1][0]['id']
             key_trigg = "contra"   + contradicting_pred [0][1][0]['id']
-            dig.add_edge (key_corr, key_trigg, label = "correl")
+            dig.add_edge (key_corr, key_trigg, label = "found correlation")
 
         for contra, correl in correlation:
            add_edge_between(contra, correl)
@@ -116,7 +114,6 @@ class Correlation(Pairix):
 
     def draw_correlations (self, G, source, target):
         import pylab as P
-        import textwrap
 
         path = './img/contradiction -- new correlation'+ source +" -- "+ target +".svg"
 
@@ -131,7 +128,7 @@ class Correlation(Pairix):
                         name="cluster1",
                         style='filled',
                         color='lightgrey',
-                        label='found contradictions')
+                        label='Found Contradictions')
 
         # Add correlations to graph as cluster
         nbunch_pn =[n for n, d in G.nodes(data='kind') if d == 'poss_new']
@@ -139,7 +136,7 @@ class Correlation(Pairix):
                         name="cluster2",
                         style='filled',
                         color='lightgrey',
-                        label='possible new correlations')
+                        label='Possible New Correlations')
 
         A.layout('dot')
 

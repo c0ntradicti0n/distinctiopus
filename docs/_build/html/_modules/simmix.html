@@ -220,9 +220,49 @@
 
 
 <div class="viewcode-block" id="Simmix"><a class="viewcode-back" href="../simmix.html#simmix.Simmix">[docs]</a><span class="k">class</span> <span class="nc">Simmix</span><span class="p">:</span>
-    <span class="sd">&#39;&#39;&#39;This module contains utils to overlap different similarity measures.&#39;&#39;&#39;</span>
+    <span class="sd">&#39;&#39;&#39;This module allows to overlap different similarity measures. Give it two lists or two lists of pairs of expressions and it find the ones, that belong together in a way, how you defined &#39;belonging together&#39;. &#39;&#39;&#39;</span>
+
 <div class="viewcode-block" id="Simmix.__init__"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">similarity_composition</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Set up, which functions are taken to compute a similarity matrix to choose from</span>
+        <span class="sa">r</span><span class="sd">&#39;&#39;&#39; Setup, which functions are taken to compute a similarity matrix to choose from some natural language expressions, that are already analysed in the manner of :mod:`~predicatrix2.Predication`.</span>
+
+<span class="sd">            Under the hood a similarity matrix is computed by a cartesian product of the two samples of expressions as</span>
+<span class="sd">            two vectors and a vector valued function,</span>
+
+<span class="sd">               .. math:: \overrightarrow{f}(x_{1,n}, x_{2,m}) = \langle f_1(x_{1,n}, x_{2,m}), f_2(x_{1,n}, x_{2,m}), \dots f_k(x_{1,n}, x_{2,m}) \rangle</span>
+
+<span class="sd">            The function matrix then is:</span>
+
+<span class="sd">            .. image:: /_static/doc_external/aslant_matrix.png</span>
+
+<span class="sd">            Then the sum of the results of the matrix are normalized by attaching two vectors for minimum and maximum of the functions to each of the planes.</span>
+<span class="sd">            Then the results are normalized.</span>
+<span class="sd">            And the added maximum and miminum vectors are taken off.</span>
+
+<span class="sd">            Then the matrix is weighted by building the scalar product.</span>
+
+<span class="sd">            .. math::</span>
+
+<span class="sd">                \overrightarrow{w} \bullet \sum D\overrightarrow{f}(\overrightarrow{x_1}, \overrightarrow{x_2})  \Delta n = \overrightarrow{w} \bullet</span>
+<span class="sd">                \begin{bmatrix}</span>
+<span class="sd">                     \sum_{n=1}^l f_n(x_{1,1}, x_{2,1}) &amp; \sum_{n=1}^l f_n(x_{1,2}, x_{2,1}) &amp; \cdots &amp; \sum_{n=1}^l f_n(x_{1,x}, x_{2,1})\\</span>
+<span class="sd">                     \sum_{n=1}^l f_n(x_{1,1}, x_{2,2}) &amp; \sum_{n=1}^l f_n(x_{1,2}, x_{2,2}) &amp; \cdots &amp; \sum_{n=1}^l f_n(x_{1,x}, x_{2,2})\\</span>
+<span class="sd">                      \vdots  &amp; \vdots  &amp; \ddots &amp; \vdots  \\</span>
+<span class="sd">                     \sum_{n=1}^l f_n(x_{1,1}, x_{2,y}) &amp; \sum_{n=1}^l f_n(x_{1,2}, x_{2,y}) &amp; \cdots &amp; \sum_{n=1}^l f_n(x_{1,x}, x_{2,y})</span>
+<span class="sd">                 \end{bmatrix}</span>
+
+<span class="sd">            You can set a range of valid results of the similarity functions. If the value for one function, the expression is excluded.</span>
+
+<span class="sd">            After this, one can adjust different modes, how to make a choice based on this similarity matrix.</span>
+<span class="sd">            Either to take exactly one with the maximal similarity, or to take the best n, or get an optimal 1:1 alignment.</span>
+
+<span class="sd">            And in the last there are different possibilities, how to get back the results.</span>
+
+<span class="sd">            * the expressions pairs, that are the chosen</span>
+<span class="sd">                - :func:`~simmix.Simmix.expressions_list`</span>
+<span class="sd">            * just the indices of the input expressions or just of the left resp. right expression list.</span>
+<span class="sd">                - :func:`~simmix.Simmix.expressions.i_list`</span>
+<span class="sd">            * write it into a graph, if you present a routinr for writing in a graph (a coroutine, to receive the result with `data=(yield) and send with `corou.send(data...)` send).</span>
+<span class="sd">                - :func:`~simmix.Simmix.write_to_graph`</span>
 
 <span class="sd">            :param similarity_composition:</span>
 <span class="sd">                list of tuples (</span>
@@ -276,6 +316,7 @@
 <span class="sd">        :param maxim: maximum value</span>
 <span class="sd">        :param maxim: minimum value</span>
 <span class="sd">        :return: decorated function</span>
+
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
             <span class="n">f</span><span class="o">.</span><span class="n">min</span> <span class="o">=</span> <span class="n">minim</span>
@@ -306,18 +347,6 @@
                <span class="n">minimize</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Choose in different manners building a similarity matrix.</span>
 
-
-<span class="sd">        .. math:: \sum_{i=1}^{\\infty} x_{i}</span>
-
-<span class="sd">        The similarity matrix is computed by a cartesian product of the two samples of expressions as two vectors and</span>
-<span class="sd">        a vector valued function,</span>
-
-<span class="sd">           .. math:: \overrightarrow{f}(x_{1,n}, x_{2,m}) = \langle f_1(x_{1,n}, x_{2,m}), f_2(x{1,n}, x_{2,m}), \dots f_k(x_{1,n}, x_{2,m}) \rangle   \\</span>
-
-<span class="sd">        the resulting matrix then is:</span>
-
-<span class="sd">        .. image:: /_static/doc_external/aslant_matrix.png</span>
-
 <span class="sd">        :param data:</span>
 <span class="sd">            tuple of lists of expressions, meaning the dictionaries or what is compared for you</span>
 <span class="sd">        :param out:</span>
@@ -343,8 +372,8 @@
 <span class="sd">            count of best n solutions, also clusters of expressions of the one are chosen to fit to a cluster of the other</span>
 <span class="sd">        :return:</span>
 <span class="sd">            list of tuples of lists of ints or indexed expressions, according to the chosen &#39;out&#39; parameter</span>
-<span class="sd">        &#39;&#39;&#39;</span>
 
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">exs1</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">exs2</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">beam</span> <span class="o">=</span> <span class="p">{}</span>
@@ -480,23 +509,23 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">out</span> <span class="ow">or</span> <span class="n">out</span> <span class="o">==</span> <span class="s1">&#39;ex&#39;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">expressions_list</span><span class="p">(</span><span class="n">left_value</span><span class="p">,</span> <span class="n">right_values</span><span class="p">,</span> <span class="n">exs1</span><span class="p">,</span> <span class="n">exs2</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">out</span> <span class="o">==</span> <span class="s1">&#39;i&#39;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">i_list</span><span class="p">(</span><span class="n">left_value</span><span class="p">,</span> <span class="n">right_values</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">i_list</span><span class="p">(</span><span class="n">left_value</span><span class="p">,</span> <span class="n">right_values</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">out</span> <span class="o">==</span> <span class="s1">&#39;r&#39;</span><span class="p">:</span>
-            <span class="n">i_s</span> <span class="o">=</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">i_list</span><span class="p">(</span><span class="n">left_value</span><span class="p">,</span> <span class="n">right_values</span><span class="p">)</span>
+            <span class="n">i_s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">i_list</span><span class="p">(</span><span class="n">left_value</span><span class="p">,</span> <span class="n">right_values</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">reduce_i_s_right_values</span><span class="p">(</span><span class="n">i_s</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">out</span> <span class="o">==</span> <span class="s1">&#39;lx&#39;</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">exs1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">left_value</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">out</span> <span class="o">==</span> <span class="s1">&#39;rx&#39;</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">exs1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">right_values</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">r</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">out</span> <span class="o">==</span> <span class="s1">&#39;2t&#39;</span><span class="p">:</span>
-            <span class="n">i_s</span> <span class="o">=</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">i_list</span><span class="p">(</span><span class="n">left_value</span><span class="p">,</span> <span class="n">right_values</span><span class="p">)</span>
+            <span class="n">i_s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">i_list</span><span class="p">(</span><span class="n">left_value</span><span class="p">,</span> <span class="n">right_values</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">reduce_i_s_pair_tuples</span><span class="p">(</span><span class="n">i_s</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">out</span> <span class="o">==</span> <span class="s1">&#39;nx&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">graph_coro</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;parameter graph_coro is required for use with a Graph!&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">graph_coro</span>
         <span class="k">elif</span> <span class="n">out</span> <span class="o">==</span> <span class="s1">&#39;(i,ex)&#39;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">(</span><span class="n">Simmix</span><span class="o">.</span><span class="n">i_list</span><span class="p">(</span><span class="n">left_value</span><span class="p">,</span> <span class="n">right_values</span><span class="p">),</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">i_list</span><span class="p">(</span><span class="n">left_value</span><span class="p">,</span> <span class="n">right_values</span><span class="p">),</span>
                     <span class="n">Simmix</span><span class="o">.</span><span class="n">expressions_list</span><span class="p">(</span><span class="n">left_value</span><span class="p">,</span> <span class="n">right_values</span><span class="p">,</span> <span class="n">exs1</span><span class="p">,</span> <span class="n">exs2</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;What the else could out be returned? Wrong parameter for &#39;out&#39;&quot;</span><span class="p">)</span></div>
@@ -520,7 +549,8 @@
 <div class="viewcode-block" id="Simmix.expressions_list"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.expressions_list">[docs]</a>    <span class="k">def</span> <span class="nf">expressions_list</span> <span class="p">(</span><span class="n">left_value</span><span class="p">,</span> <span class="n">right_values</span><span class="p">,</span> <span class="n">exs1</span><span class="p">,</span> <span class="n">exs2</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">[([</span><span class="n">exs1</span><span class="p">[</span><span class="n">left_value</span><span class="p">[</span><span class="n">l</span><span class="p">]]],</span> <span class="p">[</span><span class="n">exs2</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">right_values</span><span class="p">[</span><span class="n">l</span><span class="p">]])</span>
                   <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">left_value</span><span class="p">))]</span></div>
-<div class="viewcode-block" id="Simmix.i_list"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.i_list">[docs]</a>    <span class="k">def</span> <span class="nf">i_list</span> <span class="p">(</span><span class="n">left_value</span><span class="p">,</span> <span class="n">right_values</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Simmix.i_list"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.i_list">[docs]</a>    <span class="k">def</span> <span class="nf">i_list</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left_value</span><span class="p">,</span> <span class="n">right_values</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">[([</span><span class="n">left_value</span><span class="p">[</span><span class="n">l</span><span class="p">]],</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">right_values</span><span class="p">[</span><span class="n">l</span><span class="p">]])</span>
                   <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">left_value</span><span class="p">))]</span></div>
 

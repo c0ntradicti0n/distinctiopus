@@ -135,9 +135,15 @@ class Contradiction:
             n2 = n2[0]
 
         def add_nx_node(G, n):
-            G.add_node (n['id'], s_id=n['s_id'], text=" ".join(n['text']).replace("'", "") )
+            G.add_node (n['id'],
+                        s_id=n['s_id'],
+                        label=" ".join(n['text']).replace("'", "") )
         def add_nx_edge(G, n1, n2):
-            G.add_edge (n1['id'], n2['id'], general_kind=general_kind, special_kind=special_kind )
+            G.add_edge (n1['id'], n2['id'],
+                        general_kind=general_kind,
+                        special_kind=special_kind,
+                        label = general_kind + ' ' + special_kind )
+
         add_nx_node(G,n1)
         add_nx_node(G,n1)
         add_nx_edge(G,n1,n2)
@@ -168,7 +174,7 @@ class Contradiction:
         import pylab as plt
         path = './img/contradicting_key_correlation' +  str(next(self.contra_counter)) + ".svg"
 
-        G.graph['graph'] = {'rankdir': 'LR','splines':'curved'}
+        G.graph['graph'] = {'rankdir': 'LR','splines':'line'}
         G.graph['edges'] = {'arrowsize': '4.0'}
 
         A = nx.drawing.nx_agraph.to_agraph(G)
