@@ -9,58 +9,25 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 295)">
 <polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-295 1143.3,-295 1143.3,4 -4,4"/>
 <g id="clust1" class="cluster">
-<title>cluster1</title>
-<polygon fill="#d3d3d3" stroke="#d3d3d3" points="642.17,-11 642.17,-168 1139.3,-168 1139.3,-11 642.17,-11"/>
-<text text-anchor="middle" x="890.75" y="-152.8" font-family="Times,serif" font-size="14.00" fill="#000000">Found Contradictions</text>
-</g>
-<g id="clust2" class="cluster">
 <title>cluster2</title>
 <polygon fill="#d3d3d3" stroke="#d3d3d3" points="0,-20 0,-291 528.17,-291 528.17,-20 0,-20"/>
 <text text-anchor="middle" x="264.08" y="-275.8" font-family="Times,serif" font-size="14.00" fill="#000000">Possible New Correlations</text>
 </g>
-<!-- contra36 -->
-<g id="node1" class="node">
-<title>contra36</title>
-<ellipse fill="none" stroke="#000000" cx="742.8" cy="-84" rx="92.7622" ry="48.1667"/>
-<text text-anchor="middle" x="742.8" y="-102.8" font-family="Times,serif" font-size="14.00" fill="#000000">Examples of the</text>
-<text text-anchor="middle" x="742.8" y="-87.8" font-family="Times,serif" font-size="14.00" fill="#000000">former are such</text>
-<text text-anchor="middle" x="742.8" y="-72.8" font-family="Times,serif" font-size="14.00" fill="#000000">expressions as Man ,</text>
-<text text-anchor="middle" x="742.8" y="-57.8" font-family="Times,serif" font-size="14.00" fill="#000000">Ox , Runs , Wins</text>
-</g>
-<!-- contra37 -->
-<g id="node2" class="node">
-<title>contra37</title>
-<ellipse fill="none" stroke="#000000" cx="1056.4" cy="-78" rx="75" ry="58.8803"/>
-<text text-anchor="middle" x="1056.4" y="-104.3" font-family="Times,serif" font-size="14.00" fill="#000000">Examples of the</text>
-<text text-anchor="middle" x="1056.4" y="-89.3" font-family="Times,serif" font-size="14.00" fill="#000000">latter are such</text>
-<text text-anchor="middle" x="1056.4" y="-74.3" font-family="Times,serif" font-size="14.00" fill="#000000">expressions as</text>
-<text text-anchor="middle" x="1056.4" y="-59.3" font-family="Times,serif" font-size="14.00" fill="#000000">Themanruns ,</text>
-<text text-anchor="middle" x="1056.4" y="-44.3" font-family="Times,serif" font-size="14.00" fill="#000000">Themanwins , .</text>
-</g>
-<!-- contra36&#45;&gt;contra37 -->
-<g id="edge1" class="edge">
-<title>contra36&#45;&gt;contra37</title>
-<path fill="none" stroke="#000000" d="M835.63,-81.852C856.41,-81.371 872.43,-81 872.43,-81 872.43,-81 922.99,-80.176 971.09,-79.391"/>
-<polygon fill="#000000" stroke="#000000" points="971.3583,-82.8872 981.3,-79.225 971.2444,-75.8881 971.3583,-82.8872"/>
-<text text-anchor="middle" x="908.43" y="-84.8" font-family="Times,serif" font-size="14.00" fill="#000000">contradicting</text>
+<g id="clust2" class="cluster">
+<title>cluster1</title>
+<polygon fill="#d3d3d3" stroke="#d3d3d3" points="642.17,-11 642.17,-168 1139.3,-168 1139.3,-11 642.17,-11"/>
+<text text-anchor="middle" x="890.75" y="-152.8" font-family="Times,serif" font-size="14.00" fill="#000000">Found Contradictions</text>
 </g>
 <!-- poss_new17 -->
-<g id="node3" class="node">
+<g id="node1" class="node">
 <title>poss_new17</title>
 <ellipse fill="none" stroke="#000000" cx="100.63" cy="-180" rx="87.7537" ry="37.5"/>
 <text text-anchor="middle" x="100.63" y="-191.3" font-family="Times,serif" font-size="14.00" fill="#000000">Examples of the</text>
 <text text-anchor="middle" x="100.63" y="-176.3" font-family="Times,serif" font-size="14.00" fill="#000000">former are such</text>
 <text text-anchor="middle" x="100.63" y="-161.3" font-family="Times,serif" font-size="14.00" fill="#000000">expressions as Man</text>
 </g>
-<!-- poss_new17&#45;&gt;contra37 -->
-<g id="edge6" class="edge">
-<title>poss_new17&#45;&gt;contra37</title>
-<path fill="none" stroke="#000000" d="M171.76,-157.92C316.6,-112.96 632.17,-15 632.17,-15 632.17,-15 848.61,-47.144 972.29,-65.511"/>
-<polygon fill="#000000" stroke="#000000" points="972.0843,-69.0188 982.49,-67.026 973.1128,-62.0947 972.0843,-69.0188"/>
-<text text-anchor="middle" x="585.17" y="-3.8" font-family="Times,serif" font-size="14.00" fill="#000000">found correlation</text>
-</g>
 <!-- poss_new12 -->
-<g id="node4" class="node">
+<g id="node2" class="node">
 <title>poss_new12</title>
 <ellipse fill="none" stroke="#000000" cx="445.22" cy="-212" rx="75" ry="48.1667"/>
 <text text-anchor="middle" x="445.22" y="-230.8" font-family="Times,serif" font-size="14.00" fill="#000000">Examples of the</text>
@@ -69,11 +36,44 @@
 <text text-anchor="middle" x="445.22" y="-185.8" font-family="Times,serif" font-size="14.00" fill="#000000">Themanruns</text>
 </g>
 <!-- poss_new17&#45;&gt;poss_new12 -->
-<g id="edge2" class="edge">
+<g id="edge1" class="edge">
 <title>poss_new17&#45;&gt;poss_new12</title>
 <path fill="none" stroke="#000000" d="M188.25,-181.88C254.19,-183.3 333.26,-185 333.26,-185 333.26,-185 347.18,-188.36 365.2,-192.7"/>
 <polygon fill="#000000" stroke="#000000" points="364.4083,-196.1093 374.95,-195.05 366.0485,-189.3042 364.4083,-196.1093"/>
 <text text-anchor="middle" x="281.76" y="-173.8" font-family="Times,serif" font-size="14.00" fill="#000000">possibly correlated</text>
+</g>
+<!-- contra37 -->
+<g id="node6" class="node">
+<title>contra37</title>
+<ellipse fill="none" stroke="#000000" cx="1056.4" cy="-78" rx="75" ry="58.8803"/>
+<text text-anchor="middle" x="1056.4" y="-104.3" font-family="Times,serif" font-size="14.00" fill="#000000">Examples of the</text>
+<text text-anchor="middle" x="1056.4" y="-89.3" font-family="Times,serif" font-size="14.00" fill="#000000">latter are such</text>
+<text text-anchor="middle" x="1056.4" y="-74.3" font-family="Times,serif" font-size="14.00" fill="#000000">expressions as</text>
+<text text-anchor="middle" x="1056.4" y="-59.3" font-family="Times,serif" font-size="14.00" fill="#000000">Themanruns ,</text>
+<text text-anchor="middle" x="1056.4" y="-44.3" font-family="Times,serif" font-size="14.00" fill="#000000">Themanwins , .</text>
+</g>
+<!-- poss_new17&#45;&gt;contra37 -->
+<g id="edge6" class="edge">
+<title>poss_new17&#45;&gt;contra37</title>
+<path fill="none" stroke="#000000" d="M171.76,-157.92C316.6,-112.96 632.17,-15 632.17,-15 632.17,-15 848.61,-47.144 972.29,-65.511"/>
+<polygon fill="#000000" stroke="#000000" points="972.0843,-69.0188 982.49,-67.026 973.1128,-62.0947 972.0843,-69.0188"/>
+<text text-anchor="middle" x="585.17" y="-3.8" font-family="Times,serif" font-size="14.00" fill="#000000">found correlation</text>
+</g>
+<!-- poss_new12&#45;&gt;poss_new17 -->
+<g id="edge2" class="edge">
+<title>poss_new12&#45;&gt;poss_new17</title>
+<path fill="none" stroke="#000000" d="M370.34,-215.14C308.3,-217.73 230.26,-221 230.26,-221 230.26,-221 207.48,-213.79 181.02,-205.42"/>
+<polygon fill="#000000" stroke="#000000" points="181.7298,-201.9738 171.14,-202.3 179.6218,-208.6489 181.7298,-201.9738"/>
+<text text-anchor="middle" x="281.76" y="-224.8" font-family="Times,serif" font-size="14.00" fill="#000000">possibly correlated</text>
+</g>
+<!-- contra36 -->
+<g id="node5" class="node">
+<title>contra36</title>
+<ellipse fill="none" stroke="#000000" cx="742.8" cy="-84" rx="92.7622" ry="48.1667"/>
+<text text-anchor="middle" x="742.8" y="-102.8" font-family="Times,serif" font-size="14.00" fill="#000000">Examples of the</text>
+<text text-anchor="middle" x="742.8" y="-87.8" font-family="Times,serif" font-size="14.00" fill="#000000">former are such</text>
+<text text-anchor="middle" x="742.8" y="-72.8" font-family="Times,serif" font-size="14.00" fill="#000000">expressions as Man ,</text>
+<text text-anchor="middle" x="742.8" y="-57.8" font-family="Times,serif" font-size="14.00" fill="#000000">Ox , Runs , Wins</text>
 </g>
 <!-- poss_new12&#45;&gt;contra36 -->
 <g id="edge7" class="edge">
@@ -82,15 +82,8 @@
 <polygon fill="#000000" stroke="#000000" points="663.5504,-121.9005 671.35,-114.73 660.7811,-115.4716 663.5504,-121.9005"/>
 <text text-anchor="middle" x="585.17" y="-173.8" font-family="Times,serif" font-size="14.00" fill="#000000">now opposed</text>
 </g>
-<!-- poss_new12&#45;&gt;poss_new17 -->
-<g id="edge3" class="edge">
-<title>poss_new12&#45;&gt;poss_new17</title>
-<path fill="none" stroke="#000000" d="M370.34,-215.14C308.3,-217.73 230.26,-221 230.26,-221 230.26,-221 207.48,-213.79 181.02,-205.42"/>
-<polygon fill="#000000" stroke="#000000" points="181.7298,-201.9738 171.14,-202.3 179.6218,-208.6489 181.7298,-201.9738"/>
-<text text-anchor="middle" x="281.76" y="-224.8" font-family="Times,serif" font-size="14.00" fill="#000000">possibly correlated</text>
-</g>
 <!-- poss_new36 -->
-<g id="node5" class="node">
+<g id="node3" class="node">
 <title>poss_new36</title>
 <ellipse fill="none" stroke="#000000" cx="100.63" cy="-76" rx="92.7622" ry="48.1667"/>
 <text text-anchor="middle" x="100.63" y="-94.8" font-family="Times,serif" font-size="14.00" fill="#000000">Examples of the</text>
@@ -99,7 +92,7 @@
 <text text-anchor="middle" x="100.63" y="-49.8" font-family="Times,serif" font-size="14.00" fill="#000000">Ox , Runs , Wins</text>
 </g>
 <!-- poss_new37 -->
-<g id="node6" class="node">
+<g id="node4" class="node">
 <title>poss_new37</title>
 <ellipse fill="none" stroke="#000000" cx="445.22" cy="-87" rx="75" ry="58.8803"/>
 <text text-anchor="middle" x="445.22" y="-113.3" font-family="Times,serif" font-size="14.00" fill="#000000">Examples of the</text>
@@ -109,18 +102,25 @@
 <text text-anchor="middle" x="445.22" y="-53.3" font-family="Times,serif" font-size="14.00" fill="#000000">Themanwins , .</text>
 </g>
 <!-- poss_new36&#45;&gt;poss_new37 -->
-<g id="edge4" class="edge">
+<g id="edge3" class="edge">
 <title>poss_new36&#45;&gt;poss_new37</title>
 <path fill="none" stroke="#000000" d="M193.58,-76.4C258.37,-76.678 333.26,-77 333.26,-77 333.26,-77 344.74,-78.026 360.35,-79.42"/>
 <polygon fill="#000000" stroke="#000000" points="360.2683,-82.9265 370.54,-80.33 360.891,-75.9543 360.2683,-82.9265"/>
 <text text-anchor="middle" x="281.76" y="-65.8" font-family="Times,serif" font-size="14.00" fill="#000000">possibly correlated</text>
 </g>
 <!-- poss_new37&#45;&gt;poss_new36 -->
-<g id="edge5" class="edge">
+<g id="edge4" class="edge">
 <title>poss_new37&#45;&gt;poss_new36</title>
 <path fill="none" stroke="#000000" d="M370.94,-95.984C308.81,-103.5 230.26,-113 230.26,-113 230.26,-113 213.4,-108.19 191.83,-102.03"/>
 <polygon fill="#000000" stroke="#000000" points="192.5665,-98.6005 181.99,-99.223 190.6462,-105.332 192.5665,-98.6005"/>
 <text text-anchor="middle" x="281.76" y="-116.8" font-family="Times,serif" font-size="14.00" fill="#000000">possibly correlated</text>
+</g>
+<!-- contra36&#45;&gt;contra37 -->
+<g id="edge5" class="edge">
+<title>contra36&#45;&gt;contra37</title>
+<path fill="none" stroke="#000000" d="M835.63,-81.852C856.41,-81.371 872.43,-81 872.43,-81 872.43,-81 922.99,-80.176 971.09,-79.391"/>
+<polygon fill="#000000" stroke="#000000" points="971.3583,-82.8872 981.3,-79.225 971.2444,-75.8881 971.3583,-82.8872"/>
+<text text-anchor="middle" x="908.43" y="-84.8" font-family="Times,serif" font-size="14.00" fill="#000000">contradicting</text>
 </g>
 </g>
 </svg>

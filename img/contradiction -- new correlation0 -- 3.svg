@@ -9,86 +9,65 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 388)">
 <polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-388 1024.3,-388 1024.3,4 -4,4"/>
 <g id="clust1" class="cluster">
-<title>cluster1</title>
-<polygon fill="#d3d3d3" stroke="#d3d3d3" points="290.02,0 290.02,-93 1020.3,-93 1020.3,0 290.02,0"/>
-<text text-anchor="middle" x="655.17" y="-77.8" font-family="Times,serif" font-size="14.00" fill="#000000">Found Contradictions</text>
-</g>
-<g id="clust2" class="cluster">
 <title>cluster2</title>
 <polygon fill="#d3d3d3" stroke="#d3d3d3" points="0,-101 0,-384 709.3,-384 709.3,-101 0,-101"/>
 <text text-anchor="middle" x="354.65" y="-368.8" font-family="Times,serif" font-size="14.00" fill="#000000">Possible New Correlations</text>
 </g>
-<!-- contra0 -->
-<g id="node1" class="node">
-<title>contra0</title>
-<ellipse fill="none" stroke="#000000" cx="388.53" cy="-35" rx="90.5" ry="27"/>
-<text text-anchor="middle" x="388.53" y="-38.8" font-family="Times,serif" font-size="14.00" fill="#000000">Forms of speech are</text>
-<text text-anchor="middle" x="388.53" y="-23.8" font-family="Times,serif" font-size="14.00" fill="#000000">either simple</text>
-</g>
-<!-- contra3 -->
-<g id="node2" class="node">
-<title>contra3</title>
-<ellipse fill="none" stroke="#000000" cx="921.81" cy="-35" rx="90.5" ry="27"/>
-<text text-anchor="middle" x="921.81" y="-38.8" font-family="Times,serif" font-size="14.00" fill="#000000">Forms of speech are</text>
-<text text-anchor="middle" x="921.81" y="-23.8" font-family="Times,serif" font-size="14.00" fill="#000000">or composite</text>
-</g>
-<!-- contra0&#45;&gt;contra3 -->
-<g id="edge1" class="edge">
-<title>contra0&#45;&gt;contra3</title>
-<path fill="none" stroke="#000000" d="M479.25,-35C525.73,-35 572.67,-35 572.67,-35 572.67,-35 717.72,-35 820.83,-35"/>
-<polygon fill="#000000" stroke="#000000" points="820.99,-38.5001 830.99,-35 820.99,-31.5001 820.99,-38.5001"/>
-<text text-anchor="middle" x="608.67" y="-38.8" font-family="Times,serif" font-size="14.00" fill="#000000">contradicting</text>
+<g id="clust2" class="cluster">
+<title>cluster1</title>
+<polygon fill="#d3d3d3" stroke="#d3d3d3" points="290.02,0 290.02,-93 1020.3,-93 1020.3,0 290.02,0"/>
+<text text-anchor="middle" x="655.17" y="-77.8" font-family="Times,serif" font-size="14.00" fill="#000000">Found Contradictions</text>
 </g>
 <!-- poss_new9 -->
-<g id="node3" class="node">
+<g id="node1" class="node">
 <title>poss_new9</title>
 <ellipse fill="none" stroke="#000000" cx="98.51" cy="-335" rx="69.5877" ry="18"/>
 <text text-anchor="middle" x="98.51" y="-331.3" font-family="Times,serif" font-size="14.00" fill="#000000">Forms of speech</text>
 </g>
 <!-- poss_new34 -->
-<g id="node4" class="node">
+<g id="node2" class="node">
 <title>poss_new34</title>
 <ellipse fill="none" stroke="#000000" cx="608.67" cy="-326" rx="75" ry="27"/>
 <text text-anchor="middle" x="608.67" y="-329.8" font-family="Times,serif" font-size="14.00" fill="#000000">Examples of the</text>
 <text text-anchor="middle" x="608.67" y="-314.8" font-family="Times,serif" font-size="14.00" fill="#000000">former</text>
 </g>
 <!-- poss_new9&#45;&gt;poss_new34 -->
-<g id="edge2" class="edge">
+<g id="edge1" class="edge">
 <title>poss_new9&#45;&gt;poss_new34</title>
 <path fill="none" stroke="#000000" d="M168.14,-333.54C238.54,-332.06 337.03,-330 337.03,-330 337.03,-330 443.98,-328.43 523.66,-327.25"/>
 <polygon fill="#000000" stroke="#000000" points="523.7733,-330.7488 533.72,-327.1 523.6689,-323.7496 523.7733,-330.7488"/>
 <text text-anchor="middle" x="388.53" y="-333.8" font-family="Times,serif" font-size="14.00" fill="#000000">possibly correlated</text>
 </g>
 <!-- poss_new0 -->
-<g id="node5" class="node">
+<g id="node3" class="node">
 <title>poss_new0</title>
 <ellipse fill="none" stroke="#000000" cx="98.51" cy="-272" rx="90.5" ry="27"/>
 <text text-anchor="middle" x="98.51" y="-275.8" font-family="Times,serif" font-size="14.00" fill="#000000">Forms of speech are</text>
 <text text-anchor="middle" x="98.51" y="-260.8" font-family="Times,serif" font-size="14.00" fill="#000000">either simple</text>
 </g>
 <!-- poss_new3 -->
-<g id="node6" class="node">
+<g id="node4" class="node">
 <title>poss_new3</title>
 <ellipse fill="none" stroke="#000000" cx="608.67" cy="-253" rx="90.5" ry="27"/>
 <text text-anchor="middle" x="608.67" y="-256.8" font-family="Times,serif" font-size="14.00" fill="#000000">Forms of speech are</text>
 <text text-anchor="middle" x="608.67" y="-241.8" font-family="Times,serif" font-size="14.00" fill="#000000">or composite</text>
 </g>
 <!-- poss_new0&#45;&gt;poss_new3 -->
-<g id="edge3" class="edge">
+<g id="edge2" class="edge">
 <title>poss_new0&#45;&gt;poss_new3</title>
 <path fill="none" stroke="#000000" d="M184.69,-263.67C285.86,-253.9 440.03,-239 440.03,-239 440.03,-239 473.91,-241.81 511.3,-244.92"/>
 <polygon fill="#000000" stroke="#000000" points="511.1367,-248.4183 521.39,-245.75 511.7106,-241.4419 511.1367,-248.4183"/>
 <text text-anchor="middle" x="388.53" y="-227.8" font-family="Times,serif" font-size="14.00" fill="#000000">possibly correlated</text>
 </g>
 <!-- poss_new3&#45;&gt;poss_new0 -->
-<g id="edge4" class="edge">
+<g id="edge3" class="edge">
 <title>poss_new3&#45;&gt;poss_new0</title>
 <path fill="none" stroke="#000000" d="M521.23,-260.08C441.82,-266.51 337.03,-275 337.03,-275 337.03,-275 264.47,-274.09 199.39,-273.27"/>
 <polygon fill="#000000" stroke="#000000" points="199.0631,-269.7657 189.02,-273.14 198.9753,-276.7652 199.0631,-269.7657"/>
 <text text-anchor="middle" x="388.53" y="-278.8" font-family="Times,serif" font-size="14.00" fill="#000000">possibly correlated</text>
 </g>
 <!-- poss_new37 -->
-<g id="node7" class="node">
+<g id="node5" class="node">
 <title>poss_new37</title>
 <ellipse fill="none" stroke="#000000" cx="98.51" cy="-168" rx="75" ry="58.8803"/>
 <text text-anchor="middle" x="98.51" y="-194.3" font-family="Times,serif" font-size="14.00" fill="#000000">Examples of the</text>
@@ -97,15 +76,8 @@
 <text text-anchor="middle" x="98.51" y="-149.3" font-family="Times,serif" font-size="14.00" fill="#000000">Themanruns ,</text>
 <text text-anchor="middle" x="98.51" y="-134.3" font-family="Times,serif" font-size="14.00" fill="#000000">Themanwins , .</text>
 </g>
-<!-- poss_new37&#45;&gt;contra0 -->
-<g id="edge6" class="edge">
-<title>poss_new37&#45;&gt;contra0</title>
-<path fill="none" stroke="#000000" d="M163.23,-138.32C213.16,-115.42 281.63,-84.023 329.94,-61.867"/>
-<polygon fill="#000000" stroke="#000000" points="331.6972,-64.9118 339.33,-57.564 328.781,-58.5482 331.6972,-64.9118"/>
-<text text-anchor="middle" x="243.52" y="-120.8" font-family="Times,serif" font-size="14.00" fill="#000000">now opposed</text>
-</g>
 <!-- poss_new36 -->
-<g id="node8" class="node">
+<g id="node6" class="node">
 <title>poss_new36</title>
 <ellipse fill="none" stroke="#000000" cx="608.67" cy="-158" rx="92.7622" ry="48.1667"/>
 <text text-anchor="middle" x="608.67" y="-176.8" font-family="Times,serif" font-size="14.00" fill="#000000">Examples of the</text>
@@ -114,11 +86,32 @@
 <text text-anchor="middle" x="608.67" y="-131.8" font-family="Times,serif" font-size="14.00" fill="#000000">Ox , Runs , Wins</text>
 </g>
 <!-- poss_new37&#45;&gt;poss_new36 -->
-<g id="edge5" class="edge">
+<g id="edge4" class="edge">
 <title>poss_new37&#45;&gt;poss_new36</title>
 <path fill="none" stroke="#000000" d="M173.65,-166.42C243.57,-164.96 337.03,-163 337.03,-163 337.03,-163 428.83,-161.31 505.69,-159.9"/>
 <polygon fill="#000000" stroke="#000000" points="506.0166,-163.3946 515.95,-159.71 505.8869,-156.3958 506.0166,-163.3946"/>
 <text text-anchor="middle" x="388.53" y="-166.8" font-family="Times,serif" font-size="14.00" fill="#000000">possibly correlated</text>
+</g>
+<!-- contra0 -->
+<g id="node7" class="node">
+<title>contra0</title>
+<ellipse fill="none" stroke="#000000" cx="388.53" cy="-35" rx="90.5" ry="27"/>
+<text text-anchor="middle" x="388.53" y="-38.8" font-family="Times,serif" font-size="14.00" fill="#000000">Forms of speech are</text>
+<text text-anchor="middle" x="388.53" y="-23.8" font-family="Times,serif" font-size="14.00" fill="#000000">either simple</text>
+</g>
+<!-- poss_new37&#45;&gt;contra0 -->
+<g id="edge6" class="edge">
+<title>poss_new37&#45;&gt;contra0</title>
+<path fill="none" stroke="#000000" d="M163.23,-138.32C213.16,-115.42 281.63,-84.023 329.94,-61.867"/>
+<polygon fill="#000000" stroke="#000000" points="331.6972,-64.9118 339.33,-57.564 328.781,-58.5482 331.6972,-64.9118"/>
+<text text-anchor="middle" x="243.52" y="-120.8" font-family="Times,serif" font-size="14.00" fill="#000000">now opposed</text>
+</g>
+<!-- contra3 -->
+<g id="node8" class="node">
+<title>contra3</title>
+<ellipse fill="none" stroke="#000000" cx="921.81" cy="-35" rx="90.5" ry="27"/>
+<text text-anchor="middle" x="921.81" y="-38.8" font-family="Times,serif" font-size="14.00" fill="#000000">Forms of speech are</text>
+<text text-anchor="middle" x="921.81" y="-23.8" font-family="Times,serif" font-size="14.00" fill="#000000">or composite</text>
 </g>
 <!-- poss_new36&#45;&gt;contra3 -->
 <g id="edge7" class="edge">
@@ -126,6 +119,13 @@
 <path fill="none" stroke="#000000" d="M682.88,-128.85C735.89,-108.03 806.51,-80.289 857.21,-60.376"/>
 <polygon fill="#000000" stroke="#000000" points="858.723,-63.5421 866.75,-56.627 856.1627,-57.0271 858.723,-63.5421"/>
 <text text-anchor="middle" x="766.3" y="-114.8" font-family="Times,serif" font-size="14.00" fill="#000000">found correlation</text>
+</g>
+<!-- contra0&#45;&gt;contra3 -->
+<g id="edge5" class="edge">
+<title>contra0&#45;&gt;contra3</title>
+<path fill="none" stroke="#000000" d="M479.25,-35C525.73,-35 572.67,-35 572.67,-35 572.67,-35 717.72,-35 820.83,-35"/>
+<polygon fill="#000000" stroke="#000000" points="820.99,-38.5001 830.99,-35 820.99,-31.5001 820.99,-38.5001"/>
+<text text-anchor="middle" x="608.67" y="-38.8" font-family="Times,serif" font-size="14.00" fill="#000000">contradicting</text>
 </g>
 </g>
 </svg>
