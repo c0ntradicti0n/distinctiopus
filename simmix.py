@@ -1,49 +1,64 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-''' This module is intended for overlapping an open-end variety of similarty measures on complex data in
+''' This module allows to overlap different similarity measures. Give it two lists or two lists of pairs of expressions and it find the ones, that belong together in a way, how you defined 'belonging together'.
+
+
+    This module is intended for overlapping an open-end variety of similarty measures on complex data in
     natural language processing. Its like an organ with different registers for text-comparisons.
 
     Choices are made from two lists of dict elements, that are representing some phrases. They are bundles
     of properties, as their text, grammar, also a logical formula to represent their logical structure (pyprover), semantical vectors (and syntactical, like elmo-embeddings from allen-nlp) , tdf-idf-importance and some more. These are predefined here, if you know some of your own,its possible to give custom functions.
 
-    p1 =
-      {
-      'text': ['The', 'cause', 'of', 'cancer', 'is', 'not', 'a', 'virus', 'and', 'the', 'cause', 'of', 'cancer', 'is', 'not', 'a', 'fungus'],
-      'lemma_': ['the', 'because', 'of', 'cancer', 'be', 'not', 'a', 'virus', 'and', 'the', 'because', 'of', 'cancer', 'be', 'not', 'a', 'fungus'],
-      'dep',
-      'importance': array([0.53395703, ...  0.2       ])
-      A ∧ ¬C ∧ B ∧ ¬D
-    ((((pyprover.A )) & ~ pyprover.C ) & (((pyprover.B )) & ~ pyprover.D ))
-      }
+    Example
+    -------
 
-    p2 = ...
-    q1 = ...
-    q2 = ...
-    ps = [p1,p2,p3 ...]
-    qs = [q1,q2,q3 ...]
+    Predicates have the form of dictionaries to reveal their different properties in computer linguistics.
+    They can be tagged differently (pos, tag, dep), lemmatized, vectors and other kinds of represantations.
 
-    Two list of these elements have to be provided for the Simmix.choose ((p1,p2))-function.
+    >>> p1 = {'text':  ['Black', 'bird', 'singing', 'in', 'the', 'dead', 'of', 'night'],
+    ...       'lemma': ['black', 'bird', 'sing', 'in', 'the', 'dead', 'of', 'night'],
+    ...       'dep_':  ['amod', 'subj', 'compound', 'prep', 'pobj', 'det', 'prep', 'pobj']}
+    >>> p2 = {'text':  ['All', 'your', 'life'],
+    ...       'lemma': ['all', 'your', 'life'],
+    ...       'dep_' : ['det', 'poss', 'subj']}
+    >>> p3 = {'text':  ['You', 'love', 'all' 'your', 'life'],
+    ...       'lemma':  ['You', 'love', 'all' 'your', 'life'],
+    ...       'dep_' :  ['nsubj', 'ROOT', 'det' 'poss', 'dobj'],}
+
+   This model now goes on to compare two lists of such predicate-dictionaries. But first you have to specify, how you
+   want to compare them. You can compare app. Because indeed apples and pears and carrots are comparable, but you can
+   choose, which perspective to use for that comparison, maybe by weight, by volume, color, shape or whatsoever.
+
+   Here we define, that we want to compare this time the text of the expressions with string-fuzzy logic.
+   We instantiate the Simmix-module and give it this list of tuple:
+
+   >>> function_tuples = [
+   ...             (1, Simmix.fuzzystr_sim, 0.72, 2.01), # fuzzy-string-comparison
+   ...             (1, Simmix.dep_sim, 0.4, 1)           # levensthein distance of the dependency measures
+   ...             ]
 
 
-    Also there are functions in Simmix to compare these and different sorts of how choices can be made.
+   And then the Simmix module can be initialized with that:
 
-    The functions and parameters for computing the overall-similarity,, that should be used in a complex comparison
-    have to be initialized like this:
+   These 4-tuples consist in
 
-     superficial_sim  = \
-        Simmix([(1, Simmix.fuzzystr_sim, 0.72, 2.01), # fuzzy-string-comparison
-                (1, Simmix.dep_sim, 0.4, 1)       # levensthein distance of the dependency measures
-                ])
+   .. code-block:: python
 
-    The list of tuple parameter is represents a pipeline, what should be computed:
-    1                     -- The weight of their normalized results.
-    Simmix.fuzzystr_sim   -- which function
-    0.72                  -- minimum-score
-    2.01                  -- maximum-score
+        function_tuple = (
+            weight,                                   # weight of this measure
+            function,                                 # function without argument that takes Dict[str:?], Dict[str: ?] -> float
+            maximal_threshold,                        # minimum threshold
+            minimal_threshold,                        # maximum threshold
+            )
+
+   And to apply that to the defined predicates:
+
+   >>> superficial_sim  = \
+   ...    Simmix(function_tuples)
+   >>> superficial_sim.choose(([p1],[p2,p2]))
 
 '''
-
 import types
 import scipy
 import numpy as np
@@ -75,8 +90,6 @@ def cartesian_product_itertools(arrays):
 
 
 class Simmix:
-    '''This module allows to overlap different similarity measures. Give it two lists or two lists of pairs of expressions and it find the ones, that belong together in a way, how you defined 'belonging together'. '''
-
     def __init__ (self, similarity_composition, n=1):
         r''' Setup, which functions are taken to compute a similarity matrix to choose from some natural language expressions, that are already analysed in the manner of :mod:`~predicatrix2.Predication`.
 
@@ -573,15 +586,50 @@ class Simmix:
         except KeyError:
             logging.warning ("Why is there no 'doc'-key? Proceed... ")
             return is2.issubset(is1), {}
+
+
     @standard_range(-100,0)
     def longer_sim (ex1, ex2):
+        ''' Negative length distance resp. the expressions words.
+
+        :param ex1: expression1
+        :param ex2: expression2
+        :return: abs (len(ex1['i']) - len ['i'], {}
+
+        '''
         is1 = set(ex1["i"])
         is2 = set(ex2["i"])
-        return -len (is1)-len(is2), {}
-    def multi_sim(fun=None, n=4):
+        return abs (len (is1)-len(is2)), {}
+
+
+    def multi_sim(fun, n=2):
+        ''' This wrapper turns functions, that evaluate pairs of expression, into functions, that work with tuples (!)
+        of expressions. This is done by comparing each value in these list with each value in the other list.
+
+        Example
+        -------
+        define the function like this
+
+        >>> sx = Simmix (
+               [(1, Simmix.multi_sim(Simmix.fuzzystr_sim, n=7), 0.5, 1)]
+               )
+
+        and work with data that are a tuple lists of tuples of tuples lists of predicate-dicts
+
+        >>> data = (
+                    [([{'text': ..., ...}],[{'text': ..., ...}])],
+                    [([{'text': ..., ...}],[{'text': ..., ...}])])
+
+        That you need, if you want to filter the results of simmix again with simmix, for example what pairs of
+        expressions fit to other expressions.
+
+        :param n: How many values are maximally expected in these lists? The expected range of the multi-fun is the
+            square of this
+        :return: wrapped function
+
+        '''
+        n **= 2
         b = {}
-        if not fun:
-            raise ValueError("fun must be given")
         @Simmix.standard_range(fun.min*n,fun.max*n)  # depends on fun!
         def multi_generated (exs1,exs2):
             sim = 0
@@ -599,32 +647,75 @@ class Simmix:
         return multi_generated
 
 
-    @standard_range(-1000, 100)
-    def nextleft_sim (ex1, ex2):
-        minL1  = min(ex1["i"])
-        maxL2  = max(ex2["i"])
-        return -minL1 - maxL2, {}
-    @standard_range(-1000, 100)
-    def nextright_sim (ex1, ex2):
-        maxR1  = max(ex1["i"])
-        minL2  = min(ex2["i"])
-        return -maxR1 - minL2, {}
+    @standard_range(0, 1)
+    def left_sim (ex1, ex2):
+        ''' Is the expression2 left of expression1?
+
+            :param ex1: predicate-tuple
+            :param ex2: predicate-tuple
+            :return: 0 or 1 (if left), {}
+
+        '''
+        pos1  = max(ex1["i_s"]) + ex1['s_id']*1000
+        pos2  = min(ex2["i_s"]) + ex2['s_id']*1000
+        return pos1<pos2, {}
+
+    @standard_range(0, 1)
+    def right (ex1, ex2):
+        ''' Is the expression2 right of expression1?
+
+            :param ex1: predicate-tuple
+            :param ex2: predicate-tuple
+            :return: 0 or 1 (if right), {}
+
+        '''
+        pos1  = max(ex1["i_s"]) + ex1['s_id']*1000
+        pos2  = min(ex2["i_s"]) + ex2['s_id']*1000
+        return  pos1>pos2, {}
+
+
     def boolean_sim (attrib_dict):
-        if not attrib_dict:
-            raise ValueError("Dictionary of atrributes and values can't be " + str(attrib_dict))
+        ''' According to a dictionary, that says, which attribute in the one of the pair must also in the attribute
+            of the other one, if a match should be there.
+
+            Example
+            -------
+
+            >>> d = {'lemma':
+            ...            {'black':['life'],
+            ...             'gray': [('shade', 'of', 'gray')]
+            ...              },
+            ...      'dep_': {'subj': 'subj'}}
+            >>> p1 = {'text':  ['Black', 'bird', 'singing', 'in', 'the', 'dead', 'of', 'night'],
+            ...       'lemma': ['black', 'bird', 'sing', 'in', 'the', 'dead', 'of', 'night'],
+            ...       'dep_':  ['amod', 'subj', 'compound', 'prep', 'pobj', 'det', 'prep', 'pobj']}
+            >>> p2 = {'text':  ['All', 'your', 'life'],
+            ...       'lemma': ['all', 'your', 'life'],
+            ...       'dep_' : ['det', 'poss', 'subj']}
+            >>> f = Simmix.boolean_sim (d)
+            >>> f (p1,p2)
+            (2, {})
+
+        :param attrib_dict: dict of dict of lists of strings
+
+        :return: number of matched conditions and {}, the beam to follow the computation in some cases
+
+        '''
         @Simmix.standard_range(0, 10)
         def boolean_sim_(ex1,ex2):
             cost = 0
             for attr, single_attrib_dict in attrib_dict.items():
                 for key, item in single_attrib_dict.items():
-                    if key in [getattr(x,attr) for x in ex1]:
-                        that_key_cost =  int(item in [getattr(x,attr) for x in ex2])
+                    if key in ex1[attr]:
+                        that_key_cost =  int(item in ex2[attr])
                         if isinstance(item,list):
                             for it in item:
-                                that_key_cost +=  int(it in [getattr(x,attr) for x in ex2])
+                                that_key_cost +=  int(it in ex2[attr])
                         cost += that_key_cost
             return cost, {}
         return boolean_sim_
+
+
     def excluding_pair_boolean_sim (attrib_dict):
         """ The defined pair of values mustn't occur in one of the statements at once and in the other. """
         if not attrib_dict:

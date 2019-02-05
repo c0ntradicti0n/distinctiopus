@@ -27,7 +27,8 @@
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="grammarannotator module" href="grammarannotator.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -80,11 +81,14 @@
               
             
             
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">subj_and_aspectrix module</a></li>
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="CursorilyLogician.html">CursorilyLogician module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simmix.html">simmix module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grammarannotator.html">grammarannotator module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">subj_and_aspectrix module</a></li>
 </ul>
-</div>
+
             
           
         </div>
@@ -161,8 +165,51 @@
 </dd></dl>
 
 <dl class="method">
+<dt id="subj_and_aspectrix.Subjects_and_aspects.add_correlation_edge">
+<code class="descname">add_correlation_edge</code><span class="sig-paren">(</span><em>G</em>, <em>predicate_dict1</em>, <em>predicate_dict2</em>, <em>label=None</em>, <em>kind=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/subj_and_aspectrix.html#Subjects_and_aspects.add_correlation_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#subj_and_aspectrix.Subjects_and_aspects.add_correlation_edge" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="subj_and_aspectrix.Subjects_and_aspects.add_determined_expression_nx">
+<code class="descname">add_determined_expression_nx</code><span class="sig-paren">(</span><em>G</em>, <em>general_kind</em>, <em>special_kind</em>, <em>n1</em>, <em>n2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/subj_and_aspectrix.html#Subjects_and_aspects.add_determined_expression_nx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#subj_and_aspectrix.Subjects_and_aspects.add_determined_expression_nx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Throws node data into neo4j by expanding data as dictionary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>general_kind</strong> – Property “GeneralKind” in the GDB</li>
+<li><strong>special_kind</strong> – Property “SpecialKind” in the GDB (‘anonym’/’negation’)</li>
+<li><strong>n1</strong> – predicate dict 1</li>
+<li><strong>n2</strong> – predicate dict 2</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="subj_and_aspectrix.Subjects_and_aspects.add_nx_edge">
+<code class="descname">add_nx_edge</code><span class="sig-paren">(</span><em>G</em>, <em>n1</em>, <em>n2</em>, <em>general_kind</em>, <em>special_kind</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/subj_and_aspectrix.html#Subjects_and_aspects.add_nx_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#subj_and_aspectrix.Subjects_and_aspects.add_nx_edge" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="subj_and_aspectrix.Subjects_and_aspects.add_nx_node">
+<code class="descname">add_nx_node</code><span class="sig-paren">(</span><em>G</em>, <em>n</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/subj_and_aspectrix.html#Subjects_and_aspects.add_nx_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#subj_and_aspectrix.Subjects_and_aspects.add_nx_node" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="subj_and_aspectrix.Subjects_and_aspects.add_possible_correlation_node">
+<code class="descname">add_possible_correlation_node</code><span class="sig-paren">(</span><em>G</em>, <em>predicate_dict</em>, <em>kind=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/subj_and_aspectrix.html#Subjects_and_aspects.add_possible_correlation_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#subj_and_aspectrix.Subjects_and_aspects.add_possible_correlation_node" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="subj_and_aspectrix.Subjects_and_aspects.annotate">
-<code class="descname">annotate</code><span class="sig-paren">(</span><em>opposed_pair_pair=None</em>, <em>graph_coro_subj_asp=None</em>, <em>graph_coro_arg_binding=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/subj_and_aspectrix.html#Subjects_and_aspects.annotate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#subj_and_aspectrix.Subjects_and_aspects.annotate" title="Permalink to this definition">¶</a></dt>
+<code class="descname">annotate</code><span class="sig-paren">(</span><em>opposed_pair_pair=None</em>, <em>graph_coro_subj_asp=None</em>, <em>graph_coro_arg_binding=None</em>, <em>paint_graph=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/subj_and_aspectrix.html#Subjects_and_aspects.annotate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#subj_and_aspectrix.Subjects_and_aspects.annotate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Annotates the correlations, that means expressions that are similar to each other and are distinct from the
 pair, that was found as excluding each other. For instance ‘from the one side’ and ‘from the other side’.</p>
 <p>In part the graph is cleaned, because also exmaples can be marked as seemingly contradictions.
@@ -189,6 +236,11 @@ constellation</li>
 </tbody>
 </table>
 </dd></dl>
+
+<dl class="method">
+<dt id="subj_and_aspectrix.Subjects_and_aspects.draw_key_graphs">
+<code class="descname">draw_key_graphs</code><span class="sig-paren">(</span><em>G</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/subj_and_aspectrix.html#Subjects_and_aspects.draw_key_graphs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#subj_and_aspectrix.Subjects_and_aspects.draw_key_graphs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="subj_and_aspectrix.Subjects_and_aspects.get_arguments">
@@ -222,6 +274,16 @@ constellation</li>
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="subj_and_aspectrix.Subjects_and_aspects.put_into_nx">
+<code class="descname">put_into_nx</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#subj_and_aspectrix.Subjects_and_aspects.put_into_nx" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="subj_and_aspectrix.Subjects_and_aspects.wrap">
+<code class="descname">wrap</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/subj_and_aspectrix.html#Subjects_and_aspects.wrap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#subj_and_aspectrix.Subjects_and_aspects.wrap" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </div>
@@ -231,6 +293,13 @@ constellation</li>
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="grammarannotator.html" class="btn btn-neutral" title="grammarannotator module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>

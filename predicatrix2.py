@@ -75,7 +75,7 @@ class Predication():
         self.Counterpart =  Simmix(
             [   (1, Simmix.dep_sim,  0, 1),
                 (1, Simmix.tag_sim,  0, 1),
-                (1, Simmix.nextleft_sim, 0, 1),
+                (1, Simmix.left_sim, 0, 1),
                 (1, Simmix.fuzzystr_sim, 0, 1)
             ],
             n=1

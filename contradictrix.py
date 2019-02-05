@@ -91,12 +91,14 @@ class Contradiction:
             put_into_nx = self.put_into_nx(general_kind='contradiction', G=G)
             graph_coro = [graph_coro, put_into_nx ]
 
-        negation_contradictions = self.Contra_Neg.choose ((predicates1, predicates2), type='negation', layout='n', graph_coro=graph_coro, **kwargs)
-        antonym_contradictions  = self.Contra_Anto.choose((predicates1, predicates2), type='antonym',  layout='n', graph_coro=graph_coro, **kwargs)
+        negation_contradictions = self.Contra_Neg.choose ((predicates1, predicates2), type='*negation', layout='n', graph_coro=graph_coro, **kwargs)
+        antonym_contradictions  = self.Contra_Anto.choose((predicates1, predicates2), type='*antonym',  layout='n', graph_coro=graph_coro, **kwargs)
         logging.info("contradictions by antonym : %s" % str (antonym_contradictions))
         logging.info("contradictions by negation: %s" % str (negation_contradictions))
 
         if paint_graph:
+            for p in predicates1 + predicates2:
+                put_into_nx.send(p)
             put_into_nx.send('draw')
 
         try:
@@ -134,19 +136,20 @@ class Contradiction:
             logging.warning("node data is list... taking first")
             n2 = n2[0]
 
-        def add_nx_node(G, n):
-            G.add_node (n['id'],
-                        s_id=n['s_id'],
-                        label=" ".join(n['text']).replace("'", "") )
-        def add_nx_edge(G, n1, n2):
-            G.add_edge (n1['id'], n2['id'],
-                        general_kind=general_kind,
-                        special_kind=special_kind,
-                        label = general_kind + ' ' + special_kind )
+        self.add_nx_node(G,n1)
+        self.add_nx_node(G,n1)
+        self.add_nx_edge(G,n1,n2, general_kind, special_kind)
 
-        add_nx_node(G,n1)
-        add_nx_node(G,n1)
-        add_nx_edge(G,n1,n2)
+    def add_nx_node(self, G, n):
+        G.add_node(n['id'],
+                   s_id=n['s_id'],
+                   label=" ".join(n['text']).replace("'", ""))
+
+    def add_nx_edge(self, G, n1, n2, general_kind, special_kind):
+        G.add_edge (n1['id'], n2['id'],
+             general_kind=general_kind,
+             special_kind=special_kind,
+             label = general_kind + ' ' + special_kind )
 
 
     @coroutine
@@ -162,6 +165,8 @@ class Contradiction:
             if isinstance(data, tuple) and len(data) == 3:
                 n1, n2, special_kind = data
                 self.add_determined_expression_nx(G, general_kind, special_kind, n1, n2)
+            elif isinstance(data, dict):
+                self.add_nx_node(G, data)
             elif isinstance(data, str) and data=='draw':
                 self.draw_key_graphs(G)
             else:

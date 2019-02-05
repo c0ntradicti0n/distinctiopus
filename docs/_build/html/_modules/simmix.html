@@ -80,8 +80,18 @@
               
             
             
-              <!-- Local TOC -->
-              <div class="local-toc"></div>
+              <p class="caption"><span class="caption-text">Table of Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../CursorilyLogician.html">CursorilyLogician module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../simmix.html">simmix module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grammarannotator.html">grammarannotator module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contradictrix.html">contradictrix module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../correlatrix.html">correlatrix module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../subj_and_aspectrix.html">subj_and_aspectrix module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../corpus_reader.html">corpus_reader module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../webanno_parser.html">webanno_parser module</a></li>
+</ul>
+
             
           
         </div>
@@ -146,49 +156,64 @@
 <span></span><span class="ch">#!/usr/bin/env python</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="sd">&#39;&#39;&#39; This module is intended for overlapping an open-end variety of similarty measures on complex data in</span>
+<span class="sd">&#39;&#39;&#39; This module allows to overlap different similarity measures. Give it two lists or two lists of pairs of expressions and it find the ones, that belong together in a way, how you defined &#39;belonging together&#39;.</span>
+
+
+<span class="sd">    This module is intended for overlapping an open-end variety of similarty measures on complex data in</span>
 <span class="sd">    natural language processing. Its like an organ with different registers for text-comparisons.</span>
 
 <span class="sd">    Choices are made from two lists of dict elements, that are representing some phrases. They are bundles</span>
 <span class="sd">    of properties, as their text, grammar, also a logical formula to represent their logical structure (pyprover), semantical vectors (and syntactical, like elmo-embeddings from allen-nlp) , tdf-idf-importance and some more. These are predefined here, if you know some of your own,its possible to give custom functions.</span>
 
-<span class="sd">    p1 =</span>
-<span class="sd">      {</span>
-<span class="sd">      &#39;text&#39;: [&#39;The&#39;, &#39;cause&#39;, &#39;of&#39;, &#39;cancer&#39;, &#39;is&#39;, &#39;not&#39;, &#39;a&#39;, &#39;virus&#39;, &#39;and&#39;, &#39;the&#39;, &#39;cause&#39;, &#39;of&#39;, &#39;cancer&#39;, &#39;is&#39;, &#39;not&#39;, &#39;a&#39;, &#39;fungus&#39;],</span>
-<span class="sd">      &#39;lemma_&#39;: [&#39;the&#39;, &#39;because&#39;, &#39;of&#39;, &#39;cancer&#39;, &#39;be&#39;, &#39;not&#39;, &#39;a&#39;, &#39;virus&#39;, &#39;and&#39;, &#39;the&#39;, &#39;because&#39;, &#39;of&#39;, &#39;cancer&#39;, &#39;be&#39;, &#39;not&#39;, &#39;a&#39;, &#39;fungus&#39;],</span>
-<span class="sd">      &#39;dep&#39;,</span>
-<span class="sd">      &#39;importance&#39;: array([0.53395703, ...  0.2       ])</span>
-<span class="sd">      A ∧ ¬C ∧ B ∧ ¬D</span>
-<span class="sd">    ((((pyprover.A )) &amp; ~ pyprover.C ) &amp; (((pyprover.B )) &amp; ~ pyprover.D ))</span>
-<span class="sd">      }</span>
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
 
-<span class="sd">    p2 = ...</span>
-<span class="sd">    q1 = ...</span>
-<span class="sd">    q2 = ...</span>
-<span class="sd">    ps = [p1,p2,p3 ...]</span>
-<span class="sd">    qs = [q1,q2,q3 ...]</span>
+<span class="sd">    Predicates have the form of dictionaries to reveal their different properties in computer linguistics.</span>
+<span class="sd">    They can be tagged differently (pos, tag, dep), lemmatized, vectors and other kinds of represantations.</span>
 
-<span class="sd">    Two list of these elements have to be provided for the Simmix.choose ((p1,p2))-function.</span>
+<span class="sd">    &gt;&gt;&gt; p1 = {&#39;text&#39;:  [&#39;Black&#39;, &#39;bird&#39;, &#39;singing&#39;, &#39;in&#39;, &#39;the&#39;, &#39;dead&#39;, &#39;of&#39;, &#39;night&#39;],</span>
+<span class="sd">    ...       &#39;lemma&#39;: [&#39;black&#39;, &#39;bird&#39;, &#39;sing&#39;, &#39;in&#39;, &#39;the&#39;, &#39;dead&#39;, &#39;of&#39;, &#39;night&#39;],</span>
+<span class="sd">    ...       &#39;dep_&#39;:  [&#39;amod&#39;, &#39;subj&#39;, &#39;compound&#39;, &#39;prep&#39;, &#39;pobj&#39;, &#39;det&#39;, &#39;prep&#39;, &#39;pobj&#39;]}</span>
+<span class="sd">    &gt;&gt;&gt; p2 = {&#39;text&#39;:  [&#39;All&#39;, &#39;your&#39;, &#39;life&#39;],</span>
+<span class="sd">    ...       &#39;lemma&#39;: [&#39;all&#39;, &#39;your&#39;, &#39;life&#39;],</span>
+<span class="sd">    ...       &#39;dep_&#39; : [&#39;det&#39;, &#39;poss&#39;, &#39;subj&#39;]}</span>
+<span class="sd">    &gt;&gt;&gt; p3 = {&#39;text&#39;:  [&#39;You&#39;, &#39;love&#39;, &#39;all&#39; &#39;your&#39;, &#39;life&#39;],</span>
+<span class="sd">    ...       &#39;lemma&#39;:  [&#39;You&#39;, &#39;love&#39;, &#39;all&#39; &#39;your&#39;, &#39;life&#39;],</span>
+<span class="sd">    ...       &#39;dep_&#39; :  [&#39;nsubj&#39;, &#39;ROOT&#39;, &#39;det&#39; &#39;poss&#39;, &#39;dobj&#39;],}</span>
+
+<span class="sd">   This model now goes on to compare two lists of such predicate-dictionaries. But first you have to specify, how you</span>
+<span class="sd">   want to compare them. You can compare app. Because indeed apples and pears and carrots are comparable, but you can</span>
+<span class="sd">   choose, which perspective to use for that comparison, maybe by weight, by volume, color, shape or whatsoever.</span>
+
+<span class="sd">   Here we define, that we want to compare this time the text of the expressions with string-fuzzy logic.</span>
+<span class="sd">   We instantiate the Simmix-module and give it this list of tuple:</span>
+
+<span class="sd">   &gt;&gt;&gt; function_tuples = [</span>
+<span class="sd">   ...             (1, Simmix.fuzzystr_sim, 0.72, 2.01), # fuzzy-string-comparison</span>
+<span class="sd">   ...             (1, Simmix.dep_sim, 0.4, 1)           # levensthein distance of the dependency measures</span>
+<span class="sd">   ...             ]</span>
 
 
-<span class="sd">    Also there are functions in Simmix to compare these and different sorts of how choices can be made.</span>
+<span class="sd">   And then the Simmix module can be initialized with that:</span>
 
-<span class="sd">    The functions and parameters for computing the overall-similarity,, that should be used in a complex comparison</span>
-<span class="sd">    have to be initialized like this:</span>
+<span class="sd">   These 4-tuples consist in</span>
 
-<span class="sd">     superficial_sim  = \</span>
-<span class="sd">        Simmix([(1, Simmix.fuzzystr_sim, 0.72, 2.01), # fuzzy-string-comparison</span>
-<span class="sd">                (1, Simmix.dep_sim, 0.4, 1)       # levensthein distance of the dependency measures</span>
-<span class="sd">                ])</span>
+<span class="sd">   .. code-block:: python</span>
 
-<span class="sd">    The list of tuple parameter is represents a pipeline, what should be computed:</span>
-<span class="sd">    1                     -- The weight of their normalized results.</span>
-<span class="sd">    Simmix.fuzzystr_sim   -- which function</span>
-<span class="sd">    0.72                  -- minimum-score</span>
-<span class="sd">    2.01                  -- maximum-score</span>
+<span class="sd">        function_tuple = (</span>
+<span class="sd">            weight,                                   # weight of this measure</span>
+<span class="sd">            function,                                 # function without argument that takes Dict[str:?], Dict[str: ?] -&gt; float</span>
+<span class="sd">            maximal_threshold,                        # minimum threshold</span>
+<span class="sd">            minimal_threshold,                        # maximum threshold</span>
+<span class="sd">            )</span>
+
+<span class="sd">   And to apply that to the defined predicates:</span>
+
+<span class="sd">   &gt;&gt;&gt; superficial_sim  = \</span>
+<span class="sd">   ...    Simmix(function_tuples)</span>
+<span class="sd">   &gt;&gt;&gt; superficial_sim.choose(([p1],[p2,p2]))</span>
 
 <span class="sd">&#39;&#39;&#39;</span>
-
 <span class="kn">import</span> <span class="nn">types</span>
 <span class="kn">import</span> <span class="nn">scipy</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -220,8 +245,6 @@
 
 
 <div class="viewcode-block" id="Simmix"><a class="viewcode-back" href="../simmix.html#simmix.Simmix">[docs]</a><span class="k">class</span> <span class="nc">Simmix</span><span class="p">:</span>
-    <span class="sd">&#39;&#39;&#39;This module allows to overlap different similarity measures. Give it two lists or two lists of pairs of expressions and it find the ones, that belong together in a way, how you defined &#39;belonging together&#39;. &#39;&#39;&#39;</span>
-
 <div class="viewcode-block" id="Simmix.__init__"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">similarity_composition</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&#39;&#39;&#39; Setup, which functions are taken to compute a similarity matrix to choose from some natural language expressions, that are already analysed in the manner of :mod:`~predicatrix2.Predication`.</span>
 
@@ -718,15 +741,50 @@
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">warning</span> <span class="p">(</span><span class="s2">&quot;Why is there no &#39;doc&#39;-key? Proceed... &quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">is2</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">is1</span><span class="p">),</span> <span class="p">{}</span></div>
+
+
 <div class="viewcode-block" id="Simmix.longer_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.longer_sim">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">longer_sim</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Negative length distance resp. the expressions words.</span>
+
+<span class="sd">        :param ex1: expression1</span>
+<span class="sd">        :param ex2: expression2</span>
+<span class="sd">        :return: abs (len(ex1[&#39;i&#39;]) - len [&#39;i&#39;], {}</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">is1</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;i&quot;</span><span class="p">])</span>
         <span class="n">is2</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;i&quot;</span><span class="p">])</span>
-        <span class="k">return</span> <span class="o">-</span><span class="nb">len</span> <span class="p">(</span><span class="n">is1</span><span class="p">)</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">is2</span><span class="p">),</span> <span class="p">{}</span></div>
-<div class="viewcode-block" id="Simmix.multi_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.multi_sim">[docs]</a>    <span class="k">def</span> <span class="nf">multi_sim</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">abs</span> <span class="p">(</span><span class="nb">len</span> <span class="p">(</span><span class="n">is1</span><span class="p">)</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">is2</span><span class="p">)),</span> <span class="p">{}</span></div>
+
+
+<div class="viewcode-block" id="Simmix.multi_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.multi_sim">[docs]</a>    <span class="k">def</span> <span class="nf">multi_sim</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; This wrapper turns functions, that evaluate pairs of expression, into functions, that work with tuples (!)</span>
+<span class="sd">        of expressions. This is done by comparing each value in these list with each value in the other list.</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        define the function like this</span>
+
+<span class="sd">        &gt;&gt;&gt; sx = Simmix (</span>
+<span class="sd">               [(1, Simmix.multi_sim(Simmix.fuzzystr_sim, n=7), 0.5, 1)]</span>
+<span class="sd">               )</span>
+
+<span class="sd">        and work with data that are a tuple lists of tuples of tuples lists of predicate-dicts</span>
+
+<span class="sd">        &gt;&gt;&gt; data = (</span>
+<span class="sd">                    [([{&#39;text&#39;: ..., ...}],[{&#39;text&#39;: ..., ...}])],</span>
+<span class="sd">                    [([{&#39;text&#39;: ..., ...}],[{&#39;text&#39;: ..., ...}])])</span>
+
+<span class="sd">        That you need, if you want to filter the results of simmix again with simmix, for example what pairs of</span>
+<span class="sd">        expressions fit to other expressions.</span>
+
+<span class="sd">        :param n: How many values are maximally expected in these lists? The expected range of the multi-fun is the</span>
+<span class="sd">            square of this</span>
+<span class="sd">        :return: wrapped function</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">n</span> <span class="o">**=</span> <span class="mi">2</span>
         <span class="n">b</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">fun</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;fun must be given&quot;</span><span class="p">)</span>
         <span class="nd">@Simmix</span><span class="o">.</span><span class="n">standard_range</span><span class="p">(</span><span class="n">fun</span><span class="o">.</span><span class="n">min</span><span class="o">*</span><span class="n">n</span><span class="p">,</span><span class="n">fun</span><span class="o">.</span><span class="n">max</span><span class="o">*</span><span class="n">n</span><span class="p">)</span>  <span class="c1"># depends on fun!</span>
         <span class="k">def</span> <span class="nf">multi_generated</span> <span class="p">(</span><span class="n">exs1</span><span class="p">,</span><span class="n">exs2</span><span class="p">):</span>
             <span class="n">sim</span> <span class="o">=</span> <span class="mi">0</span>
@@ -744,32 +802,75 @@
         <span class="k">return</span> <span class="n">multi_generated</span></div>
 
 
-<div class="viewcode-block" id="Simmix.nextleft_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.nextleft_sim">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="o">-</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">nextleft_sim</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
-        <span class="n">minL1</span>  <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;i&quot;</span><span class="p">])</span>
-        <span class="n">maxL2</span>  <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;i&quot;</span><span class="p">])</span>
-        <span class="k">return</span> <span class="o">-</span><span class="n">minL1</span> <span class="o">-</span> <span class="n">maxL2</span><span class="p">,</span> <span class="p">{}</span></div>
-<div class="viewcode-block" id="Simmix.nextright_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.nextright_sim">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="o">-</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">nextright_sim</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
-        <span class="n">maxR1</span>  <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;i&quot;</span><span class="p">])</span>
-        <span class="n">minL2</span>  <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;i&quot;</span><span class="p">])</span>
-        <span class="k">return</span> <span class="o">-</span><span class="n">maxR1</span> <span class="o">-</span> <span class="n">minL2</span><span class="p">,</span> <span class="p">{}</span></div>
+<div class="viewcode-block" id="Simmix.left_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.left_sim">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">left_sim</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Is the expression2 left of expression1?</span>
+
+<span class="sd">            :param ex1: predicate-tuple</span>
+<span class="sd">            :param ex2: predicate-tuple</span>
+<span class="sd">            :return: 0 or 1 (if left), {}</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">pos1</span>  <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;i_s&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="n">ex1</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">1000</span>
+        <span class="n">pos2</span>  <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;i_s&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="n">ex2</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">1000</span>
+        <span class="k">return</span> <span class="n">pos1</span><span class="o">&lt;</span><span class="n">pos2</span><span class="p">,</span> <span class="p">{}</span></div>
+
+<div class="viewcode-block" id="Simmix.right"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.right">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">right</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Is the expression2 right of expression1?</span>
+
+<span class="sd">            :param ex1: predicate-tuple</span>
+<span class="sd">            :param ex2: predicate-tuple</span>
+<span class="sd">            :return: 0 or 1 (if right), {}</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">pos1</span>  <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;i_s&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="n">ex1</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">1000</span>
+        <span class="n">pos2</span>  <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;i_s&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="n">ex2</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">1000</span>
+        <span class="k">return</span>  <span class="n">pos1</span><span class="o">&gt;</span><span class="n">pos2</span><span class="p">,</span> <span class="p">{}</span></div>
+
+
 <div class="viewcode-block" id="Simmix.boolean_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.boolean_sim">[docs]</a>    <span class="k">def</span> <span class="nf">boolean_sim</span> <span class="p">(</span><span class="n">attrib_dict</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">attrib_dict</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Dictionary of atrributes and values can&#39;t be &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">attrib_dict</span><span class="p">))</span>
+        <span class="sd">&#39;&#39;&#39; According to a dictionary, that says, which attribute in the one of the pair must also in the attribute</span>
+<span class="sd">            of the other one, if a match should be there.</span>
+
+<span class="sd">            Example</span>
+<span class="sd">            -------</span>
+
+<span class="sd">            &gt;&gt;&gt; d = {&#39;lemma&#39;:</span>
+<span class="sd">            ...            {&#39;black&#39;:[&#39;life&#39;],</span>
+<span class="sd">            ...             &#39;gray&#39;: [(&#39;shade&#39;, &#39;of&#39;, &#39;gray&#39;)]</span>
+<span class="sd">            ...              },</span>
+<span class="sd">            ...      &#39;dep_&#39;: {&#39;subj&#39;: &#39;subj&#39;}}</span>
+<span class="sd">            &gt;&gt;&gt; p1 = {&#39;text&#39;:  [&#39;Black&#39;, &#39;bird&#39;, &#39;singing&#39;, &#39;in&#39;, &#39;the&#39;, &#39;dead&#39;, &#39;of&#39;, &#39;night&#39;],</span>
+<span class="sd">            ...       &#39;lemma&#39;: [&#39;black&#39;, &#39;bird&#39;, &#39;sing&#39;, &#39;in&#39;, &#39;the&#39;, &#39;dead&#39;, &#39;of&#39;, &#39;night&#39;],</span>
+<span class="sd">            ...       &#39;dep_&#39;:  [&#39;amod&#39;, &#39;subj&#39;, &#39;compound&#39;, &#39;prep&#39;, &#39;pobj&#39;, &#39;det&#39;, &#39;prep&#39;, &#39;pobj&#39;]}</span>
+<span class="sd">            &gt;&gt;&gt; p2 = {&#39;text&#39;:  [&#39;All&#39;, &#39;your&#39;, &#39;life&#39;],</span>
+<span class="sd">            ...       &#39;lemma&#39;: [&#39;all&#39;, &#39;your&#39;, &#39;life&#39;],</span>
+<span class="sd">            ...       &#39;dep_&#39; : [&#39;det&#39;, &#39;poss&#39;, &#39;subj&#39;]}</span>
+<span class="sd">            &gt;&gt;&gt; f = Simmix.boolean_sim (d)</span>
+<span class="sd">            &gt;&gt;&gt; f (p1,p2)</span>
+<span class="sd">            (2, {})</span>
+
+<span class="sd">        :param attrib_dict: dict of dict of lists of strings</span>
+
+<span class="sd">        :return: number of matched conditions and {}, the beam to follow the computation in some cases</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="nd">@Simmix</span><span class="o">.</span><span class="n">standard_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
         <span class="k">def</span> <span class="nf">boolean_sim_</span><span class="p">(</span><span class="n">ex1</span><span class="p">,</span><span class="n">ex2</span><span class="p">):</span>
             <span class="n">cost</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">single_attrib_dict</span> <span class="ow">in</span> <span class="n">attrib_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">single_attrib_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">attr</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ex1</span><span class="p">]:</span>
-                        <span class="n">that_key_cost</span> <span class="o">=</span>  <span class="nb">int</span><span class="p">(</span><span class="n">item</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">attr</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ex2</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">ex1</span><span class="p">[</span><span class="n">attr</span><span class="p">]:</span>
+                        <span class="n">that_key_cost</span> <span class="o">=</span>  <span class="nb">int</span><span class="p">(</span><span class="n">item</span> <span class="ow">in</span> <span class="n">ex2</span><span class="p">[</span><span class="n">attr</span><span class="p">])</span>
                         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span><span class="nb">list</span><span class="p">):</span>
                             <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">item</span><span class="p">:</span>
-                                <span class="n">that_key_cost</span> <span class="o">+=</span>  <span class="nb">int</span><span class="p">(</span><span class="n">it</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">attr</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ex2</span><span class="p">])</span>
+                                <span class="n">that_key_cost</span> <span class="o">+=</span>  <span class="nb">int</span><span class="p">(</span><span class="n">it</span> <span class="ow">in</span> <span class="n">ex2</span><span class="p">[</span><span class="n">attr</span><span class="p">])</span>
                         <span class="n">cost</span> <span class="o">+=</span> <span class="n">that_key_cost</span>
             <span class="k">return</span> <span class="n">cost</span><span class="p">,</span> <span class="p">{}</span>
         <span class="k">return</span> <span class="n">boolean_sim_</span></div>
+
+
 <div class="viewcode-block" id="Simmix.excluding_pair_boolean_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.excluding_pair_boolean_sim">[docs]</a>    <span class="k">def</span> <span class="nf">excluding_pair_boolean_sim</span> <span class="p">(</span><span class="n">attrib_dict</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; The defined pair of values mustn&#39;t occur in one of the statements at once and in the other. &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">attrib_dict</span><span class="p">:</span>

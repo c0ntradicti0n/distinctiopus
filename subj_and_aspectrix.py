@@ -28,19 +28,22 @@ class Subjects_and_aspects(Arguments):
                     ],
                    )
 
-        self.filter = \
-            Simmix([(1, Simmix.multi_sim(Simmix.elmo_layer_sim(layer=[0, 1])
-                                         ), 0.2, 1)
-                    ],
+        self.filter1 = \
+            Simmix([(    1, Simmix.multi_sim(Simmix.elmo_layer_sim(layer=[0, 1]) ), 0.2, 1),
+                    (-1000, Simmix.multi_sim(Simmix.boolean_subsame_sim, n=2),      0.0, 0.1)],
                    n=100)
 
         self.concrete_abstract = \
-             Simmix ([(1, Simmix.multi_sim(Simmix.abtract_conrete_sim()), 0.0,1)],
+             Simmix ([(1, Simmix.multi_sim(Simmix.abtract_conrete_sim(), n=2), 0, 1)],
                       n=1)
+
+        self.theme_rheme = \
+             Simmix ([(1, Simmix.multi_sim(Simmix.left_sim, n=2), 0.2, 1),
+                     (-1000, Simmix.multi_sim(Simmix.boolean_subsame_sim, n=2), 0.0, 0.1)],
+                     n=1)
 
         self.pattern_pair_ent = [(self.standard_entity_exs, self.standard_entity_exs)]
         self.pattern_pair_asp = [(self.standard_aspect_exs, self.standard_aspect_exs)]
-
         self.subjasp_counter = count_up()
 
 
@@ -101,10 +104,12 @@ class Subjects_and_aspects(Arguments):
         if not poss_correlates1 or not poss_correlates2:
             return []
 
+
+
         def filter_possibilities (poss_correlates, pattern):
-            return self.filter.choose(                    # not too much
+            return self.filter1.choose(                    # not too much
                 (poss_correlates,
-                 (self.pattern_pair_ent)),
+                 pattern),
                 n=2,
                 out = 'lx',
                 layout='n',
@@ -115,14 +120,17 @@ class Subjects_and_aspects(Arguments):
         poss_subjects2 = filter_possibilities(poss_correlates2, self.pattern_pair_asp)
         poss_aspects2  = filter_possibilities(poss_correlates2, self.pattern_pair_asp)
 
-        subjects_aspects = self.concrete_abstract.choose(
-            (poss_subjects1 + poss_subjects2,poss_aspects2 + poss_aspects1),
+        subjects_aspects = self.theme_rheme.choose(
+            (poss_subjects1 + poss_subjects2, poss_aspects2 + poss_aspects1),
             n=1,
-            minimize=True,
+            minimize=False,
             layout='n',
             out='ex',
             type=("subjects", "aspects", "compared"),
             graph_coro=graph_coro_subj_asp)                             # Put it in the graph
+
+        if not subjects_aspects:
+            return []
 
         subject1 = subjects_aspects[0][0][0][0][0]
         subject2 = subjects_aspects[0][0][0][1][0]
@@ -175,20 +183,20 @@ class Subjects_and_aspects(Arguments):
             logging.warning("node data is list... taking first")
             n2 = n2[0]
 
-        def add_nx_node(G, n):
-            G.add_node (n['id'],
-                        s_id=n['s_id'],
-                        label=" ".join(n['text']).replace("'", "") )
-        def add_nx_edge(G, n1, n2):
-            G.add_edge (n1['id'], n2['id'],
-                        general_kind=general_kind,
-                        special_kind=special_kind,
-                        label = general_kind + ' ' + special_kind )
+        self.add_nx_node(G, n1)
+        self.add_nx_node(G, n2)
+        self.add_nx_edge(G, n1, n2, general_kind, special_kind)
 
-        add_nx_node(G,n1)
-        add_nx_node(G,n1)
-        add_nx_edge(G,n1,n2)
+    def add_nx_node(self, G, n):
+        G.add_node(n['id'],
+                   s_id=n['s_id'],
+                   label=" ".join(n['text']).replace("'", ""))
 
+    def add_nx_edge(self, G, n1, n2, general_kind, special_kind):
+        G.add_edge(n1['id'], n2['id'],
+                   general_kind=general_kind,
+                   special_kind=special_kind,
+                   label=general_kind + ' ' + special_kind)
 
     @coroutine
     def put_into_nx(self, G, general_kind):
