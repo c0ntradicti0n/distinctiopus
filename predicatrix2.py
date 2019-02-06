@@ -134,7 +134,7 @@ class Predication():
             s_id = next(self.s_id_generator)
         if not doc:
             raise KeyError("keyword argument 'doc'must be given")
-        if not s_id:
+        if s_id == None:
             raise KeyError("keyword argument 's_id' must be given")
 
         ps = self.collect_all_predicates(doc, s_id=s_id, **kwargs)
@@ -449,30 +449,33 @@ class Predication():
         logging.info ("predicates for '%s'," % str(ex))
 
         elmo_embeddings = self.elmo.embed_sentence([x.text for x in ex])
-        try:
 
+        try:
             importance = self.tdfidf.sentence2vec([x.lemma_ for x in ex])
         except AttributeError:
             logging.warning("No td-idf information was precomputed for this expression, filling it up with 0")
             importance = self.tdfidf.zero_importance([x.lemma_ for x in ex])
 
         ps = self.collect_all_simple_predicates(ex)
+
         if not ps:
             logging.error("no predicates found for %s" % str(ex))
+
         if not coref:
-            coref = [[]]*len (ex)
+            coref = [[]]*len (ex[0].doc)
 
         for p in ps:
-            p["id"]                  = str(next(self.id_generator))
-            p['s_id']                = s_id
-            p["elmo_embeddings"]     = elmo_embeddings[:,p["full_ex_i"]].sum(axis=1)
-            p['coref']               = [coref[i] for i in p["full_ex_i"]]
-            p["elmo_embeddings_per_word"]     = elmo_embeddings[:,p["full_ex_i"]]
-            p["elmo_embeddings_full"]= elmo_embeddings
-            p["importance"]          = importance[p["full_ex_i"]]
-            p["importance_full"]     = importance
-            p['arguments']           = self.sp_imp_elmo_dictize_ex (
+            p["id"]                      = str(next(self.id_generator))
+            p['s_id']                    = s_id
+            p["elmo_embeddings"]         = elmo_embeddings[:,p["full_ex_i"]].sum(axis=1)
+            p["coref"]                   = [coref[i] for i in p["full_ex_i"]]
+            p["elmo_embeddings_per_word"]= elmo_embeddings[:,p["full_ex_i"]]
+            p["elmo_embeddings_full"]    = elmo_embeddings
+            p["importance"]              = importance[p["full_ex_i"]]
+            p["importance_full"]         = importance
+            p['arguments']               = self.sp_imp_elmo_dictize_ex (
                                          p['arguments'],
+                                         coref,
                                          elmo_embeddings,
                                          importance,
                                          s_id)
@@ -495,31 +498,35 @@ class Predication():
         self.predicate_df = self.predicate_df.append(ps)
         self.predicate_df = self.predicate_df.append([part_p for p in ps for part_p in p['part_predications']])
 
-    def sp_imp_elmo_dictize_ex(self, ex, elmo_embeddings, importance, s_id):
+    def sp_imp_elmo_dictize_ex(self, ex, coref, elmo_embeddings, importance, s_id):
         if not ex:
             logging.warning("empty expression for argument?")
             return {}
         if isinstance(ex, list) and not isinstance(ex[0], spacy.tokens.token.Token ):
-            return list (self.sp_imp_elmo_dictize_ex(e, elmo_embeddings, importance, s_id) for e in ex)
+            return list (self.sp_imp_elmo_dictize_ex(e, coref, elmo_embeddings, importance, s_id) for e in ex)
 
         i_s = [x.i for x in ex]
-        d = {
-            "s_id"            : s_id,
-            "id"              : str(next(self.id_generator)),
-            "full_ex"         : ex,
-            "doc"             : ex[0].doc,
-            "i_s"             : i_s,
-            "dep"             : [x.dep for x in ex],
-            "pos"             : [x.pos for x in ex],
-            "tag"             : [x.tag for x in ex],
-            "text"            : [x.text for x in ex],
-            "lemma"           : [x.lemma for x in ex],
-            "lemma_"          : [x.lemma_ for x in ex],
-            "lemma_tag_"      : [x.lemma_ + '_' + x.tag_ for x in ex],
-            "importance"      : importance[i_s],
-            "elmo_embeddings" : elmo_embeddings[:,i_s].sum(axis=1),
-            "key"             : "arg" + str(next(self.arg_key_gen))
-        }
+        try:
+            d = {
+                "s_id"            : s_id,
+                "id"              : str(next(self.id_generator)),
+                "full_ex"         : ex,
+                "doc"             : ex[0].doc,
+                "i_s"             : i_s,
+                "dep"             : [x.dep for x in ex],
+                "pos"             : [x.pos for x in ex],
+                "tag"             : [x.tag for x in ex],
+                "text"            : [x.text for x in ex],
+                "lemma"           : [x.lemma for x in ex],
+                "lemma_"          : [x.lemma_ for x in ex],
+                "lemma_tag_"      : [x.lemma_ + '_' + x.tag_ for x in ex],
+                "coref"           : [coref[i] for i in i_s],
+                "importance"      : importance[i_s],
+                "elmo_embeddings" : elmo_embeddings[:,i_s].sum(axis=1),
+                "key"             : "arg" + str(next(self.arg_key_gen))
+            }
+        except IndexError:
+            raise IndexError ('indices out of range of coref')
         return d
 
 

@@ -108,7 +108,7 @@ class Contradiction:
 
 
     def wrap (self, line):
-        return textwrap.fill(line, 20)
+        return textwrap.fill(line, 50)
 
     def add_possible_correlation_node (self, G, predicate_dict, kind=None):
         key_co1 = kind + predicate_dict['key']
@@ -137,13 +137,13 @@ class Contradiction:
             n2 = n2[0]
 
         self.add_nx_node(G,n1)
-        self.add_nx_node(G,n1)
+        self.add_nx_node(G,n2)
         self.add_nx_edge(G,n1,n2, general_kind, special_kind)
 
     def add_nx_node(self, G, n):
         G.add_node(n['id'],
                    s_id=n['s_id'],
-                   label=" ".join(n['text']).replace("'", ""))
+                   label=self.wrap(" ".join(n['text']).replace("'", "")))
 
     def add_nx_edge(self, G, n1, n2, general_kind, special_kind):
         G.add_edge (n1['id'], n2['id'],
@@ -178,6 +178,8 @@ class Contradiction:
     def draw_key_graphs(self, G):
         import pylab as plt
         path = './img/contradicting_key_correlation' +  str(next(self.contra_counter)) + ".svg"
+
+
 
         G.graph['graph'] = {'rankdir': 'LR','splines':'line'}
         G.graph['edges'] = {'arrowsize': '4.0'}

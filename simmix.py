@@ -70,7 +70,7 @@ import string
 import re
 from pyxdameraulevenshtein import damerau_levenshtein_distance
 import logging
-from nested_list_tools import check_for_tuple_in_list, flatten,  flatten_reduce, flatten_list, type_spec
+from nested_list_tools import check_for_tuple_in_list, flatten, flatten_reduce, flatten_list, type_spec, existent
 import dict_tools
 import abstractness_estimator
 
@@ -465,8 +465,23 @@ class Simmix:
         str1  = ex1["text"]
         str2  = ex2["text"]
         return -damerau_levenshtein_distance(str1, str2) / (len(ex1) + len(ex2)) , {}
+
+
     @standard_range(-0.9, 0.9)
     def common_words_sim (ex1, ex2):
+        ''' This function gives weighted score for common words and negative weighted score for words, that appear only
+            in one expressions.
+
+            The weight of the weighted score is the tdidf-score in the document.
+
+            .. math::
+
+                c = \dfrac{\sum_{n=1}^{|W_{x_1} \cup W_{x_2}|} 2 \text{tf-idf}(w_n,x_1, D) -    \text{tf-idf}(w_n,x_1, D) -  \text{tf-idf}(w_n,x_2, D)}{|W_{x_1} \cup W_{x_2}|}
+
+            :param ex1: dict with 'importance' and 'lemma'
+            :param ex2: dict with 'importance' and 'lemma'
+            :return:
+        '''
         str1  = ex1["lemma"]
         str2  = ex2["lemma"]
         res = (len([ex1['importance'][i] for i,x in enumerate(str1) if x in str2]) +
@@ -501,6 +516,8 @@ class Simmix:
                 logger.error ("gensim meager, words are missing: " + str(nlemmata1) + str(nlemmata2) )
                 return 0
         return vecs_sim_
+
+
     def elmo_sim():
         @Simmix.standard_range(-6, 0.5)
         def elmo_sim_generated (ex1,ex2):
@@ -533,6 +550,8 @@ class Simmix:
                       )
             return sim, {}
         return elmo_sim_generated
+
+
     def elmo_layer_sim(layer = [0,1,2]):
         @Simmix.standard_range(-10/len(layer), 0.5/len(layer))
         def elmo_sim_generated (ex1,ex2):
@@ -586,6 +605,55 @@ class Simmix:
         except KeyError:
             logging.warning ("Why is there no 'doc'-key? Proceed... ")
             return is2.issubset(is1), {}
+
+
+    @standard_range(0,1)
+    def same_sent_sim (ex1,ex2):
+        ''' Check if both expressions are from the same sentence.
+
+        :param ex1: dict with 's_id'
+        :param ex2: dict with 's_id'
+        :return: 0 or 1
+
+        '''
+        return int(ex1['s_id'] == ex2['s_id'])
+
+
+    @standard_range(0,1)
+    def coreferential_sim (ex1,ex2):
+        ''' Check if the expressions are coreferential.
+
+        That means, either they refer to the same expression or they refer to one another
+
+        :param ex1: dict with 'coref', 's_id', 'full_ex_i'
+        :param ex2: dict with 'coref', 's_id', 'full_ex_i'
+        :return: 0 or 1
+
+        '''
+        coref1 = ex1['coref']
+        coref2 = ex2['coref']
+
+        def look_for_the_other(corefs, ex):
+            for corefs_per_word in existent(corefs):
+                for coref in corefs_per_word:
+                    if coref['s_id'] == ex['s_id']:
+                        if any(i in ex['i_s'] for i in range(coref['m_start'], coref['m_end'])):
+                            return True
+                        else:
+                            continue
+                    else:
+                        continue
+                return False
+            return False
+
+        def same_reference(coref1, coref2):
+            return any([c in coref1 for c in coref2 if c])
+
+        coreferential = (same_reference(coref1, coref2)
+                         or look_for_the_other(coref1, ex2)
+                         or look_for_the_other(coref2, ex1))
+        return int (coreferential), {}
+
 
 
     @standard_range(-100,0)

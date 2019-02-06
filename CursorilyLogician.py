@@ -367,16 +367,25 @@ r"""               MERGE (a:Expression {id:'%s', s_id:'%s', text:'%s'})
     def query_distinctions (self):
         query = \
             r"""
-Match (pred3)-[{GeneralKind:'correlation', SpecialKind:'correlated'}]-(pred1)-[{GeneralKind:'contradiction'}]-(pred2)-[{GeneralKind:'correlation', SpecialKind:'correlated'}]-(pred4)-[{GeneralKind:'correlation', SpecialKind:'opposed'}]-(pred3), 
-
-(pred1)-[{GeneralKind:'argument',SpecialKind:'subject'}]-(arg1), (pred2)-[{GeneralKind:'argument',SpecialKind:'subject'}]-(arg2),
-(pred3)-[{GeneralKind:'argument',SpecialKind:'aspect'}]-(arg3), (pred4)-[{GeneralKind:'argument',SpecialKind:'aspect'}]-(arg4),
-(arg1)-[{SpecialKind:'subject_juncture'}]-(arg2),
-(arg3)-[{SpecialKind:'aspect_juncture'}]-(arg4)
+Match 
+(pred3)-[{GeneralKind:'correlation', SpecialKind:'correlated'}]-(pred1),
+(pred1)-[{GeneralKind:'contradiction'}]-(pred2),
+(pred2)-[{GeneralKind:'correlation', SpecialKind:'correlated'}]-(pred4),
+(pred4)-[{GeneralKind:'correlation', SpecialKind:'opposed'}]-(pred3), 
+(pred1)-[{SpecialKind:'subject'}]-(arg1), 
+(pred2)-[{SpecialKind:'subject'}]-(arg2),
+(pred3)-[{SpecialKind:'aspect'}]-(arg3), 
+(pred4)-[{SpecialKind:'aspect'}]-(arg4),
+(arg1)-[{SpecialKind:'subjects'}]-(arg2),
+(arg3)-[{SpecialKind:'aspects'}]-(arg4)
 
 where ID(pred1)<ID(pred2)
 
 Return arg1, arg2, pred1, pred2, pred3, pred4, arg3, arg4"""
+
+        """Match p=(e0)-[{GeneralKind:'denotation'}]-(e1)-[{GeneralKind:'correlation'}]-(e2)-[{GeneralKind:'denotation'}]-(e3)
+With collect(p) as r
+Return r"""
         logging.info ("query neo4j for distinctions")
         self.distinction_df =  pd.DataFrame(self.graph.run(query).data()).applymap(
             lambda x: x['text']

@@ -11,10 +11,10 @@ class Correlation(Pairix):
 
         # This looks for relativly similar phrases to get some pairs that are possible modifiers to the contradiction
         self.correlative = \
-            Simmix([(200, Simmix.common_words_sim, 0.35, 1),
-                    (1, Simmix.dep_sim, 0.95, 1),
-                    (1, Simmix.pos_sim, 0.95, 1),
-                    #(1, Simmix.elmo_sim(), 0.35,1),
+            Simmix([(3, Simmix.common_words_sim, 0.35, 1),
+                    (1, Simmix.dep_sim, 0.65, 1),
+                    (1, Simmix.pos_sim, 0.65, 1),
+                    (1, Simmix.elmo_sim(), 0.35,1),
                     #(1,Simmix.fuzzystr_sim, 0.5,1),
                     (-1000, Simmix.boolean_subsame_sim, 0, 0.1)
                     ],
@@ -22,13 +22,10 @@ class Correlation(Pairix):
 
         # That's a distinctive criterium, that the correlative keys can't be too similar to the contradicting pair
         self.distinct = \
-            Simmix([(1, Simmix.multi_sim(fun=Simmix.common_words_sim, n=2.65*2.65), 0, 1),
-                    (1, Simmix.multi_sim(fun=Simmix.elmo_sim(), n=2.65*2.65), 0, 1),
+            Simmix([(1, Simmix.multi_sim(fun=Simmix.common_words_sim, n=2.65*2.65), 0, 0.9),
+                    (1, Simmix.multi_sim(fun=Simmix.elmo_sim(), n=2.65*2.65), 0, 0.9),
                     (1, Simmix.multi_sim(fun=Simmix.dep_sim, n=2.65*2.65), 0.0, 1),
                     (1, Simmix.multi_sim(fun=Simmix.pos_sim,n=2.65*2.65), 0.0, 1)
-                    # (2,Simmix.elmo_multi_sim(), 0,0.4),
-                    # (1, Simmix.multi_sim(fun=Simmix.sub_i, n=4), 0,0.3),
-                    # (1, Simmix.multi_sim(fun=Simmix.longer_sim, n=4), 0, 0.7) \
                     ],
                    n=None)
 
@@ -52,10 +49,12 @@ class Correlation(Pairix):
         if not poss_correlations:
             return []
 
+
+
         correlation = self.distinct.choose(                    # not too much
             ([contradiction],
              poss_correlations),
-            n=1,
+            n=int((len(poss_correlations)+1)/2),
             minimize=True,
             layout='n',
             out='ex',
@@ -98,19 +97,20 @@ class Correlation(Pairix):
             add_possible_correlation_node(ex2[0], kind = 'poss_new')
             add_possible_correlation_edge(ex1[0], ex2[0], label="possibly correlated", kind="poss_new")
 
-        def add_edge_between (contradicting_pred, correlated_pred):
-            key_corr1  = "poss_new" + correlated_pred    [0][0][0]['id']
-            key_trigg1 = "contra"   + contradicting_pred [0][0][0]['id']
-            dig.add_edge (key_trigg1, key_corr1, label = "*correlated")
+        def add_edge_between (contradicting_preds, correlated_preds):
+            for contradicting_pred in contradicting_preds:
+                for correlated_pred in correlated_preds:
+                    key_corr1  = "poss_new" + correlated_pred    [0][0]['id']
+                    key_corr2  = "poss_new" + correlated_pred    [1][0]['id']
 
-            key_corr2  = "poss_new" + correlated_pred    [0][1][0]['id']
-            key_trigg2 = "contra"   + contradicting_pred [0][1][0]['id']
-            dig.add_edge (key_trigg2, key_corr2, label = "*correlated")
+                    key_trigg2 = "contra"   + contradicting_pred [1][0]['id']
+                    key_trigg1 = "contra"   + contradicting_pred [0][0]['id']
 
-            dig.add_edge (key_corr1, key_corr2, label = "*opposed")
-            dig.add_edge (key_corr2, key_corr1, label = "*opposed")
+                    dig.add_edge (key_trigg1, key_corr1, label = "*correlated")
+                    dig.add_edge (key_trigg2, key_corr2, label = "*correlated")
 
-
+                    dig.add_edge (key_corr1, key_corr2, label = "*opposed")
+                    dig.add_edge (key_corr2, key_corr1, label = "*opposed")
 
         for contra, correl in correlation:
            add_edge_between(contra, correl)

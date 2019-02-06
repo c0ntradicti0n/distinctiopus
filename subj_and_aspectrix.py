@@ -33,14 +33,14 @@ class Subjects_and_aspects(Arguments):
                     (-1000, Simmix.multi_sim(Simmix.boolean_subsame_sim, n=2),      0.0, 0.1)],
                    n=100)
 
-        self.concrete_abstract = \
-             Simmix ([(1, Simmix.multi_sim(Simmix.abtract_conrete_sim(), n=2), 0, 1)],
-                      n=1)
-
         self.theme_rheme = \
              Simmix ([(1, Simmix.multi_sim(Simmix.left_sim, n=2), 0.2, 1),
                      (-1000, Simmix.multi_sim(Simmix.boolean_subsame_sim, n=2), 0.0, 0.1)],
                      n=1)
+
+        self.coreferential = \
+             Simmix ([(1, Simmix.multi_sim(Simmix.coreferential_sim, n=2), 0, 0.1)],
+                      n=1)
 
         self.pattern_pair_ent = [(self.standard_entity_exs, self.standard_entity_exs)]
         self.pattern_pair_asp = [(self.standard_aspect_exs, self.standard_aspect_exs)]
@@ -105,7 +105,6 @@ class Subjects_and_aspects(Arguments):
             return []
 
 
-
         def filter_possibilities (poss_correlates, pattern):
             return self.filter1.choose(                    # not too much
                 (poss_correlates,
@@ -116,8 +115,8 @@ class Subjects_and_aspects(Arguments):
             )
 
         poss_subjects1 = filter_possibilities(poss_correlates1, self.pattern_pair_ent)
-        poss_aspects1  = filter_possibilities(poss_correlates1, self.pattern_pair_ent)
-        poss_subjects2 = filter_possibilities(poss_correlates2, self.pattern_pair_asp)
+        poss_aspects1  = filter_possibilities(poss_correlates1, self.pattern_pair_asp)
+        poss_subjects2 = filter_possibilities(poss_correlates2, self.pattern_pair_ent)
         poss_aspects2  = filter_possibilities(poss_correlates2, self.pattern_pair_asp)
 
         subjects_aspects = self.theme_rheme.choose(
@@ -142,9 +141,21 @@ class Subjects_and_aspects(Arguments):
         pred3    = oppo2[0][0]
         pred4    = oppo2[1][0]
 
+        if not (
+            Simmix.same_sent_sim(subject1, pred1) and
+            Simmix.same_sent_sim(subject2, pred2) and
+            Simmix.same_sent_sim(aspect1, pred3) and
+            Simmix.same_sent_sim(aspect2, pred4) ):
+            logging.warning ('subjects and aspects not from the same sentence')
+            return []
+
+        coreferential = self.coreferential.choose(subjects_aspects, layout='n')
+
+        if coreferential:
+            return []
+
         graph_coro_arg_binding.send ((pred1, subject1) + ('subject',))
         graph_coro_arg_binding.send ((pred2, subject2) + ('subject',))
-
         graph_coro_arg_binding.send ((pred3, aspect1) + ('aspect',))
         graph_coro_arg_binding.send ((pred4, aspect2) + ('aspect',))
 

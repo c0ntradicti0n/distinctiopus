@@ -3,6 +3,10 @@ import collections
 import functools
 import operator
 
+def existent(iterable):
+    for element in iterable:
+        if element:
+            yield element
 
 def flatten(iterable):
     for el in iterable:
