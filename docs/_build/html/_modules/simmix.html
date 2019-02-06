@@ -225,7 +225,7 @@
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">pyxdameraulevenshtein</span> <span class="k">import</span> <span class="n">damerau_levenshtein_distance</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">nested_list_tools</span> <span class="k">import</span> <span class="n">check_for_tuple_in_list</span><span class="p">,</span> <span class="n">flatten</span><span class="p">,</span>  <span class="n">flatten_reduce</span><span class="p">,</span> <span class="n">flatten_list</span><span class="p">,</span> <span class="n">type_spec</span>
+<span class="kn">from</span> <span class="nn">nested_list_tools</span> <span class="k">import</span> <span class="n">check_for_tuple_in_list</span><span class="p">,</span> <span class="n">flatten</span><span class="p">,</span> <span class="n">flatten_reduce</span><span class="p">,</span> <span class="n">flatten_list</span><span class="p">,</span> <span class="n">type_spec</span><span class="p">,</span> <span class="n">existent</span>
 <span class="kn">import</span> <span class="nn">dict_tools</span>
 <span class="kn">import</span> <span class="nn">abstractness_estimator</span>
 
@@ -620,8 +620,23 @@
         <span class="n">str1</span>  <span class="o">=</span> <span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span>
         <span class="n">str2</span>  <span class="o">=</span> <span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="o">-</span><span class="n">damerau_levenshtein_distance</span><span class="p">(</span><span class="n">str1</span><span class="p">,</span> <span class="n">str2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ex1</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">ex2</span><span class="p">))</span> <span class="p">,</span> <span class="p">{}</span></div>
+
+
 <div class="viewcode-block" id="Simmix.common_words_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.common_words_sim">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="o">-</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">common_words_sim</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; This function gives weighted score for common words and negative weighted score for words, that appear only</span>
+<span class="sd">            in one expressions.</span>
+
+<span class="sd">            The weight of the weighted score is the tdidf-score in the document.</span>
+
+<span class="sd">            .. math::</span>
+
+<span class="sd">                c = \dfrac{\sum_{n=1}^{|W_{x_1} \cup W_{x_2}|} 2 \text{tf-idf}(w_n,x_1, D) -    \text{tf-idf}(w_n,x_1, D) -  \text{tf-idf}(w_n,x_2, D)}{|W_{x_1} \cup W_{x_2}|}</span>
+
+<span class="sd">            :param ex1: dict with &#39;importance&#39; and &#39;lemma&#39;</span>
+<span class="sd">            :param ex2: dict with &#39;importance&#39; and &#39;lemma&#39;</span>
+<span class="sd">            :return:</span>
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">str1</span>  <span class="o">=</span> <span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;lemma&quot;</span><span class="p">]</span>
         <span class="n">str2</span>  <span class="o">=</span> <span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;lemma&quot;</span><span class="p">]</span>
         <span class="n">res</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">([</span><span class="n">ex1</span><span class="p">[</span><span class="s1">&#39;importance&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">str1</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">str2</span><span class="p">])</span> <span class="o">+</span>
@@ -656,6 +671,8 @@
                 <span class="n">logger</span><span class="o">.</span><span class="n">error</span> <span class="p">(</span><span class="s2">&quot;gensim meager, words are missing: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nlemmata1</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nlemmata2</span><span class="p">)</span> <span class="p">)</span>
                 <span class="k">return</span> <span class="mi">0</span>
         <span class="k">return</span> <span class="n">vecs_sim_</span></div>
+
+
 <div class="viewcode-block" id="Simmix.elmo_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.elmo_sim">[docs]</a>    <span class="k">def</span> <span class="nf">elmo_sim</span><span class="p">():</span>
         <span class="nd">@Simmix</span><span class="o">.</span><span class="n">standard_range</span><span class="p">(</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
         <span class="k">def</span> <span class="nf">elmo_sim_generated</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span><span class="n">ex2</span><span class="p">):</span>
@@ -688,6 +705,8 @@
                       <span class="p">)</span>
             <span class="k">return</span> <span class="n">sim</span><span class="p">,</span> <span class="p">{}</span>
         <span class="k">return</span> <span class="n">elmo_sim_generated</span></div>
+
+
 <div class="viewcode-block" id="Simmix.elmo_layer_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.elmo_layer_sim">[docs]</a>    <span class="k">def</span> <span class="nf">elmo_layer_sim</span><span class="p">(</span><span class="n">layer</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]):</span>
         <span class="nd">@Simmix</span><span class="o">.</span><span class="n">standard_range</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">layer</span><span class="p">),</span> <span class="mf">0.5</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">layer</span><span class="p">))</span>
         <span class="k">def</span> <span class="nf">elmo_sim_generated</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span><span class="n">ex2</span><span class="p">):</span>
@@ -743,9 +762,62 @@
             <span class="k">return</span> <span class="n">is2</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">is1</span><span class="p">),</span> <span class="p">{}</span></div>
 
 
+<div class="viewcode-block" id="Simmix.same_sent_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.same_sent_sim">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">same_sent_sim</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span><span class="n">ex2</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Check if both expressions are from the same sentence.</span>
+
+<span class="sd">        :param ex1: dict with &#39;s_id&#39;</span>
+<span class="sd">        :param ex2: dict with &#39;s_id&#39;</span>
+<span class="sd">        :return: 0 or 1</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">ex1</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">ex2</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="Simmix.coreferential_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.coreferential_sim">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">coreferential_sim</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span><span class="n">ex2</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Check if the expressions are coreferential.</span>
+
+<span class="sd">        That means, either they refer to the same expression or they refer to one another</span>
+
+<span class="sd">        :param ex1: dict with &#39;coref&#39;, &#39;s_id&#39;, &#39;full_ex_i&#39;</span>
+<span class="sd">        :param ex2: dict with &#39;coref&#39;, &#39;s_id&#39;, &#39;full_ex_i&#39;</span>
+<span class="sd">        :return: 0 or 1</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">coref1</span> <span class="o">=</span> <span class="n">ex1</span><span class="p">[</span><span class="s1">&#39;coref&#39;</span><span class="p">]</span>
+        <span class="n">coref2</span> <span class="o">=</span> <span class="n">ex2</span><span class="p">[</span><span class="s1">&#39;coref&#39;</span><span class="p">]</span>
+
+        <span class="k">def</span> <span class="nf">look_for_the_other</span><span class="p">(</span><span class="n">corefs</span><span class="p">,</span> <span class="n">ex</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">corefs_per_word</span> <span class="ow">in</span> <span class="n">existent</span><span class="p">(</span><span class="n">corefs</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">coref</span> <span class="ow">in</span> <span class="n">corefs_per_word</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">coref</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">ex</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">]:</span>
+                        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">i</span> <span class="ow">in</span> <span class="n">ex</span><span class="p">[</span><span class="s1">&#39;i_s&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">coref</span><span class="p">[</span><span class="s1">&#39;m_start&#39;</span><span class="p">],</span> <span class="n">coref</span><span class="p">[</span><span class="s1">&#39;m_end&#39;</span><span class="p">])):</span>
+                            <span class="k">return</span> <span class="kc">True</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">continue</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">def</span> <span class="nf">same_reference</span><span class="p">(</span><span class="n">coref1</span><span class="p">,</span> <span class="n">coref2</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">any</span><span class="p">([</span><span class="n">c</span> <span class="ow">in</span> <span class="n">coref1</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">coref2</span> <span class="k">if</span> <span class="n">c</span><span class="p">])</span>
+
+        <span class="n">coreferential</span> <span class="o">=</span> <span class="p">(</span><span class="n">same_reference</span><span class="p">(</span><span class="n">coref1</span><span class="p">,</span> <span class="n">coref2</span><span class="p">)</span>
+                         <span class="ow">or</span> <span class="n">look_for_the_other</span><span class="p">(</span><span class="n">coref1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">)</span>
+                         <span class="ow">or</span> <span class="n">look_for_the_other</span><span class="p">(</span><span class="n">coref2</span><span class="p">,</span> <span class="n">ex1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">int</span> <span class="p">(</span><span class="n">coreferential</span><span class="p">),</span> <span class="p">{}</span></div>
+
+
+
 <div class="viewcode-block" id="Simmix.longer_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.longer_sim">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">longer_sim</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Negative length distance resp. the expressions words.</span>
+        <span class="sd">&#39;&#39;&#39; Difference between the lenght of the expressions.</span>
+
+<span class="sd">        ..math::</span>
+
+<span class="sd">            c = |W_{x_1} \cup W_{x_2}|</span>
 
 <span class="sd">        :param ex1: expression1</span>
 <span class="sd">        :param ex2: expression2</span>

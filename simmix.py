@@ -658,7 +658,11 @@ class Simmix:
 
     @standard_range(-100,0)
     def longer_sim (ex1, ex2):
-        ''' Negative length distance resp. the expressions words.
+        ''' Difference between the lenght of the expressions.
+
+        ..math::
+
+            c = |W_{x_1} \cup W_{x_2}|
 
         :param ex1: expression1
         :param ex2: expression2

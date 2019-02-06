@@ -188,14 +188,14 @@
                     <span class="p">(</span><span class="o">-</span><span class="mi">1000</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">multi_sim</span><span class="p">(</span><span class="n">Simmix</span><span class="o">.</span><span class="n">boolean_subsame_sim</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>      <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)],</span>
                    <span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">concrete_abstract</span> <span class="o">=</span> \
-             <span class="n">Simmix</span> <span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">multi_sim</span><span class="p">(</span><span class="n">Simmix</span><span class="o">.</span><span class="n">abtract_conrete_sim</span><span class="p">(),</span> <span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span>
-                      <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">theme_rheme</span> <span class="o">=</span> \
              <span class="n">Simmix</span> <span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">multi_sim</span><span class="p">(</span><span class="n">Simmix</span><span class="o">.</span><span class="n">left_sim</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
                      <span class="p">(</span><span class="o">-</span><span class="mi">1000</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">multi_sim</span><span class="p">(</span><span class="n">Simmix</span><span class="o">.</span><span class="n">boolean_subsame_sim</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)],</span>
                      <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">coreferential</span> <span class="o">=</span> \
+             <span class="n">Simmix</span> <span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">multi_sim</span><span class="p">(</span><span class="n">Simmix</span><span class="o">.</span><span class="n">coreferential_sim</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)],</span>
+                      <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">pattern_pair_ent</span> <span class="o">=</span> <span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">standard_entity_exs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">standard_entity_exs</span><span class="p">)]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pattern_pair_asp</span> <span class="o">=</span> <span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">standard_aspect_exs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">standard_aspect_exs</span><span class="p">)]</span>
@@ -260,7 +260,6 @@
             <span class="k">return</span> <span class="p">[]</span>
 
 
-
         <span class="k">def</span> <span class="nf">filter_possibilities</span> <span class="p">(</span><span class="n">poss_correlates</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter1</span><span class="o">.</span><span class="n">choose</span><span class="p">(</span>                    <span class="c1"># not too much</span>
                 <span class="p">(</span><span class="n">poss_correlates</span><span class="p">,</span>
@@ -271,8 +270,8 @@
             <span class="p">)</span>
 
         <span class="n">poss_subjects1</span> <span class="o">=</span> <span class="n">filter_possibilities</span><span class="p">(</span><span class="n">poss_correlates1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pattern_pair_ent</span><span class="p">)</span>
-        <span class="n">poss_aspects1</span>  <span class="o">=</span> <span class="n">filter_possibilities</span><span class="p">(</span><span class="n">poss_correlates1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pattern_pair_ent</span><span class="p">)</span>
-        <span class="n">poss_subjects2</span> <span class="o">=</span> <span class="n">filter_possibilities</span><span class="p">(</span><span class="n">poss_correlates2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pattern_pair_asp</span><span class="p">)</span>
+        <span class="n">poss_aspects1</span>  <span class="o">=</span> <span class="n">filter_possibilities</span><span class="p">(</span><span class="n">poss_correlates1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pattern_pair_asp</span><span class="p">)</span>
+        <span class="n">poss_subjects2</span> <span class="o">=</span> <span class="n">filter_possibilities</span><span class="p">(</span><span class="n">poss_correlates2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pattern_pair_ent</span><span class="p">)</span>
         <span class="n">poss_aspects2</span>  <span class="o">=</span> <span class="n">filter_possibilities</span><span class="p">(</span><span class="n">poss_correlates2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pattern_pair_asp</span><span class="p">)</span>
 
         <span class="n">subjects_aspects</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">theme_rheme</span><span class="o">.</span><span class="n">choose</span><span class="p">(</span>
@@ -297,9 +296,21 @@
         <span class="n">pred3</span>    <span class="o">=</span> <span class="n">oppo2</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">pred4</span>    <span class="o">=</span> <span class="n">oppo2</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
 
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
+            <span class="n">Simmix</span><span class="o">.</span><span class="n">same_sent_sim</span><span class="p">(</span><span class="n">subject1</span><span class="p">,</span> <span class="n">pred1</span><span class="p">)</span> <span class="ow">and</span>
+            <span class="n">Simmix</span><span class="o">.</span><span class="n">same_sent_sim</span><span class="p">(</span><span class="n">subject2</span><span class="p">,</span> <span class="n">pred2</span><span class="p">)</span> <span class="ow">and</span>
+            <span class="n">Simmix</span><span class="o">.</span><span class="n">same_sent_sim</span><span class="p">(</span><span class="n">aspect1</span><span class="p">,</span> <span class="n">pred3</span><span class="p">)</span> <span class="ow">and</span>
+            <span class="n">Simmix</span><span class="o">.</span><span class="n">same_sent_sim</span><span class="p">(</span><span class="n">aspect2</span><span class="p">,</span> <span class="n">pred4</span><span class="p">)</span> <span class="p">):</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span> <span class="p">(</span><span class="s1">&#39;subjects and aspects not from the same sentence&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="n">coreferential</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coreferential</span><span class="o">.</span><span class="n">choose</span><span class="p">(</span><span class="n">subjects_aspects</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="s1">&#39;n&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">coreferential</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
         <span class="n">graph_coro_arg_binding</span><span class="o">.</span><span class="n">send</span> <span class="p">((</span><span class="n">pred1</span><span class="p">,</span> <span class="n">subject1</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;subject&#39;</span><span class="p">,))</span>
         <span class="n">graph_coro_arg_binding</span><span class="o">.</span><span class="n">send</span> <span class="p">((</span><span class="n">pred2</span><span class="p">,</span> <span class="n">subject2</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;subject&#39;</span><span class="p">,))</span>
-
         <span class="n">graph_coro_arg_binding</span><span class="o">.</span><span class="n">send</span> <span class="p">((</span><span class="n">pred3</span><span class="p">,</span> <span class="n">aspect1</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;aspect&#39;</span><span class="p">,))</span>
         <span class="n">graph_coro_arg_binding</span><span class="o">.</span><span class="n">send</span> <span class="p">((</span><span class="n">pred4</span><span class="p">,</span> <span class="n">aspect2</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;aspect&#39;</span><span class="p">,))</span>
 

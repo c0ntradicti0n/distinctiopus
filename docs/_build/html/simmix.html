@@ -82,12 +82,16 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p class="caption"><span class="caption-text">Table of Contents</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="CursorilyLogician.html">CursorilyLogician module</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">simmix module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="grammarannotator.html">grammarannotator module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contradictrix.html">contradictrix module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="correlatrix.html">correlatrix module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="subj_and_aspectrix.html">subj_and_aspectrix module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="corpus_reader.html">corpus_reader module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="webanno_parser.html">webanno_parser module</a></li>
 </ul>
 
             
@@ -385,12 +389,54 @@ count of best n solutions, also clusters of expressions of the one are chosen to
 <dl class="method">
 <dt id="simmix.Simmix.common_words_sim">
 <code class="descname">common_words_sim</code><span class="sig-paren">(</span><em>ex2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.common_words_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.common_words_sim" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This function gives weighted score for common words and negative weighted score for words, that appear only
+in one expressions.</p>
+<p>The weight of the weighted score is the tdidf-score in the document.</p>
+<div class="math notranslate nohighlight">
+\[c = \dfrac{\sum_{n=1}^{|W_{x_1} \cup W_{x_2}|} 2        ext{tf-idf}(w_n,x_1, D) -       ext{tf-idf}(w_n,x_1, D) -       ext{tf-idf}(w_n,x_2, D)}{|W_{x_1} \cup W_{x_2}|}\]</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ex1</strong> – dict with ‘importance’ and ‘lemma’</li>
+<li><strong>ex2</strong> – dict with ‘importance’ and ‘lemma’</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="simmix.Simmix.convolve_sim">
 <code class="descname">convolve_sim</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.convolve_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.convolve_sim" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.coreferential_sim">
+<code class="descname">coreferential_sim</code><span class="sig-paren">(</span><em>ex2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.coreferential_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.coreferential_sim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the expressions are coreferential.</p>
+<p>That means, either they refer to the same expression or they refer to one another</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ex1</strong> – dict with ‘coref’, ‘s_id’, ‘full_ex_i’</li>
+<li><strong>ex2</strong> – dict with ‘coref’, ‘s_id’, ‘full_ex_i’</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">0 or 1</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="simmix.Simmix.dep_sim">
@@ -508,7 +554,11 @@ this key stands for contains a negation</p>
 <dl class="method">
 <dt id="simmix.Simmix.longer_sim">
 <code class="descname">longer_sim</code><span class="sig-paren">(</span><em>ex2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.longer_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.longer_sim" title="Permalink to this definition">¶</a></dt>
-<dd><p>Negative length distance resp. the expressions words.</p>
+<dd><p>Difference between the lenght of the expressions.</p>
+<p>..math:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">c</span> <span class="o">=</span> <span class="o">|</span><span class="n">W_</span><span class="p">{</span><span class="n">x_1</span><span class="p">}</span> \<span class="n">cup</span> <span class="n">W_</span><span class="p">{</span><span class="n">x_2</span><span class="p">}</span><span class="o">|</span>
+</pre></div>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -616,6 +666,27 @@ Solved with the hungarian method, filtered by the mask of acceptable solutions w
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">0 or 1 (if right), {}</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="simmix.Simmix.same_sent_sim">
+<code class="descname">same_sent_sim</code><span class="sig-paren">(</span><em>ex2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simmix.html#Simmix.same_sent_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simmix.Simmix.same_sent_sim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if both expressions are from the same sentence.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ex1</strong> – dict with ‘s_id’</li>
+<li><strong>ex2</strong> – dict with ‘s_id’</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">0 or 1</p>
 </td>
 </tr>
 </tbody>

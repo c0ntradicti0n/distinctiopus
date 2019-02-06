@@ -522,16 +522,25 @@
 <div class="viewcode-block" id="DataframeCursorilyLogician.query_distinctions"><a class="viewcode-back" href="../CursorilyLogician.html#CursorilyLogician.DataframeCursorilyLogician.query_distinctions">[docs]</a>    <span class="k">def</span> <span class="nf">query_distinctions</span> <span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">query</span> <span class="o">=</span> \
             <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Match (pred3)-[{GeneralKind:&#39;correlation&#39;, SpecialKind:&#39;correlated&#39;}]-(pred1)-[{GeneralKind:&#39;contradiction&#39;}]-(pred2)-[{GeneralKind:&#39;correlation&#39;, SpecialKind:&#39;correlated&#39;}]-(pred4)-[{GeneralKind:&#39;correlation&#39;, SpecialKind:&#39;opposed&#39;}]-(pred3), </span>
-
-<span class="sd">(pred1)-[{GeneralKind:&#39;argument&#39;,SpecialKind:&#39;subject&#39;}]-(arg1), (pred2)-[{GeneralKind:&#39;argument&#39;,SpecialKind:&#39;subject&#39;}]-(arg2),</span>
-<span class="sd">(pred3)-[{GeneralKind:&#39;argument&#39;,SpecialKind:&#39;aspect&#39;}]-(arg3), (pred4)-[{GeneralKind:&#39;argument&#39;,SpecialKind:&#39;aspect&#39;}]-(arg4),</span>
-<span class="sd">(arg1)-[{SpecialKind:&#39;subject_juncture&#39;}]-(arg2),</span>
-<span class="sd">(arg3)-[{SpecialKind:&#39;aspect_juncture&#39;}]-(arg4)</span>
+<span class="sd">Match </span>
+<span class="sd">(pred3)-[{GeneralKind:&#39;correlation&#39;, SpecialKind:&#39;correlated&#39;}]-(pred1),</span>
+<span class="sd">(pred1)-[{GeneralKind:&#39;contradiction&#39;}]-(pred2),</span>
+<span class="sd">(pred2)-[{GeneralKind:&#39;correlation&#39;, SpecialKind:&#39;correlated&#39;}]-(pred4),</span>
+<span class="sd">(pred4)-[{GeneralKind:&#39;correlation&#39;, SpecialKind:&#39;opposed&#39;}]-(pred3), </span>
+<span class="sd">(pred1)-[{SpecialKind:&#39;subject&#39;}]-(arg1), </span>
+<span class="sd">(pred2)-[{SpecialKind:&#39;subject&#39;}]-(arg2),</span>
+<span class="sd">(pred3)-[{SpecialKind:&#39;aspect&#39;}]-(arg3), </span>
+<span class="sd">(pred4)-[{SpecialKind:&#39;aspect&#39;}]-(arg4),</span>
+<span class="sd">(arg1)-[{SpecialKind:&#39;subjects&#39;}]-(arg2),</span>
+<span class="sd">(arg3)-[{SpecialKind:&#39;aspects&#39;}]-(arg4)</span>
 
 <span class="sd">where ID(pred1)&lt;ID(pred2)</span>
 
 <span class="sd">Return arg1, arg2, pred1, pred2, pred3, pred4, arg3, arg4&quot;&quot;&quot;</span>
+
+        <span class="sd">&quot;&quot;&quot;Match p=(e0)-[{GeneralKind:&#39;denotation&#39;}]-(e1)-[{GeneralKind:&#39;correlation&#39;}]-(e2)-[{GeneralKind:&#39;denotation&#39;}]-(e3)</span>
+<span class="sd">With collect(p) as r</span>
+<span class="sd">Return r&quot;&quot;&quot;</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span> <span class="p">(</span><span class="s2">&quot;query neo4j for distinctions&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">distinction_df</span> <span class="o">=</span>  <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">())</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span>
             <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]</span>
