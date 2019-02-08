@@ -32,12 +32,29 @@ def flatten_list(l):
             yield el
 
 
-def curry(fun, *args, **kwargs):
+def curry(function, *args, **kwargs):
+    ''' Apply arguments to a function, but leave the last one out
+
+    :param function: function with multiple arguments
+    :param args: normal arguments
+    :param kwargs: keyword arguments
+    :return: fun with one argument
+
+    '''
     def fun_new(x):
-        return fun (x, *args, **kwargs)
+        return function (x, *args, **kwargs)
     return fun_new
 
 def on_each_level (lol, fun, out = []):
+    ''' If you have a nested list and you want to apply a function on the elements of the list, you have to go through
+    all the levels, this functions does this recursively and applys the function
+
+    :param lol: nested list
+    :param fun: function with one argument
+    :param out: output list, default (for starting) = []
+    :return:
+
+    '''
     for x in lol:
         if not isinstance(x, list):
             out.append(fun(x))
@@ -45,16 +62,6 @@ def on_each_level (lol, fun, out = []):
             out.append(on_each_level(x, fun, []))
     return out
 
-""""""
-def on_each_iterable_old (lol, fun, out = []):
-    if isinstance(lol, list):
-        for x in lol:
-            out.append(on_each_iterable(x, fun, []))
-        out = fun(out)
-    else:
-        out = lol
-    return out
-""""""
 
 def on_each_iterable (lol, fun):
     out = []
@@ -66,11 +73,30 @@ def on_each_iterable (lol, fun):
         out = lol
     return out
 
-def stack_matryoshka(nesting_list):
-    nesting_list = sorted(nesting_list, key=lambda x: len(x))
+def stack_matryoshka(list_to_nest):
+    ''' Put lists, that fit into the elements of a list together.
+
+    Example
+    -------
+
+    >>> l = [[4],
+    ... [3,4,5],
+    ... [2,3,4,5,6],
+    ... [1,2,3,4,5,6,7]]
+    >>> stack_matryoshka(l)
+    [1, [2, [3, [4], 5], 6], 7]
+
+    But remember, graphs are the most time better solutions to this or to build a string and parse it as python
+
+    :param nesting_list: lists, that may fit together, but if you want to get a good result, you should give a list
+    with all elements in it.
+    :return: nested list
+
+    '''
+    list_to_nest = sorted(list_to_nest, key=lambda x: len(x))
     n = 0
-    while n < (len(nesting_list) - 1):
-        to_fit_there = nesting_list[n]
+    while n < (len(list_to_nest) - 1):
+        to_fit_there = list_to_nest[n]
         flatted_to_fit_there = list(flatten(to_fit_there[:]))
 
         def is_fitting(*xs):
@@ -83,16 +109,17 @@ def stack_matryoshka(nesting_list):
                 return False
             return decision
 
-        for m in range(n + 1, len(nesting_list)):
-            through = list(nesting_list[m])
+        for m in range(n + 1, len(list_to_nest)):
+            through = list(list_to_nest[m])
 
             def replacing_fun(x):
                 return list(replace(list(x), is_fitting, [to_fit_there], window_size=len(to_fit_there)))
 
-            nesting_list[m] = on_each_iterable(through, replacing_fun)
+            list_to_nest[m] = on_each_iterable(through, replacing_fun)
 
         n = n + 1
-    return (nesting_list[-1])
+    return (list_to_nest[-1])
+
 
 def replace_pattern(lst, pattern_sequence, replacement, expand=False):
     out = lst[:]
@@ -312,3 +339,6 @@ class TestNLT(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+    import doctest
+
+    doctest.testmod()

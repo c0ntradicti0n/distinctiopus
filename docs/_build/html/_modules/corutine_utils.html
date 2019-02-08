@@ -90,6 +90,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../subj_and_aspectrix.html">subj_and_aspectrix module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../corpus_reader.html">corpus_reader module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../webanno_parser.html">webanno_parser module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../word_definitions.html">word_definitions module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tdfidf_tool.html">tdfidf_tool module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../corutine_utils.html">corutine_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dict_tools.html">dict_tools module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../nested_list_tools.html">nested_list_tools module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../word_definitions.html">word_definitions module</a></li>
 </ul>
 
             
@@ -153,7 +159,12 @@
            <div itemprop="articleBody">
             
   <h1>Source code for corutine_utils</h1><div class="highlight"><pre>
-<div class="viewcode-block" id="coroutine"><a class="viewcode-back" href="../corutine_utils.html#CursorilyLogician.coroutine">[docs]</a><span></span><span class="k">def</span> <span class="nf">coroutine</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<div class="viewcode-block" id="coroutine"><a class="viewcode-back" href="../corutine_utils.html#corutine_utils.coroutine">[docs]</a><span></span><span class="k">def</span> <span class="nf">coroutine</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Start coroutine with this wrapper, when initializing calling the first time next() on them</span>
+
+<span class="sd">    :param func: function with data = (yield)</span>
+<span class="sd">    :return: started function</span>
+<span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">cr</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="nb">next</span><span class="p">(</span><span class="n">cr</span><span class="p">)</span>

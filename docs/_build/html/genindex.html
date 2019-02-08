@@ -91,6 +91,12 @@
 <li class="toctree-l1"><a class="reference internal" href="subj_and_aspectrix.html">subj_and_aspectrix module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="corpus_reader.html">corpus_reader module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="webanno_parser.html">webanno_parser module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="word_definitions.html">word_definitions module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tdfidf_tool.html">tdfidf_tool module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="corutine_utils.html">corutine_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dict_tools.html">dict_tools module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nested_list_tools.html">nested_list_tools module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="word_definitions.html">word_definitions module</a></li>
 </ul>
 
             
@@ -250,6 +256,8 @@
         <li><a href="subj_and_aspectrix.html#subj_and_aspectrix.Subjects_and_aspects.add_determined_expression_nx">(subj_and_aspectrix.Subjects_and_aspects method)</a>
 </li>
       </ul></li>
+      <li><a href="subj_and_aspectrix.html#subj_and_aspectrix.Subjects_and_aspects.add_edge_between">add_edge_between() (subj_and_aspectrix.Subjects_and_aspects method)</a>
+</li>
       <li><a href="contradictrix.html#contradictrix.Contradiction.add_nx_edge">add_nx_edge() (contradictrix.Contradiction method)</a>
 
       <ul>
@@ -455,12 +463,10 @@
 </li>
       </ul></li>
       <li><a href="contradictrix.html#contradictrix.Contradiction.draw_key_graphs">draw_key_graphs() (contradictrix.Contradiction method)</a>
-
-      <ul>
-        <li><a href="subj_and_aspectrix.html#subj_and_aspectrix.Subjects_and_aspects.draw_key_graphs">(subj_and_aspectrix.Subjects_and_aspects method)</a>
 </li>
-      </ul></li>
       <li><a href="predicatrix2.html#predicatrix2.Predication.draw_predicate_structure">draw_predicate_structure() (predicatrix2.Predication method)</a>
+</li>
+      <li><a href="subj_and_aspectrix.html#subj_and_aspectrix.Subjects_and_aspects.draw_subjects_aspects">draw_subjects_aspects() (subj_and_aspectrix.Subjects_and_aspects method)</a>
 </li>
       <li><a href="grammarannotator.html#grammarannotator.GrammarAnnotator.dump">dump() (grammarannotator.GrammarAnnotator method)</a>
 </li>
@@ -710,8 +716,6 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="nested_list_tools.html#nested_list_tools.on_each_iterable_old">on_each_iterable_old() (in module nested_list_tools)</a>
-</li>
       <li><a href="nested_list_tools.html#nested_list_tools.on_each_level">on_each_level() (in module nested_list_tools)</a>
 </li>
       <li><a href="simmix.html#simmix.Simmix.one_to_one">one_to_one() (simmix.Simmix method)</a>
@@ -738,15 +742,13 @@
 </li>
       <li><a href="predicatrix2.html#predicatrix2.Predication.pprint_key_dict">pprint_key_dict() (predicatrix2.Predication method)</a>
 </li>
-      <li><a href="webanno_parser.html#webanno_parser.Webanno_Parser.DistpartRelation.pred">pred (webanno_parser.Webanno_Parser.DistpartRelation attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="webanno_parser.html#webanno_parser.Webanno_Parser.DistpartRelation.pred">pred (webanno_parser.Webanno_Parser.DistpartRelation attribute)</a>
+</li>
       <li><a href="predicatrix2.html#predicatrix2.Predication">Predication (class in predicatrix2)</a>
 </li>
       <li><a href="predicatrix2.html#module-predicatrix2">predicatrix2 (module)</a>
-</li>
-      <li><a href="simmix.html#simmix.Simmix.print_exs">print_exs() (simmix.Simmix method)</a>
 </li>
       <li><a href="predicatrix2.html#predicatrix2.Predication.print_predicate">print_predicate() (predicatrix2.Predication method)</a>
 </li>
@@ -832,10 +834,10 @@
 </li>
       <li><a href="predicatrix2.html#predicatrix2.Predication.spacy_pos">spacy_pos() (predicatrix2.Predication method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="predicatrix2.html#predicatrix2.Predication.spacy_pos_">spacy_pos_() (predicatrix2.Predication method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="predicatrix2.html#predicatrix2.Predication.spacy_tag">spacy_tag() (predicatrix2.Predication method)</a>
 </li>
       <li><a href="predicatrix2.html#predicatrix2.Predication.spacy_tag_">spacy_tag_() (predicatrix2.Predication method)</a>
@@ -861,6 +863,8 @@
       <li><a href="webanno_parser.html#webanno_parser.Webanno_Parser.GraphEvaluation.sub_parts_graph">sub_parts_graph (webanno_parser.Webanno_Parser.GraphEvaluation attribute)</a>
 </li>
       <li><a href="subj_and_aspectrix.html#module-subj_and_aspectrix">subj_and_aspectrix (module)</a>
+</li>
+      <li><a href="subj_and_aspectrix.html#subj_and_aspectrix.Subjects_and_aspects.subj_aspect_to_nxdigraph">subj_aspect_to_nxdigraph() (subj_and_aspectrix.Subjects_and_aspects method)</a>
 </li>
       <li><a href="subj_and_aspectrix.html#subj_and_aspectrix.Subjects_and_aspects">Subjects_and_aspects (class in subj_and_aspectrix)</a>
 </li>
@@ -994,7 +998,7 @@
 <h2 id="Z">Z</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="tdfidf_tool.html#tdfidf_tool.tdfidf.zero_importance">zero_importance() (tdfidf_tool.tdfidf method)</a>
+      <li><a href="tdfidf_tool.html#tdfidf_tool.tdfidf.half_importance">half_importance() (tdfidf_tool.tdfidf method)</a>
 </li>
   </ul></td>
 </tr></table>

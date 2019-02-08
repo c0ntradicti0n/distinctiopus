@@ -90,6 +90,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../subj_and_aspectrix.html">subj_and_aspectrix module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../corpus_reader.html">corpus_reader module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../webanno_parser.html">webanno_parser module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../word_definitions.html">word_definitions module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tdfidf_tool.html">tdfidf_tool module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../corutine_utils.html">corutine_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dict_tools.html">dict_tools module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../nested_list_tools.html">nested_list_tools module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../word_definitions.html">word_definitions module</a></li>
 </ul>
 
             
@@ -349,6 +355,14 @@
 
 
 <div class="viewcode-block" id="Simmix.apply_sim_fun"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.apply_sim_fun">[docs]</a>    <span class="k">def</span> <span class="nf">apply_sim_fun</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fee</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Apply the field of functions to the arguments</span>
+
+<span class="sd">        The argument are 3-tuples, with the function and the two expressions, these expressions are feeded into the functions</span>
+
+<span class="sd">        :param fee: tuple</span>
+<span class="sd">        :return: return value of the function</span>
+<span class="sd">        :raises: TypeError if the function does not give a 2-tuple of value and dictionary information for backtracking</span>
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">fun</span> <span class="o">=</span> <span class="n">fee</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
         <span class="n">ex1</span> <span class="o">=</span> <span class="n">fee</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">ex2</span> <span class="o">=</span> <span class="n">fee</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
@@ -427,6 +441,9 @@
             <span class="n">res_cube</span> <span class="o">=</span> <span class="n">res_cube</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">exs1</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">exs2</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">np</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">_internal</span><span class="o">.</span><span class="n">AxisError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;expression is empty </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">((</span><span class="n">exs1</span><span class="p">,</span> <span class="n">exs2</span><span class="p">))))</span>
+        <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span> <span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">or you forgot the multi-wrapper, when using a function for tuples as simmix expressions&quot;</span><span class="p">)</span>
 
         <span class="c1"># get cubic shape back and floating points for the numbers</span>
         <span class="n">res_cube</span> <span class="o">=</span> <span class="n">res_cube</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">funs</span><span class="p">)))</span>
@@ -570,6 +587,14 @@
         <span class="k">return</span> <span class="n">l_values</span><span class="p">,</span> <span class="n">r_values</span></div>
 
 <div class="viewcode-block" id="Simmix.expressions_list"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.expressions_list">[docs]</a>    <span class="k">def</span> <span class="nf">expressions_list</span> <span class="p">(</span><span class="n">left_value</span><span class="p">,</span> <span class="n">right_values</span><span class="p">,</span> <span class="n">exs1</span><span class="p">,</span> <span class="n">exs2</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Collects the expressions from the indices</span>
+
+<span class="sd">        :param left_value: list of ints, indices for exs1</span>
+<span class="sd">        :param right_values: list of list of indices for exs2, they are indices, because they can be more than one if found</span>
+<span class="sd">        :param exs1: list of dicts or list of tuples of list of dicts</span>
+<span class="sd">        :param exs2: list of dicts or list of tuples of list of dicts</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="p">[([</span><span class="n">exs1</span><span class="p">[</span><span class="n">left_value</span><span class="p">[</span><span class="n">l</span><span class="p">]]],</span> <span class="p">[</span><span class="n">exs2</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">right_values</span><span class="p">[</span><span class="n">l</span><span class="p">]])</span>
                   <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">left_value</span><span class="p">))]</span></div>
 
@@ -582,41 +607,77 @@
             <span class="k">return</span> <span class="p">[]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">flatten</span><span class="p">(</span><span class="n">r</span> <span class="k">for</span> <span class="n">l</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">x</span> <span class="k">if</span> <span class="n">x</span><span class="p">))</span></div>
+
 <div class="viewcode-block" id="Simmix.reduce_i_s_pair_tuples"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.reduce_i_s_pair_tuples">[docs]</a>    <span class="k">def</span> <span class="nf">reduce_i_s_pair_tuples</span> <span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">x</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">list</span><span class="p">((</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">)</span> <span class="k">for</span> <span class="n">l</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">x</span> <span class="k">if</span> <span class="n">x</span> <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">r</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">l</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Simmix.print_exs"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.print_exs">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">print_exs</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
-        <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;ex1&quot;</span><span class="p">,</span> <span class="n">ex1</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">ex1</span><span class="p">))</span>
-        <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;ex2&quot;</span><span class="p">,</span> <span class="n">ex2</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">ex2</span><span class="p">))</span>
-        <span class="nb">print</span> <span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">lemma_</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ex1</span><span class="p">])</span>
-        <span class="nb">print</span> <span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">lemma_</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ex2</span><span class="p">])</span>
-        <span class="k">return</span> <span class="mi">1</span><span class="p">,</span> <span class="p">{}</span></div>
+
 <div class="viewcode-block" id="Simmix.pos_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.pos_sim">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">pos_sim</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Compares the pos tags. Levenstejn distance per total length of both expressions</span>
+
+<span class="sd">        :param ex1: dict with [&#39;pos&#39;]</span>
+<span class="sd">        :param ex2: dict with [&#39;pos&#39;]</span>
+<span class="sd">        :return: float and bracktracking {}</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">grammar1</span>  <span class="o">=</span> <span class="n">ex1</span><span class="p">[</span><span class="s1">&#39;pos&#39;</span><span class="p">]</span>
         <span class="n">grammar2</span>  <span class="o">=</span> <span class="n">ex2</span><span class="p">[</span><span class="s1">&#39;pos&#39;</span><span class="p">]</span>
         <span class="k">return</span> <span class="o">-</span><span class="n">damerau_levenshtein_distance</span><span class="p">(</span><span class="n">grammar1</span><span class="p">,</span> <span class="n">grammar2</span><span class="p">)</span> <span class="o">/</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ex1</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">ex2</span><span class="p">)),</span> <span class="p">{}</span></div>
 <div class="viewcode-block" id="Simmix.dep_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.dep_sim">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">dep_sim</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Compares the dep tags. Levenstejn distance per total length of both expresions</span>
+
+<span class="sd">        :param ex1: dict with [&#39;dep&#39;]</span>
+<span class="sd">        :param ex2: dict with [&#39;dep&#39;]</span>
+<span class="sd">        :return: float and bracktracking {}</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">grammar1</span>  <span class="o">=</span> <span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;dep&quot;</span><span class="p">]</span>
         <span class="n">grammar2</span>  <span class="o">=</span> <span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;dep&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="o">-</span><span class="n">damerau_levenshtein_distance</span><span class="p">(</span><span class="n">grammar1</span><span class="p">,</span> <span class="n">grammar2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ex1</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">ex2</span><span class="p">))</span> <span class="p">,</span> <span class="p">{}</span></div>
+
+
 <div class="viewcode-block" id="Simmix.lemma_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.lemma_sim">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">lemma_sim</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Compares the lemma tags. Levenstejn distance per total length of both expresiions</span>
+
+<span class="sd">        :param ex1: dict with [&#39;lemma&#39;]</span>
+<span class="sd">        :param ex2: dict with [&#39;lemma&#39;]</span>
+<span class="sd">        :return: float and bracktracking {}</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">grammar1</span>  <span class="o">=</span> <span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;lemma&quot;</span><span class="p">]</span>
         <span class="n">grammar2</span>  <span class="o">=</span> <span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;lemma&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="o">-</span><span class="n">damerau_levenshtein_distance</span><span class="p">(</span><span class="n">grammar1</span><span class="p">,</span> <span class="n">grammar2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ex1</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">ex2</span><span class="p">)),</span> <span class="p">{}</span></div>
+
+
 <div class="viewcode-block" id="Simmix.tag_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.tag_sim">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">tag_sim</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Compares the tag tags. Levenstejn distance per total length of both expresiions</span>
+
+<span class="sd">        :param ex1: dict with [&#39;tag&#39;]</span>
+<span class="sd">        :param ex2: dict with [&#39;tag&#39;]</span>
+<span class="sd">        :return: float and bracktracking {}</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">grammar1</span>  <span class="o">=</span> <span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;tag&quot;</span><span class="p">]</span>
         <span class="n">grammar2</span>  <span class="o">=</span> <span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;tag&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="o">-</span><span class="n">damerau_levenshtein_distance</span><span class="p">(</span><span class="n">grammar1</span><span class="p">,</span> <span class="n">grammar2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ex1</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">ex2</span><span class="p">))</span> <span class="p">,</span> <span class="p">{}</span></div>
+
+
 <div class="viewcode-block" id="Simmix.fuzzystr_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.fuzzystr_sim">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">fuzzystr_sim</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Compares the text tags. Levenstejn distance per total length of both expresiions</span>
+
+<span class="sd">        :param ex1: dict with [&#39;text&#39;]</span>
+<span class="sd">        :param ex2: dict with [&#39;text&#39;]</span>
+<span class="sd">        :return: float and bracktracking {}</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">str1</span>  <span class="o">=</span> <span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span>
         <span class="n">str2</span>  <span class="o">=</span> <span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="o">-</span><span class="n">damerau_levenshtein_distance</span><span class="p">(</span><span class="n">str1</span><span class="p">,</span> <span class="n">str2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ex1</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">ex2</span><span class="p">))</span> <span class="p">,</span> <span class="p">{}</span></div>
@@ -635,7 +696,8 @@
 
 <span class="sd">            :param ex1: dict with &#39;importance&#39; and &#39;lemma&#39;</span>
 <span class="sd">            :param ex2: dict with &#39;importance&#39; and &#39;lemma&#39;</span>
-<span class="sd">            :return:</span>
+<span class="sd">            :return: c and backtracking beam {}</span>
+
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">str1</span>  <span class="o">=</span> <span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;lemma&quot;</span><span class="p">]</span>
         <span class="n">str2</span>  <span class="o">=</span> <span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;lemma&quot;</span><span class="p">]</span>
@@ -646,6 +708,13 @@
         <span class="k">return</span> <span class="n">res</span><span class="p">,</span> <span class="p">{}</span></div>
 
 <div class="viewcode-block" id="Simmix.convolve_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.convolve_sim">[docs]</a>    <span class="k">def</span> <span class="nf">convolve_sim</span><span class="p">(</span><span class="n">layer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Compares embeddings with a convolution</span>
+
+<span class="sd">        :param ex1: dict with [&#39;elmo_embeddings_full&#39;]</span>
+<span class="sd">        :param ex2: dict with [&#39;elmo_embeddings_full&#39;]</span>
+<span class="sd">        :return: float and bracktracking {}</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="kn">import</span> <span class="nn">scipy.signal</span> <span class="k">as</span> <span class="nn">sg</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">layer</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;layers must be set!&#39;</span><span class="p">)</span>
@@ -654,6 +723,7 @@
             <span class="n">vectors1</span> <span class="o">=</span> <span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;elmo_embeddings_full&quot;</span><span class="p">]</span>
             <span class="n">vectors2</span> <span class="o">=</span> <span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;elmo_embeddings_full&quot;</span><span class="p">]</span>
             <span class="k">return</span> <span class="n">sg</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">vectors1</span><span class="p">,</span> <span class="n">vectors2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
         <span class="k">return</span> <span class="n">_convolve_sim</span></div>
 
 
@@ -674,6 +744,25 @@
 
 
 <div class="viewcode-block" id="Simmix.elmo_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.elmo_sim">[docs]</a>    <span class="k">def</span> <span class="nf">elmo_sim</span><span class="p">():</span>
+        <span class="sd">&#39;&#39;&#39; Compares the expressions by their elmo embeddings, all three layers are taken into account.</span>
+
+<span class="sd">        There is a problem with comparing a really long expression with a short one, then the similarity is normaly</span>
+<span class="sd">        higher than with shorter expressions. You can imagine this, if you put different vectors  together by summing</span>
+<span class="sd">        them up, you get statistically a vector, that goes in every direction and is more like a snowball, all snowballs</span>
+<span class="sd">        look equal, but not totally the same.</span>
+<span class="sd">        If you have just around 5, then its quite more directed. So I decided to divide it with a the natural logarithm</span>
+<span class="sd">        of the biggstes lengths of both. Maybe I can&#39;t back up that scientificially, ok.</span>
+
+<span class="sd">        ..math::</span>
+
+<span class="sd">            c = \ln (\dfrac{l_  ext(max)}{2e}) * (      \text{cosine distance}(\overrightarrow{x_{1,0}}, \overrightarrow{x_{2,0}}) +       \text{cosine distance}(\overrightarrow{x_{1,1}}, \overrightarrow{x_{2,1}}) +       \text{cosine distance}(\overrightarrow{x_{1,2}}, \overrightarrow{x_{2,2}})</span>
+<span class="sd">        :param ex1: dict with [&#39;elmo_embeddings&#39;, &#39;full_ex&#39;]</span>
+<span class="sd">        :param ex2: dict with [&#39;elmo_embeddings&#39;, &#39;full_ex]</span>
+<span class="sd">        :return: float and bracktracking {}</span>
+
+<span class="sd">        TODO Parentheses bug!</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="nd">@Simmix</span><span class="o">.</span><span class="n">standard_range</span><span class="p">(</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
         <span class="k">def</span> <span class="nf">elmo_sim_generated</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span><span class="n">ex2</span><span class="p">):</span>
             <span class="n">vectors1</span> <span class="o">=</span> <span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;elmo_embeddings&quot;</span><span class="p">]</span>
@@ -688,6 +777,8 @@
             <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">IndexError</span>
         <span class="k">return</span> <span class="n">elmo_sim_generated</span></div>
+
+
 <div class="viewcode-block" id="Simmix.elmo_multi_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.elmo_multi_sim">[docs]</a>    <span class="k">def</span> <span class="nf">elmo_multi_sim</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
         <span class="nd">@Simmix</span><span class="o">.</span><span class="n">standard_range</span><span class="p">(</span><span class="o">-</span><span class="mi">6</span><span class="o">*</span><span class="n">n</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">n</span><span class="p">)</span>
         <span class="k">def</span> <span class="nf">elmo_sim_generated</span> <span class="p">(</span><span class="n">exs1</span><span class="p">,</span><span class="n">exs2</span><span class="p">):</span>
@@ -722,6 +813,8 @@
             <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">IndexError</span>
         <span class="k">return</span> <span class="n">elmo_sim_generated</span></div>
+
+
 <div class="viewcode-block" id="Simmix.elmo_weighted_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.elmo_weighted_sim">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="o">-</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">elmo_weighted_sim</span><span class="p">():</span>
         <span class="k">def</span> <span class="nf">elmo_sim_generated</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span><span class="n">ex2</span><span class="p">):</span>

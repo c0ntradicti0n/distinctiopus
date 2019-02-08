@@ -51,8 +51,8 @@ class tdfidf:
                     and self.importance_of_word(w) < max_thr]
 
 
-    def zero_importance(self, str_list):
-        return np.array([0 for w in str_list])
+    def half_importance(self, str_list):
+        return np.array([0.5 for w in str_list])
 
 
 

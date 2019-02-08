@@ -93,6 +93,7 @@ class Predication():
              'i': Predication.spacy_i}
 
         self.predicate_df = pandas.DataFrame()
+        self.argument_df = pandas.DataFrame()
 
         return None
 
@@ -454,7 +455,7 @@ class Predication():
             importance = self.tdfidf.sentence2vec([x.lemma_ for x in ex])
         except AttributeError:
             logging.warning("No td-idf information was precomputed for this expression, filling it up with 0")
-            importance = self.tdfidf.zero_importance([x.lemma_ for x in ex])
+            importance = self.tdfidf.half_importance([x.lemma_ for x in ex])
 
         ps = self.collect_all_simple_predicates(ex)
 
@@ -491,12 +492,49 @@ class Predication():
 
         if paint_graph:
             self.draw_predicate_structure(ps,"./img/predicate chunks " + ps[0]['key']+".svg")
-            self.append_to_predicate_df(ps)
+
+        self.append_to_predicate_df(ps)
+        self.append_to_argument_df(ps)
         return ps
 
     def append_to_predicate_df (self, ps):
         self.predicate_df = self.predicate_df.append(ps)
         self.predicate_df = self.predicate_df.append([part_p for p in ps for part_p in p['part_predications']])
+
+
+    def append_to_argument_df (self, ps):
+        arguments = flatten_reduce( list( map (lambda x: x['arguments'], ps) ))
+        self.argument_df = self.argument_df.append(arguments)
+
+
+    def get_coreferenced_arguments(self, corefs):
+        return list (map(self.get_coreferenced_argument, corefs))
+
+
+    def get_coreferenced_argument(self, coref):
+        if not coref:
+            return None
+        s_id  = coref['s_id']
+        m_start = coref['m_start']-1
+        m_end   = coref['m_end']-1
+        mask = self.argument_df.query("s_id==@s_id").apply(
+                lambda ex:
+                True
+                if (
+                        all(m in ex['i_s']
+                            for m in range(m_start, m_end))
+                        and 'NOUN' in ex['pos_'])
+                else False,
+            axis=1)
+
+        referenced = self.argument_df.query("s_id==@s_id")[mask].nsmallest(n=1, columns='len').to_dict(orient='records')
+
+        if referenced:
+            if referenced == [[[]]]:
+                a=1
+            return referenced[0]
+        else:
+            return []
 
     def sp_imp_elmo_dictize_ex(self, ex, coref, elmo_embeddings, importance, s_id):
         if not ex:
@@ -508,26 +546,53 @@ class Predication():
         i_s = [x.i for x in ex]
         try:
             d = {
+                "id": str(next(self.id_generator)),
                 "s_id"            : s_id,
-                "id"              : str(next(self.id_generator)),
+                "i_s"             : i_s,
+                'len'             : len(i_s),
+
+                "text"            : [x.text for x in ex],
                 "full_ex"         : ex,
                 "doc"             : ex[0].doc,
-                "i_s"             : i_s,
+
                 "dep"             : [x.dep for x in ex],
+                "dep_"            :  [x.dep_ for x in ex],
+
                 "pos"             : [x.pos for x in ex],
+                "pos_"            : [x.pos_ for x in ex],
+
                 "tag"             : [x.tag for x in ex],
-                "text"            : [x.text for x in ex],
+                "tag_"            : [x.tag for x in ex],
+
                 "lemma"           : [x.lemma for x in ex],
                 "lemma_"          : [x.lemma_ for x in ex],
                 "lemma_tag_"      : [x.lemma_ + '_' + x.tag_ for x in ex],
-                "coref"           : [coref[i] for i in i_s],
+
+                "coref"           : flatten_reduce([coref[i] for i in i_s]),
+                "coreferenced"    : self.get_coreferenced_arguments,
+
                 "importance"      : importance[i_s],
                 "elmo_embeddings" : elmo_embeddings[:,i_s].sum(axis=1),
+
                 "key"             : "arg" + str(next(self.arg_key_gen))
             }
         except IndexError:
             raise IndexError ('indices out of range of coref')
         return d
+
+
+    def coreferenced_expressions (self, corefs):
+        return list(map (self.coreferenced_expression, corefs))
+    def coreferenced_expression (self, coref):
+        s_id = coref['s_id']
+        m_start = coref['m_start']
+        m_end = coref['m_end']
+
+        mask = self.Predicatrix.predicate_df.query("s_id==@s_id")['full_ex_i'].apply(
+            lambda ex_i: True if [m for m in range(m_start, m_end) if m in ex_i] else False)
+        return self.Predicatrix.predicate_df.query("s_id==@s_id")[mask].to_dict(orient='records')
+
+
 
 
     def formalize (self,pred, elmo_embeddings, importance):

@@ -90,6 +90,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../subj_and_aspectrix.html">subj_and_aspectrix module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../corpus_reader.html">corpus_reader module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../webanno_parser.html">webanno_parser module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../word_definitions.html">word_definitions module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tdfidf_tool.html">tdfidf_tool module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../corutine_utils.html">corutine_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dict_tools.html">dict_tools module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../nested_list_tools.html">nested_list_tools module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../word_definitions.html">word_definitions module</a></li>
 </ul>
 
             
@@ -174,18 +180,19 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">corpus</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">similar</span> <span class="o">=</span> \
-            <span class="n">Simmix</span><span class="p">([(</span><span class="mi">18</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">common_words_sim</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="n">Simmix</span><span class="p">([(</span><span class="mi">20</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">common_words_sim</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
                     <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">dep_sim</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
                     <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">pos_sim</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-                    <span class="c1"># (1,Simmix.elmo_sim(), 0.5,1),</span>
-                    <span class="c1"># (1,Simmix.fuzzystr_sim, 0.5,1),</span>
-                    <span class="c1">#(-100, Simmix.boolean_subsame_sim, 0, 0.1)</span>
+                    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">tag_sim</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
                     <span class="p">],</span>
                    <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">filter1</span> <span class="o">=</span> \
-            <span class="n">Simmix</span><span class="p">([(</span>    <span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">multi_sim</span><span class="p">(</span><span class="n">Simmix</span><span class="o">.</span><span class="n">elmo_layer_sim</span><span class="p">(</span><span class="n">layer</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span> <span class="p">),</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-                    <span class="p">(</span><span class="o">-</span><span class="mi">1000</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">multi_sim</span><span class="p">(</span><span class="n">Simmix</span><span class="o">.</span><span class="n">boolean_subsame_sim</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>      <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)],</span>
+            <span class="n">Simmix</span><span class="p">([(</span><span class="mi">18</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">multi_sim</span><span class="p">(</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">common_words_sim</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                    <span class="c1">#(    3, Simmix.multi_sim(Simmix.elmo_layer_sim(layer=[0, 1]) ), 0.2, 1),</span>
+                    <span class="p">(</span>    <span class="mi">4</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">multi_sim</span><span class="p">(</span><span class="n">Simmix</span><span class="o">.</span><span class="n">dep_sim</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                    <span class="c1">#(-1000, Simmix.multi_sim(Simmix.boolean_subsame_sim, n=2),      0.0, 0.1)</span>
+                    <span class="p">],</span>
                    <span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">theme_rheme</span> <span class="o">=</span> \
@@ -199,7 +206,8 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">pattern_pair_ent</span> <span class="o">=</span> <span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">standard_entity_exs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">standard_entity_exs</span><span class="p">)]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pattern_pair_asp</span> <span class="o">=</span> <span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">standard_aspect_exs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">standard_aspect_exs</span><span class="p">)]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">subjasp_counter</span> <span class="o">=</span> <span class="n">count_up</span><span class="p">()</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">counter</span> <span class="o">=</span> <span class="n">count_up</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="Subjects_and_aspects.get_arguments"><a class="viewcode-back" href="../subj_and_aspectrix.html#subj_and_aspectrix.Subjects_and_aspects.get_arguments">[docs]</a>    <span class="k">def</span> <span class="nf">get_arguments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred</span><span class="p">):</span>
@@ -261,7 +269,7 @@
 
 
         <span class="k">def</span> <span class="nf">filter_possibilities</span> <span class="p">(</span><span class="n">poss_correlates</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter1</span><span class="o">.</span><span class="n">choose</span><span class="p">(</span>                    <span class="c1"># not too much</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter1</span><span class="o">.</span><span class="n">choose</span><span class="p">(</span>                    <span class="c1"># not too muchself.standard_predicate[0][&#39;arguments&#39;][0:1]</span>
                 <span class="p">(</span><span class="n">poss_correlates</span><span class="p">,</span>
                  <span class="n">pattern</span><span class="p">),</span>
                 <span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
@@ -304,10 +312,10 @@
             <span class="n">logging</span><span class="o">.</span><span class="n">warning</span> <span class="p">(</span><span class="s1">&#39;subjects and aspects not from the same sentence&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="p">[]</span>
 
-        <span class="n">coreferential</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coreferential</span><span class="o">.</span><span class="n">choose</span><span class="p">(</span><span class="n">subjects_aspects</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="s1">&#39;n&#39;</span><span class="p">)</span>
+        <span class="c1">#coreferential = self.coreferential.choose(subjects_aspects, layout=&#39;n&#39;)</span>
 
-        <span class="k">if</span> <span class="n">coreferential</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[]</span>
+        <span class="c1">#if coreferential:</span>
+        <span class="c1">#    return []</span>
 
         <span class="n">graph_coro_arg_binding</span><span class="o">.</span><span class="n">send</span> <span class="p">((</span><span class="n">pred1</span><span class="p">,</span> <span class="n">subject1</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;subject&#39;</span><span class="p">,))</span>
         <span class="n">graph_coro_arg_binding</span><span class="o">.</span><span class="n">send</span> <span class="p">((</span><span class="n">pred2</span><span class="p">,</span> <span class="n">subject2</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;subject&#39;</span><span class="p">,))</span>
@@ -315,8 +323,9 @@
         <span class="n">graph_coro_arg_binding</span><span class="o">.</span><span class="n">send</span> <span class="p">((</span><span class="n">pred4</span><span class="p">,</span> <span class="n">aspect2</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;aspect&#39;</span><span class="p">,))</span>
 
         <span class="k">if</span> <span class="n">paint_graph</span><span class="p">:</span>
-            <span class="n">put_into_nx</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s1">&#39;draw&#39;</span><span class="p">)</span>
-
+            <span class="c1">#put_into_nx.send(&#39;draw&#39;)</span>
+            <span class="n">G</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subj_aspect_to_nxdigraph</span><span class="p">(</span><span class="n">poss_correlates1</span><span class="o">+</span><span class="n">poss_correlates2</span><span class="p">,</span> <span class="n">subjects_aspects</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">subjects_aspects</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">draw_subjects_aspects</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">subjects_aspects</span></div>
 
 
@@ -385,17 +394,78 @@
         <span class="k">return</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="Subjects_and_aspects.draw_key_graphs"><a class="viewcode-back" href="../subj_and_aspectrix.html#subj_and_aspectrix.Subjects_and_aspects.draw_key_graphs">[docs]</a>    <span class="k">def</span> <span class="nf">draw_key_graphs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">G</span><span class="p">):</span>
-        <span class="kn">import</span> <span class="nn">pylab</span> <span class="k">as</span> <span class="nn">plt</span>
-        <span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;./img/subject_aspects&#39;</span> <span class="o">+</span>  <span class="nb">str</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subjasp_counter</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;.svg&quot;</span>
+<div class="viewcode-block" id="Subjects_and_aspects.add_edge_between"><a class="viewcode-back" href="../subj_and_aspectrix.html#subj_and_aspectrix.Subjects_and_aspects.add_edge_between">[docs]</a>    <span class="k">def</span> <span class="nf">add_edge_between</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dig</span><span class="p">,</span> <span class="n">contradicting_preds</span><span class="p">,</span> <span class="n">correlated_preds</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">contradicting_pred</span> <span class="ow">in</span> <span class="n">contradicting_preds</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">correlated_pred</span> <span class="ow">in</span> <span class="n">correlated_preds</span><span class="p">:</span>
+                <span class="n">key_corr1</span>  <span class="o">=</span> <span class="s2">&quot;poss_new&quot;</span> <span class="o">+</span> <span class="n">correlated_pred</span>    <span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+                <span class="n">key_corr2</span>  <span class="o">=</span> <span class="s2">&quot;poss_new&quot;</span> <span class="o">+</span> <span class="n">correlated_pred</span>    <span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
 
-        <span class="n">G</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s1">&#39;graph&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;rankdir&#39;</span><span class="p">:</span> <span class="s1">&#39;LR&#39;</span><span class="p">,</span><span class="s1">&#39;splines&#39;</span><span class="p">:</span><span class="s1">&#39;line&#39;</span><span class="p">}</span>
+                <span class="n">key_trigg2</span> <span class="o">=</span> <span class="s2">&quot;poss_new&quot;</span>   <span class="o">+</span> <span class="n">contradicting_pred</span> <span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+                <span class="n">key_trigg1</span> <span class="o">=</span> <span class="s2">&quot;poss_new&quot;</span>   <span class="o">+</span> <span class="n">contradicting_pred</span> <span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+
+                <span class="n">dig</span><span class="o">.</span><span class="n">add_edge</span> <span class="p">(</span><span class="n">key_trigg1</span><span class="p">,</span> <span class="n">key_corr1</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;*correlated&quot;</span><span class="p">)</span>
+                <span class="n">dig</span><span class="o">.</span><span class="n">add_edge</span> <span class="p">(</span><span class="n">key_trigg2</span><span class="p">,</span> <span class="n">key_corr2</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;*correlated&quot;</span><span class="p">)</span>
+
+                <span class="n">dig</span><span class="o">.</span><span class="n">add_edge</span> <span class="p">(</span><span class="n">key_corr1</span><span class="p">,</span> <span class="n">key_corr2</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;*opposed&quot;</span><span class="p">)</span>
+                <span class="n">dig</span><span class="o">.</span><span class="n">add_edge</span> <span class="p">(</span><span class="n">key_corr2</span><span class="p">,</span> <span class="n">key_corr1</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;*opposed&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subjects_and_aspects.subj_aspect_to_nxdigraph"><a class="viewcode-back" href="../subj_and_aspectrix.html#subj_and_aspectrix.Subjects_and_aspects.subj_aspect_to_nxdigraph">[docs]</a>    <span class="k">def</span> <span class="nf">subj_aspect_to_nxdigraph</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">possible_subjs_asps</span><span class="p">,</span> <span class="n">subjects</span><span class="p">,</span> <span class="n">aspects</span><span class="p">):</span>
+        <span class="n">dig</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+        <span class="kn">import</span> <span class="nn">textwrap</span>
+
+        <span class="k">def</span> <span class="nf">wrap</span> <span class="p">(</span><span class="n">strs</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">strs</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">add_possible_correlation_node</span> <span class="p">(</span><span class="n">correlated</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="n">key_co1</span> <span class="o">=</span> <span class="n">kind</span> <span class="o">+</span> <span class="n">correlated</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">wrap</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">correlated</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]))</span>
+            <span class="n">dig</span><span class="o">.</span><span class="n">add_node</span> <span class="p">(</span><span class="n">key_co1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">add_possible_correlation_edge</span> <span class="p">(</span><span class="n">correlated1</span><span class="p">,</span> <span class="n">correlated2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kind</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">key_co1</span> <span class="o">=</span> <span class="n">kind</span> <span class="o">+</span> <span class="n">correlated1</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+            <span class="n">key_co2</span> <span class="o">=</span> <span class="n">kind</span> <span class="o">+</span> <span class="n">correlated2</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+            <span class="n">dig</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">key_co1</span><span class="p">,</span> <span class="n">key_co2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+
+
+        <span class="k">for</span> <span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span> <span class="ow">in</span> <span class="n">possible_subjs_asps</span><span class="p">:</span>
+            <span class="n">add_possible_correlation_node</span><span class="p">(</span><span class="n">ex1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">kind</span> <span class="o">=</span> <span class="s1">&#39;poss_new&#39;</span><span class="p">)</span>
+            <span class="n">add_possible_correlation_node</span><span class="p">(</span><span class="n">ex2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">kind</span> <span class="o">=</span> <span class="s1">&#39;poss_new&#39;</span><span class="p">)</span>
+            <span class="n">add_possible_correlation_edge</span><span class="p">(</span><span class="n">ex1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ex2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;possibly correlated&quot;</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;poss_new&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_edge_between</span><span class="p">(</span><span class="n">dig</span><span class="p">,</span> <span class="n">subjects</span><span class="p">,</span> <span class="n">aspects</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dig</span></div>
+
+
+<div class="viewcode-block" id="Subjects_and_aspects.draw_subjects_aspects"><a class="viewcode-back" href="../subj_and_aspectrix.html#subj_and_aspectrix.Subjects_and_aspects.draw_subjects_aspects">[docs]</a>    <span class="k">def</span> <span class="nf">draw_subjects_aspects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">G</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">pylab</span> <span class="k">as</span> <span class="nn">P</span>
+
+        <span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;./img/subjects - aspects&#39;</span> <span class="o">+</span> <span class="nb">str</span> <span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">counter</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;.svg&quot;</span>
+
+        <span class="n">G</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s1">&#39;graph&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;rankdir&#39;</span><span class="p">:</span> <span class="s1">&#39;LR&#39;</span><span class="p">,</span> <span class="s1">&#39;splines&#39;</span><span class="p">:</span> <span class="s1">&#39;line&#39;</span><span class="p">}</span>
         <span class="n">G</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s1">&#39;edges&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;arrowsize&#39;</span><span class="p">:</span> <span class="s1">&#39;4.0&#39;</span><span class="p">}</span>
 
         <span class="n">A</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">drawing</span><span class="o">.</span><span class="n">nx_agraph</span><span class="o">.</span><span class="n">to_agraph</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+
+        <span class="c1"># Add contradictions to graph as cluster</span>
+        <span class="n">nbunch_cr</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;kind&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="s1">&#39;contra&#39;</span><span class="p">]</span>
+        <span class="n">A</span><span class="o">.</span><span class="n">add_subgraph</span><span class="p">(</span><span class="n">nbunch</span><span class="o">=</span><span class="n">nbunch_cr</span><span class="p">,</span>
+                       <span class="n">name</span><span class="o">=</span><span class="s2">&quot;cluster1&quot;</span><span class="p">,</span>
+                       <span class="n">style</span><span class="o">=</span><span class="s1">&#39;filled&#39;</span><span class="p">,</span>
+                       <span class="n">color</span><span class="o">=</span><span class="s1">&#39;lightgrey&#39;</span><span class="p">,</span>
+                       <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Found Contradictions&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Add correlations to graph as cluster</span>
+        <span class="n">nbunch_pn</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;kind&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="s1">&#39;poss_new&#39;</span><span class="p">]</span>
+        <span class="n">A</span><span class="o">.</span><span class="n">add_subgraph</span><span class="p">(</span><span class="n">nbunch</span><span class="o">=</span><span class="n">nbunch_pn</span><span class="p">,</span>
+                       <span class="n">name</span><span class="o">=</span><span class="s2">&quot;cluster2&quot;</span><span class="p">,</span>
+                       <span class="n">style</span><span class="o">=</span><span class="s1">&#39;filled&#39;</span><span class="p">,</span>
+                       <span class="n">color</span><span class="o">=</span><span class="s1">&#39;lightgrey&#39;</span><span class="p">,</span>
+                       <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Possible New Correlations&#39;</span><span class="p">)</span>
+
         <span class="n">A</span><span class="o">.</span><span class="n">layout</span><span class="p">(</span><span class="s1">&#39;dot&#39;</span><span class="p">)</span>
+
         <span class="n">A</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span></div></div>
+        <span class="n">P</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span></div></div>
 </pre></div>
 
            </div>

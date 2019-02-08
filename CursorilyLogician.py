@@ -152,8 +152,8 @@ class DataframeCursorilyLogician:
         '''
 
         s_id  = coref['s_id']
-        m_start = coref['m_start']
-        m_end   = coref['m_end']
+        m_start = coref['m_start']-1
+        m_end   = coref['m_end']-1
         mask = self.Predicatrix.predicate_df.query("s_id==@s_id")['full_ex_i'].apply(
             lambda ex_i: True if [m for m in range(m_start, m_end) if m in ex_i] else False)
         return self.Predicatrix.predicate_df.query("s_id==@s_id")[mask].to_dict(orient='records')

@@ -123,7 +123,7 @@ class Simmix:
             After this, one can adjust different modes, how to make a choice based on this similarity matrix.
             Either to take exactly one with the maximal similarity, or to take the best n, or get an optimal 1:1 alignment.
 
-            And in the last there are different possibilities, how to get back the results.
+            Last but not least there are different possibilities, how to get back the results.
 
             * the expressions pairs, that are the chosen
                 - :func:`~simmix.Simmix.expressions_list`
@@ -158,7 +158,6 @@ class Simmix:
                 weights[i]        = weight
                 thresholds_min[i] = threshold_min
                 thresholds_max[i] = threshold_max
-
             else:
                 raise ValueError("len of tuples must be 2, (weight, fun) or 3 (weight, fun, threshold_min, threshold_max)" +
                                  str(similarity_composition))
@@ -194,6 +193,14 @@ class Simmix:
 
 
     def apply_sim_fun (self, fee):
+        ''' Apply the field of functions to the arguments
+
+        The argument are 3-tuples, with the function and the two expressions, these expressions are feeded into the functions
+
+        :param fee: tuple
+        :return: return value of the function
+        :raises: TypeError if the function does not give a 2-tuple of value and dictionary information for backtracking
+        '''
         fun = fee[2]
         ex1 = fee[0]
         ex2 = fee[1]
@@ -272,6 +279,9 @@ class Simmix:
             res_cube = res_cube.reshape(len(exs1), len(exs2), -1)
         except np.core._internal.AxisError as e:
             raise ValueError('expression is empty %s' % (str((exs1, exs2))))
+        except TypeError as e:
+            raise TypeError (
+                str(e) + "\nor you forgot the multi-wrapper, when using a function for tuples as simmix expressions")
 
         # get cubic shape back and floating points for the numbers
         res_cube = res_cube.reshape((-1, len(self.funs)))
@@ -415,6 +425,14 @@ class Simmix:
         return l_values, r_values
 
     def expressions_list (left_value, right_values, exs1, exs2):
+        ''' Collects the expressions from the indices
+
+        :param left_value: list of ints, indices for exs1
+        :param right_values: list of list of indices for exs2, they are indices, because they can be more than one if found
+        :param exs1: list of dicts or list of tuples of list of dicts
+        :param exs2: list of dicts or list of tuples of list of dicts
+
+        '''
         return [([exs1[left_value[l]]], [exs2[r] for r in right_values[l]])
                   for l in range(len(left_value))]
 
@@ -427,41 +445,79 @@ class Simmix:
             return []
         else:
             return list(flatten(r for l, r in x if x))
+
     def reduce_i_s_pair_tuples (x):
         if not x:
             return []
         else:
             return list((y,z) for l, r in x if x for z in r for y in l)
 
-    @standard_range(0, 2)
-    def print_exs (ex1, ex2):
-        print ("ex1", ex1, type(ex1))
-        print ("ex2", ex2, type(ex2))
-        print ([x.lemma_ for x in ex1])
-        print ([x.lemma_ for x in ex2])
-        return 1, {}
+
     @standard_range(-1, 0)
     def pos_sim (ex1, ex2):
+        ''' Compares the pos tags. Levenstejn distance per total length of both expressions
+
+        :param ex1: dict with ['pos']
+        :param ex2: dict with ['pos']
+        :return: float and bracktracking {}
+
+        '''
         grammar1  = ex1['pos']
         grammar2  = ex2['pos']
         return -damerau_levenshtein_distance(grammar1, grammar2) /(len(ex1) + len(ex2)), {}
+
+
     @standard_range(-1, 0)
     def dep_sim (ex1, ex2):
+        ''' Compares the dep tags. Levenstejn distance per total length of both expresions
+
+        :param ex1: dict with ['dep']
+        :param ex2: dict with ['dep']
+        :return: float and bracktracking {}
+
+        '''
         grammar1  = ex1["dep"]
         grammar2  = ex2["dep"]
         return -damerau_levenshtein_distance(grammar1, grammar2) / (len(ex1) + len(ex2)) , {}
+
+
     @standard_range(-1, 0)
     def lemma_sim (ex1, ex2):
+        ''' Compares the lemma tags. Levenstejn distance per total length of both expresiions
+
+        :param ex1: dict with ['lemma']
+        :param ex2: dict with ['lemma']
+        :return: float and bracktracking {}
+
+        '''
         grammar1  = ex1["lemma"]
         grammar2  = ex2["lemma"]
         return -damerau_levenshtein_distance(grammar1, grammar2) / (len(ex1) + len(ex2)), {}
+
+
     @standard_range(-1, 0)
     def tag_sim (ex1, ex2):
+        ''' Compares the tag tags. Levenstejn distance per total length of both expresiions
+
+        :param ex1: dict with ['tag']
+        :param ex2: dict with ['tag']
+        :return: float and bracktracking {}
+
+        '''
         grammar1  = ex1["tag"]
         grammar2  = ex2["tag"]
         return -damerau_levenshtein_distance(grammar1, grammar2) / (len(ex1) + len(ex2)) , {}
+
+
     @standard_range(-1, 0)
     def fuzzystr_sim (ex1, ex2):
+        ''' Compares the text tags. Levenstejn distance per total length of both expresiions
+
+        :param ex1: dict with ['text']
+        :param ex2: dict with ['text']
+        :return: float and bracktracking {}
+
+        '''
         str1  = ex1["text"]
         str2  = ex2["text"]
         return -damerau_levenshtein_distance(str1, str2) / (len(ex1) + len(ex2)) , {}
@@ -480,7 +536,8 @@ class Simmix:
 
             :param ex1: dict with 'importance' and 'lemma'
             :param ex2: dict with 'importance' and 'lemma'
-            :return:
+            :return: c and backtracking beam {}
+
         '''
         str1  = ex1["lemma"]
         str2  = ex2["lemma"]
@@ -490,7 +547,34 @@ class Simmix:
                len([ex2['importance'][i] for i, x in enumerate(str2) if x in str1]))/(len(ex1) + len(ex2))
         return res, {}
 
+
+    @standard_range(-1, 0)
+    def head_dep_sim (ex1, ex2):
+        ''' Compares the dep tags. Levenstejn distance per total length of both expresions
+
+        :param ex1: dict with ['full_ex', head, dep, tag, pos]
+        :param ex2: dict with ['dep']
+        :return: float and bracktracking {}
+
+        '''
+        grammar1  = [x.head.dep for x in ex1["full_ex"]]
+        grammar2  = [x.head.dep for x in ex2["full_ex"]]
+        grammar1 += [x.head.tag for x in ex1["full_ex"]]
+        grammar2 += [x.head.tag for x in ex2["full_ex"]]
+        grammar1 += [x.head.pos for x in ex1["full_ex"]]
+        grammar2 += [x.head.pos for x in ex2["full_ex"]]
+
+        return head_is_root #-damerau_levenshtein_distance(grammar1, grammar2) / (len(ex1) + len(ex2)) , {}
+
+
     def convolve_sim(layer=None):
+        ''' Compares embeddings with a convolution
+
+        :param ex1: dict with ['elmo_embeddings_full']
+        :param ex2: dict with ['elmo_embeddings_full']
+        :return: float and bracktracking {}
+
+        '''
         import scipy.signal as sg
         if not layer:
             raise ValueError('layers must be set!')
@@ -499,6 +583,7 @@ class Simmix:
             vectors1 = ex1["elmo_embeddings_full"]
             vectors2 = ex2["elmo_embeddings_full"]
             return sg.convolve(vectors1, vectors2).mean()
+
         return _convolve_sim
 
 
@@ -519,6 +604,25 @@ class Simmix:
 
 
     def elmo_sim():
+        ''' Compares the expressions by their elmo embeddings, all three layers are taken into account.
+
+        There is a problem with comparing a really long expression with a short one, then the similarity is normaly
+        higher than with shorter expressions. You can imagine this, if you put different vectors  together by summing
+        them up, you get statistically a vector, that goes in every direction and is more like a snowball, all snowballs
+        look equal, but not totally the same.
+        If you have just around 5, then its quite more directed. So I decided to divide it with a the natural logarithm
+        of the biggstes lengths of both. Maybe I can't back up that scientificially, ok.
+
+        ..math::
+
+            c = \ln (\dfrac{l_  ext(max)}{2e}) * (      \text{cosine distance}(\overrightarrow{x_{1,0}}, \overrightarrow{x_{2,0}}) +       \text{cosine distance}(\overrightarrow{x_{1,1}}, \overrightarrow{x_{2,1}}) +       \text{cosine distance}(\overrightarrow{x_{1,2}}, \overrightarrow{x_{2,2}})
+        :param ex1: dict with ['elmo_embeddings', 'full_ex']
+        :param ex2: dict with ['elmo_embeddings', 'full_ex]
+        :return: float and bracktracking {}
+
+        TODO Parentheses bug!
+
+        '''
         @Simmix.standard_range(-6, 0.5)
         def elmo_sim_generated (ex1,ex2):
             vectors1 = ex1["elmo_embeddings"]
@@ -533,6 +637,8 @@ class Simmix:
             except IndexError:
                 raise IndexError
         return elmo_sim_generated
+
+
     def elmo_multi_sim(n=3):
         @Simmix.standard_range(-6*n, 0.5*n)
         def elmo_sim_generated (exs1,exs2):
@@ -567,6 +673,8 @@ class Simmix:
             except IndexError:
                 raise IndexError
         return elmo_sim_generated
+
+
     @standard_range(-20, 20)
     def elmo_weighted_sim():
         def elmo_sim_generated (ex1,ex2):

@@ -90,6 +90,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../subj_and_aspectrix.html">subj_and_aspectrix module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../corpus_reader.html">corpus_reader module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../webanno_parser.html">webanno_parser module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../word_definitions.html">word_definitions module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tdfidf_tool.html">tdfidf_tool module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../corutine_utils.html">corutine_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dict_tools.html">dict_tools module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../nested_list_tools.html">nested_list_tools module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../word_definitions.html">word_definitions module</a></li>
 </ul>
 
             
@@ -206,7 +212,7 @@
                     <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">importance_of_word</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">max_thr</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="tdfidf.zero_importance"><a class="viewcode-back" href="../tdfidf_tool.html#tdfidf_tool.tdfidf.zero_importance">[docs]</a>    <span class="k">def</span> <span class="nf">zero_importance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">str_list</span><span class="p">):</span>
+<div class="viewcode-block" id="tdfidf.half_importance"><a class="viewcode-back" href="../tdfidf_tool.html#tdfidf_tool.tdfidf.half_importance">[docs]</a>    <span class="k">def</span> <span class="nf">half_importance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">str_list</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">str_list</span><span class="p">])</span></div></div>
 
 
