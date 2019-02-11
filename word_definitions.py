@@ -1,6 +1,6 @@
 import doctest
 
-negation_list = ["no", "not", "none", "never", "nothing", "nobody", "nowhere", "neither", "nor", "non", "n't", "cannot", "prevent"]
+negation_list = ["no", "not", "none", "never", "nothing", "nobody", "nowhere", "neither", "nor", "non", "n't", "cannot", "prevent", 'disclaim', 'disclaims']
 conjunction_list = ["and", "but"]
 disjunction_list = ["or"]
 conditional_list = ['if', 'when', 'which', 'who', 'that']
@@ -283,7 +283,10 @@ additional_antonyms = {'fight': ['embrace', 'wander'],
                        'stand': [('play', '*', 'soccer')],
                        ('coordinate'):[('subordinate')],
                        ('some'):[('generally')],
-                       ('have', '*', 'in', 'common'): [('differ', 'in'), 'differ', 'derive']
+                       ('have', '*', 'in', 'common'): [('differ', 'in'), 'differ', 'derive'],
+                       ('produce'):[('consume')],
+                       ('lowlevel'):[('highlevel')],
+                       ('own'):[('other')]
                        }
 
 import dict_tools

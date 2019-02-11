@@ -44,7 +44,7 @@ class Contradiction:
         '''
         fit_mix_neg = \
              Simmix ( [(1,Simmix.elmo_sim(), 0.4,1),
-                       (1, Simmix.common_words_sim, 0.5,1),
+                       #(1, Simmix.common_words_sim, 0.5,1),
                         ],
                       n=None)
         self.Contra_Neg  = \
@@ -53,7 +53,7 @@ class Contradiction:
                     ], n=30)
 
         fit_mix_ant = \
-             Simmix ( [(1,Simmix.elmo_sim(), 0.55, 1),
+             Simmix ( [(1,Simmix.elmo_sim(), 0.35, 1),
                        (1, Simmix.excluding_pair_boolean_sim(word_definitions.antonym_dict), 0.1, 1)
                        ], n=None)
         self.Contra_Anto = \

@@ -135,6 +135,8 @@ class DataframeCursorilyLogician:
         :param pred: the predicate
         :return: list of predicate_tuples
         '''
+        if pred == []:
+            raise ValueError ('got empty predicate')
         pred = pred[0]
         s_id = pred['s_id']
         poss_part = self.get_part_predication(s_id)
@@ -154,7 +156,7 @@ class DataframeCursorilyLogician:
         s_id  = coref['s_id']
         m_start = coref['m_start']-1
         m_end   = coref['m_end']-1
-        mask = self.Predicatrix.predicate_df.query("s_id==@s_id")['full_ex_i'].apply(
+        mask = self.Predicatrix.predicate_df.query("s_id==@s_id")['i_s'].apply(
             lambda ex_i: True if [m for m in range(m_start, m_end) if m in ex_i] else False)
         return self.Predicatrix.predicate_df.query("s_id==@s_id")[mask].to_dict(orient='records')
 
@@ -317,11 +319,11 @@ class DataframeCursorilyLogician:
         query = (
 r"""               MERGE (a:Expression {id:'%s', s_id:'%s', text:'%s'}) 
                 MERGE (b:Expression {id:'%s', s_id:'%s', text:'%s'}) 
-                MERGE (a)-[:TextRelation {GeneralKind: '%s', SpecialKind:'%s'}]-(b)"""
+                MERGE (a)-[:%s {GeneralKind: '%s', SpecialKind:'%s'}]-(b)"""
                 %
                (n1['id'], n1['s_id'],  " ".join(n1['text']).replace("'", ""),
                 n2['id'], n2['s_id'],  " ".join(n2['text']).replace("'", ""),
-                general_kind, special_kind))
+                general_kind.title(), general_kind, special_kind))
         logging.info ("querying neo4j the following:\n %s" % query)
         self.graph.run(query)
 
@@ -351,7 +353,7 @@ r"""               MERGE (a:Expression {id:'%s', s_id:'%s', text:'%s'})
         :yield: tuples of contradicting predicates
         """
         query = (
-            r"""MATCH path = (a)-[:TextRelation {GeneralKind:'%s'}]->(b) 
+            r"""MATCH path = (a)-[{GeneralKind:'%s'}]->(b) 
                 WHERE ID(a) < ID(b)
                 RETURN a,b """ % kind
         )

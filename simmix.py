@@ -615,7 +615,7 @@ class Simmix:
 
         ..math::
 
-            c = \ln (\dfrac{l_  ext(max)}{2e}) * (      \text{cosine distance}(\overrightarrow{x_{1,0}}, \overrightarrow{x_{2,0}}) +       \text{cosine distance}(\overrightarrow{x_{1,1}}, \overrightarrow{x_{2,1}}) +       \text{cosine distance}(\overrightarrow{x_{1,2}}, \overrightarrow{x_{2,2}})
+            c = \ln (\dfrac{\text(max)}{2e}) * (      \text{cosine distance}(\overrightarrow{x_{1,0}}, \overrightarrow{x_{2,0}}) +       \text{cosine distance}(\overrightarrow{x_{1,1}}, \overrightarrow{x_{2,1}}) +       \text{cosine distance}(\overrightarrow{x_{1,2}}, \overrightarrow{x_{2,2}})
         :param ex1: dict with ['elmo_embeddings', 'full_ex']
         :param ex2: dict with ['elmo_embeddings', 'full_ex]
         :return: float and bracktracking {}
@@ -677,6 +677,16 @@ class Simmix:
 
     @standard_range(-20, 20)
     def elmo_weighted_sim():
+        ''' Use a tf-idf-importance weighted, length-normalized measure based on the most semantical layer of elmo-
+        embeddings
+
+        ..math::
+             c = \ln (\dfrac{\text(max)}{2e}) * (      \text{cosine distance}(\overrightarrow{x_{1,0}}, \overrightarrow{x_{2,0}}) +       \text{cosine distance}(\overrightarrow{x_{1,1}}, \overrightarrow{x_{2,1}}) +       \text{cosine distance}(\overrightarrow{x_{1,2}}, \overrightarrow{x_{2,2}})
+
+        :param ex1: dict with 'elmo_embeddings_per_word', 'importance'
+        :param ex2: dict with 'elmo_embeddings_per_word', 'importance'
+        :return: -20 to +20 , {}
+        '''
         def elmo_sim_generated (ex1,ex2):
             total_length = max(len(ex1["full_ex"]), len (ex2["full_ex"]))
             vector1  = ex1["elmo_embeddings_per_word"]
@@ -695,19 +705,42 @@ class Simmix:
         return elmo_sim_generated
     @standard_range(0, 1)
     def boolean_same_sim (ex1, ex2):
+        ''' Is the text the same in the other?
+
+        :param ex1: dict with 'text'
+        :param ex2: dict with 'text
+        :return: 0-1 , {}
+
+        '''
         text1        = " ".join(ex1["text"])
         text2        = " ".join(ex2["text"])
         return text2 == text1, {}
+
+
     @standard_range(0, 1)
     def boolean_subsame_sim (ex1, ex2):
+        ''' Is the text of the one contained in the other?
+
+        :param ex1: dict with 'text'
+        :param ex2: dict with 'text
+        :return: 0-1  , {}
+
+        '''
         text1        = ex1["text"]
         text2        = ex2["text"]
-        #return (text2 in text1) or (text1 in text2), {}
         return all(w in text1 for w in text2) or all(w in text2 for w in text1), {}
+
     @standard_range(0, 1)
     def sub_i (ex1, ex2):
-        is1 = set(ex1["i"])
-        is2 = set(ex2["i"])
+        ''' Are the one tokens a subset of the other tokens?
+
+        :param ex1: dict with 'i_s'
+        :param ex2: dict with 'i_s
+        :return: 0-1
+
+        '''
+        is1 = set(ex1["i_s"])
+        is2 = set(ex2["i_s"])
         try:
             return is2.issubset(is1) and ex1['doc'] == ex2['doc'], {}
         except KeyError:

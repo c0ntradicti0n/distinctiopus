@@ -134,9 +134,9 @@ class Subjects_and_aspects(Arguments):
             if token.pos_ == 'NOUN':
                 res += 2
             if token.head.dep_ == 'ROOT':
-                res += 5
+                res += 20
             if token.head.dep_ in ['acl', 'rcl']:
-                res += 3
+                res += 1
             return res
 
         def aspectness_word(token):

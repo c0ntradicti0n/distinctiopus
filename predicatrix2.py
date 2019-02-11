@@ -177,17 +177,39 @@ class Predication():
                      "arguments"    : arguments,
                      "arguments_i"  : arguments_i,
                      "full_ex"      : full_ex,
-                     "full_ex_i"    : full_ex_i,
-                     "i"            : full_ex_i,
+                     "i_s"          : full_ex_i,
                      "doc"          : doc,
                      "text"         : [str(x.text) for x in full_ex][:],
-                     "logic_atom"   : logicatom,
                      "key"          : str(next(self.pred_key_gen))
             }
         return predicate
 
     def collect_predicates(self,root_token, arg_markers, too_deep_markers,  ellipsis_resolution=True,
-                no_zero_args=True, mother = False):
+                no_zero_args=True, mother = False, attribute_ordering=False):
+        ''' Extract the predicative structure arising from a special triggering word, that can be handled like in
+            predicate logic.
+
+            A predicate is divided into two major parts:
+            one expression for the information of the concept (the function-name, the Begriff), and its arguments (the
+            arguments of the function, the individuals and variables for them).
+
+
+
+        :param root_token:
+        :param arg_markers:
+        :param too_deep_markers:
+        :param ellipsis_resolution:
+        :param no_zero_args:
+        :param mother:
+        :param attribute_ordering:
+             False (default):
+                 A verbal is the root of the predicative structure and dependents with noun or pronoun cores are the 'arguments'
+             True:
+                 If the predicate is triggered by an adjective-substantive-junction, then the substantive (with its
+                 dependents) is the lonly argument and the adjective with its dependents is the predicate
+
+        :return: dict with
+        '''
         predicate_i    = []
         toodeep_i      = []
         lpar_toodeep_i = []
@@ -327,7 +349,7 @@ class Predication():
         return ps
 
     def attribute_contained_predicates(self,ps, expand = False):
-        ps = sorted(ps, key=lambda x:-len(x['full_ex_i']))
+        ps = sorted(ps, key=lambda x:-len(x['i_s']))
 
         Sub_sim = Simmix([(1, Simmix.sub_i,  0.1, 1),
                           (-1, Simmix.boolean_same_sim, 0,0.1)],
@@ -358,7 +380,7 @@ class Predication():
         p_new = []
         for r in source_nodes:
                  sub_predicates                 = [ps[r]] + [ps[x] for x in nx.algorithms.descendants(containment_structure, r)]
-                 ps[r]['part_predications']     = sorted(sub_predicates, key=lambda x:len(x['full_ex_i']))
+                 ps[r]['part_predications']     = sorted(sub_predicates, key=lambda x:len(x['i_s']))
                  ps[r]['containment_structure'] = containment_structure
                  if len(sub_predicates) != len(containment_structure.nodes) - 1:
                      logging.error("graph bigger than predicates!")
@@ -406,22 +428,22 @@ class Predication():
 
         ps_new = []
         for p in ps:
-            if not any(set(p['full_ex_i']) == set(p2['full_ex_i']) for p2 in ps_new):
+            if not any(set(p['i_s']) == set(p2['i_s']) for p2 in ps_new):
                 ps_new.append(p)
         ps = ps_new
 
         for predicate in ps:
             predicate["doc"] = ex[0].doc
-            predicate["dep"] = [ex[x].dep for x in predicate["full_ex_i"]]
-            predicate["pos"] = [ex[x].pos for x in predicate["full_ex_i"]]
-            predicate["tag"] = [ex[x].tag for x in predicate["full_ex_i"]]
-            predicate["dep_"] = [ex[x].dep_ for x in predicate["full_ex_i"]]
-            predicate["pos_"] = [ex[x].pos_ for x in predicate["full_ex_i"]]
-            predicate["tag_"] = [ex[x].tag_ for x in predicate["full_ex_i"]]
-            predicate["text"] = [ex[x].text for x in predicate["full_ex_i"]]
-            predicate["lemma"] = [ex[x].lemma for x in predicate["full_ex_i"]]
-            predicate["lemma_"] = [ex[x].lemma_ for x in predicate["full_ex_i"]]
-            predicate["lemma_tag_"] = [ex[x].lemma_ + '_' + ex[x].tag_ for x in predicate["full_ex_i"]]
+            predicate["dep"] = [ex[x].dep for x in predicate['i_s']]
+            predicate["pos"] = [ex[x].pos for x in predicate['i_s']]
+            predicate["tag"] = [ex[x].tag for x in predicate['i_s']]
+            predicate["dep_"] = [ex[x].dep_ for x in predicate['i_s']]
+            predicate["pos_"] = [ex[x].pos_ for x in predicate['i_s']]
+            predicate["tag_"] = [ex[x].tag_ for x in predicate['i_s']]
+            predicate["text"] = [ex[x].text for x in predicate['i_s']]
+            predicate["lemma"] = [ex[x].lemma for x in predicate['i_s']]
+            predicate["lemma_"] = [ex[x].lemma_ for x in predicate['i_s']]
+            predicate["lemma_tag_"] = [ex[x].lemma_ + '_' + ex[x].tag_ for x in predicate['i_s']]
         return ps
 
     def collect_all_predicates(self,ex, coref=None, s_id=None,  paint_graph=True):
@@ -468,11 +490,11 @@ class Predication():
         for p in ps:
             p["id"]                      = str(next(self.id_generator))
             p['s_id']                    = s_id
-            p["elmo_embeddings"]         = elmo_embeddings[:,p["full_ex_i"]].sum(axis=1)
-            p["coref"]                   = [coref[i] for i in p["full_ex_i"]]
-            p["elmo_embeddings_per_word"]= elmo_embeddings[:,p["full_ex_i"]]
+            p["elmo_embeddings"]         = elmo_embeddings[:,p['i_s']].sum(axis=1)
+            p["coref"]                   = [coref[i] for i in p['i_s']]
+            p["elmo_embeddings_per_word"]= elmo_embeddings[:,p['i_s']]
             p["elmo_embeddings_full"]    = elmo_embeddings
-            p["importance"]              = importance[p["full_ex_i"]]
+            p["importance"]              = importance[p['i_s']]
             p["importance_full"]         = importance
             p['arguments']               = self.sp_imp_elmo_dictize_ex (
                                          p['arguments'],
@@ -489,6 +511,7 @@ class Predication():
         if not ps:
             text = " ".join([x.text for x in ex])
             logging.error("No predication found in expression: '%s'." % text )
+            return []
 
         if paint_graph:
             self.draw_predicate_structure(ps,"./img/predicate chunks " + ps[0]['key']+".svg")
@@ -588,7 +611,7 @@ class Predication():
         m_start = coref['m_start']
         m_end = coref['m_end']
 
-        mask = self.Predicatrix.predicate_df.query("s_id==@s_id")['full_ex_i'].apply(
+        mask = self.Predicatrix.predicate_df.query("s_id==@s_id")['i_s'].apply(
             lambda ex_i: True if [m for m in range(m_start, m_end) if m in ex_i] else False)
         return self.Predicatrix.predicate_df.query("s_id==@s_id")[mask].to_dict(orient='records')
 
