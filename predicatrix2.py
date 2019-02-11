@@ -166,11 +166,10 @@ class Predication():
         v_roots = tuple(e for e in ex if e.dep_ in ['ROOT'] and e.pos_ not in ['NOUN'])
         return v_roots
 
-    def build_predicate(self,predicate_i, arguments_i, full_ex_i, logicatom_i, doc):
+    def build_predicate(self,predicate_i, arguments_i, full_ex_i, doc):
         predicate =  [doc[x] for x in predicate_i]
         arguments = [[doc[x] for x in arg_i] for arg_i in arguments_i]
         full_ex   =  [doc[x] for x in full_ex_i]
-        logicatom =  [doc[x] for x in logicatom_i]
 
         predicate = {"predicate": predicate,
                      "predicate_i"  : predicate_i,
@@ -280,7 +279,6 @@ class Predication():
         predicate_i =  sorted(predicate_i)
         arguments_i = [sorted(arg_i) for arg_i in arguments_i if arg_i]
         full_ex_i   =  sorted(set(predicate_i) | set(flatten(arguments_i)))
-        logicatom_i =  sorted(list(set(full_ex_i) - set(lpar_toodeep_i)))
 
         if ellipsis_resolution:
             full_ex_i = sorted(list(set(full_ex_i) - set(lpar_toodeep_i)))
@@ -288,7 +286,7 @@ class Predication():
             arguments_i = [sorted(set(arg_i) - set(lpar_toodeep_i)) for arg_i in arguments_i if arg_i]
 
         doc = root_token.doc
-        predicate = self.build_predicate(predicate_i,arguments_i,full_ex_i,logicatom_i,doc)
+        predicate = self.build_predicate(predicate_i,arguments_i,full_ex_i,doc)
         return predicate
 
     p_counter = itertools.count()
