@@ -193,17 +193,17 @@
             <span class="k">yield</span> <span class="n">el</span></div>
 
 
-<div class="viewcode-block" id="curry"><a class="viewcode-back" href="../nested_list_tools.html#nested_list_tools.curry">[docs]</a><span class="k">def</span> <span class="nf">curry</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="curry"><a class="viewcode-back" href="../nested_list_tools.html#nested_list_tools.curry">[docs]</a><span class="k">def</span> <span class="nf">curry</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39; Apply arguments to a function, but leave the last one out</span>
 
-<span class="sd">    :param fun: function with multiple arguments</span>
+<span class="sd">    :param function: function with multiple arguments</span>
 <span class="sd">    :param args: normal arguments</span>
 <span class="sd">    :param kwargs: keyword arguments</span>
 <span class="sd">    :return: fun with one argument</span>
 
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">def</span> <span class="nf">fun_new</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">fun</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">function</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">fun_new</span></div>
 
 <div class="viewcode-block" id="on_each_level"><a class="viewcode-back" href="../nested_list_tools.html#nested_list_tools.on_each_level">[docs]</a><span class="k">def</span> <span class="nf">on_each_level</span> <span class="p">(</span><span class="n">lol</span><span class="p">,</span> <span class="n">fun</span><span class="p">,</span> <span class="n">out</span> <span class="o">=</span> <span class="p">[]):</span>

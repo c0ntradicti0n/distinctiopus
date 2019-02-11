@@ -296,6 +296,8 @@
 <span class="sd">        :param pred: the predicate</span>
 <span class="sd">        :return: list of predicate_tuples</span>
 <span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">pred</span> <span class="o">==</span> <span class="p">[]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span> <span class="p">(</span><span class="s1">&#39;got empty predicate&#39;</span><span class="p">)</span>
         <span class="n">pred</span> <span class="o">=</span> <span class="n">pred</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">s_id</span> <span class="o">=</span> <span class="n">pred</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">]</span>
         <span class="n">poss_part</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_part_predication</span><span class="p">(</span><span class="n">s_id</span><span class="p">)</span>
@@ -313,9 +315,9 @@
 <span class="sd">        &#39;&#39;&#39;</span>
 
         <span class="n">s_id</span>  <span class="o">=</span> <span class="n">coref</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">]</span>
-        <span class="n">m_start</span> <span class="o">=</span> <span class="n">coref</span><span class="p">[</span><span class="s1">&#39;m_start&#39;</span><span class="p">]</span>
-        <span class="n">m_end</span>   <span class="o">=</span> <span class="n">coref</span><span class="p">[</span><span class="s1">&#39;m_end&#39;</span><span class="p">]</span>
-        <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Predicatrix</span><span class="o">.</span><span class="n">predicate_df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;s_id==@s_id&quot;</span><span class="p">)[</span><span class="s1">&#39;full_ex_i&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+        <span class="n">m_start</span> <span class="o">=</span> <span class="n">coref</span><span class="p">[</span><span class="s1">&#39;m_start&#39;</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span>
+        <span class="n">m_end</span>   <span class="o">=</span> <span class="n">coref</span><span class="p">[</span><span class="s1">&#39;m_end&#39;</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Predicatrix</span><span class="o">.</span><span class="n">predicate_df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;s_id==@s_id&quot;</span><span class="p">)[</span><span class="s1">&#39;i_s&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
             <span class="k">lambda</span> <span class="n">ex_i</span><span class="p">:</span> <span class="kc">True</span> <span class="k">if</span> <span class="p">[</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m_start</span><span class="p">,</span> <span class="n">m_end</span><span class="p">)</span> <span class="k">if</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">ex_i</span><span class="p">]</span> <span class="k">else</span> <span class="kc">False</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Predicatrix</span><span class="o">.</span><span class="n">predicate_df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;s_id==@s_id&quot;</span><span class="p">)[</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s1">&#39;records&#39;</span><span class="p">)</span></div>
 
@@ -478,11 +480,11 @@
         <span class="n">query</span> <span class="o">=</span> <span class="p">(</span>
 <span class="sa">r</span><span class="sd">&quot;&quot;&quot;               MERGE (a:Expression {id:&#39;%s&#39;, s_id:&#39;%s&#39;, text:&#39;%s&#39;}) </span>
 <span class="sd">                MERGE (b:Expression {id:&#39;%s&#39;, s_id:&#39;%s&#39;, text:&#39;%s&#39;}) </span>
-<span class="sd">                MERGE (a)-[:TextRelation {GeneralKind: &#39;%s&#39;, SpecialKind:&#39;%s&#39;}]-(b)&quot;&quot;&quot;</span>
+<span class="sd">                MERGE (a)-[:%s {GeneralKind: &#39;%s&#39;, SpecialKind:&#39;%s&#39;}]-(b)&quot;&quot;&quot;</span>
                 <span class="o">%</span>
                <span class="p">(</span><span class="n">n1</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">n1</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">],</span>  <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">n1</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
                 <span class="n">n2</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">n2</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">],</span>  <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">n2</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
-                <span class="n">general_kind</span><span class="p">,</span> <span class="n">special_kind</span><span class="p">))</span>
+                <span class="n">general_kind</span><span class="o">.</span><span class="n">title</span><span class="p">(),</span> <span class="n">general_kind</span><span class="p">,</span> <span class="n">special_kind</span><span class="p">))</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span> <span class="p">(</span><span class="s2">&quot;querying neo4j the following:</span><span class="se">\n</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">query</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">query</span><span class="p">)</span></div>
 
@@ -512,7 +514,7 @@
 <span class="sd">        :yield: tuples of contradicting predicates</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">query</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="sa">r</span><span class="sd">&quot;&quot;&quot;MATCH path = (a)-[:TextRelation {GeneralKind:&#39;%s&#39;}]-&gt;(b) </span>
+            <span class="sa">r</span><span class="sd">&quot;&quot;&quot;MATCH path = (a)-[{GeneralKind:&#39;%s&#39;}]-&gt;(b) </span>
 <span class="sd">                WHERE ID(a) &lt; ID(b)</span>
 <span class="sd">                RETURN a,b &quot;&quot;&quot;</span> <span class="o">%</span> <span class="n">kind</span>
         <span class="p">)</span>

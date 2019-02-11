@@ -90,10 +90,12 @@
 <li class="toctree-l1"><a class="reference internal" href="subj_and_aspectrix.html">subj_and_aspectrix module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="corpus_reader.html">corpus_reader module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="webanno_parser.html">webanno_parser module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="word_definitions.html">word_definitions module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tdfidf_tool.html">tdfidf_tool module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="corutine_utils.html">corutine_utils module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dict_tools.html">dict_tools module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="nested_list_tools.html">nested_list_tools module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="word_definitions.html">word_definitions module</a></li>
 </ul>
 
             
@@ -215,6 +217,11 @@ A predicate for instance, contains</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="predicatrix2.Predication.append_to_argument_df">
+<code class="descname">append_to_argument_df</code><span class="sig-paren">(</span><em>ps</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.append_to_argument_df"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.append_to_argument_df" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="predicatrix2.Predication.append_to_predicate_df">
 <code class="descname">append_to_predicate_df</code><span class="sig-paren">(</span><em>ps</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.append_to_predicate_df"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.append_to_predicate_df" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -236,8 +243,35 @@ A predicate for instance, contains</p>
 
 <dl class="method">
 <dt id="predicatrix2.Predication.build_predicate">
-<code class="descname">build_predicate</code><span class="sig-paren">(</span><em>predicate_i</em>, <em>arguments_i</em>, <em>full_ex_i</em>, <em>logicatom_i</em>, <em>doc</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.build_predicate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.build_predicate" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="descname">build_predicate</code><span class="sig-paren">(</span><em>predicate_i</em>, <em>arguments_i</em>, <em>full_ex_i</em>, <em>doc</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.build_predicate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.build_predicate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build a dict from information over a predicate</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>predicate_i</strong> – indices of predicates</li>
+<li><strong>arguments_i</strong> – indices of arguments as list of list</li>
+<li><strong>full_ex_i</strong> – all indices</li>
+<li><strong>doc</strong> – the spacy document</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict wth
+“predicate”    : spacy tokens  of predicate,
+“predicate_i”  : indices of that,
+“arguments”    : spacy tokens of arguments,
+“arguments_i”  : indices of that,
+“full_ex”      : all spacy tokens,
+“i_s”          : indices of that
+“doc”          : spacy tokens
+“text”         : list of words,
+“key”          : a unique identifyer for that predicate</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="predicatrix2.Predication.collect_all_predicates">
@@ -264,7 +298,53 @@ formula with a dictionary, to what expressions the constants in the formula belo
 
 <dl class="method">
 <dt id="predicatrix2.Predication.collect_predicates">
-<code class="descname">collect_predicates</code><span class="sig-paren">(</span><em>root_token</em>, <em>arg_markers</em>, <em>too_deep_markers</em>, <em>ellipsis_resolution=True</em>, <em>no_zero_args=True</em>, <em>mother=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.collect_predicates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.collect_predicates" title="Permalink to this definition">¶</a></dt>
+<code class="descname">collect_predicates</code><span class="sig-paren">(</span><em>root_token</em>, <em>arg_markers</em>, <em>too_deep_markers</em>, <em>ellipsis_resolution=True</em>, <em>no_zero_args=True</em>, <em>mother=False</em>, <em>attribute_ordering=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.collect_predicates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.collect_predicates" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Extract the predicative structure arising from a special triggering word, that can be handled like in</dt>
+<dd><p class="first">predicate logic.</p>
+<p class="last">A predicate is divided into two major parts:
+one expression for the information of the concept (the function-name, the Begriff), and its arguments (the
+arguments of the function, the individuals and variables for them).</p>
+</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>root_token</strong> – verbal or substantive root word</li>
+<li><strong>arg_markers</strong> – what kinds of dependences to take arguments</li>
+<li><strong>too_deep_markers</strong> – where to cut the expression because of deepness</li>
+<li><strong>ellipsis_resolution</strong> – if coordinative bindings should be dissolved every time
+(and the elliptical part doubbled for the second part)</li>
+<li><strong>no_zero_args</strong> – its not allowed for predications to have zero arugments</li>
+<li><strong>mother</strong> – the whole expression should appear as result</li>
+<li><strong>attribute_ordering</strong> – <dl class="docutils">
+<dt>False (default):</dt>
+<dd>A verbal is the root of the predicative structure and dependents with noun or pronoun cores are the ‘arguments’</dd>
+<dt>True:</dt>
+<dd>If the predicate is triggered by an adjective-substantive-junction, then the substantive (with its
+dependents) is the lonly argument and the adjective with its dependents is the predicate</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict from <a class="reference internal" href="#predicatrix2.Predication.build_predicate" title="predicatrix2.Predication.build_predicate"><code class="xref py py-func docutils literal notranslate"><span class="pre">build_predicate()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.coreferenced_expression">
+<code class="descname">coreferenced_expression</code><span class="sig-paren">(</span><em>coref</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.coreferenced_expression"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.coreferenced_expression" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.coreferenced_expressions">
+<code class="descname">coreferenced_expressions</code><span class="sig-paren">(</span><em>corefs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.coreferenced_expressions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.coreferenced_expressions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -285,6 +365,16 @@ formula with a dictionary, to what expressions the constants in the formula belo
 <dl class="method">
 <dt id="predicatrix2.Predication.get_attributive_roots">
 <code class="descname">get_attributive_roots</code><span class="sig-paren">(</span><em>ex</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.get_attributive_roots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.get_attributive_roots" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.get_coreferenced_argument">
+<code class="descname">get_coreferenced_argument</code><span class="sig-paren">(</span><em>coref</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.get_coreferenced_argument"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.get_coreferenced_argument" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.get_coreferenced_arguments">
+<code class="descname">get_coreferenced_arguments</code><span class="sig-paren">(</span><em>corefs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.get_coreferenced_arguments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.get_coreferenced_arguments" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">

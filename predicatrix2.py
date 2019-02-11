@@ -23,7 +23,9 @@ from generator_tools import count_up
 class Predication():
     def __init__(self, corpus=None):
         ''' This module lets you translate natural language expressions into predicative chunks, to analyse the
-        parts of sentence further.
+        parts of sentences and their relatitions.
+
+        For the chunking intialize the model and call `analyse_predication` and you get back a hard-core-annotated expression
 
         These chunks are dicts of other properties, that represent a part of the sentence with different properties.
         A predicate for instance, contains
@@ -167,6 +169,24 @@ class Predication():
         return v_roots
 
     def build_predicate(self,predicate_i, arguments_i, full_ex_i, doc):
+        ''' Build a dict from information over a predicate
+
+        :param predicate_i: indices of predicates
+        :param arguments_i: indices of arguments as list of list
+        :param full_ex_i:  all indices
+        :param doc: the spacy document
+        :return: dict wth
+                     "predicate"    : spacy tokens  of predicate,
+                     "predicate_i"  : indices of that,
+                     "arguments"    : spacy tokens of arguments,
+                     "arguments_i"  : indices of that,
+                     "full_ex"      : all spacy tokens,
+                     "i_s"          : indices of that
+                     "doc"          : spacy tokens
+                     "text"         : list of words,
+                     "key"          : a unique identifyer for that predicate
+
+        '''
         predicate =  [doc[x] for x in predicate_i]
         arguments = [[doc[x] for x in arg_i] for arg_i in arguments_i]
         full_ex   =  [doc[x] for x in full_ex_i]
@@ -183,8 +203,8 @@ class Predication():
             }
         return predicate
 
-    def collect_predicates(self,root_token, arg_markers, too_deep_markers,  ellipsis_resolution=True,
-                no_zero_args=True, mother = False, attribute_ordering=False):
+    def collect_predicates(self, root_token, arg_markers, too_deep_markers, ellipsis_resolution=True,
+                           no_zero_args=True, mother = False, attributive_ordering=False):
         ''' Extract the predicative structure arising from a special triggering word, that can be handled like in
             predicate logic.
 
@@ -192,22 +212,24 @@ class Predication():
             one expression for the information of the concept (the function-name, the Begriff), and its arguments (the
             arguments of the function, the individuals and variables for them).
 
-
-
-        :param root_token:
-        :param arg_markers:
-        :param too_deep_markers:
-        :param ellipsis_resolution:
+        :param root_token: verbal or substantive root word
+        :param arg_markers: what kinds of dependences to take arguments
+        :param too_deep_markers: where to cut the expression because of deepness
+        :param ellipsis_resolution: if coordinative bindings should be dissolved every time
+             (and the elliptical part doubbled for the second part)
         :param no_zero_args:
+             its not allowed for predications to have zero arugments
         :param mother:
-        :param attribute_ordering:
+             the whole expression should appear as result
+        :param attributive_ordering:
              False (default):
                  A verbal is the root of the predicative structure and dependents with noun or pronoun cores are the 'arguments'
              True:
                  If the predicate is triggered by an adjective-substantive-junction, then the substantive (with its
                  dependents) is the lonly argument and the adjective with its dependents is the predicate
 
-        :return: dict with
+        :return: dict from :func:`~predicatrix2.Predication.build_predicate`
+
         '''
         predicate_i    = []
         toodeep_i      = []
@@ -284,6 +306,9 @@ class Predication():
             full_ex_i = sorted(list(set(full_ex_i) - set(lpar_toodeep_i)))
             predicate_i = sorted(list(set(predicate_i) - set(lpar_toodeep_i)))
             arguments_i = [sorted(set(arg_i) - set(lpar_toodeep_i)) for arg_i in arguments_i if arg_i]
+
+        if attributive_ordering:
+            predicate_i, arguments_i = arguments_i, predicate_i
 
         doc = root_token.doc
         predicate = self.build_predicate(predicate_i,arguments_i,full_ex_i,doc)
