@@ -29,7 +29,7 @@ There are some additional rules (how to deal with the adjectives, that appear in
 
     The brown fox jumps over the lazy dog and {the brown fox} fell into the mouth of a white shark
    
-![Image](./explanation/dependency.png)   
+![Image](dependency.png)   
    
 Here we get then 6 predicates:
 
@@ -42,7 +42,7 @@ Here we get then 6 predicates:
 
 My algorithm puts these into a tree, which expressions appear in others
 
-![Image](./explanation/predicate_chunks.svg)
+![Image](predicate_chunks.svg)
 
 That is done to determine, where negations acutally stand:
 
@@ -56,15 +56,15 @@ Then S0krates fits these chunks into very similar pairs and tries to find there 
 
 The following contradictions are 
 
-![Image](./explanation/contradiction.svg)
+![Image](contradiction.svg)
 
 ## Finding correlating predicate pairs to the contradictions
 
-![Image](./explanation/correlation.svg)
+![Image](correlation.svg)
 
 ## Finding themes and aspects
 
-![Image](./explanation/subjects_aspects.svg)
+![Image](subjects_aspects.svg)
 
 ## Matching results in neo4j
 
