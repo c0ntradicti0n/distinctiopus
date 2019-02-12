@@ -20,7 +20,7 @@ class Subjects_and_aspects(Arguments):
         super().__init__(corpus)
 
         self.similar = \
-            Simmix([(20, Simmix.common_words_sim, 0.1, 1),
+            Simmix([(20, Simmix.common_words_sim, 0.5, 1),
                     (1, Simmix.dep_sim, 0.1, 1),
                     (1, Simmix.pos_sim, 0.1, 1),
                     (1, Simmix.tag_sim, 0.1, 1),

@@ -308,7 +308,8 @@ class Predication():
             arguments_i = [sorted(set(arg_i) - set(lpar_toodeep_i)) for arg_i in arguments_i if arg_i]
 
         if attributive_ordering:
-            predicate_i, arguments_i = arguments_i, predicate_i
+            predicate_i, arguments_i = list(flatten_list(arguments_i)), [predicate_i]
+
 
         doc = root_token.doc
         predicate = self.build_predicate(predicate_i,arguments_i,full_ex_i,doc)
@@ -353,9 +354,9 @@ class Predication():
                 rath = list(reversed(path))
                 for i, n in enumerate(rath[:-1]):
                      edge = G.edges[(rath[i+1], rath[i])]
-                     if edge['shared_negations']:# and not edge['used']:
+                     if edge['shared_negations']:
                          negation_containing_node = \
-                             rath[i] #if len(s['part_predications'][n]['full_ex']) > len(s['part_predications'][rath[i+1]]['full_ex']) else rath[i+1]
+                             rath[i]
                          G.nodes[negation_containing_node]['predicate']['negation_count'] = len(edge['shared_negations'])
                          break
 
@@ -421,7 +422,8 @@ class Predication():
                     x,
                     self.attributive_arg_markers,
                     self.attributive_too_deep_markers,
-                    no_zero_args=True)
+                    no_zero_args=True,
+                    attributive_ordering=True)
             a_ps.append(p)
 
         v_ps = []

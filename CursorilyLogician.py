@@ -117,7 +117,7 @@ class DataframeCursorilyLogician:
             and second it evaluates the similarity of these phrases, what would be the fitting counterpart for that one
 
         '''
-        put_contradiction_into_gdb = self.put_into_gdb("contradiction")
+        put_contradiction_into_gdb = self.put_into_gdb("connotation", "contradiction")
 
         for index, x in self.sentence_df.iterrows():
             self.Contradictrix.find_contradictive(
@@ -190,7 +190,7 @@ class DataframeCursorilyLogician:
         contradictions           = list(self.get_from_gdb('contradiction'))
 
         # Coroutine for writing-tasks, no values stored here
-        put_correlation_into_gdb = self.put_into_gdb("correlation")
+        put_correlation_into_gdb = self.put_into_gdb("Connotation", "correlation")
 
         for contra1, contra2 in contradictions:
             poss_correl_l = self.get_correllation_preds(contra1)
@@ -208,15 +208,14 @@ class DataframeCursorilyLogician:
         :return: 2tuple-2tuple-list-predicate-dict
         '''
         query = \
-            """Match (pred3)-[{GeneralKind:'correlation', SpecialKind:'correlated'}]-(pred1),
-                     (pred1)-[{GeneralKind:'correlation', SpecialKind:'opposed'}]-(pred2),
-                     (pred2)-[{GeneralKind:'correlation', SpecialKind:'correlated'}]-(pred4),
-                     (pred4)-[{GeneralKind:'correlation', SpecialKind:'opposed'}]-(pred3),
-                     
-                     (pred1)-[{GeneralKind:'contradiction'}]-(pred2)
+            """ MATCH (pred1)--(pred2)--(pred3)--(pred4)
 
-               Where ID(pred1)<ID(pred2)
-               Return pred1, pred2, pred3, pred4"""
+                WHERE (pred1)-[:CORRELATION {SpecialKind:'correlated'}]-(pred3) AND
+            
+                     (pred1)-[:CORRELATION {SpecialKind:'opposed'}]-(pred2) AND
+                     (pred2)-[:CORRELATION {SpecialKind:'correlated'}]-(pred4) AND
+                     (pred4)-[:CORRELATION {SpecialKind:'opposed'}]-(pred3)                AND ID(pred1)<ID(pred2)
+               RETURN pred1, pred2, pred3, pred4"""
 
         logging.info("query neo4j for reading by this:\n%s" % query)
         records = self.graph.run(query).data()
@@ -240,8 +239,8 @@ class DataframeCursorilyLogician:
 
         opposed_pair_pairs   = self.get_opposed_constellation_gdb()
 
-        put_arg_into_gdb     = self.put_into_gdb('argument')
-        put_deno_into_gdb    = self.put_into_gdb('denotation')
+        put_arg_into_gdb     = self.put_into_gdb('denotation', 'argument')
+        put_deno_into_gdb    = self.put_into_gdb('denotation', 'subjects_aspects')
 
 
         for oppo in opposed_pair_pairs:
@@ -301,7 +300,7 @@ class DataframeCursorilyLogician:
         return None
 
 
-    def add_determined_expression (self, general_kind, special_kind, n1, n2):
+    def add_determined_expression (self, label, general_kind, special_kind, n1, n2):
         ''' Throws node data into neo4j by expanding data as dictionary.
 
             :param general_kind: some string property of all members, that are added by this function
@@ -317,19 +316,19 @@ class DataframeCursorilyLogician:
             logging.warning("node data is list... taking first")
             n2 = n2[0]
         query = (
-r"""               MERGE (a:Expression {id:'%s', s_id:'%s', text:'%s'}) 
-                MERGE (b:Expression {id:'%s', s_id:'%s', text:'%s'}) 
-                MERGE (a)-[:%s {GeneralKind: '%s', SpecialKind:'%s'}]-(b)"""
+r"""            MERGE (a:%s {id:'%s', s_id:'%s', text:'%s', i_s:%s}) 
+                MERGE (b:%s {id:'%s', s_id:'%s', text:'%s', i_s:%s}) 
+                MERGE (a)-[:%s {SpecialKind:'%s'}]-(b)"""
                 %
-               (n1['id'], n1['s_id'],  " ".join(n1['text']).replace("'", ""),
-                n2['id'], n2['s_id'],  " ".join(n2['text']).replace("'", ""),
-                general_kind.title(), general_kind, special_kind))
+               (label.upper(), n1['id'], n1['s_id'],  " ".join(n1['text']).replace("'", ""), n1['i_s'],
+                label.upper(), n2['id'], n2['s_id'],  " ".join(n2['text']).replace("'", ""), n2['i_s'],
+                general_kind.upper(), special_kind))
         logging.info ("querying neo4j the following:\n %s" % query)
         self.graph.run(query)
 
 
     @coroutine
-    def put_into_gdb (self, general_kind):
+    def put_into_gdb (self, label, general_kind):
         ''' This returns a subgraph of the graph, selected by the 'general_kind' param.
 
         :param general_kind: some string property of all members, that are added by this function
@@ -339,7 +338,7 @@ r"""               MERGE (a:Expression {id:'%s', s_id:'%s', text:'%s'})
             data = (yield)
             if isinstance(data, tuple) and len(data) == 3:
                 n1, n2, special_kind =  data
-                self.add_determined_expression(general_kind, special_kind, n1, n2)
+                self.add_determined_expression(label, general_kind, special_kind, n1, n2)
             else:
                 logging.error('Value could not be set because I don\'t know how to deal with the type')
                 raise ValueError('Value could not be set because I don\'t know how to deal with the type')
@@ -353,9 +352,9 @@ r"""               MERGE (a:Expression {id:'%s', s_id:'%s', text:'%s'})
         :yield: tuples of contradicting predicates
         """
         query = (
-            r"""MATCH path = (a)-[{GeneralKind:'%s'}]->(b) 
+            r"""MATCH path = (a)-[:%s]->(b) 
                 WHERE ID(a) < ID(b)
-                RETURN a,b """ % kind
+                RETURN a,b """ % kind.upper()
         )
         logging.info("query neo4j for reading by this:\n%s" % query)
         records = self.graph.run(query).data()

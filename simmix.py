@@ -539,6 +539,7 @@ class Simmix:
             :return: c and backtracking beam {}
 
         '''
+        # A bit something else than this: https://en.wikipedia.org/wiki/Overlap_coefficient
         str1  = ex1["lemma"]
         str2  = ex2["lemma"]
         res = (len([ex1['importance'][i] for i,x in enumerate(str1) if x in str2]) +
