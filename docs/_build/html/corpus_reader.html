@@ -80,11 +80,11 @@
               
             
             
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">corpus_reader module</a></li>
+              <p class="caption"><span class="caption-text">Table of Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">How it works</a></li>
 </ul>
-</div>
+
             
           
         </div>
@@ -156,8 +156,30 @@
 <dl class="method">
 <dt id="corpus_reader.CorpusReader.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>corpus_path=None</em>, <em>only=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/corpus_reader.html#CorpusReader.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#corpus_reader.CorpusReader.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+<dd><p>This module reads conll files into a DataFrama.</p>
+<p>Conll files have here to be read, they are written line per word.
+It is collapsed into one line per sentence here.</p>
+<p>Also some datatypes are parsed into a more appropriate datastructure than strings
+The spacy doc’s are build here, overwritten with grammar from the conll files to use the datastructure of spracy.
+Also the coreference mention tags are parsed to some dict.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>corpus_path</strong> – path to the dir that contains a folder ‘import’, where the conll files are</li>
+<li><strong>only</strong> – restrict the conll files that should be read.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
+
+<dl class="method">
+<dt id="corpus_reader.CorpusReader.aggregate_sentences">
+<code class="descname">aggregate_sentences</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/corpus_reader.html#CorpusReader.aggregate_sentences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#corpus_reader.CorpusReader.aggregate_sentences" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="corpus_reader.CorpusReader.annotate_corefs">
@@ -168,12 +190,6 @@
 <dt id="corpus_reader.CorpusReader.col_set">
 <code class="descname">col_set</code><em class="property"> = ['i', 'text', 'lemma', 'pos', 'tag', 'nothing', 'head', 'dep', 'spacy_i', 'coref']</em><a class="headerlink" href="#corpus_reader.CorpusReader.col_set" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="method">
-<dt id="corpus_reader.CorpusReader.commonize_values">
-<code class="descname">commonize_values</code><span class="sig-paren">(</span><em>col_with_lists</em>, <em>col_to_index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/corpus_reader.html#CorpusReader.commonize_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#corpus_reader.CorpusReader.commonize_values" title="Permalink to this definition">¶</a></dt>
-<dd><p>Select rows with overlapping values</p>
-</dd></dl>
 
 <dl class="attribute">
 <dt id="corpus_reader.CorpusReader.conll_format">
@@ -240,6 +256,16 @@ per observation in the output table</p>
 <code class="descname">load_conll</code><span class="sig-paren">(</span><em>i</em>, <em>corpus_path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/corpus_reader.html#CorpusReader.load_conll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#corpus_reader.CorpusReader.load_conll" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="method">
+<dt id="corpus_reader.CorpusReader.parse_coref_str">
+<code class="descname">parse_coref_str</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/corpus_reader.html#CorpusReader.parse_coref_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#corpus_reader.CorpusReader.parse_coref_str" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="corpus_reader.CorpusReader.parse_ints">
+<code class="descname">parse_ints</code><span class="sig-paren">(</span><em>d</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/corpus_reader.html#CorpusReader.parse_ints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#corpus_reader.CorpusReader.parse_ints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="attribute">
 <dt id="corpus_reader.CorpusReader.pattern">
 <code class="descname">pattern</code><em class="property"> = re.compile('(?P&lt;inv_id&gt;(?P&lt;id&gt;\\d+)((?:\\.)?(?P&lt;hidden&gt;\\d+))?)      # i (as well es hidden node-ids in conll-u format)\n                                 \\t(?P&lt;text&gt;.*?)    # whitespace, next bar, n1\n         , re.VERBOSE)</em><a class="headerlink" href="#corpus_reader.CorpusReader.pattern" title="Permalink to this definition">¶</a></dt>
@@ -249,6 +275,29 @@ per observation in the output table</p>
 <dt id="corpus_reader.CorpusReader.read_one_conll">
 <code class="descname">read_one_conll</code><span class="sig-paren">(</span><em>fname</em>, <em>s_id_dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/corpus_reader.html#CorpusReader.read_one_conll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#corpus_reader.CorpusReader.read_one_conll" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="method">
+<dt id="corpus_reader.CorpusReader.renumerate_word_ids">
+<code class="descname">renumerate_word_ids</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/corpus_reader.html#CorpusReader.renumerate_word_ids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#corpus_reader.CorpusReader.renumerate_word_ids" title="Permalink to this definition">¶</a></dt>
+<dd><p>In conll files normal id’s are ints, but invisible nodes have to be re-enumerated.</p>
+<blockquote>
+<div><p>If you annotated <cite>hidden nodes</cite> with this syntax for the id: ‘1.1’, they are recounted here.</p>
+<p>See this discussion here:
+.. _Null subjects: <a class="reference external" href="http://www.python.org/https://github.com/UniversalDependencies/docs/issues/589">http://www.python.org/https://github.com/UniversalDependencies/docs/issues/589</a>
+That also happens, if there are coordinative bindings in the sentences, that re-use the tokens for their
+grammatical well-formedness</p>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>x</strong> – pandas Series of Enhanced UD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">index list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="corpus_reader.CorpusReader.write_conll_by_df_group">
@@ -306,6 +355,7 @@ per observation in the output table</p>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
         <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
 
   

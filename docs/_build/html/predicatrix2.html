@@ -82,20 +82,7 @@
             
               <p class="caption"><span class="caption-text">Table of Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="CursorilyLogician.html">CursorilyLogician module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="simmix.html">simmix module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="grammarannotator.html">grammarannotator module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="contradictrix.html">contradictrix module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="correlatrix.html">correlatrix module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="subj_and_aspectrix.html">subj_and_aspectrix module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="corpus_reader.html">corpus_reader module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="webanno_parser.html">webanno_parser module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="word_definitions.html">word_definitions module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tdfidf_tool.html">tdfidf_tool module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="corutine_utils.html">corutine_utils module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dict_tools.html">dict_tools module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="nested_list_tools.html">nested_list_tools module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="word_definitions.html">word_definitions module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">How it works</a></li>
 </ul>
 
             
@@ -170,7 +157,8 @@
 <dt id="predicatrix2.Predication.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>corpus=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>This module lets you translate natural language expressions into predicative chunks, to analyse the
-parts of sentence further.</p>
+parts of sentences and their relatitions.</p>
+<p>For the chunking intialize the model and call <cite>analyse_predication</cite> and you get back a hard-core-annotated expression</p>
 <p>These chunks are dicts of other properties, that represent a part of the sentence with different properties.
 A predicate for instance, contains</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">spacy</span>
@@ -297,8 +285,13 @@ formula with a dictionary, to what expressions the constants in the formula belo
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="predicatrix2.Predication.collect_argument">
+<code class="descname">collect_argument</code><span class="sig-paren">(</span><em>arg_i</em>, <em>too_deep_i</em>, <em>doc</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.collect_argument"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.collect_argument" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="predicatrix2.Predication.collect_predicates">
-<code class="descname">collect_predicates</code><span class="sig-paren">(</span><em>root_token</em>, <em>arg_markers</em>, <em>too_deep_markers</em>, <em>ellipsis_resolution=True</em>, <em>no_zero_args=True</em>, <em>mother=False</em>, <em>attribute_ordering=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.collect_predicates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.collect_predicates" title="Permalink to this definition">¶</a></dt>
+<code class="descname">collect_predicates</code><span class="sig-paren">(</span><em>root_token</em>, <em>arg_markers</em>, <em>too_deep_markers</em>, <em>ellipsis_resolution=True</em>, <em>no_zero_args=True</em>, <em>mother=False</em>, <em>attributive_ordering=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.collect_predicates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.collect_predicates" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
 <dt>Extract the predicative structure arising from a special triggering word, that can be handled like in</dt>
 <dd><p class="first">predicate logic.</p>
@@ -319,7 +312,7 @@ arguments of the function, the individuals and variables for them).</p>
 (and the elliptical part doubbled for the second part)</li>
 <li><strong>no_zero_args</strong> – its not allowed for predications to have zero arugments</li>
 <li><strong>mother</strong> – the whole expression should appear as result</li>
-<li><strong>attribute_ordering</strong> – <dl class="docutils">
+<li><strong>attributive_ordering</strong> – <dl class="docutils">
 <dt>False (default):</dt>
 <dd>A verbal is the root of the predicative structure and dependents with noun or pronoun cores are the ‘arguments’</dd>
 <dt>True:</dt>
@@ -395,6 +388,11 @@ dependents) is the lonly argument and the adjective with its dependents is the p
 <dl class="method">
 <dt id="predicatrix2.Predication.p_to_file">
 <code class="descname">p_to_file</code><span class="sig-paren">(</span><em>fp</em>, <em>predicate</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.p_to_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.p_to_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.post_process_arguments">
+<code class="descname">post_process_arguments</code><span class="sig-paren">(</span><em>arguments_i</em>, <em>too_deep_i</em>, <em>doc</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.post_process_arguments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.post_process_arguments" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">

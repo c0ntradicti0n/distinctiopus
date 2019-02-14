@@ -142,8 +142,14 @@ class DataframeCursorilyLogician:
 
         '''
         horizon = list(range(int(s_id) + 1, int(s_id) + horizon + 1))
-        markers = 'thus|for|example'
-        predicates =  self.sentence_df.query('s_id in @horizon and text.str.contains(@markers)')['predication'].values.tolist()
+        markers_pos = 'thus_ADV'
+        markers_text = 'for instance'
+        mask = (
+            self.sentence_df['s_id'].astype(int) in horizon &
+            self.sentence_df['text_pos_'].str.contains(markers_pos, case=False) &
+            self.sentence_df['text'].str.contains(markers_text, case=False) )
+
+        predicates =  self.sentence_df[mask]['predication'].values.tolist()
         if predicates:
             x = 1
         return predicates

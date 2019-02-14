@@ -82,20 +82,9 @@
             
               <p class="caption"><span class="caption-text">Table of Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../CursorilyLogician.html">CursorilyLogician module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../simmix.html">simmix module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../grammarannotator.html">grammarannotator module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../contradictrix.html">contradictrix module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../correlatrix.html">correlatrix module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../subj_and_aspectrix.html">subj_and_aspectrix module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../corpus_reader.html">corpus_reader module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../webanno_parser.html">webanno_parser module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../word_definitions.html">word_definitions module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tdfidf_tool.html">tdfidf_tool module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../corutine_utils.html">corutine_utils module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../dict_tools.html">dict_tools module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../nested_list_tools.html">nested_list_tools module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../word_definitions.html">word_definitions module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">How it works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../textlinguistics.html">Textlinguistic tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../basic_annotations.html">bayessoassdsdsdsdskr</a></li>
 </ul>
 
             
@@ -163,6 +152,7 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="k">import</span> <span class="n">count</span>
 <span class="kn">from</span> <span class="nn">nested_list_tools</span> <span class="k">import</span> <span class="n">flatten_reduce</span>
+<span class="kn">import</span> <span class="nn">fnmatch</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -171,8 +161,8 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">NullHandler</span><span class="p">())</span>
 
-
-<span class="kn">import</span> <span class="nn">grammarannotator</span>
+<span class="kn">import</span> <span class="nn">spacy</span>
+<span class="n">nlp</span> <span class="o">=</span> <span class="n">spacy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;en_core_web_sm&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="find_position_in_doc_by_approx"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.find_position_in_doc_by_approx">[docs]</a><span class="k">def</span> <span class="nf">find_position_in_doc_by_approx</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">text_token</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">deviation</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
     <span class="n">deviator</span> <span class="o">=</span> <span class="n">iterate_away</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">deviation</span><span class="p">)</span>
@@ -198,34 +188,79 @@
 
 <div class="viewcode-block" id="CorpusReader"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader">[docs]</a><span class="k">class</span> <span class="nc">CorpusReader</span><span class="p">:</span>
 <div class="viewcode-block" id="CorpusReader.__init__"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">corpus_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">only</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; This module reads conll files into a DataFrama.</span>
+
+<span class="sd">        Conll files have here to be read, they are written line per word.</span>
+<span class="sd">        It is collapsed into one line per sentence here.</span>
+
+<span class="sd">        Also some datatypes are parsed into a more appropriate datastructure than strings</span>
+<span class="sd">        The spacy doc&#39;s are build here, overwritten with grammar from the conll files to use the datastructure of spracy.</span>
+<span class="sd">        Also the coreference mention tags are parsed to some dict.</span>
+
+<span class="sd">        :param corpus_path: path to the dir that contains a folder &#39;import&#39;, where the conll files are</span>
+<span class="sd">        :param only:  restrict the conll files that should be read.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">corpus_path</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Export dir must be given!&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;path must be given!&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">corpus_path</span> <span class="o">=</span> <span class="n">corpus_path</span>
+
+        <span class="c1"># loand conlls into dicts and build dataframe with one line per word</span>
         <span class="n">all_sentences</span><span class="p">,</span> <span class="n">all_conlls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_all_conlls</span><span class="p">(</span><span class="n">corpus_path</span><span class="p">,</span> <span class="n">only</span><span class="o">=</span><span class="n">only</span><span class="p">)</span>
-        <span class="n">flatt_conll_dicts</span> <span class="o">=</span> <span class="n">flatten_reduce</span><span class="p">(</span><span class="n">all_conlls</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">flatt_conll_dicts</span><span class="p">))</span>
-
-        <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">({</span><span class="s1">&#39;text&#39;</span><span class="p">:</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]),</span>
-                              <span class="s1">&#39;s_id&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;sent_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                             <span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">all_conlls</span><span class="p">)</span>
 
         <span class="c1"># translate also normal conll-nodes as well as invisible knodes to some nice id</span>
-        <span class="k">def</span> <span class="nf">renumerate_word_ids</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-            <span class="n">invisible_nodes_translation_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;inv_id&#39;</span><span class="p">],</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)))))</span>
-            <span class="n">x</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">invisible_nodes_translation_dict</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
-            <span class="n">x</span><span class="p">[</span><span class="s1">&#39;head_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span> <span class="n">invisible_nodes_translation_dict</span><span class="p">[</span><span class="n">h</span><span class="p">]</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;inv_head_id&#39;</span><span class="p">]]</span>
-            <span class="k">return</span> <span class="n">x</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;s_id&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">renumerate_word_ids</span><span class="p">)</span>
+        <span class="c1"># groupby makes the grouped value invisible to the function, copy it</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;s_id2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">]</span> <span class="c1"># </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;s_id&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">renumerate_word_ids</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;sent_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">]</span>
+        <span class="c1"># parse columns to int</span>
         <span class="n">num_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;s_id&quot;</span><span class="p">,</span> <span class="s2">&quot;head_id&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">num_cols</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">num_cols</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">)</span>
 
-        <span class="n">Grammarian</span> <span class="o">=</span> <span class="n">grammarannotator</span><span class="o">.</span><span class="n">GrammarAnnotator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sentence_df</span> <span class="o">=</span> <span class="n">Grammarian</span><span class="o">.</span><span class="n">sentence_df</span>
-        <span class="k">return</span> <span class="kc">None</span></div>
+        <span class="c1"># from dataframe with one line per word get another with one line to one sentence</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sentence_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;s_id&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aggregate_sentences</span><span class="p">)</span></div>
+        
+
+<div class="viewcode-block" id="CorpusReader.renumerate_word_ids"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader.renumerate_word_ids">[docs]</a>    <span class="k">def</span> <span class="nf">renumerate_word_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; In conll files normal id&#39;s are ints, but invisible nodes have to be re-enumerated.</span>
+
+<span class="sd">         If you annotated `hidden nodes` with this syntax for the id: &#39;1.1&#39;, they are recounted here.</span>
+
+<span class="sd">         See this discussion here:</span>
+<span class="sd">         .. _Null subjects: http://www.python.org/https://github.com/UniversalDependencies/docs/issues/589</span>
+<span class="sd">         That also happens, if there are coordinative bindings in the sentences, that re-use the tokens for their</span>
+<span class="sd">         grammatical well-formedness</span>
+
+<span class="sd">        :param x: pandas Series of Enhanced UD</span>
+<span class="sd">        :return: index list</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">invisible_nodes_translation_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;inv_id&#39;</span><span class="p">],</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)))))</span>
+        <span class="n">x</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">invisible_nodes_translation_dict</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="n">x</span><span class="p">[</span><span class="s1">&#39;head_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span> <span class="n">invisible_nodes_translation_dict</span><span class="p">[</span><span class="n">h</span><span class="p">]</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;inv_head_id&#39;</span><span class="p">]]</span>
+        <span class="k">return</span> <span class="n">x</span></div>
+
+
+<div class="viewcode-block" id="CorpusReader.aggregate_sentences"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader.aggregate_sentences">[docs]</a>    <span class="k">def</span> <span class="nf">aggregate_sentences</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">nlp</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]))</span>
+        <span class="n">corefs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_coref_str</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;coref&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">({</span><span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]),</span>
+                          <span class="s1">&#39;text_pos_&#39;</span><span class="p">:</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">text</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">pos</span> <span class="k">for</span> <span class="n">text</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;pos_&#39;</span><span class="p">])]),</span>
+                          <span class="s1">&#39;s_id&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;s_id2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                          <span class="s1">&#39;spacy_doc&#39;</span><span class="p">:</span> <span class="n">doc</span><span class="p">,</span>
+                          <span class="s1">&#39;coref&#39;</span><span class="p">:</span> <span class="n">corefs</span>
+                          <span class="p">})</span></div>
+
+<div class="viewcode-block" id="CorpusReader.parse_coref_str"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader.parse_coref_str">[docs]</a>    <span class="k">def</span> <span class="nf">parse_coref_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">mfas</span> <span class="o">=</span> <span class="p">[</span><span class="n">re</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;((?P&lt;s_id&gt;\d+)-&gt;\[(?P&lt;m_start&gt;\d+):(?P&lt;m_end&gt;\d+)\])+&quot;</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">parse_ints</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">groupdict</span><span class="p">())</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">mfa</span><span class="p">]</span> <span class="k">if</span> <span class="n">mfa</span> <span class="k">else</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">mfa</span> <span class="ow">in</span> <span class="n">mfas</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="CorpusReader.parse_ints"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader.parse_ints">[docs]</a>    <span class="k">def</span> <span class="nf">parse_ints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
+
+
 
 <div class="viewcode-block" id="CorpusReader.lemmatize_text"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader.lemmatize_text">[docs]</a>    <span class="k">def</span> <span class="nf">lemmatize_text</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;lemma&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span></div>
@@ -256,7 +291,6 @@
 <div class="viewcode-block" id="CorpusReader.load_all_conlls"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader.load_all_conlls">[docs]</a>    <span class="k">def</span> <span class="nf">load_all_conlls</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">only</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">all_sentences</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">all_conlls</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="kn">import</span> <span class="nn">fnmatch</span>
 
         <span class="k">def</span> <span class="nf">hasNumbers</span><span class="p">(</span><span class="n">inputString</span><span class="p">):</span>
             <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">char</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">inputString</span><span class="p">)</span>
@@ -270,6 +304,8 @@
                 <span class="n">conll_lines</span><span class="p">,</span> <span class="n">sentence</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_one_conll</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">s_id_dict</span><span class="p">)</span>
                 <span class="n">all_sentences</span><span class="o">.</span><span class="n">append</span> <span class="p">(</span><span class="n">sentence</span><span class="p">)</span>
                 <span class="n">all_conlls</span><span class="o">.</span><span class="n">append</span> <span class="p">(</span><span class="n">conll_lines</span><span class="p">)</span>
+        <span class="n">all_conlls</span> <span class="o">=</span> <span class="n">flatten_reduce</span><span class="p">(</span><span class="n">all_conlls</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">all_sentences</span><span class="p">,</span> <span class="n">all_conlls</span></div>
 
 <div class="viewcode-block" id="CorpusReader.load_conll"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader.load_conll">[docs]</a>    <span class="k">def</span> <span class="nf">load_conll</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">corpus_path</span><span class="p">):</span>
@@ -395,14 +431,6 @@
                       <span class="p">)</span>
         <span class="k">return</span> <span class="n">res</span></div>
 
-<div class="viewcode-block" id="CorpusReader.commonize_values"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader.commonize_values">[docs]</a>    <span class="k">def</span> <span class="nf">commonize_values</span> <span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">col_with_lists</span><span class="p">,</span> <span class="n">col_to_index</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Select rows with overlapping values</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">v</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="n">col_with_lists</span><span class="p">)</span>
-        <span class="n">common_cols</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_x != </span><span class="si">%s</span><span class="s1">_y&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">col_to_index</span><span class="p">,</span> <span class="n">col_to_index</span><span class="p">))</span> <span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">col_to_index</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">common_cols</span><span class="p">)]</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">col_to_index</span><span class="p">)[</span><span class="n">col_with_lists</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CorpusReader.explode"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader.explode">[docs]</a>    <span class="k">def</span> <span class="nf">explode</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">column_to_explode</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

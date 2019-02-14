@@ -82,20 +82,9 @@
             
               <p class="caption"><span class="caption-text">Table of Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../CursorilyLogician.html">CursorilyLogician module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../simmix.html">simmix module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../grammarannotator.html">grammarannotator module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../contradictrix.html">contradictrix module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../correlatrix.html">correlatrix module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../subj_and_aspectrix.html">subj_and_aspectrix module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../corpus_reader.html">corpus_reader module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../webanno_parser.html">webanno_parser module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../word_definitions.html">word_definitions module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tdfidf_tool.html">tdfidf_tool module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../corutine_utils.html">corutine_utils module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../dict_tools.html">dict_tools module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../nested_list_tools.html">nested_list_tools module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../word_definitions.html">word_definitions module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">How it works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../textlinguistics.html">Textlinguistic tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../basic_annotations.html">bayessoassdsdsdsdskr</a></li>
 </ul>
 
             
@@ -700,6 +689,7 @@
 <span class="sd">            :return: c and backtracking beam {}</span>
 
 <span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># A bit something else than this: https://en.wikipedia.org/wiki/Overlap_coefficient</span>
         <span class="n">str1</span>  <span class="o">=</span> <span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;lemma&quot;</span><span class="p">]</span>
         <span class="n">str2</span>  <span class="o">=</span> <span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;lemma&quot;</span><span class="p">]</span>
         <span class="n">res</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">([</span><span class="n">ex1</span><span class="p">[</span><span class="s1">&#39;importance&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">str1</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">str2</span><span class="p">])</span> <span class="o">+</span>

@@ -38,52 +38,79 @@ def iterate_away(pos, deviation):
 
 class CorpusReader:
     def __init__(self, corpus_path=None, only=None):
-        ''' This module reads conll files into a DataFrama
+        ''' This module reads conll files into a DataFrama.
+
+        Conll files have here to be read, they are written line per word.
+        It is collapsed into one line per sentence here.
+
+        Also some datatypes are parsed into a more appropriate datastructure than strings
+        The spacy doc's are build here, overwritten with grammar from the conll files to use the datastructure of spracy.
+        Also the coreference mention tags are parsed to some dict.
 
         :param corpus_path: path to the dir that contains a folder 'import', where the conll files are
-        :param only:  ???
+        :param only:  restrict the conll files that should be read.
 
         '''
         if not corpus_path:
             raise AttributeError("path must be given!")
         self.corpus_path = corpus_path
 
+        # loand conlls into dicts and build dataframe with one line per word
         all_sentences, all_conlls = self.load_all_conlls(corpus_path, only=only)
         self.df = pd.DataFrame(all_conlls)
 
-        def parse_coref_str(x):
-            mfas = [re.finditer (r"((?P<s_id>\d+)->\[(?P<m_start>\d+):(?P<m_end>\d+)\])+", y) for y in x]
-            def parse_ints(d):
-                return {a: int(x) for a, x in d.items()}
-            return  [[parse_ints(m.groupdict()) for m in mfa] if mfa else [] for mfa in mfas ]
-
-        def aggregate_sentences(x):
-            doc    = nlp(' '.join(x['text']))
-            corefs = parse_coref_str(x['coref'])
-            return pd.Series({'text'     : ' '.join(x['text']),
-                              'text_dep_': ' '.join ([text + '_' + dep for text, dep in zip(x['text'], x['dep_'])]),
-                              's_id'     : x['s_id2'].iloc[0],
-                              'spacy_doc': doc,
-                              'coref'    : corefs
-                             })
-
         # translate also normal conll-nodes as well as invisible knodes to some nice id
-        def renumerate_word_ids(x):
-            invisible_nodes_translation_dict = dict(zip(x['inv_id'],list(range(len(x)))))
-            x['id'] = invisible_nodes_translation_dict.values()
-            x['head_id'] = [ invisible_nodes_translation_dict[h] for h in x['inv_head_id']]
-            return x
-
+        # groupby makes the grouped value invisible to the function, copy it
         self.df['s_id2'] = self.df ['s_id'] # 
-        self.df = self.df.groupby('s_id').apply(lambda x: renumerate_word_ids(x))
+        self.df = self.df.groupby('s_id').apply(lambda x: self.renumerate_word_ids(x))
 
+        # parse columns to int
         num_cols = ["s_id", "head_id", "id"]
         self.df[num_cols] = self.df[num_cols].apply(pd.to_numeric)
 
-        # Grammarian = grammarannotator.GrammarAnnotator(self.df)
-        self.sentence_df = self.df.groupby('s_id').apply(aggregate_sentences)
+        # from dataframe with one line per word get another with one line to one sentence
+        self.sentence_df = self.df.groupby('s_id').apply(self.aggregate_sentences)
         
-        return None
+
+    def renumerate_word_ids(self, x):
+        ''' In conll files normal id's are ints, but invisible nodes have to be re-enumerated.
+
+         If you annotated `hidden nodes` with this syntax for the id: '1.1', they are recounted here.
+
+         See this discussion here:
+         .. _Null subjects: http://www.python.org/https://github.com/UniversalDependencies/docs/issues/589
+         That also happens, if there are coordinative bindings in the sentences, that re-use the tokens for their
+         grammatical well-formedness
+
+        :param x: pandas Series of Enhanced UD
+        :return: index list
+        '''
+        invisible_nodes_translation_dict = dict(zip(x['inv_id'],list(range(len(x)))))
+        x['id'] = invisible_nodes_translation_dict.values()
+        x['head_id'] = [ invisible_nodes_translation_dict[h] for h in x['inv_head_id']]
+        return x
+
+
+    def aggregate_sentences(self, x):
+        doc = nlp(' '.join(x['text']))
+        corefs = self.parse_coref_str(x['coref'])
+        return pd.Series({'text': ' '.join(x['text']),
+                          'text_pos_': ' '.join([text + '_' + pos for text, pos in zip(x['text'], x['pos_'])]),
+                          's_id': x['s_id2'].iloc[0],
+                          'spacy_doc': doc,
+                          'coref': corefs
+                          })
+
+    def parse_coref_str(self, x):
+        mfas = [re.finditer(r"((?P<s_id>\d+)->\[(?P<m_start>\d+):(?P<m_end>\d+)\])+", y) for y in x]
+        return [[self.parse_ints(m.groupdict()) for m in mfa] if mfa else [] for mfa in mfas]
+
+
+
+    def parse_ints(self, d):
+        return {a: int(x) for a, x in d.items()}
+
+
 
     def lemmatize_text(self):
         return " ".join(self.df['lemma'].tolist())
@@ -254,14 +281,6 @@ class CorpusReader:
                       )
         return res
 
-    def commonize_values (df, col_with_lists, col_to_index):
-        """Select rows with overlapping values
-        """
-        v = df.merge(df, on=col_with_lists)
-        common_cols = set(
-            np.sort(v.iloc[:, [0, -1]].query(str('%s_x != %s_y' % (col_to_index, col_to_index)) ), axis=1).ravel()
-        )
-        return df[df[col_to_index].isin(common_cols)].groupby(col_to_index)[col_with_lists].apply(list)
 
     def explode(df, column_to_explode):
         """

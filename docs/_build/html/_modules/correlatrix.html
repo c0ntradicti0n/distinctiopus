@@ -82,20 +82,9 @@
             
               <p class="caption"><span class="caption-text">Table of Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../CursorilyLogician.html">CursorilyLogician module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../simmix.html">simmix module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../grammarannotator.html">grammarannotator module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../contradictrix.html">contradictrix module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../correlatrix.html">correlatrix module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../subj_and_aspectrix.html">subj_and_aspectrix module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../corpus_reader.html">corpus_reader module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../webanno_parser.html">webanno_parser module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../word_definitions.html">word_definitions module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tdfidf_tool.html">tdfidf_tool module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../corutine_utils.html">corutine_utils module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../dict_tools.html">dict_tools module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../nested_list_tools.html">nested_list_tools module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../word_definitions.html">word_definitions module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">How it works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../textlinguistics.html">Textlinguistic tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../basic_annotations.html">bayessoassdsdsdsdskr</a></li>
 </ul>
 
             
@@ -183,10 +172,10 @@
 
         <span class="c1"># That&#39;s a distinctive criterium, that the correlative keys can&#39;t be too similar to the contradicting pair</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">distinct</span> <span class="o">=</span> \
-            <span class="n">Simmix</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">multi_sim</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="n">Simmix</span><span class="o">.</span><span class="n">common_words_sim</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mf">2.65</span><span class="o">*</span><span class="mf">2.65</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">),</span>
-                    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">multi_sim</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="n">Simmix</span><span class="o">.</span><span class="n">elmo_sim</span><span class="p">(),</span> <span class="n">n</span><span class="o">=</span><span class="mf">2.65</span><span class="o">*</span><span class="mf">2.65</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">),</span>
-                    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">multi_sim</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="n">Simmix</span><span class="o">.</span><span class="n">dep_sim</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mf">2.65</span><span class="o">*</span><span class="mf">2.65</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-                    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">multi_sim</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="n">Simmix</span><span class="o">.</span><span class="n">pos_sim</span><span class="p">,</span><span class="n">n</span><span class="o">=</span><span class="mf">2.65</span><span class="o">*</span><span class="mf">2.65</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">Simmix</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">multi_sim</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="n">Simmix</span><span class="o">.</span><span class="n">common_words_sim</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">multi_sim</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="n">Simmix</span><span class="o">.</span><span class="n">elmo_sim</span><span class="p">(),</span> <span class="n">n</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">multi_sim</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="n">Simmix</span><span class="o">.</span><span class="n">dep_sim</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">multi_sim</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="n">Simmix</span><span class="o">.</span><span class="n">pos_sim</span><span class="p">,</span><span class="n">n</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
                     <span class="p">],</span>
                    <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
@@ -210,8 +199,6 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">poss_correlations</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[]</span>
 
-
-
         <span class="n">correlation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">distinct</span><span class="o">.</span><span class="n">choose</span><span class="p">(</span>                    <span class="c1"># not too much</span>
             <span class="p">([</span><span class="n">contradiction</span><span class="p">],</span>
              <span class="n">poss_correlations</span><span class="p">),</span>
@@ -221,7 +208,6 @@
             <span class="n">out</span><span class="o">=</span><span class="s1">&#39;ex&#39;</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;opposed&quot;</span><span class="p">,</span> <span class="s2">&quot;opposed&quot;</span><span class="p">,</span> <span class="s2">&quot;correlated&quot;</span><span class="p">),</span>
             <span class="n">graph_coro</span><span class="o">=</span><span class="n">graph_coro</span><span class="p">)</span>                             <span class="c1"># Put it in the graph</span>
-
 
         <span class="k">if</span> <span class="n">save_graph</span><span class="p">:</span>
             <span class="n">G</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">correl_to_nxdigraph</span><span class="p">(</span><span class="n">contradiction</span><span class="p">,</span> <span class="n">poss_correlations</span><span class="p">,</span> <span class="n">correlation</span><span class="p">)</span>
@@ -281,7 +267,7 @@
 <div class="viewcode-block" id="Correlation.draw_correlations"><a class="viewcode-back" href="../correlatrix.html#correlatrix.Correlation.draw_correlations">[docs]</a>    <span class="k">def</span> <span class="nf">draw_correlations</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
         <span class="kn">import</span> <span class="nn">pylab</span> <span class="k">as</span> <span class="nn">P</span>
 
-        <span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;./img/contradiction -- new correlation&#39;</span><span class="o">+</span> <span class="n">source</span> <span class="o">+</span><span class="s2">&quot; -- &quot;</span><span class="o">+</span> <span class="n">target</span> <span class="o">+</span><span class="s2">&quot;.svg&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;./img/correlation&#39;</span><span class="o">+</span> <span class="n">source</span> <span class="o">+</span><span class="s2">&quot; -- &quot;</span><span class="o">+</span> <span class="n">target</span> <span class="o">+</span><span class="s2">&quot;.svg&quot;</span>
 
         <span class="n">G</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s1">&#39;graph&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;rankdir&#39;</span><span class="p">:</span> <span class="s1">&#39;LR&#39;</span><span class="p">,</span> <span class="s1">&#39;splines&#39;</span><span class="p">:</span><span class="s1">&#39;line&#39;</span><span class="p">}</span>
         <span class="n">G</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s1">&#39;edges&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;arrowsize&#39;</span><span class="p">:</span> <span class="s1">&#39;4.0&#39;</span><span class="p">}</span>

@@ -82,20 +82,9 @@
             
               <p class="caption"><span class="caption-text">Table of Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../CursorilyLogician.html">CursorilyLogician module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../simmix.html">simmix module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../grammarannotator.html">grammarannotator module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../contradictrix.html">contradictrix module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../correlatrix.html">correlatrix module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../subj_and_aspectrix.html">subj_and_aspectrix module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../corpus_reader.html">corpus_reader module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../webanno_parser.html">webanno_parser module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../word_definitions.html">word_definitions module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tdfidf_tool.html">tdfidf_tool module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../corutine_utils.html">corutine_utils module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../dict_tools.html">dict_tools module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../nested_list_tools.html">nested_list_tools module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../word_definitions.html">word_definitions module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">How it works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../textlinguistics.html">Textlinguistic tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../basic_annotations.html">bayessoassdsdsdsdskr</a></li>
 </ul>
 
             
@@ -167,6 +156,7 @@
 <span class="kn">from</span> <span class="nn">allennlp.commands.elmo</span> <span class="k">import</span> <span class="n">ElmoEmbedder</span>
 <span class="kn">import</span> <span class="nn">spacy</span>
 
+
 <span class="kn">import</span> <span class="nn">logging</span>
 
 
@@ -184,7 +174,9 @@
 <div class="viewcode-block" id="Predication"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication">[docs]</a><span class="k">class</span> <span class="nc">Predication</span><span class="p">():</span>
 <div class="viewcode-block" id="Predication.__init__"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">corpus</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; This module lets you translate natural language expressions into predicative chunks, to analyse the</span>
-<span class="sd">        parts of sentence further.</span>
+<span class="sd">        parts of sentences and their relatitions.</span>
+
+<span class="sd">        For the chunking intialize the model and call `analyse_predication` and you get back a hard-core-annotated expression</span>
 
 <span class="sd">        These chunks are dicts of other properties, that represent a part of the sentence with different properties.</span>
 <span class="sd">        A predicate for instance, contains</span>
@@ -204,8 +196,8 @@
 <span class="sd">        &#39;&#39;&#39;</span>
 
         <span class="k">if</span> <span class="n">corpus</span><span class="p">:</span>
-            <span class="n">lemmatize_text</span> <span class="o">=</span> <span class="n">corpus</span><span class="o">.</span><span class="n">lemmatize_text</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">tdfidf</span> <span class="o">=</span> <span class="n">tdfidf_tool</span><span class="o">.</span><span class="n">tdfidf</span><span class="p">(</span><span class="n">lemmatize_text</span><span class="p">)</span>
+            <span class="n">lemmatized_text</span> <span class="o">=</span> <span class="n">corpus</span><span class="o">.</span><span class="n">lemmatize_text</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tdfidf</span> <span class="o">=</span> <span class="n">tdfidf_tool</span><span class="o">.</span><span class="n">tdfidf</span><span class="p">(</span><span class="n">lemmatized_text</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tdfidf</span> <span class="o">=</span> <span class="n">tdfidf_tool</span><span class="o">.</span><span class="n">tdfidf</span><span class="p">(</span><span class="s2">&quot;no text&quot;</span><span class="p">)</span>
 
@@ -257,6 +249,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">argument_df</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="kc">None</span></div>
+
 
 <div class="viewcode-block" id="Predication.spacy_dep_"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication.spacy_dep_">[docs]</a>    <span class="k">def</span> <span class="nf">spacy_dep_</span> <span class="p">(</span><span class="n">ex</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">set</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dep_</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ex</span> <span class="p">)</span></div>
@@ -346,9 +339,12 @@
 <span class="sd">                     &quot;key&quot;          : a unique identifyer for that predicate</span>
 
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">predicate</span> <span class="o">=</span>  <span class="p">[</span><span class="n">doc</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">predicate_i</span><span class="p">]</span>
-        <span class="n">arguments</span> <span class="o">=</span> <span class="p">[[</span><span class="n">doc</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">arg_i</span><span class="p">]</span> <span class="k">for</span> <span class="n">arg_i</span> <span class="ow">in</span> <span class="n">arguments_i</span><span class="p">]</span>
-        <span class="n">full_ex</span>   <span class="o">=</span>  <span class="p">[</span><span class="n">doc</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">full_ex_i</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">predicate</span> <span class="o">=</span>  <span class="p">[</span><span class="n">doc</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">predicate_i</span><span class="p">]</span>
+            <span class="n">arguments</span> <span class="o">=</span> <span class="p">[[</span><span class="n">doc</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">arg_i</span><span class="p">]</span> <span class="k">for</span> <span class="n">arg_i</span> <span class="ow">in</span> <span class="n">arguments_i</span><span class="p">]</span>
+            <span class="n">full_ex</span>   <span class="o">=</span>  <span class="p">[</span><span class="n">doc</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">full_ex_i</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span> <span class="p">(</span><span class="s1">&#39;Computed empty value error&#39;</span><span class="p">)</span>
 
         <span class="n">predicate</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;predicate&quot;</span><span class="p">:</span> <span class="n">predicate</span><span class="p">,</span>
                      <span class="s2">&quot;predicate_i&quot;</span>  <span class="p">:</span> <span class="n">predicate_i</span><span class="p">,</span>
@@ -362,8 +358,21 @@
             <span class="p">}</span>
         <span class="k">return</span> <span class="n">predicate</span></div>
 
-<div class="viewcode-block" id="Predication.collect_predicates"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication.collect_predicates">[docs]</a>    <span class="k">def</span> <span class="nf">collect_predicates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">root_token</span><span class="p">,</span> <span class="n">arg_markers</span><span class="p">,</span> <span class="n">too_deep_markers</span><span class="p">,</span>  <span class="n">ellipsis_resolution</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">no_zero_args</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mother</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">attribute_ordering</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Predication.post_process_arguments"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication.post_process_arguments">[docs]</a>    <span class="k">def</span> <span class="nf">post_process_arguments</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arguments_i</span><span class="p">,</span><span class="n">too_deep_i</span><span class="p">,</span> <span class="n">doc</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">arguments_i</span><span class="p">:</span>
+            <span class="n">arg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collect_argument</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">too_deep_i</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">arg</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">arg</span></div>
+
+
+<div class="viewcode-block" id="Predication.collect_argument"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication.collect_argument">[docs]</a>    <span class="k">def</span> <span class="nf">collect_argument</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg_i</span><span class="p">,</span> <span class="n">too_deep_i</span><span class="p">,</span> <span class="n">doc</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">arg_i</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">doc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">pos_</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;NOUN&#39;</span><span class="p">,</span> <span class="s1">&#39;PRON&#39;</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">i</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">rights</span> <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">too_deep_i</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="Predication.collect_predicates"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication.collect_predicates">[docs]</a>    <span class="k">def</span> <span class="nf">collect_predicates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root_token</span><span class="p">,</span> <span class="n">arg_markers</span><span class="p">,</span> <span class="n">too_deep_markers</span><span class="p">,</span> <span class="n">ellipsis_resolution</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                           <span class="n">no_zero_args</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mother</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">attributive_ordering</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Extract the predicative structure arising from a special triggering word, that can be handled like in</span>
 <span class="sd">            predicate logic.</span>
 
@@ -380,7 +389,7 @@
 <span class="sd">             its not allowed for predications to have zero arugments</span>
 <span class="sd">        :param mother:</span>
 <span class="sd">             the whole expression should appear as result</span>
-<span class="sd">        :param attribute_ordering:</span>
+<span class="sd">        :param attributive_ordering:</span>
 <span class="sd">             False (default):</span>
 <span class="sd">                 A verbal is the root of the predicative structure and dependents with noun or pronoun cores are the &#39;arguments&#39;</span>
 <span class="sd">             True:</span>
@@ -391,7 +400,7 @@
 
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">predicate_i</span>    <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">toodeep_i</span>      <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">too_deep_i</span>      <span class="o">=</span> <span class="p">[]</span>
         <span class="n">lpar_toodeep_i</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">root_token</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -423,12 +432,12 @@
                     <span class="n">conjunction</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">i</span>
                                    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">subleaf</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">rights</span>
                                    <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">dep_</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;cc&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">c</span><span class="o">.</span><span class="n">i</span><span class="o">&lt;</span><span class="n">subleaf</span><span class="o">.</span><span class="n">i</span> <span class="p">]</span>
-                    <span class="n">toodeep_i</span>  <span class="o">+=</span> <span class="n">counterpart</span> <span class="o">+</span> <span class="n">conjunction</span>
+                    <span class="n">too_deep_i</span>  <span class="o">+=</span> <span class="n">counterpart</span> <span class="o">+</span> <span class="n">conjunction</span>
 
-        <span class="n">predicate_i</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">predicate_i</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">toodeep_i</span><span class="p">[:]))</span>
+        <span class="n">predicate_i</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">predicate_i</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">too_deep_i</span><span class="p">[:]))</span>
 
         <span class="k">if</span> <span class="n">root_token</span><span class="o">.</span><span class="n">dep_</span> <span class="o">==</span> <span class="s1">&#39;conj&#39;</span><span class="p">:</span>
-            <span class="n">counterpart1</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">s</span><span class="o">.</span><span class="n">i</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">root_token</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">rights</span><span class="p">])</span> <span class="o">-</span> <span class="nb">set</span> <span class="p">(</span><span class="n">toodeep_i</span><span class="p">[:])</span>
+            <span class="n">counterpart1</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">s</span><span class="o">.</span><span class="n">i</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">root_token</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">rights</span><span class="p">])</span> <span class="o">-</span> <span class="nb">set</span> <span class="p">(</span><span class="n">too_deep_i</span><span class="p">[:])</span>
 
             <span class="k">if</span> <span class="n">root_token</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">dep_</span> <span class="o">==</span> <span class="s1">&#39;acomp&#39;</span><span class="p">:</span>
                 <span class="n">head</span> <span class="o">=</span> <span class="n">root_token</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">head</span>
@@ -438,23 +447,24 @@
             <span class="n">lefts</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">s</span><span class="o">.</span><span class="n">i</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">head</span><span class="o">.</span><span class="n">lefts</span><span class="p">])</span>
             <span class="n">children_of_lefts</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">s</span><span class="o">.</span><span class="n">i</span> <span class="k">for</span> <span class="n">left</span> <span class="ow">in</span> <span class="n">head</span><span class="o">.</span><span class="n">lefts</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">left</span><span class="o">.</span><span class="n">subtree</span><span class="p">])</span>
             <span class="n">children_of_lefts</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">lefts</span><span class="p">)</span>
-            <span class="n">elliptical</span>   <span class="o">=</span> <span class="n">children_of_lefts</span> <span class="o">-</span> <span class="nb">set</span> <span class="p">(</span><span class="n">toodeep_i</span><span class="p">[:])</span>
+            <span class="n">elliptical</span>   <span class="o">=</span> <span class="n">children_of_lefts</span> <span class="o">-</span> <span class="nb">set</span> <span class="p">(</span><span class="n">too_deep_i</span><span class="p">[:])</span>
             <span class="n">predicate_i</span>  <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">elliptical</span><span class="p">)</span> <span class="o">+</span> <span class="n">predicate_i</span>
 
         <span class="n">arguments_i</span>    <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">arguments_dependent_i</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">predicate_i</span><span class="p">:</span>
             <span class="n">subleaf</span> <span class="o">=</span> <span class="n">root_token</span><span class="o">.</span><span class="n">doc</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">subleaf</span><span class="o">.</span><span class="n">dep_</span> <span class="ow">in</span> <span class="n">arg_markers</span><span class="p">:</span>
                 <span class="n">argument_i</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">i</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">subleaf</span><span class="o">.</span><span class="n">subtree</span><span class="p">]</span>
                 <span class="n">arguments_i</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">argument_i</span><span class="p">)</span>
 
+
         <span class="n">predicate_i</span> <span class="o">=</span>  <span class="nb">set</span><span class="p">(</span><span class="n">predicate_i</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">flatten</span><span class="p">(</span><span class="n">arguments_i</span><span class="p">[:]))</span>
-        <span class="n">arguments_i</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">arg_i</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">toodeep_i</span><span class="p">[:]))</span> <span class="k">for</span> <span class="n">arg_i</span> <span class="ow">in</span> <span class="n">arguments_i</span><span class="p">]</span>
+        <span class="n">arguments_i</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">arg_i</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">too_deep_i</span><span class="p">[:]))</span> <span class="k">for</span> <span class="n">arg_i</span> <span class="ow">in</span> <span class="n">arguments_i</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">predicate_i</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="p">(</span> <span class="n">no_zero_args</span> <span class="ow">and</span> <span class="p">(</span>
-             <span class="ow">not</span> <span class="nb">list</span><span class="p">(</span><span class="n">flatten</span><span class="p">(</span><span class="n">arguments_i</span><span class="p">[:])))):</span>
+        <span class="k">if</span> <span class="n">no_zero_args</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">list</span><span class="p">(</span><span class="n">flatten</span><span class="p">(</span><span class="n">arguments_i</span><span class="p">[:])):</span>
             <span class="k">return</span> <span class="kc">None</span>
 
         <span class="n">predicate_i</span> <span class="o">=</span>  <span class="nb">sorted</span><span class="p">(</span><span class="n">predicate_i</span><span class="p">)</span>
@@ -466,7 +476,11 @@
             <span class="n">predicate_i</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">predicate_i</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">lpar_toodeep_i</span><span class="p">)))</span>
             <span class="n">arguments_i</span> <span class="o">=</span> <span class="p">[</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">arg_i</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">lpar_toodeep_i</span><span class="p">))</span> <span class="k">for</span> <span class="n">arg_i</span> <span class="ow">in</span> <span class="n">arguments_i</span> <span class="k">if</span> <span class="n">arg_i</span><span class="p">]</span>
 
+        <span class="k">if</span> <span class="n">attributive_ordering</span><span class="p">:</span>
+            <span class="n">predicate_i</span><span class="p">,</span> <span class="n">arguments_i</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">flatten_list</span><span class="p">(</span><span class="n">arguments_i</span><span class="p">)),</span> <span class="p">[</span><span class="n">predicate_i</span><span class="p">]</span>
+
         <span class="n">doc</span> <span class="o">=</span> <span class="n">root_token</span><span class="o">.</span><span class="n">doc</span>
+        <span class="n">arguments_i</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">post_process_arguments</span><span class="p">(</span><span class="n">arguments_i</span><span class="p">,</span> <span class="n">too_deep_i</span><span class="p">,</span> <span class="n">doc</span><span class="p">))</span>
         <span class="n">predicate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_predicate</span><span class="p">(</span><span class="n">predicate_i</span><span class="p">,</span><span class="n">arguments_i</span><span class="p">,</span><span class="n">full_ex_i</span><span class="p">,</span><span class="n">doc</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">predicate</span></div>
 
@@ -509,9 +523,9 @@
                 <span class="n">rath</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
                 <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">rath</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
                      <span class="n">edge</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">[(</span><span class="n">rath</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">rath</span><span class="p">[</span><span class="n">i</span><span class="p">])]</span>
-                     <span class="k">if</span> <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;shared_negations&#39;</span><span class="p">]:</span><span class="c1"># and not edge[&#39;used&#39;]:</span>
+                     <span class="k">if</span> <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;shared_negations&#39;</span><span class="p">]:</span>
                          <span class="n">negation_containing_node</span> <span class="o">=</span> \
-                             <span class="n">rath</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="c1">#if len(s[&#39;part_predications&#39;][n][&#39;full_ex&#39;]) &gt; len(s[&#39;part_predications&#39;][rath[i+1]][&#39;full_ex&#39;]) else rath[i+1]</span>
+                             <span class="n">rath</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
                          <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">negation_containing_node</span><span class="p">][</span><span class="s1">&#39;predicate&#39;</span><span class="p">][</span><span class="s1">&#39;negation_count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="s1">&#39;shared_negations&#39;</span><span class="p">])</span>
                          <span class="k">break</span>
 
@@ -577,7 +591,8 @@
                     <span class="n">x</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">attributive_arg_markers</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">attributive_too_deep_markers</span><span class="p">,</span>
-                    <span class="n">no_zero_args</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">no_zero_args</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">attributive_ordering</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">a_ps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
 
         <span class="n">v_ps</span> <span class="o">=</span> <span class="p">[]</span>
@@ -666,7 +681,14 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">coref</span><span class="p">:</span>
             <span class="n">coref</span> <span class="o">=</span> <span class="p">[[]]</span><span class="o">*</span><span class="nb">len</span> <span class="p">(</span><span class="n">ex</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">doc</span><span class="p">)</span>
 
+
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ps</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">c</span><span class="o">=</span> <span class="p">[</span><span class="n">coref</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;i_s&#39;</span><span class="p">]]</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="k">raise</span>
+
+
             <span class="n">p</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>                      <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id_generator</span><span class="p">))</span>
             <span class="n">p</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">]</span>                    <span class="o">=</span> <span class="n">s_id</span>
             <span class="n">p</span><span class="p">[</span><span class="s2">&quot;elmo_embeddings&quot;</span><span class="p">]</span>         <span class="o">=</span> <span class="n">elmo_embeddings</span><span class="p">[:,</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;i_s&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -693,7 +715,7 @@
             <span class="k">return</span> <span class="p">[]</span>
 
         <span class="k">if</span> <span class="n">paint_graph</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">draw_predicate_structure</span><span class="p">(</span><span class="n">ps</span><span class="p">,</span><span class="s2">&quot;./img/predicate chunks &quot;</span> <span class="o">+</span> <span class="n">ps</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;key&#39;</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;.svg&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">draw_predicate_structure</span><span class="p">(</span><span class="n">ps</span><span class="p">,</span><span class="s2">&quot;./img/predicate&quot;</span> <span class="o">+</span> <span class="n">ps</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;key&#39;</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;.svg&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">append_to_predicate_df</span><span class="p">(</span><span class="n">ps</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">append_to_argument_df</span><span class="p">(</span><span class="n">ps</span><span class="p">)</span>

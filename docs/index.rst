@@ -7,26 +7,21 @@ Welcome to S0krates's documentation!
 ====================================
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
    :caption: Table of Contents
 
-   CursorilyLogician
-   simmix
-   predication
-   grammarannotator
-   contradictrix
-   correlatrix
-   subj_and_aspectrix
-   corpus_reader
-   webanno_parser
-   word_definitions
-   tdfidf_tool
-   corutine_utils
-   dict_tools
-   nested_list_tools
-   word_definitions
+   intro
+   textlinguistics
+   basic_annotations
+   littletools
 
+=======
+Support
+=======
 
+If you use this and run into problems, just open an issue on Github_.
+
+.. _Github: https://github.com/c0ntradicti0n/S0krates3
 
 
 Indices and tables

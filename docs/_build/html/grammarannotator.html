@@ -80,11 +80,13 @@
               
             
             
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">grammarannotator module</a></li>
+              <p class="caption"><span class="caption-text">Table of Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">How it works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="textlinguistics.html">Textlinguistic tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basic_annotations.html">bayessoassdsdsdsdskr</a></li>
 </ul>
-</div>
+
             
           
         </div>
@@ -147,134 +149,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-grammarannotator">
-<span id="grammarannotator-module"></span><h1>grammarannotator module<a class="headerlink" href="#module-grammarannotator" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
-<dt id="grammarannotator.GrammarAnnotator">
-<em class="property">class </em><code class="descclassname">grammarannotator.</code><code class="descname">GrammarAnnotator</code><span class="sig-paren">(</span><em>df</em>, <em>import_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/grammarannotator.html#GrammarAnnotator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grammarannotator.GrammarAnnotator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="method">
-<dt id="grammarannotator.GrammarAnnotator.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>df</em>, <em>import_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/grammarannotator.html#GrammarAnnotator.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grammarannotator.GrammarAnnotator.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="grammarannotator.GrammarAnnotator.add_parses">
-<code class="descname">add_parses</code><span class="sig-paren">(</span><em>df</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/grammarannotator.html#GrammarAnnotator.add_parses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grammarannotator.GrammarAnnotator.add_parses" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="grammarannotator.GrammarAnnotator.clean_text">
-<code class="descname">clean_text</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/grammarannotator.html#GrammarAnnotator.clean_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grammarannotator.GrammarAnnotator.clean_text" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="grammarannotator.GrammarAnnotator.collapse_sentences">
-<code class="descname">collapse_sentences</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/grammarannotator.html#GrammarAnnotator.collapse_sentences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grammarannotator.GrammarAnnotator.collapse_sentences" title="Permalink to this definition">¶</a></dt>
-<dd><p>merges a token df to single senetences by groupung thenm by a column ‘sentence_id’</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="grammarannotator.GrammarAnnotator.conll_format">
-<code class="descname">conll_format</code><em class="property"> = '%d\t%s\t%s\t%s\t%s\t%s\t%d\t%s\t%s\t%s'</em><a class="headerlink" href="#grammarannotator.GrammarAnnotator.conll_format" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="grammarannotator.GrammarAnnotator.conll_line2match">
-<code class="descname">conll_line2match</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/grammarannotator.html#GrammarAnnotator.conll_line2match"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grammarannotator.GrammarAnnotator.conll_line2match" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="grammarannotator.GrammarAnnotator.conll_pattern">
-<code class="descname">conll_pattern</code><em class="property"> = re.compile('(?P&lt;id&gt;\\d+)((?:\\.)?(?P&lt;hidden&gt;\\d+))?      # i (as well es hidden node-ids in conll-u format)\n                                 \\t(?P&lt;text&gt;.*?)    \n                                 \\t(?P&lt;lemma&gt;., re.VERBOSE)</em><a class="headerlink" href="#grammarannotator.GrammarAnnotator.conll_pattern" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="grammarannotator.GrammarAnnotator.doc2conll">
-<code class="descname">doc2conll</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/grammarannotator.html#GrammarAnnotator.doc2conll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grammarannotator.GrammarAnnotator.doc2conll" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="grammarannotator.GrammarAnnotator.dump">
-<code class="descname">dump</code><span class="sig-paren">(</span><em>sentence_df</em>, <em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/grammarannotator.html#GrammarAnnotator.dump"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grammarannotator.GrammarAnnotator.dump" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="grammarannotator.GrammarAnnotator.export_parses">
-<code class="descname">export_parses</code><span class="sig-paren">(</span><em>sentence_df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/grammarannotator.html#GrammarAnnotator.export_parses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grammarannotator.GrammarAnnotator.export_parses" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="grammarannotator.GrammarAnnotator.import_parses">
-<code class="descname">import_parses</code><span class="sig-paren">(</span><em>df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/grammarannotator.html#GrammarAnnotator.import_parses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grammarannotator.GrammarAnnotator.import_parses" title="Permalink to this definition">¶</a></dt>
-<dd><p>import parse tree information like head and <a href="#id1"><span class="problematic" id="id2">dep_</span></a> from a directory containing conll-files, that have the ‘sentence_id’ as filename and ‘conll’ as suffix.
-These files can be produced by GrammarAnnotator.export_parses
-# conll editor: <a class="reference external" href="https://arborator.ilpga.fr/q.cgi">https://arborator.ilpga.fr/q.cgi</a></p>
-</dd></dl>
-
-<dl class="method">
-<dt id="grammarannotator.GrammarAnnotator.load">
-<code class="descname">load</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/grammarannotator.html#GrammarAnnotator.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grammarannotator.GrammarAnnotator.load" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="grammarannotator.GrammarAnnotator.load_conll_over_spacy_doc">
-<code class="descname">load_conll_over_spacy_doc</code><span class="sig-paren">(</span><em>doc</em>, <em>df_for_sentence=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/grammarannotator.html#GrammarAnnotator.load_conll_over_spacy_doc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grammarannotator.GrammarAnnotator.load_conll_over_spacy_doc" title="Permalink to this definition">¶</a></dt>
-<dd><p>read conll_files over a spacy document with same length. they may be manipulated.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="grammarannotator.GrammarAnnotator.merge_sentence_df">
-<code class="descname">merge_sentence_df</code><span class="sig-paren">(</span><em>sentence_df</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/grammarannotator.html#GrammarAnnotator.merge_sentence_df"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grammarannotator.GrammarAnnotator.merge_sentence_df" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="grammarannotator.GrammarAnnotator.save_conll">
-<code class="descname">save_conll</code><span class="sig-paren">(</span><em>doc</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/grammarannotator.html#GrammarAnnotator.save_conll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grammarannotator.GrammarAnnotator.save_conll" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="grammarannotator.Replacement">
-<em class="property">class </em><code class="descclassname">grammarannotator.</code><code class="descname">Replacement</code><span class="sig-paren">(</span><em>dict</em>, <em>fun</em>, <em>replacement</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/grammarannotator.html#Replacement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grammarannotator.Replacement" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="method">
-<dt id="grammarannotator.Replacement.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>dict</em>, <em>fun</em>, <em>replacement</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/grammarannotator.html#Replacement.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grammarannotator.Replacement.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt id="grammarannotator.df2tuples">
-<code class="descclassname">grammarannotator.</code><code class="descname">df2tuples</code><span class="sig-paren">(</span><em>df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/grammarannotator.html#df2tuples"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grammarannotator.df2tuples" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="grammarannotator.split_data_frame_list">
-<code class="descclassname">grammarannotator.</code><code class="descname">split_data_frame_list</code><span class="sig-paren">(</span><em>df</em>, <em>target_column</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/grammarannotator.html#split_data_frame_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grammarannotator.split_data_frame_list" title="Permalink to this definition">¶</a></dt>
-<dd><p>Splits a column with lists into rows</p>
-<dl class="docutils">
-<dt>Keyword arguments:</dt>
-<dd>df – dataframe
-target_column – name of column that contains lists</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="grammarannotator.split_data_frame_list_beware">
-<code class="descclassname">grammarannotator.</code><code class="descname">split_data_frame_list_beware</code><span class="sig-paren">(</span><em>df</em>, <em>target_column</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/grammarannotator.html#split_data_frame_list_beware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grammarannotator.split_data_frame_list_beware" title="Permalink to this definition">¶</a></dt>
-<dd><p>Accepts a column with multiple types and splits list variables to several rows.</p>
-<p>df: dataframe to split
-target_column: the column containing the values to split
-output_type: type of all outputs
-returns: a dataframe with each entry for the target column separated, with each element moved into a new row. 
-The values in the other columns are duplicated across the newly divided rows.</p>
-</dd></dl>
-
+  <div class="section" id="grammarannotator-module">
+<h1>grammarannotator module<a class="headerlink" href="#grammarannotator-module" title="Permalink to this headline">¶</a></h1>
 </div>
 
 
