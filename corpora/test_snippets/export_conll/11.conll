@@ -1,0 +1,5 @@
+1	This	this	DET	DT	_	2	nsubj	11-87	_
+2	is	be	VERB	VBZ	_	2	ROOT	11-88	_
+3	mostly	mostly	ADV	RB	_	4	advmod	11-89	_
+4	bogus	bogus	ADJ	JJ	_	2	acomp	11-90	_
+5	.	.	PUNCT	.	_	2	punct	11-91	_

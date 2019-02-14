@@ -1,0 +1,9 @@
+1	THIS	this	DET	DT	_	3	det	3-76	_
+2	LIMITED	limited	ADJ	JJ	_	3	amod	3-77	_
+3	WARRANTY	warranty	PROPN	NNP	_	3	ROOT	3-78	_
+4	GIVES	give	VERB	VBZ	_	4	ROOT	3-79	_
+5	YOU	you	PRON	PRP	_	4	dative	3-80	_
+6	SPECIFIC	specific	ADJ	JJ	_	8	amod	3-81	_
+7	LEGAL	legal	PROPN	NNP	_	8	compound	3-82	_
+8	RIGHTS	right	NOUN	NNS	_	8	ROOT	3-83	_
+9	.	.	PUNCT	.	_	8	punct	3-84	_

@@ -1,0 +1,12 @@
+1	YOU	you	PRON	PRP	_	3	nsubj	4-85	_
+2	MAY	may	VERB	MD	_	3	aux	4-86	_
+3	HAVE	have	VERB	VB	_	3	ROOT	4-87	_
+4	OTHERS	other	NOUN	NNS	_	3	dobj	4-88	_
+5	,	,	PUNCT	,	_	4	punct	4-89	_
+6	WHICH	which	ADJ	WDT	_	7	nsubj	4-90	_
+7	VARY	vary	VERB	VBP	_	4	relcl	4-91	_
+8	FROM	from	ADP	IN	_	7	prep	4-92	_
+9	STATE	state	NOUN	NN	_	11	nmod	4-93	_
+10	/	/	SYM	SYM	_	11	punct	4-94	_
+11	JURISDICTION	jurisdiction	PROPN	NNP	_	8	pobj	4-95	_
+12	TO	to	ADP	IN	_	11	prep	4-96	_

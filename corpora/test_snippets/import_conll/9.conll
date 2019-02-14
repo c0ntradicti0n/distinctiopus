@@ -1,0 +1,6 @@
+1	Coroutines	coroutine	NOUN	NNS	_	2	nsubj	9-150	_
+2	tend	tend	VERB	VBP	_	2	ROOT	9-151	_
+3	to	to	PART	TO	_	4	aux	9-152	_
+4	consume	consume	VERB	VB	_	2	xcomp	9-153	_
+5	values	value	NOUN	NNS	_	4	dobj	9-154	_
+6	.	.	PUNCT	.	_	2	punct	9-155	_

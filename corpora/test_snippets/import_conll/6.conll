@@ -1,0 +1,15 @@
+1	snippet	snippet	ADJ	JJ	_	2	compound	6-118	_
+2	Generators	generators	PROPN	NNPS	_	2	ROOT	6-119	_
+3	and	and	CCONJ	CC	_	2	cc	6-120	_
+4	Coroutines	coroutines	PROPN	NNPS	_	2	conj	6-121	_
+5	[	[	PUNCT	-LRB-	_	10	punct	6-122	_
+6	chromeextension,//oemmndcbldboiebfnladdacbdfmadadm	chromeextension,//oemmndcbldboiebfnladdacbdfmadadm	NOUN	NN	_	10	nmod	6-123	_
+7	/	/	SYM	SYM	_	10	punct	6-124	_
+8	http,//dabeaz.com	http,//dabeaz.com	X	ADD	_	10	nmod	6-125	_
+9	/	/	SYM	SYM	_	10	punct	6-126	_
+10	coroutines	coroutine	NOUN	NNS	_	10	ROOT	6-127	_
+11	/	/	SYM	SYM	_	10	punct	6-128	_
+12	Coroutines.pdf	coroutines.pdf	PROPN	NNP	_	10	dep	6-129	_
+13	,	,	PUNCT	,	_	12	punct	6-130	_
+14	sl	sl	ADJ	JJ	_	10	advmod	6-131	_
+15	.	.	PUNCT	.	_	10	punct	6-132	_

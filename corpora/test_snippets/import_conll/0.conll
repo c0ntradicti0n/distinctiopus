@@ -1,0 +1,5 @@
+1	snippet	snippet	ADJ	JJ	_	3	compound	0-1	_
+2	Microsoft	microsoft	PROPN	NNP	_	3	compound	0-2	2->[10:11]
+3	Eula	eula	PROPN	NNP	_	3	ROOT	0-3	_
+4	8	8	NUM	CD	_	3	nummod	0-4	_
+5	.	.	PUNCT	.	_	3	punct	0-5	_

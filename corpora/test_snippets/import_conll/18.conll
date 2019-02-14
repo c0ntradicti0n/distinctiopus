@@ -1,0 +1,7 @@
+1	You	-PRON-	PRON	PRP	_	3	nsubj	18-212	_
+2	will	will	VERB	MD	_	3	aux	18-213	_
+3	revert	revert	VERB	VB	_	3	ROOT	18-214	_
+4	two	two	NUM	CD	_	6	nummod	18-215	_
+5	commits	commit	NOUN	NNS	_	6	compound	18-216	_
+6	total	total	ADJ	JJ	_	3	dobj	18-217	_
+7	.	.	PUNCT	.	_	3	punct	18-218	_

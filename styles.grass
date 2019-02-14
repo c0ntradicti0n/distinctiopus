@@ -1,0 +1,76 @@
+node {
+  diameter: 100px;
+  color: #deb986;
+  border-color: #564E58;
+  border-width: 2px;
+  text-color-internal: #FFFFFF;
+  font-size: 10px;
+}
+relationship {
+  color: #A5ABB6;
+  shaft-width: 5px;
+  font-size: 10px;
+  padding: 3px;
+  text-color-external: #000000;
+  text-color-internal: #FFFFFF;
+  caption: "<type>";
+}
+
+node.Nlp {
+   caption:"{text}";
+}
+
+node.CONNOTATION {
+  color: #F0803C;
+  caption:"{text}";
+}
+
+node.DENOTATION {
+  color: #225560;
+  caption:"{text}";
+}
+
+node.Nlp {}
+   caption:"{text}"
+
+node.Subject {
+  color: #00CC99;
+}
+node.Aspect {
+  color: #FFEE88;
+}
+node.Predicate {
+  color: #DD1155;
+}
+node.Correlation {
+  color: #AA1155;
+}
+
+
+relationship.Contradiction {
+  color: #904E55;
+  shaft-width: 9px;
+  font-size: 10px;
+  padding: 5px;
+}
+
+relationship.Correlated{
+  color: #2932AC;
+  shaft-width: 9px;
+  font-size: 10px;
+  padding: 5px;
+}
+
+relationship.Opposed{
+  color: #29FFCC;
+  shaft-width: 3px;
+  font-size: 10px;
+  padding: 5px;
+}
+
+relationship.Argument{
+  color: #FF32AC;
+  shaft-width: 3px;
+  font-size: 10px;
+  padding: 5px;
+}

@@ -1,0 +1,8 @@
+1	Our	-PRON-	ADJ	PRP$	_	2	poss	14-128	_
+2	application	application	NOUN	NN	_	4	nsubj	14-129	_
+3	will	will	VERB	MD	_	4	aux	14-130	_
+4	focus	focus	VERB	VB	_	4	ROOT	14-131	_
+5	on	on	ADP	IN	_	4	prep	14-132	_
+6	the	the	DET	DT	_	7	det	14-133	_
+7	latter	latter	ADJ	JJ	_	5	pobj	14-134	_
+8	.	.	PUNCT	.	_	4	punct	14-135	_

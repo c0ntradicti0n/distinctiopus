@@ -1,0 +1,17 @@
+1	THE	the	DET	DT	_	3	det	5-101	_
+2	ENTIRE	entire	ADJ	JJ	_	3	amod	5-102	_
+3	RISK	risk	NOUN	NN	_	4	nsubj	5-103	_
+4	ARISING	arise	VERB	VBG	_	4	ROOT	5-104	_
+5	OUT	out	ADP	IN	_	4	advmod	5-105	_
+6	OF	of	ADP	IN	_	5	prep	5-106	_
+7	USE	use	PROPN	NNP	_	6	pobj	5-107	_
+8	OR	or	CCONJ	CC	_	7	cc	5-108	_
+9	PERFORMANCE	performance	NOUN	NN	_	7	conj	5-109	_
+10	OF	of	ADP	IN	_	7	prep	5-110	_
+11	THE	the	DET	DT	_	13	det	5-111	2->[53:56]
+12	SOFTWARE	software	PROPN	NNP	_	13	compound	5-112	2->[53:56]
+13	PRODUCT	product	NOUN	NN	_	10	pobj	5-113	2->[53:56]
+14	REMAINS	remain	VERB	VBZ	_	4	dobj	5-114	_
+15	WITH	with	ADP	IN	_	4	prep	5-115	_
+16	YOU	you	PRON	PRP	_	15	pobj	5-116	_
+17	.	.	PUNCT	.	_	4	punct	5-117	_

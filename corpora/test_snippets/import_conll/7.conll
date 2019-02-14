@@ -1,0 +1,13 @@
+1	Despite	despite	ADP	IN	_	8	prep	7-133	_
+2	some	some	DET	DT	_	3	det	7-134	_
+3	similarities	similarity	NOUN	NNS	_	1	pobj	7-135	_
+4	,	,	PUNCT	,	_	8	punct	7-136	_
+5	Generators	generators	PROPN	NNPS	_	8	nsubj	7-137	_
+6	and	and	CCONJ	CC	_	5	cc	7-138	_
+7	coroutines	coroutine	NOUN	NNS	_	5	conj	7-139	_
+8	are	be	VERB	VBP	_	8	ROOT	7-140	_
+9	basically	basically	ADV	RB	_	8	advmod	7-141	_
+10	two	two	NUM	CD	_	12	nummod	7-142	_
+11	different	different	ADJ	JJ	_	12	amod	7-143	_
+12	concepts	concept	NOUN	NNS	_	8	attr	7-144	_
+13	.	.	PUNCT	.	_	8	punct	7-145	_

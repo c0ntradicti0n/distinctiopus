@@ -1,0 +1,17 @@
+1	snippet	snippet	ADJ	JJ	_	1	ROOT	12-92	_
+2	Git	git	PROPN	NNP	_	4	nmod	12-93	_
+3	[	[	PUNCT	-LRB-	_	4	punct	12-94	_
+4	https,//learngitbranching.js.org	https,//learngitbranching.js.org	PROPN	NNP	_	4	ROOT	12-95	_
+5	,	,	PUNCT	,	_	4	punct	12-96	_
+6	rampup4	rampup4	X	FW	_	4	appos	12-97	_
+7	]	]	PUNCT	-RRB-	_	4	punct	12-98	_
+8	There	there	ADV	EX	_	9	expl	12-99	_
+9	are	be	VERB	VBP	_	9	ROOT	12-100	_
+10	many	many	ADJ	JJ	_	11	amod	12-101	_
+11	ways	way	NOUN	NNS	_	9	attr	12-102	_
+12	to	to	PART	TO	_	13	aux	12-103	_
+13	reverse	reverse	VERB	VB	_	11	relcl	12-104	_
+14	changes	change	NOUN	NNS	_	13	dobj	12-105	_
+15	in	in	ADP	IN	_	14	prep	12-106	_
+16	Git	git	PROPN	NNP	_	15	pobj	12-107	_
+17	.	.	PUNCT	.	_	9	punct	12-108	_
