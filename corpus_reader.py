@@ -2,6 +2,7 @@ import re
 import os
 from itertools import count
 from nested_list_tools import flatten_reduce
+import fnmatch
 
 import numpy as np
 import pandas as pd
@@ -10,8 +11,8 @@ import copy
 import logging
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
-
-import grammarannotator
+import spacy
+nlp = spacy.load('en_core_web_sm')
 
 def find_position_in_doc_by_approx(doc, text_token, pos, deviation=10):
     deviator = iterate_away(pos, deviation)
@@ -37,17 +38,33 @@ def iterate_away(pos, deviation):
 
 class CorpusReader:
     def __init__(self, corpus_path=None, only=None):
+        ''' This module reads conll files into a DataFrama
+
+        :param corpus_path: path to the dir that contains a folder 'import', where the conll files are
+        :param only:  ???
+
+        '''
         if not corpus_path:
-            raise AttributeError("Export dir must be given!")
+            raise AttributeError("path must be given!")
         self.corpus_path = corpus_path
+
         all_sentences, all_conlls = self.load_all_conlls(corpus_path, only=only)
-        flatt_conll_dicts = flatten_reduce(all_conlls)
+        self.df = pd.DataFrame(all_conlls)
 
-        self.df = pd.DataFrame(list(flatt_conll_dicts))
+        def parse_coref_str(x):
+            mfas = [re.finditer (r"((?P<s_id>\d+)->\[(?P<m_start>\d+):(?P<m_end>\d+)\])+", y) for y in x]
+            def parse_ints(d):
+                return {a: int(x) for a, x in d.items()}
+            return  [[parse_ints(m.groupdict()) for m in mfa] if mfa else [] for mfa in mfas ]
 
-        def f(x):
-            return pd.Series({'text':' '.join(x['text']),
-                              's_id': x['sent_id'].iloc[0]
+        def aggregate_sentences(x):
+            doc    = nlp(' '.join(x['text']))
+            corefs = parse_coref_str(x['coref'])
+            return pd.Series({'text'     : ' '.join(x['text']),
+                              'text_dep_': ' '.join ([text + '_' + dep for text, dep in zip(x['text'], x['dep_'])]),
+                              's_id'     : x['s_id2'].iloc[0],
+                              'spacy_doc': doc,
+                              'coref'    : corefs
                              })
 
         # translate also normal conll-nodes as well as invisible knodes to some nice id
@@ -56,17 +73,19 @@ class CorpusReader:
             x['id'] = invisible_nodes_translation_dict.values()
             x['head_id'] = [ invisible_nodes_translation_dict[h] for h in x['inv_head_id']]
             return x
-        self.df = self.df.groupby('s_id').apply(renumerate_word_ids)
 
-        self.df['sent_id'] = self.df ['s_id']
+        self.df['s_id2'] = self.df ['s_id'] # 
+        self.df = self.df.groupby('s_id').apply(lambda x: renumerate_word_ids(x))
+
         num_cols = ["s_id", "head_id", "id"]
         self.df[num_cols] = self.df[num_cols].apply(pd.to_numeric)
 
-        Grammarian = grammarannotator.GrammarAnnotator(self.df)
-        self.sentence_df = Grammarian.sentence_df
+        # Grammarian = grammarannotator.GrammarAnnotator(self.df)
+        self.sentence_df = self.df.groupby('s_id').apply(aggregate_sentences)
+        
         return None
 
-    def lemmatized_text(self):
+    def lemmatize_text(self):
         return " ".join(self.df['lemma'].tolist())
 
     def read_one_conll (self,fname, s_id_dict):
@@ -95,7 +114,6 @@ class CorpusReader:
     def load_all_conlls (self, path, only=None):
         all_sentences = []
         all_conlls = []
-        import fnmatch
 
         def hasNumbers(inputString):
             return any(char.isdigit() for char in inputString)
@@ -109,6 +127,8 @@ class CorpusReader:
                 conll_lines, sentence = self.read_one_conll(filename, s_id_dict)
                 all_sentences.append (sentence)
                 all_conlls.append (conll_lines)
+        all_conlls = flatten_reduce(all_conlls)
+
         return all_sentences, all_conlls
 
     def load_conll (self, i, corpus_path):

@@ -3,7 +3,6 @@
 
 from corpus_reader import CorpusReader
 from CursorilyLogician import DataframeCursorilyLogician
-from grammarannotator import GrammarAnnotator
 from webanno_parser import Webanno_Parser
 
 import logging
@@ -41,6 +40,8 @@ def parse_webanno():
     grammarian.annotate(webanno_parsed)
     return None
 
+
+
 def main():
     logging_setup()
     if args.webanno_tsv:
@@ -55,6 +56,7 @@ def main():
     Logician.annotate_correlations()
     Logician.annotate_subjects_and_aspects()
 
+    Logician.move_labels()
     df = Logician.query_distinctions()
     print(df.to_excel("output.xlsx"))
 

@@ -1,4 +1,6 @@
-from argumentatrix import Arguments
+from pairix import Pairix
+from corpus_reader import nlp
+from predicatrix2 import Predication
 from corutine_utils import coroutine
 from generator_tools import count_up
 from nested_list_tools import curry, flatten_reduce
@@ -12,13 +14,11 @@ logging.captureWarnings(True)
 logging.getLogger().setLevel(logging.INFO)
 
 
-class Subjects_and_aspects(Arguments):
-    ''' This module finds pairs of arguments
+class Subjects_and_aspects(Pairix):
+    ''' This module finds pairs of arguments, that are the subjects and aspects for a pair of a pair of expressions
 
     '''
     def __init__(self, corpus):
-        super().__init__(corpus)
-
         self.similar = \
             Simmix([(20, Simmix.common_words_sim, 0.5, 1),
                     (1, Simmix.dep_sim, 0.1, 1),
@@ -45,6 +45,14 @@ class Subjects_and_aspects(Arguments):
         self.coreferential = \
              Simmix ([(1, Simmix.multi_sim(Simmix.coreferential_sim, n=2), 0, 0.1)],
                       n=1)
+
+        global nlp
+        standard_ex = nlp("The thing is round from the right side.")
+
+        self.P = Predication (corpus)
+        self.standard_predicate              = self.P.collect_all_predicates(standard_ex)
+        self.standard_entity_exs             = self.standard_predicate[0]['arguments'][0:1]
+        self.standard_aspect_exs             = self.standard_predicate[0]['arguments'][1:2]
 
         self.pattern_pair_ent = [(self.standard_entity_exs, self.standard_entity_exs)]
         self.pattern_pair_asp = [(self.standard_aspect_exs, self.standard_aspect_exs)]
@@ -336,7 +344,7 @@ class Subjects_and_aspects(Arguments):
     def draw_subjects_aspects(self, G):
         import pylab as P
 
-        path = './img/subjects - aspects' + str (next(self.counter)) + ".svg"
+        path = './img/subjectsaspects' + str (next(self.counter)) + ".svg"
 
         G.graph['graph'] = {'rankdir': 'LR', 'splines': 'line'}
         G.graph['edges'] = {'arrowsize': '4.0'}

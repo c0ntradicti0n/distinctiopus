@@ -177,7 +177,7 @@ class Contradiction:
 
     def draw_key_graphs(self, G):
         import pylab as plt
-        path = './img/contradicting_key_correlation' +  str(next(self.contra_counter)) + ".svg"
+        path = './img/contradiction' +  str(next(self.contra_counter)) + ".svg"
 
 
 

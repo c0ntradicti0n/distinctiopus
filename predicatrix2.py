@@ -6,6 +6,7 @@ import pprint
 from allennlp.commands.elmo import ElmoEmbedder
 import spacy
 
+
 import logging
 
 
@@ -45,7 +46,7 @@ class Predication():
         '''
 
         if corpus:
-            lemmatized_text = corpus.lemmatized_text()
+            lemmatized_text = corpus.lemmatize_text()
             self.tdfidf = tdfidf_tool.tdfidf(lemmatized_text)
         else:
             self.tdfidf = tdfidf_tool.tdfidf("no text")
@@ -98,6 +99,7 @@ class Predication():
         self.argument_df = pandas.DataFrame()
 
         return None
+
 
     def spacy_dep_ (ex):
         return set (x.dep_ for x in ex )
@@ -187,9 +189,12 @@ class Predication():
                      "key"          : a unique identifyer for that predicate
 
         '''
-        predicate =  [doc[x] for x in predicate_i]
-        arguments = [[doc[x] for x in arg_i] for arg_i in arguments_i]
-        full_ex   =  [doc[x] for x in full_ex_i]
+        try:
+            predicate =  [doc[x] for x in predicate_i]
+            arguments = [[doc[x] for x in arg_i] for arg_i in arguments_i]
+            full_ex   =  [doc[x] for x in full_ex_i]
+        except TypeError:
+            raise ValueError ('Computed empty value error')
 
         predicate = {"predicate": predicate,
                      "predicate_i"  : predicate_i,
@@ -202,6 +207,19 @@ class Predication():
                      "key"          : str(next(self.pred_key_gen))
             }
         return predicate
+
+    def post_process_arguments (self, arguments_i,too_deep_i, doc):
+        for arg in arguments_i:
+            arg = self.collect_argument(arg, too_deep_i, doc)
+            if arg:
+                yield arg
+
+
+    def collect_argument(self, arg_i, too_deep_i, doc):
+        for i in arg_i:
+            if doc[i].pos_ in ['NOUN', 'PRON']:
+                return [i] + [r.i for r in doc[i].rights if r.i not in too_deep_i]
+
 
     def collect_predicates(self, root_token, arg_markers, too_deep_markers, ellipsis_resolution=True,
                            no_zero_args=True, mother = False, attributive_ordering=False):
@@ -232,7 +250,7 @@ class Predication():
 
         '''
         predicate_i    = []
-        toodeep_i      = []
+        too_deep_i      = []
         lpar_toodeep_i = []
         if not root_token:
             return None
@@ -264,12 +282,12 @@ class Predication():
                     conjunction = [c.i
                                    for c in subleaf.head.rights
                                    if c.dep_ in ['cc'] and c.i<subleaf.i ]
-                    toodeep_i  += counterpart + conjunction
+                    too_deep_i  += counterpart + conjunction
 
-        predicate_i = list(set(predicate_i) - set(toodeep_i[:]))
+        predicate_i = list(set(predicate_i) - set(too_deep_i[:]))
 
         if root_token.dep_ == 'conj':
-            counterpart1 = set([s.i for s in root_token.head.rights]) - set (toodeep_i[:])
+            counterpart1 = set([s.i for s in root_token.head.rights]) - set (too_deep_i[:])
 
             if root_token.head.dep_ == 'acomp':
                 head = root_token.head.head
@@ -279,23 +297,24 @@ class Predication():
             lefts = set([s.i for s in head.lefts])
             children_of_lefts = set([s.i for left in head.lefts for s in left.subtree])
             children_of_lefts.update(lefts)
-            elliptical   = children_of_lefts - set (toodeep_i[:])
+            elliptical   = children_of_lefts - set (too_deep_i[:])
             predicate_i  = list(elliptical) + predicate_i
 
         arguments_i    = []
+        arguments_dependent_i = []
         for j in predicate_i:
             subleaf = root_token.doc[j]
             if subleaf.dep_ in arg_markers:
                 argument_i = [s.i for s in subleaf.subtree]
                 arguments_i.append(argument_i)
 
+
         predicate_i =  set(predicate_i) - set(flatten(arguments_i[:]))
-        arguments_i = [list(set(arg_i) - set(toodeep_i[:])) for arg_i in arguments_i]
+        arguments_i = [list(set(arg_i) - set(too_deep_i[:])) for arg_i in arguments_i]
 
         if not predicate_i:
             return None
-        if ( no_zero_args and (
-             not list(flatten(arguments_i[:])))):
+        if no_zero_args and not list(flatten(arguments_i[:])):
             return None
 
         predicate_i =  sorted(predicate_i)
@@ -310,8 +329,8 @@ class Predication():
         if attributive_ordering:
             predicate_i, arguments_i = list(flatten_list(arguments_i)), [predicate_i]
 
-
         doc = root_token.doc
+        arguments_i = list(self.post_process_arguments(arguments_i, too_deep_i, doc))
         predicate = self.build_predicate(predicate_i,arguments_i,full_ex_i,doc)
         return predicate
 
@@ -512,7 +531,14 @@ class Predication():
         if not coref:
             coref = [[]]*len (ex[0].doc)
 
+
         for p in ps:
+            try:
+                c= [coref[i] for i in p['i_s']]
+            except IndexError:
+                raise
+
+
             p["id"]                      = str(next(self.id_generator))
             p['s_id']                    = s_id
             p["elmo_embeddings"]         = elmo_embeddings[:,p['i_s']].sum(axis=1)
@@ -539,7 +565,7 @@ class Predication():
             return []
 
         if paint_graph:
-            self.draw_predicate_structure(ps,"./img/predicate chunks " + ps[0]['key']+".svg")
+            self.draw_predicate_structure(ps,"./img/predicate" + ps[0]['key']+".svg")
 
         self.append_to_predicate_df(ps)
         self.append_to_argument_df(ps)

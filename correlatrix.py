@@ -22,10 +22,10 @@ class Correlation(Pairix):
 
         # That's a distinctive criterium, that the correlative keys can't be too similar to the contradicting pair
         self.distinct = \
-            Simmix([(1, Simmix.multi_sim(fun=Simmix.common_words_sim, n=2.65*2.65), 0, 0.9),
-                    (1, Simmix.multi_sim(fun=Simmix.elmo_sim(), n=2.65*2.65), 0, 0.9),
-                    (1, Simmix.multi_sim(fun=Simmix.dep_sim, n=2.65*2.65), 0.0, 1),
-                    (1, Simmix.multi_sim(fun=Simmix.pos_sim,n=2.65*2.65), 0.0, 1)
+            Simmix([(1, Simmix.multi_sim(fun=Simmix.common_words_sim, n=7), 0, 0.95),
+                    (1, Simmix.multi_sim(fun=Simmix.elmo_sim(), n=7), 0, 0.9),
+                    (1, Simmix.multi_sim(fun=Simmix.dep_sim, n=7), 0.0, 1),
+                    (1, Simmix.multi_sim(fun=Simmix.pos_sim,n=7), 0.0, 1)
                     ],
                    n=None)
 
@@ -49,8 +49,6 @@ class Correlation(Pairix):
         if not poss_correlations:
             return []
 
-
-
         correlation = self.distinct.choose(                    # not too much
             ([contradiction],
              poss_correlations),
@@ -60,7 +58,6 @@ class Correlation(Pairix):
             out='ex',
             type=("opposed", "opposed", "correlated"),
             graph_coro=graph_coro)                             # Put it in the graph
-
 
         if save_graph:
             G = self.correl_to_nxdigraph(contradiction, poss_correlations, correlation)
@@ -120,7 +117,7 @@ class Correlation(Pairix):
     def draw_correlations (self, G, source, target):
         import pylab as P
 
-        path = './img/contradiction -- new correlation'+ source +" -- "+ target +".svg"
+        path = './img/correlation'+ source +" -- "+ target +".svg"
 
         G.graph['graph'] = {'rankdir': 'LR', 'splines':'line'}
         G.graph['edges'] = {'arrowsize': '4.0'}

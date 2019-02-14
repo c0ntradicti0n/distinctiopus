@@ -39,6 +39,8 @@ class DataframeCursorilyLogician:
         :param corpus: corpus instance with loaded conlls
 
         '''
+        self.cleanup_debug_img()
+
         self.corpus = corpus
         self.sentence_df = self.corpus.sentence_df
 
@@ -48,7 +50,8 @@ class DataframeCursorilyLogician:
         self.Subj_Aspectrix = Subjects_and_aspects(corpus)
 
         self.graph = py2neo.Graph("bolt://localhost:7687", auth=("s0krates", "password"))
-        self.graph.run("match (n) optional match (n)-[r]-() delete n,r")
+        self.graph.run("MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r")
+        self.graph.run("CREATE INDEX ON :Nlp(s_id, i_s)")
 
     def annotate_horizon (self, horizon=3):
         def horizon_from_row(x):
@@ -95,7 +98,25 @@ class DataframeCursorilyLogician:
         :return: predicate-dict
 
         '''
+        if isinstance(id, list):
+            if len(id)!=0:
+                id=id[0]
+        id = str(id)
         return self.Predicatrix.predicate_df.query('id==@id').to_dict(orient='records')
+
+
+    def get_part_predication(self, pred):
+        ''' Collect all particular predications in that sentence. It also looks, if there were more blocks of predicates
+        found.
+
+        :param s_id: id of the sentense
+        :return: list of predicate dicts.
+
+        '''
+        return [pp
+                for pred_in_s in self.sentence_df.query('s_id==@s_id')['predication'].values.tolist()
+                for x in pred_in_s
+                for pp in x['part_predications']]
 
 
     def get_part_predication(self, s_id):
@@ -110,6 +131,23 @@ class DataframeCursorilyLogician:
                 for pred_in_s in self.sentence_df.query('s_id==@s_id')['predication'].values.tolist()
                 for x in pred_in_s
                 for pp in x['part_predications']]
+
+
+    def get_marked_predication(self, s_id, horizon=2):
+        ''' Collect all particular predications in that sentence. It also looks, if there were more blocks of predicates
+        found.
+
+        :param s_id: id of the sentense
+        :return: list of predicate dicts.
+
+        '''
+        horizon = list(range(int(s_id) + 1, int(s_id) + horizon + 1))
+        markers = 'thus|for|example'
+        predicates =  self.sentence_df.query('s_id in @horizon and text.str.contains(@markers)')['predication'].values.tolist()
+        if predicates:
+            x = 1
+        return predicates
+
 
 
     def annotate_contradictions(self):
@@ -134,15 +172,16 @@ class DataframeCursorilyLogician:
 
         :param pred: the predicate
         :return: list of predicate_tuples
+
         '''
         if pred == []:
             raise ValueError ('got empty predicate')
         pred = pred[0]
         s_id = pred['s_id']
-        poss_part = self.get_part_predication(s_id)
-        coref_preds = self.get_coreferenced_preds (pred)
-        # TODO next sentence also!
-        return poss_part + coref_preds
+        predicates_in_sentence = self.get_part_predication(s_id)        # predicates from same sentence
+        coref_preds            = self.get_coreferenced_preds (pred)     # predicates that are coreferencing/-ed
+        marked_preds           = self.get_marked_predication (s_id)     # predicates with examples or meaning explanations ('e.g.', 'by saying that I mean')
+        return predicates_in_sentence + coref_preds + marked_preds
 
 
     def get_addressed_coref (self, coref):
@@ -309,20 +348,20 @@ class DataframeCursorilyLogician:
             :param n2: predicate dict 2
 
         '''
-        if isinstance(n1, list):
-            logging.warning("node data is list... taking first")
-            n1 = n1[0]
-        if isinstance(n2, list):
-            logging.warning("node data is list... taking first")
-            n2 = n2[0]
-        query = (
-r"""            MERGE (a:%s {id:'%s', s_id:'%s', text:'%s', i_s:%s}) 
-                MERGE (b:%s {id:'%s', s_id:'%s', text:'%s', i_s:%s}) 
-                MERGE (a)-[:%s {SpecialKind:'%s'}]-(b)"""
-                %
-               (label.upper(), n1['id'], n1['s_id'],  " ".join(n1['text']).replace("'", ""), n1['i_s'],
-                label.upper(), n2['id'], n2['s_id'],  " ".join(n2['text']).replace("'", ""), n2['i_s'],
-                general_kind.upper(), special_kind))
+        query = \
+r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}', i_s:{i_s1}}}) 
+                ON CREATE SET a.label='{label}', a.id={id1}
+                ON MATCH SET a.id=a.id+[{id1}]   
+                MERGE (b:Nlp {{s_id:{s_id2}, text:'{text2}', i_s:{i_s2}}}) 
+                ON CREATE SET b.label='{label}', b.id={id2}
+                ON MATCH SET b.id=b.id+[{id2}]
+                MERGE (a)-[:{general_kind} {{SpecialKind:'{special_kind}'}}]-(b)""".format(
+                label=label.upper(),
+                general_kind=general_kind.upper(),
+                special_kind=special_kind,
+                id1=n1['id'],      s_id1=n1['s_id'],       i_s1=n1['i_s'],      text1=" ".join(n1['text']).replace("'", ""),
+                id2=n2['id'],      s_id2=n2['s_id'],       i_s2=n2['i_s'],      text2=" ".join(n2['text']).replace("'", ""),
+                )
         logging.info ("querying neo4j the following:\n %s" % query)
         self.graph.run(query)
 
@@ -356,7 +395,7 @@ r"""            MERGE (a:%s {id:'%s', s_id:'%s', text:'%s', i_s:%s})
                 WHERE ID(a) < ID(b)
                 RETURN a,b """ % kind.upper()
         )
-        logging.info("query neo4j for reading by this:\n%s" % query)
+        logging.info("query neo4j:\n%s" % query)
         records = self.graph.run(query).data()
         records = [
             (self.get_predication(pair['a']['id']),
@@ -365,30 +404,58 @@ r"""            MERGE (a:%s {id:'%s', s_id:'%s', text:'%s', i_s:%s})
         ]
         return records
 
+    def move_labels (self):
+        query = """MATCH (n:Nlp)
+CALL apoc.create.addLabels( id(n), [ n.label ] ) YIELD node
+REMOVE node.genre
+RETURN node"""
+        self.graph.run(query)
+
+
     def query_distinctions (self):
+        """
+        Match (a:DISTINGUISH8), (b:DISTINGUISH8)
+        Where a.first = b.second or a.second = b.first
+        Merge (a)-[:KNIT]-(b)
+        return a,b
+
+
+        MATCH (n1)--(n2)
+        WHERE n1.s_id = n2.s_id and all(x IN n1.i_s WHERE x IN n2.i_s)
+        return n2,n1
+        """
         query = \
             r"""
-Match 
-(pred3)-[{GeneralKind:'correlation', SpecialKind:'correlated'}]-(pred1),
-(pred1)-[{GeneralKind:'contradiction'}]-(pred2),
-(pred2)-[{GeneralKind:'correlation', SpecialKind:'correlated'}]-(pred4),
-(pred4)-[{GeneralKind:'correlation', SpecialKind:'opposed'}]-(pred3), 
-(pred1)-[{SpecialKind:'subject'}]-(arg1), 
-(pred2)-[{SpecialKind:'subject'}]-(arg2),
-(pred3)-[{SpecialKind:'aspect'}]-(arg3), 
-(pred4)-[{SpecialKind:'aspect'}]-(arg4),
-(arg1)-[{SpecialKind:'subjects'}]-(arg2),
-(arg3)-[{SpecialKind:'aspects'}]-(arg4)
+MATCH
+(pred3)-[r1{SpecialKind:'correlated'}]-(pred1),
+(pred2)-[r2{SpecialKind:'correlated'}]-(pred4),
+(pred4)-[r3{SpecialKind:'opposed'}]-(pred3), 
+(pred1)-[r4{SpecialKind:'subject'}]-(arg1), 
+(pred2)-[r5{SpecialKind:'subject'}]-(arg2),
+(pred3)-[r6{SpecialKind:'aspect'}]-(arg3), 
+(pred4)-[r7{SpecialKind:'aspect'}]-(arg4),
+(arg1)-[r8{SpecialKind:'subjects'}]-(arg2),
+(arg3)-[r9{SpecialKind:'aspects'}]-(arg4)
+WHERE ID(pred1)<ID(pred2)
+MERGE (pred1)-[r10:KN]-(d:DISTINGUISH8 {first:[ID(arg1), ID(pred1), ID(pred3), ID(arg3)], second:[ID(arg2), ID(pred2), ID(pred4), ID(arg4)]})-[:KN]-(pred2)
+RETURN arg1, arg2, pred1, pred2, pred3, pred4, arg3, arg4
+"""
 
-where ID(pred1)<ID(pred2)
 
-Return arg1, arg2, pred1, pred2, pred3, pred4, arg3, arg4"""
-
-        """Match p=(e0)-[{GeneralKind:'denotation'}]-(e1)-[{GeneralKind:'correlation'}]-(e2)-[{GeneralKind:'denotation'}]-(e3)
-With collect(p) as r
-Return r"""
         logging.info ("query neo4j for distinctions")
         self.distinction_df =  pd.DataFrame(self.graph.run(query).data()).applymap(
             lambda x: x['text']
         )
         return self.distinction_df
+
+    def cleanup_debug_img(self):
+        import os, shutil
+        folder = './img'
+        for the_file in os.listdir(folder):
+            file_path = os.path.join(folder, the_file)
+            try:
+                if os.path.isfile(file_path):
+                    os.unlink(file_path)
+                # elif os.path.isdir(file_path): shutil.rmtree(file_path)
+            except Exception as e:
+                print(e)
