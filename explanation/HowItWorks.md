@@ -95,7 +95,8 @@ By adjusting these feature metrices I can achieve both:
 
  2. Contasts between these similar pairs are in place, if there is an antonym pair appears in both or a negation appears in one of them.
 
- The solution in the programm is, that each sentence has a logical formula like `a ∧ b ∧ ¬c ∧ d`. for each of these letters there is  
+ The solution in the programm is, that each sentence has a logical formula like `a ∧ b ∧ ¬c ∧ d`. for each of these letters there is a dictionary, for what the variables stand here. This formula then is fitted to another formula, and not fitting names are renamend. If a antonym pair is present in both, a negation is inserted in to one. After all, a contradiction is derived from this with the help of [`pyprover`](https://github.com/evhub/pyprover).  
+ 
 The following contradictions are found in the two sentences: 
 
 ![Image](contradiction.svg)
@@ -103,6 +104,8 @@ The following contradictions are found in the two sentences:
 This happens in the module [`Contradiction`](../contradictrix.py)
 
 ## Find correlative pairs to the contrasting pairs
+
+
 
 ![Image](correlation.svg)
 
