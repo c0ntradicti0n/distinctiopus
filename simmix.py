@@ -70,10 +70,8 @@ import string
 import re
 from pyxdameraulevenshtein import damerau_levenshtein_distance
 import logging
-from nested_list_tools import check_for_tuple_in_list, flatten, flatten_reduce, flatten_list, type_spec, existent
-import dict_tools
-import abstractness_estimator
-
+from littletools.nested_list_tools import check_for_tuple_in_list, flatten, flatten_reduce, flatten_list, type_spec, existent
+from littletools import abstractness_estimator, dict_tools, nested_list_tools
 
 uppercase_abc = list(string.ascii_uppercase)
 uppercase_bca = list(string.ascii_uppercase)[::-1]
@@ -972,7 +970,6 @@ class Simmix:
             return cost, {}
         return excluding_pair_boolean_sim_generated
     def formula_prooves(fit_mix):
-        import pyprover
         @Simmix.standard_range(0, 4)
         def formula_prooves_generated(ex1, ex2):
             """
@@ -1212,7 +1209,6 @@ import unittest
 
 class TestSimmix(unittest.TestCase):
     def test_one_to_one_simple(self):
-        import nested_list_tools
         exs2 = [1, 2, 3]
         exs1 = [1]
         weighted_res = np.array([[0.], [0.], [0.2]])
@@ -1244,7 +1240,7 @@ class TestSimmix(unittest.TestCase):
     def test_excluding_pair (self):
         import spacy
         nlp = spacy.load('en_core_web_sm')
-        from dict_tools import balance_complex_tuple_dict
+        from littletools.dict_tools import balance_complex_tuple_dict
         import word_definitions
 
         s1 = nlp("On the other hand things are said to be named Univocally, which have both the name the definition answering to the name in common")
@@ -1268,7 +1264,7 @@ class TestSimmix(unittest.TestCase):
 
     def test_antonym_dict_for_symmetry(self):
         import word_definitions
-        from dict_tools import dict_compare
+        from littletools.dict_tools import dict_compare
 
         d1 = dict_tools.invert_dict(word_definitions.antonym_dict['lemma_'])
         d2 = word_definitions.antonym_dict['lemma_']

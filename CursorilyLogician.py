@@ -4,12 +4,14 @@
 import itertools
 import networkx as nx
 import textwrap
-from corutine_utils import coroutine
+from littletools.corutine_utils import coroutine
 import pandas as pd
 
 import matplotlib
+
+from littletools.nested_list_tools import flatten_reduce
+
 matplotlib.use('TkAgg')
-import pylab as plt
 
 from contradictrix import Contradiction
 from predicatrix2 import Predication
@@ -134,10 +136,13 @@ class DataframeCursorilyLogician:
 
 
     def get_marked_predication(self, s_id, horizon=2):
-        ''' Collect all particular predications in that sentence. It also looks, if there were more blocks of predicates
-        found.
+        ''' Collect all predicates, that have a certain marker in them.
+
+        It's  usefull, if you want to look for sentences with certain phrases like 'for example', 'in contrast',
+        'except'. I searches for the the string, that makes the mark.
 
         :param s_id: id of the sentense
+        :param horizon: how many sentences to look forward
         :return: list of predicate dicts.
 
         '''
@@ -145,11 +150,12 @@ class DataframeCursorilyLogician:
         markers_pos = 'thus_ADV'
         markers_text = 'for instance'
         mask = (
-            self.sentence_df['s_id'].astype(int) in horizon &
-            self.sentence_df['text_pos_'].str.contains(markers_pos, case=False) &
-            self.sentence_df['text'].str.contains(markers_text, case=False) )
+            self.sentence_df['s_id'].astype(int).isin(horizon) &
+            (self.sentence_df['text_pos_'].str.contains(markers_pos, case=False) |
+            self.sentence_df['text'].str.contains(markers_text, case=False)))
 
-        predicates =  self.sentence_df[mask]['predication'].values.tolist()
+
+        predicates =  flatten_reduce(self.sentence_df[mask]['predication'].values.tolist())
         if predicates:
             x = 1
         return predicates
@@ -234,7 +240,7 @@ class DataframeCursorilyLogician:
         # Lookup what contradicitons were found
         contradictions           = list(self.get_from_gdb('contradiction'))
 
-        # Coroutine for writing-tasks, no values stored here
+        # Coroutine for writing the simmix ressults into the gdb
         put_correlation_into_gdb = self.put_into_gdb("Connotation", "correlation")
 
         for contra1, contra2 in contradictions:
@@ -455,7 +461,7 @@ RETURN arg1, arg2, pred1, pred2, pred3, pred4, arg3, arg4
         return self.distinction_df
 
     def cleanup_debug_img(self):
-        import os, shutil
+        import os
         folder = './img'
         for the_file in os.listdir(folder):
             file_path = os.path.join(folder, the_file)

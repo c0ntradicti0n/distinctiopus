@@ -12,13 +12,13 @@ import logging
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
-from nested_list_tools import *
-from digraph_tools import *
-from dict_tools import *
+from littletools.nested_list_tools import *
+from littletools.digraph_tools import *
+from littletools.dict_tools import *
 from simmix import Simmix
 import word_definitions
-import tdfidf_tool
-from generator_tools import count_up
+from littletools import tdfidf_tool
+from littletools.generator_tools import count_up
 
 
 class Predication():

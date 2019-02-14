@@ -1,9 +1,9 @@
 from pairix import Pairix
-from corpus_reader import nlp
 from predicatrix2 import Predication
-from corutine_utils import coroutine
-from generator_tools import count_up
-from nested_list_tools import curry, flatten_reduce
+from corpus_reader import nlp
+from littletools.corutine_utils import coroutine
+from littletools.generator_tools import count_up
+from littletools.nested_list_tools import curry
 from simmix import Simmix
 
 import networkx as nx

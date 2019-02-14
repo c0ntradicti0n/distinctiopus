@@ -58,7 +58,7 @@ def main():
 
     Logician.move_labels()
     df = Logician.query_distinctions()
-    print(df.to_excel("output.xlsx"))
+    print(df.to_excel(args.conll+"/../output.xlsx"))
 
     #Logician.draw_as_dot_digraph(digraph, args.work_dir + "/found_distinctions." + args.output)
     return 0
@@ -76,5 +76,5 @@ if __name__ == '__main__':
     ps = pstats.Stats(pr, stream=s).sort_stats('tottime')
     ps.print_stats()
 
-    with open('test.txt', 'w+') as f:
+    with open('stats/cprofile.txt', 'w+') as f:
         f.write(s.getvalue())

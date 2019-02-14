@@ -7,7 +7,7 @@ def invert_dict(d):
 
         Example
         -------
-            >>> from dict_tools import *
+            >>> from littletools.dict_tools import *
             >>> d = {
             ...             1:[1,2,3],
             ...             6:[3,4,1]
@@ -43,7 +43,7 @@ def balance_complex_tuple_dict(d, _sort=False):
 
         Example
         -------
-            >>> from dict_tools import *
+            >>> from littletools.dict_tools import *
             >>> d = {
             ...             ('differ'):['equal'],
             ...             ('have','*','in', 'common'):[('differ','in'), 'differ', 'derive']

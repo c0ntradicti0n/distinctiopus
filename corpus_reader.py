@@ -1,10 +1,9 @@
 import re
 import os
 from itertools import count
-from nested_list_tools import flatten_reduce
+from littletools.nested_list_tools import flatten_reduce
 import fnmatch
 
-import numpy as np
 import pandas as pd
 import copy
 

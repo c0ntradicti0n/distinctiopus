@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from corutine_utils import coroutine
-from generator_tools import count_up
+from littletools.corutine_utils import coroutine
+from littletools.generator_tools import count_up
 from predicatrix2 import Predication
 import word_definitions
 from simmix import Simmix
