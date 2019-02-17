@@ -1,7 +1,7 @@
 1	Of	of	ADP	IN	_	5	prep	9-267	_
 2	things	thing	NOUN	NNS	_	1	pobj	9-268	_
 3	themselves	-PRON-	PRON	PRP	_	2	appos	9-269	_
-4	some	some	DET	DT	_	5	nsubj	9-270	_
+4	some	some	DET	DT	_	5	nsubj	9-270	9->[2:3]
 5	are	be	VERB	VBP	_	5	ROOT	9-271	_
 6	predicable	predicable	ADJ	JJ	_	5	acomp	9-272	_
 7	of	of	ADP	IN	_	6	prep	9-273	_

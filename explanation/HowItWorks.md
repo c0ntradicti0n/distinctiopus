@@ -1,10 +1,10 @@
 # S0krates
 
-S0krates is a tool, that mines distinctions. Distinctions are the decisive points in theoretical text.
+S0krates is a tool, that mines distinctions. Distinctions are the decisive points in theoretical text, that are a phänomenon in language that either helps to shape theories or to contrast results from the state of the art. Another field are law texts, what to do and what not to do. Or its a part of aethetics, to know, what are the features, you like and which you not like (See [Pierre Bourdieu - Distinction](https://en.wikipedia.org/wiki/Distinction_(book)) Its a cognitive technique, that shapes  
 
 
 
-A part of them is heavily used to shape the contures theories. If you write a scientific essay, you are advised to define your concepts and make fundamental distinctions, that are at work in your theory.
+So if you write a scientific essay, you are advised to define your concepts and make fundamental distinctions, that are at work in your theory.
 
 Another time distinctions appear at the point, when you present the results of these essays. You have to contrast them with the results of before and of other scientists. You say something like: "Before it was so and so. In contrast, afert my results it ist something else, namely so and so."
 
@@ -14,7 +14,8 @@ So, with ``distinction`` here I mean if a writer proposes two kinds or perspecti
 
 Let's take for the sake of explanation these two sentences of Aristotle:
 
-    Forms of speech are either simple or composite. Examples of the latter are such expressions as 'the man runs', 'the man wins'; of the former 'man', 'ox', 'runs', 'wins'.
+>  Forms of speech are either simple or composite. 
+>   Examples of the latter are such expressions as 'the man runs', 'the man wins'; of the former 'man', 'ox', 'runs', 'wins'.
 
 But by distinction I don't mean here, if somebody treats `money` and `luck` as something different, and doesn't draw a connection between these two things.
 

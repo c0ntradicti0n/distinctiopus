@@ -9,6 +9,7 @@ import pandas as pd
 
 import matplotlib
 
+from littletools.digraph_tools import neo4j2nx
 from littletools.nested_list_tools import flatten_reduce
 
 matplotlib.use('TkAgg')
@@ -173,7 +174,6 @@ class DataframeCursorilyLogician:
             self.Contradictrix.find_contradictive(
                 x['predication'],
                 x['predications_in_range'],
-                out='ex',
                 graph_coro=put_contradiction_into_gdb)
 
 
@@ -204,11 +204,11 @@ class DataframeCursorilyLogician:
         :return:
         '''
 
-        s_id  = coref['s_id']
-        m_start = coref['m_start']-1
-        m_end   = coref['m_end']-1
+        s_id  = str(coref['s_id'])
+        i_list = coref['i_list']
         mask = self.Predicatrix.predicate_df.query("s_id==@s_id")['i_s'].apply(
-            lambda ex_i: True if [m for m in range(m_start, m_end) if m in ex_i] else False)
+            lambda ex_i: True if [m for m in i_list if m in ex_i] else False)
+        assert mask.any()
         return self.Predicatrix.predicate_df.query("s_id==@s_id")[mask].to_dict(orient='records')
 
 
@@ -259,14 +259,11 @@ class DataframeCursorilyLogician:
         :return: 2tuple-2tuple-list-predicate-dict
         '''
         query = \
-            """ MATCH (pred1)--(pred2)--(pred3)--(pred4)
-
-                WHERE (pred1)-[:CORRELATION {SpecialKind:'correlated'}]-(pred3) AND
-            
-                     (pred1)-[:CORRELATION {SpecialKind:'opposed'}]-(pred2) AND
-                     (pred2)-[:CORRELATION {SpecialKind:'correlated'}]-(pred4) AND
-                     (pred4)-[:CORRELATION {SpecialKind:'opposed'}]-(pred3)                AND ID(pred1)<ID(pred2)
-               RETURN pred1, pred2, pred3, pred4"""
+            """MATCH (pred1)-[:CORRELATION {SpecialKind:'correlated'}]-(pred3),
+      (pred1)-[:CORRELATION {SpecialKind:'opposed'}]-(pred2),
+      (pred2)-[:CORRELATION {SpecialKind:'correlated'}]-(pred4),
+      (pred3)-[:CORRELATION {SpecialKind:'opposed'}]-(pred4)      
+RETURN pred1, pred2, pred3, pred4"""
 
         logging.info("query neo4j for reading by this:\n%s" % query)
         records = self.graph.run(query).data()
@@ -304,6 +301,8 @@ class DataframeCursorilyLogician:
 
     kind_color_map = {
             'subject'           : '#5B6C5D',
+            'aspect': '#5B6C5D',
+
             'predicate'         : '#9FFFF5',
             'example'           : '#59C9A5',
             'explanation'       : '#56E39F',
@@ -314,41 +313,79 @@ class DataframeCursorilyLogician:
         }
     edge_label_map = {
             'exclusive'         : 'side of distinction',
+            'aspect': 'aspect',
+
             'subject'           : 'subject',
+            'aspects': 'aspects',
+            'subjects': 'subjects',
+            'opposed':'contrast',
+
             'predicate'         : 'sentence',
             'example'           : 'example',
             'explanation'       : 'explanation',
             'differential_layer': 'aspect',
-            'correl'            : 'correlating part',
-            'center'            : "let's distinguish",
-            'contra'            : 'contradicting part',
+            'correlated'        : 'correlation',
+            'center'            : "distinction",
+            'contra'            : 'contrast',
             'computed'          : 'compared with',
-            None                : '?'
+            'abc'                : '?'
         }
 
 
-    def draw_as_dot_digraph(self, digraph, path):
-        H = digraph
+    def draw(self, G, path):
+        ''' Make a nice materialized graph from the distinction query
+
+            :param G: nx.Multidigraph
+            :param path: Where to put the file
+            :return: None
+
+        '''
+        path = path + 'distinction.svg'
+
+        import pylab as plt
         def wrap (strs):
             return textwrap.fill(strs, 20)
 
-        wrapped_node_labels = {n: {'label':wrap(d)} for n, d in H.nodes(data='label') if d}
-        nx.set_node_attributes(H, wrapped_node_labels)
+        wrapped_node_labels = {n: {'label':wrap(d)} for n, d in G.nodes(data='text') if d}
+        edge_labels = {(u,v,1): {'xlabel': self.edge_label_map[d]} for u,v, d in G.edges(data='SpecialKind', default='what?')}
+        node_colors =  {n: {'style':'filled', 'fillcolor':self.kind_color_map[d]} for n, d in G.nodes(data='SpecialKind') if d}
 
-        edge_labels = dict(((u,v), {'xlabel': self.edge_label_map[d]}) for u,v, d in H.edges(data='xlabel'))
-        nx.set_edge_attributes(H, edge_labels)
+        nx.set_edge_attributes(G, edge_labels)
+        nx.set_node_attributes(G, wrapped_node_labels)
+        nx.set_node_attributes(G, node_colors)
 
-        node_colors =  {n: {'style':'filled', 'fillcolor':self.kind_color_map[d]} for n, d in H.nodes(data='kind') if d}
-        nx.set_node_attributes(H, node_colors)
-
-        H.graph['graph'] = {'rankdir': 'LR',
+        G.graph['graph'] = {'rankdir': 'LR',
                             'style': 'filled',
                             'splines':'curved'}
 
-        A = nx.drawing.nx_agraph.to_agraph(H)
-        A.layout('dot')
-        A.draw(path = "found_distinction.svg")
-        return None
+        spectral = nx.spectral_layout(G)
+        #spring = nx.spring_layout(G)
+        #dot_layout = graphviz_layout(G, prog='dot')
+        pos = spectral
+
+        options = {
+            'node_color': 'blue',
+            'node_size': 100,
+            'width': 3,
+            'arrowstyle': '-|>',
+            'arrowsize': 12,
+        }
+
+        nx.draw_networkx(G,
+                         pos=pos,
+                         labels=wrapped_node_labels,
+                         with_labels=True,
+                         font_size=10,
+                         **options)
+        #nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, rotate=False)
+
+        #plt.title("\n".join([wrap(x, 90) for x in [title, wff_nice, wff_ugly]]), pad=20)
+        #pylab.axis('off')
+        plt.savefig(path, dpi=200)
+        plt.clf()
+        #A = nx.drawing.nx_agraph.to_agraph(G)
+        #A.layout('dot')
+        #A.draw(path = "found_distinction.svg")
 
 
     def add_determined_expression (self, label, general_kind, special_kind, n1, n2):
@@ -409,11 +446,15 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}', i_s:{i_s1}}})
         )
         logging.info("query neo4j:\n%s" % query)
         records = self.graph.run(query).data()
+        
         records = [
             (self.get_predication(pair['a']['id']),
              self.get_predication(pair['b']['id']))
             for pair in records
         ]
+        assert all (records)
+        assert all (all (pair) for pair in records)
+
         return records
 
     def move_labels (self):
@@ -448,17 +489,18 @@ MATCH
 (pred4)-[r7{SpecialKind:'aspect'}]-(arg4),
 (arg1)-[r8{SpecialKind:'subjects'}]-(arg2),
 (arg3)-[r9{SpecialKind:'aspects'}]-(arg4)
-WHERE ID(pred1)<ID(pred2)
-MERGE (pred1)-[r10:KN]-(d:DISTINGUISH8 {first:[ID(arg1), ID(pred1), ID(pred3), ID(arg3)], second:[ID(arg2), ID(pred2), ID(pred4), ID(arg4)]})-[:KN]-(pred2)
+//MERGE (pred1)-[r10:KN]-(d:DISTINGUISH8 {first:[ID(arg1), ID(pred1), ID(pred3), ID(arg3)], second:[ID(arg2), ID(pred2), ID(pred4), ID(arg4)]})-[:KN]-(pred2)
+SET pred1.d = True, pred2.d=True, pred3.d = True, pred4.d=True, arg1.d = True, arg2.d=True, arg3.d=True, arg4.d=True, r1.d=True, r2.d=True, r3.d=True,r4.d=True,r5.d=True,r6.d=True,r7.d=True,r8.d=True,r9.d=True
 RETURN arg1, arg2, pred1, pred2, pred3, pred4, arg3, arg4
 """
-
-
         logging.info ("query neo4j for distinctions")
         self.distinction_df =  pd.DataFrame(self.graph.run(query).data()).applymap(
             lambda x: x['text']
         )
+        G = neo4j2nx (self.graph, subgraph_marker='d')
+        self.draw(G,'img/')
         return self.distinction_df
+
 
     def cleanup_debug_img(self):
         import os

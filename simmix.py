@@ -852,7 +852,7 @@ class Simmix:
                 try:
                     res, d = fun (ex1, ex2)
                 except TypeError:
-                    raise NotImplementedError ("return beam from the distance measure!")
+                    raise NotImplementedError ("return beam from the distance measure! %s" % str(fun))
                 sim += res
                 b.update(d)
             return sim, b
@@ -868,9 +868,9 @@ class Simmix:
             :return: 0 or 1 (if left), {}
 
         '''
-        pos1  = max(ex1["i_s"]) + ex1['s_id']*1000
-        pos2  = min(ex2["i_s"]) + ex2['s_id']*1000
-        return pos1<pos2, {}
+        pos1  = max(ex1["i_s"]) + int(ex1['s_id'])*1000
+        pos2  = min(ex2["i_s"]) + int(ex2['s_id'])*1000
+        return int(pos1<pos2), {}
 
     @standard_range(0, 1)
     def right (ex1, ex2):
@@ -881,9 +881,9 @@ class Simmix:
             :return: 0 or 1 (if right), {}
 
         '''
-        pos1  = max(ex1["i_s"]) + ex1['s_id']*1000
-        pos2  = min(ex2["i_s"]) + ex2['s_id']*1000
-        return  pos1>pos2, {}
+        pos1  = max(ex1["i_s"]) + int(ex1['s_id'])*1000
+        pos2  = min(ex2["i_s"]) + int(ex2['s_id'])*1000
+        return  int(pos1>pos2), {}
 
 
     def boolean_sim (attrib_dict):

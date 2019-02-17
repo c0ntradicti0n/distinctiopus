@@ -1,7 +1,7 @@
 1	Examples	example	NOUN	NNS	_	5	nsubj	_	_
 2	of	of	ADP	IN	_	1	prep	_	_
 3	the	the	DET	DT	_	4	det	_	_
-4	latter	latter	ADJ	JJ	_	2	pobj	_	7->[6:7], 7->[1:4]
+4	latter	latter	ADJ	JJ	_	2	pobj	_	7->[6,1,2,3]
 5	are	be	VERB	VBP	_	5	ROOT	_	_
 6	such	such	ADJ	JJ	_	7	amod	_	_
 7	expressions	expression	NOUN	NNS	_	5	attr	_	_
@@ -13,7 +13,7 @@
 12.1	Examples	example	NOUN	NNS	_	15.1	nsubj	_	_
 13	of	of	ADP	IN	_	12.1	prep	_	_
 14	the	the	DET	DT	_	15	det	_	_
-15	former	former	ADJ	JJ	_	13	pobj	_	7->[8:9], 7->[1:4]
+15	former	former	ADJ	JJ	_	13	pobj	_	7->[8,1,2,3]
 15.1	are	be	VERB	VBP	_	15.1	ROOT	_	_
 15.2	such	such	ADJ	JJ	_	15.3	amod	_	_
 15.3	expressions	expression	NOUN	NNS	_	15.1	attr	_	_

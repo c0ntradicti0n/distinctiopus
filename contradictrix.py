@@ -43,13 +43,13 @@ class Contradiction:
 
         '''
         fit_mix_neg = \
-             Simmix ( [(1,Simmix.elmo_sim(), 0.4,1),
-                       #(1, Simmix.common_words_sim, 0.5,1),
+             Simmix ( [(1,Simmix.elmo_sim(), 0.5,1),
+                       (1, Simmix.common_words_sim, 0.5,1),
                         ],
                       n=None)
         self.Contra_Neg  = \
-            Simmix([(1, Simmix.formula_contradicts(fit_mix_neg), 0.1, 1)
-                    ,(1, Simmix.sub_i,0,0.1)
+            Simmix([(1, Simmix.formula_contradicts(fit_mix_neg), 0.1, 1),
+                    (1, Simmix.sub_i,0,0.1)
                     ], n=30)
 
         fit_mix_ant = \
@@ -91,8 +91,8 @@ class Contradiction:
             put_into_nx = self.put_into_nx(general_kind='contradiction', G=G)
             graph_coro = [graph_coro, put_into_nx ]
 
-        negation_contradictions = self.Contra_Neg.choose ((predicates1, predicates2), type='*negation', layout='n', graph_coro=graph_coro, **kwargs)
-        antonym_contradictions  = self.Contra_Anto.choose((predicates1, predicates2), type='*antonym',  layout='n', graph_coro=graph_coro, **kwargs)
+        negation_contradictions = self.Contra_Neg.choose ((predicates1, predicates2), type='*negation', layout='n', out='i', graph_coro=graph_coro, **kwargs)
+        antonym_contradictions  = self.Contra_Anto.choose((predicates1, predicates2), type='*antonym',  layout='n', out='i', graph_coro=graph_coro, **kwargs)
         logging.info("contradictions by antonym : %s" % str (antonym_contradictions))
         logging.info("contradictions by negation: %s" % str (negation_contradictions))
 

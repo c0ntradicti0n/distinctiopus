@@ -30,8 +30,9 @@ node.DENOTATION {
   caption:"{text}";
 }
 
-node.Nlp {}
+node.Nlp {
    caption:"{text}"
+}
 
 node.Subject {
   color: #00CC99;

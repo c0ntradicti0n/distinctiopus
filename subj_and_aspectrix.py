@@ -20,7 +20,7 @@ class Subjects_and_aspects(Pairix):
     '''
     def __init__(self, corpus):
         self.similar = \
-            Simmix([(20, Simmix.common_words_sim, 0.5, 1),
+            Simmix([(20, Simmix.common_words_sim, 0.1, 1),
                     (1, Simmix.dep_sim, 0.1, 1),
                     (1, Simmix.pos_sim, 0.1, 1),
                     (1, Simmix.tag_sim, 0.1, 1),
@@ -30,21 +30,17 @@ class Subjects_and_aspects(Pairix):
         self.filter1 = \
             Simmix([(18, Simmix.multi_sim( Simmix.common_words_sim, n=2), 0.1, 1),
                     #(    3, Simmix.multi_sim(Simmix.elmo_layer_sim(layer=[0, 1]) ), 0.2, 1),
-                    (    4, Simmix.multi_sim(Simmix.head_dep_sim), 0.0, 1),
-                    (1, Simmix.multi_sim(Simmix.pos_sim, n=2), 0.1, 1),
-                    (1, Simmix.multi_sim(Simmix.tag_sim, n=2), 0.1, 1),
+                    #(    4, Simmix.multi_sim(Simmix.head_dep_sim), 0.0, 1),
+                    #(1, Simmix.multi_sim(Simmix.pos_sim, n=2), 0.1, 1),
+                    #(1, Simmix.multi_sim(Simmix.tag_sim, n=2), 0.1, 1),
                     #(-1000, Simmix.multi_sim(Simmix.boolean_subsame_sim, n=2),      0.0, 0.1)
                     ],
                    n=100)
 
         self.theme_rheme = \
-             Simmix ([(1, Simmix.multi_sim(Simmix.left_sim, n=2), 0.2, 1),
+             Simmix ([(1, Simmix.multi_sim(Simmix.left_sim, n=2), 0.0, 1),
                      (-1000, Simmix.multi_sim(Simmix.boolean_subsame_sim, n=2), 0.0, 0.1)],
                      n=1)
-
-        self.coreferential = \
-             Simmix ([(1, Simmix.multi_sim(Simmix.coreferential_sim, n=2), 0, 0.1)],
-                      n=1)
 
         global nlp
         standard_ex = nlp("The thing is round from the right side.")
@@ -72,14 +68,14 @@ class Subjects_and_aspects(Pairix):
         for argument in arguments:
             reference = argument['coreferenced'](argument['coref'])
             if reference:
-                if reference == [[]]:
-                    logging.error ('bad return value for coreferenced, taking normal argument')
+                if reference[0]:
+                    new_arguments.append(reference[0])
+                else:
                     new_arguments.append(argument)
-                    continue
-                new_arguments.append(reference[0])
             else:
                 new_arguments.append(argument)
-        assert len (new_arguments) == len (arguments)
+        assert all (new_arguments)
+        assert new_arguments
         return new_arguments
 
     def get_arguments(self, argument):
@@ -90,7 +86,9 @@ class Subjects_and_aspects(Pairix):
 
         '''
         arguments = argument['arguments']
-        return self.argument_or_reference_instead (arguments)
+        argument = self.argument_or_reference_instead (arguments)
+        assert argument
+        return argument
 
 
     def get_correlated (self, pair):
@@ -101,6 +99,8 @@ class Subjects_and_aspects(Pairix):
 
         '''
         arguments = self.get_arguments(pair[0][0]), self.get_arguments(pair[1][0])
+        if not all(arguments):
+            raise ValueError ('no argument for predicate, that can be referenced?')
         return self.similar.choose(arguments, layout='1:1', out='ex')
 
 
@@ -216,10 +216,6 @@ class Subjects_and_aspects(Pairix):
             logging.warning ('subjects and aspects not from the same sentence')
             return []
 
-        #coreferential = self.coreferential.choose(subjects_aspects, layout='n')
-
-        #if coreferential:
-        #    return []
 
         graph_coro_arg_binding.send ((pred1, subject1) + ('subject',))
         graph_coro_arg_binding.send ((pred2, subject2) + ('subject',))

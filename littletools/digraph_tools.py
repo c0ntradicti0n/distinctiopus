@@ -55,3 +55,50 @@ def source_sink_generator (DiG):
         for source in source_nodes:
             for path in nx.all_simple_paths(DiG, source=source, target=sink):
                 yield(path)
+
+
+
+
+
+
+def rs2graph(rs):
+    """ Materialze the records of pyneo in networkx
+
+        :param rs: records from query
+        :return: nx.MultiDiGraph
+
+    """
+    # http://www.solasistim.net/posts/neo4j_to_networkx/
+    G = nx.MultiDiGraph()
+
+    def add_nodes_and_edge(tup):
+        (n1, n2, r) = tup
+        G.add_node(str(set(n1['id'])), **n1)
+        G.add_node(str(set(n2['id'])), **n2)
+        G.add_edge(str(set(n1['id'])), str(set(n2['id'])), **r)
+
+    result_tups = list(tuple(r) for r in rs)
+    for tup in result_tups:
+        add_nodes_and_edge(tup)
+
+    return G
+
+
+def neo4j2nx (pyneo4j, subgraph_marker):
+    ''' Write a subgraph in neo4j, where a certain attribute is set, to nx
+
+        :param pyneo4j: pyneo instance to call `run`
+        :param subgraph_marker: the marker, that is set in the graph, just the property name
+        :return: nx.MultiDiGraph
+
+    '''
+    query = """
+    MATCH(a)-[r]->(b)
+    WHERE EXISTS(a.{marker}) AND EXISTS(r.{marker}) AND EXISTS(r.{marker})
+    RETURN a, b, r
+    """.format (marker=subgraph_marker)
+    record =  pyneo4j.run (query)
+    G = rs2graph(record)
+    return G
+
+

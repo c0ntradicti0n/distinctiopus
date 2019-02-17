@@ -35,7 +35,7 @@
 35	body	body	NOUN	NN	_	33	pobj	13-194	_
 36	,	,	PUNCT	,	_	31	punct	13-195	_
 37	yet	yet	CCONJ	CC	_	31	cc	13-196	_
-38	it	-PRON-	PRON	PRP	_	39	nsubj	13-197	_
+38	it	-PRON-	PRON	PRP	_	39	nsubj	13-197	13->[29:30]
 39	is	be	VERB	VBZ	_	31	conj	13-198	_
 40	never	never	ADV	RB	_	39	neg	13-199	_
 41	predicable	predicable	ADJ	JJ	_	39	acomp	13-200	_

@@ -6,10 +6,7 @@ import pprint
 from allennlp.commands.elmo import ElmoEmbedder
 import spacy
 
-
 import logging
-
-
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 from littletools.nested_list_tools import *
@@ -24,27 +21,27 @@ from littletools.generator_tools import count_up
 class Predication():
     def __init__(self, corpus=None):
         ''' This module lets you translate natural language expressions into predicative chunks, to analyse the
-        parts of sentences and their relatitions.
+            parts of sentences and their relatitions.
 
-        For the chunking intialize the model and call `analyse_predication` and you get back a hard-core-annotated expression
+            For the chunking intialize the model and call `analyse_predication` and you get back a hard-core-annotated expression
 
-        These chunks are dicts of other properties, that represent a part of the sentence with different properties.
-        A predicate for instance, contains
+            These chunks are dicts of other properties, that represent a part of the sentence with different properties.
+            A predicate for instance, contains
 
-        >>> import spacy
-        >>> nlp = spacy.load('en_core_web_sm')
-        >>> P = Predication()
-        >>> text = nlp ('What is going on here?')
-        >>> pred = P.analyse_predication(doc=text, s_id='count_yourself')
-        >>> pred[0]['dep_']
-        ['nsubj', 'aux', 'ROOT', 'prt', 'advmod', 'punct']
-        >>> pred[0]['text']
-        ['What', 'is', 'going', 'on', 'here', '?']
+            >>> import spacy
+            >>> nlp = spacy.load('en_core_web_sm')
+            >>> P = Predication()
+            >>> text = nlp ('What is going on here?')
+            >>> pred = P.analyse_predication(doc=text, s_id='count_yourself')
+            >>> pred[0]['dep_']
+            ['nsubj', 'aux', 'ROOT', 'prt', 'advmod', 'punct']
+            >>> pred[0]['text']
+            ['What', 'is', 'going', 'on', 'here', '?']
 
-        :param corpus: a corpus_reader_object, to overlook the document once, to precompute all lemmata and
-        td-idf-values.
+            :param corpus: a corpus_reader_object, to overlook the document once, to precompute all lemmata and
+            td-idf-values.
+
         '''
-
         if corpus:
             lemmatized_text = corpus.lemmatize_text()
             self.tdfidf = tdfidf_tool.tdfidf(lemmatized_text)
@@ -130,7 +127,7 @@ class Predication():
 
             :param doc: spacy doctument
             :param s_id: id of sentence, use `s_id='count_yourself'` for not caring for this. In these cases, the td-idf
-            information is not possible to compute
+            information is not possible to compute, because one does not know, to which text this belongs
             :param kwargs:  :func:`~predcicatrix.Predication.collect_all_predicates`
             :return: list of predicate_dicts
 
@@ -173,20 +170,20 @@ class Predication():
     def build_predicate(self,predicate_i, arguments_i, full_ex_i, doc):
         ''' Build a dict from information over a predicate
 
-        :param predicate_i: indices of predicates
-        :param arguments_i: indices of arguments as list of list
-        :param full_ex_i:  all indices
-        :param doc: the spacy document
-        :return: dict wth
-                     "predicate"    : spacy tokens  of predicate,
-                     "predicate_i"  : indices of that,
-                     "arguments"    : spacy tokens of arguments,
-                     "arguments_i"  : indices of that,
-                     "full_ex"      : all spacy tokens,
-                     "i_s"          : indices of that
-                     "doc"          : spacy tokens
-                     "text"         : list of words,
-                     "key"          : a unique identifyer for that predicate
+            :param predicate_i: indices of predicates
+            :param arguments_i: indices of arguments as list of list
+            :param full_ex_i:  all indices
+            :param doc: the spacy document
+            :return: dict wth
+                         "predicate"    : spacy tokens  of predicate,
+                         "predicate_i"  : indices of that,
+                         "arguments"    : spacy tokens of arguments,
+                         "arguments_i"  : indices of that,
+                         "full_ex"      : all spacy tokens,
+                         "i_s"          : indices of that
+                         "doc"          : spacy tokens
+                         "text"         : list of words,
+                         "key"          : a unique identifyer for that predicate
 
         '''
         try:
@@ -208,17 +205,37 @@ class Predication():
             }
         return predicate
 
-    def post_process_arguments (self, arguments_i,too_deep_i, doc):
+    def post_process_arguments (self, arguments_i,doc):
+        ''' Iterate through arguments and give back valid noun/pronoun-cores
+
+            :param arguments_i: indices of possible argument tokens in the sentence (list(list))
+            :param doc: spacy doc
+            :return: list of argument core tokens
+
+        '''
         for arg in arguments_i:
-            arg = self.collect_argument(arg, too_deep_i, doc)
+            arg = self.collect_substancial_argument(arg, doc)
             if arg:
                 yield arg
 
 
-    def collect_argument(self, arg_i, too_deep_i, doc):
+    def collect_substancial_argument(self, arg_i, doc, out='i'):
+        ''' From an argument expression take the noun-core and not its dependents
+
+            :param arg_i: indices of possible argument tokens in the sentence
+            :param doc: spacy document
+            :return: list of spacy tokens
+
+        '''
+        arg = []
         for i in arg_i:
-            if doc[i].pos_ in ['NOUN', 'PRON']:
-                return [i] + [r.i for r in doc[i].rights if r.i not in too_deep_i]
+            if doc[i].pos_ in ['NOUN', 'PRON'] or doc[i].dep_ in ['nsubjpass','nsubj', 'obj', 'pobj', 'dobj']:
+                if out == 'i':
+                    arg.append(i) #+ [r.i for r in doc[i].rights if r.i not in too_deep_i]
+                if out == 't':
+                    arg.append(doc[i])
+        return arg
+
 
 
     def collect_predicates(self, root_token, arg_markers, too_deep_markers, ellipsis_resolution=True,
@@ -230,23 +247,23 @@ class Predication():
             one expression for the information of the concept (the function-name, the Begriff), and its arguments (the
             arguments of the function, the individuals and variables for them).
 
-        :param root_token: verbal or substantive root word
-        :param arg_markers: what kinds of dependences to take arguments
-        :param too_deep_markers: where to cut the expression because of deepness
-        :param ellipsis_resolution: if coordinative bindings should be dissolved every time
-             (and the elliptical part doubbled for the second part)
-        :param no_zero_args:
-             its not allowed for predications to have zero arugments
-        :param mother:
-             the whole expression should appear as result
-        :param attributive_ordering:
-             False (default):
-                 A verbal is the root of the predicative structure and dependents with noun or pronoun cores are the 'arguments'
-             True:
-                 If the predicate is triggered by an adjective-substantive-junction, then the substantive (with its
-                 dependents) is the lonly argument and the adjective with its dependents is the predicate
+            :param root_token: verbal or substantive root word
+            :param arg_markers: what kinds of dependences to take arguments
+            :param too_deep_markers: where to cut the expression because of deepness
+            :param ellipsis_resolution: if coordinative bindings should be dissolved every time
+                 (and the elliptical part doubbled for the second part)
+            :param no_zero_args:
+                 its not allowed for predications to have zero arugments
+            :param mother:
+                 the whole expression should appear as result
+            :param attributive_ordering:
+                 False (default):
+                     A verbal is the root of the predicative structure and dependents with noun or pronoun cores are the 'arguments'
+                 True:
+                     If the predicate is triggered by an adjective-substantive-junction, then the substantive (with its
+                     dependents) is the lonly argument and the adjective with its dependents is the predicate
 
-        :return: dict from :func:`~predicatrix2.Predication.build_predicate`
+            :return: dict from :func:`~predicatrix2.Predication.build_predicate`
 
         '''
         predicate_i    = []
@@ -301,13 +318,11 @@ class Predication():
             predicate_i  = list(elliptical) + predicate_i
 
         arguments_i    = []
-        arguments_dependent_i = []
         for j in predicate_i:
             subleaf = root_token.doc[j]
             if subleaf.dep_ in arg_markers:
                 argument_i = [s.i for s in subleaf.subtree]
                 arguments_i.append(argument_i)
-
 
         predicate_i =  set(predicate_i) - set(flatten(arguments_i[:]))
         arguments_i = [list(set(arg_i) - set(too_deep_i[:])) for arg_i in arguments_i]
@@ -330,7 +345,7 @@ class Predication():
             predicate_i, arguments_i = list(flatten_list(arguments_i)), [predicate_i]
 
         doc = root_token.doc
-        arguments_i = list(self.post_process_arguments(arguments_i, too_deep_i, doc))
+        arguments_i = list(self.post_process_arguments(arguments_i, doc))
         predicate = self.build_predicate(predicate_i,arguments_i,full_ex_i,doc)
         return predicate
 
@@ -391,7 +406,8 @@ class Predication():
                      logging.error ("negations is int? %s" % (str(negations)))
         return ps
 
-    def attribute_contained_predicates(self,ps, expand = False):
+
+    def attribute_contained_predicates(self, ps):
         ps = sorted(ps, key=lambda x:-len(x['i_s']))
 
         Sub_sim = Simmix([(1, Simmix.sub_i,  0.1, 1),
@@ -490,28 +506,20 @@ class Predication():
             predicate["lemma_tag_"] = [ex[x].lemma_ + '_' + ex[x].tag_ for x in predicate['i_s']]
         return ps
 
+
     def collect_all_predicates(self,ex, coref=None, s_id=None,  paint_graph=True):
         ''' Extracts a multitude of properties from a natural language expression, including grammar
-        imformation, word2vec, some importance weight in the document, some kind of cursorily logical
-        formula with a dictionary, to what expressions the constants in the formula belong to.
+            imformation, word2vec, some importance weight in the document, some kind of cursorily logical
+            formula with a dictionary, to what expressions the constants in the formula belong to.
 
-        :param ex:
-            string or spracy instance of the language expression
-        :return:
-            dictionary of properties of the expression
+            :param ex:
+                string or spracy instance of the language expression
+            :return:
+                dictionary of properties of the expression
+
         '''
-        global nlp
-
         if not ex:
             return None
-        if (isinstance(ex, str)):
-            ex = nlp(ex)
-        if (isinstance(ex, list)):
-            def listwrapper (ex):
-                for x in ex:
-                    yield self.collect_all_predicates(x)
-            return sum(listwrapper(ex),[])
-
 
         logging.info ("predicates for '%s'," % str(ex))
 
@@ -588,27 +596,23 @@ class Predication():
     def get_coreferenced_argument(self, coref):
         if not coref:
             return None
-        s_id  = coref['s_id']
-        m_start = coref['m_start']-1
-        m_end   = coref['m_end']-1
+        s_id  = str(coref['s_id'])
+        i_list = coref['i_list']
         mask = self.argument_df.query("s_id==@s_id").apply(
-                lambda ex:
-                True
-                if (
-                        all(m in ex['i_s']
-                            for m in range(m_start, m_end))
-                        and 'NOUN' in ex['pos_'])
-                else False,
+                lambda ex: all (m in ex['i_s'] for m in i_list) and ('NOUN' in ex['pos_']),
             axis=1)
 
         referenced = self.argument_df.query("s_id==@s_id")[mask].nsmallest(n=1, columns='len').to_dict(orient='records')
 
         if referenced:
-            if referenced == [[[]]]:
-                a=1
             return referenced[0]
         else:
-            return []
+            doc, elmo_embeddings, importance = self.argument_df.query("s_id==@s_id")[['doc', 'elmo_embeddings_full', 'importance_full']].values[0]
+            arg_tokens = self.collect_substancial_argument(i_list, doc, out='t')
+            if arg_tokens == []:
+                return None
+            arg = self.sp_imp_elmo_dictize_ex(ex=arg_tokens, coref=[[]]*len(doc), elmo_embeddings=elmo_embeddings, importance=importance, s_id=s_id)
+            return arg
 
     def sp_imp_elmo_dictize_ex(self, ex, coref, elmo_embeddings, importance, s_id):
         if not ex:
@@ -647,6 +651,8 @@ class Predication():
 
                 "importance"      : importance[i_s],
                 "elmo_embeddings" : elmo_embeddings[:,i_s].sum(axis=1),
+                "elmo_embeddings_full": elmo_embeddings,
+                "importance_full": importance,
 
                 "key"             : "arg" + str(next(self.arg_key_gen))
             }
@@ -659,14 +665,10 @@ class Predication():
         return list(map (self.coreferenced_expression, corefs))
     def coreferenced_expression (self, coref):
         s_id = coref['s_id']
-        m_start = coref['m_start']
-        m_end = coref['m_end']
-
+        i_list = coref['i_list']
         mask = self.Predicatrix.predicate_df.query("s_id==@s_id")['i_s'].apply(
-            lambda ex_i: True if [m for m in range(m_start, m_end) if m in ex_i] else False)
+            lambda ex_i: True if [m for m in i_list if m in ex_i] else False)
         return self.Predicatrix.predicate_df.query("s_id==@s_id")[mask].to_dict(orient='records')
-
-
 
 
     def formalize (self,pred, elmo_embeddings, importance):

@@ -1,7 +1,7 @@
 import re
 import os
 from itertools import count
-from littletools.nested_list_tools import flatten_reduce
+from littletools.nested_list_tools import flatten_reduce, curry
 import fnmatch
 
 import pandas as pd
@@ -65,7 +65,7 @@ class CorpusReader:
 
         # parse columns to int
         num_cols = ["s_id", "head_id", "id"]
-        self.df[num_cols] = self.df[num_cols].apply(pd.to_numeric)
+        self.df[num_cols] = self.df[num_cols].astype(int)
 
         # from dataframe with one line per word get another with one line to one sentence
         self.sentence_df = self.df.groupby('s_id').apply(self.aggregate_sentences)
@@ -90,8 +90,19 @@ class CorpusReader:
         return x
 
 
+    def override_spacy (self, tldpth):
+        t = tldpth[-1]
+        t.lemma_ = tldpth [0]
+        t.dep_ = tldpth [1]
+        t.pos_ = tldpth[2]
+        t.tag_ =  tldpth[3]
+        t.head = t.doc[tldpth[4]]
+        return t
+
+
     def aggregate_sentences(self, x):
         doc = nlp(' '.join(x['text']))
+        doc = [self.override_spacy (tup) for tup in zip(x['lemma'], x['dep_'], x['pos_'], x['tag_'], x['head_id'], doc)]
         corefs = self.parse_coref_str(x['coref'])
         return pd.Series({'text': ' '.join(x['text']),
                           'text_pos_': ' '.join([text + '_' + pos for text, pos in zip(x['text'], x['pos_'])]),
@@ -100,15 +111,36 @@ class CorpusReader:
                           'coref': corefs
                           })
 
-    def parse_coref_str(self, x):
-        mfas = [re.finditer(r"((?P<s_id>\d+)->\[(?P<m_start>\d+):(?P<m_end>\d+)\])+", y) for y in x]
-        return [[self.parse_ints(m.groupdict()) for m in mfa] if mfa else [] for mfa in mfas]
+    def parse_coref_str(self, coref_string):
+        ''' parses coref mentions in two formats. Either ranges or lists of token indices
+
+        7->[6,1,2,3]
+        1->[22:23]
+
+        :param coref_string: such a string
+        :return: coref dict with 's_id' and 'i_list'
+
+        '''
+        mfas = [re.finditer(r"(((?P<s_id_r>\d+)->\[(?P<m_start>\d+):(?P<m_end>\d+)\])|((?P<s_id_i>\d+)->\[(?P<i_list>(?:\d+)(?:,\s*\d+)*)\]))+", y) for y in coref_string]
+        return [[self.parse_coref_dict(m.groupdict()) for m in mfa] if mfa else [] for mfa in mfas]
 
 
 
-    def parse_ints(self, d):
-        return {a: int(x) for a, x in d.items()}
+    def parse_coref_dict(self, d):
+        ''' Parses the content of the coref_dict to some normal data
 
+            :param d: dict with either 's_id_r' and 'm_start', 'm_end' or 's_id_i' and 'i_list'
+            :return: coref dict with 's_id' and 'i_list'
+
+        '''
+        if d['s_id_r']:
+            return {'s_id': int (d['s_id_r']),
+                    'i_list' : list(range (int(d['m_start']), int(d['m_end'])))}
+        elif d['s_id_i']:
+            return {'s_id': int(d['s_id_i']),
+                    'i_list':  eval(d['i_list'])}
+        else:
+            raise ValueError ('coref dict with bad indices')
 
 
     def lemmatize_text(self):
