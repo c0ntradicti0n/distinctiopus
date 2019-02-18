@@ -151,10 +151,9 @@
 <span></span><span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="k">import</span> <span class="n">count</span>
-<span class="kn">from</span> <span class="nn">nested_list_tools</span> <span class="k">import</span> <span class="n">flatten_reduce</span>
+<span class="kn">from</span> <span class="nn">littletools.nested_list_tools</span> <span class="k">import</span> <span class="n">flatten_reduce</span><span class="p">,</span> <span class="n">curry</span>
 <span class="kn">import</span> <span class="nn">fnmatch</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">copy</span>
 
@@ -216,7 +215,7 @@
 
         <span class="c1"># parse columns to int</span>
         <span class="n">num_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;s_id&quot;</span><span class="p">,</span> <span class="s2">&quot;head_id&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">num_cols</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">num_cols</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">num_cols</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">num_cols</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
 
         <span class="c1"># from dataframe with one line per word get another with one line to one sentence</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sentence_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;s_id&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aggregate_sentences</span><span class="p">)</span></div>
@@ -241,8 +240,19 @@
         <span class="k">return</span> <span class="n">x</span></div>
 
 
+<div class="viewcode-block" id="CorpusReader.override_spacy"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader.override_spacy">[docs]</a>    <span class="k">def</span> <span class="nf">override_spacy</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tldpth</span><span class="p">):</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">tldpth</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">lemma_</span> <span class="o">=</span> <span class="n">tldpth</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">dep_</span> <span class="o">=</span> <span class="n">tldpth</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">pos_</span> <span class="o">=</span> <span class="n">tldpth</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">tag_</span> <span class="o">=</span>  <span class="n">tldpth</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">head</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">doc</span><span class="p">[</span><span class="n">tldpth</span><span class="p">[</span><span class="mi">4</span><span class="p">]]</span>
+        <span class="k">return</span> <span class="n">t</span></div>
+
+
 <div class="viewcode-block" id="CorpusReader.aggregate_sentences"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader.aggregate_sentences">[docs]</a>    <span class="k">def</span> <span class="nf">aggregate_sentences</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="n">doc</span> <span class="o">=</span> <span class="n">nlp</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]))</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">override_spacy</span> <span class="p">(</span><span class="n">tup</span><span class="p">)</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;lemma&#39;</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;dep_&#39;</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;pos_&#39;</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;tag_&#39;</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;head_id&#39;</span><span class="p">],</span> <span class="n">doc</span><span class="p">)]</span>
         <span class="n">corefs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_coref_str</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;coref&#39;</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">({</span><span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]),</span>
                           <span class="s1">&#39;text_pos_&#39;</span><span class="p">:</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">text</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">pos</span> <span class="k">for</span> <span class="n">text</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;pos_&#39;</span><span class="p">])]),</span>
@@ -251,15 +261,36 @@
                           <span class="s1">&#39;coref&#39;</span><span class="p">:</span> <span class="n">corefs</span>
                           <span class="p">})</span></div>
 
-<div class="viewcode-block" id="CorpusReader.parse_coref_str"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader.parse_coref_str">[docs]</a>    <span class="k">def</span> <span class="nf">parse_coref_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-        <span class="n">mfas</span> <span class="o">=</span> <span class="p">[</span><span class="n">re</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;((?P&lt;s_id&gt;\d+)-&gt;\[(?P&lt;m_start&gt;\d+):(?P&lt;m_end&gt;\d+)\])+&quot;</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+<div class="viewcode-block" id="CorpusReader.parse_coref_str"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader.parse_coref_str">[docs]</a>    <span class="k">def</span> <span class="nf">parse_coref_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coref_string</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; parses coref mentions in two formats. Either ranges or lists of token indices</span>
+
+<span class="sd">        7-&gt;[6,1,2,3]</span>
+<span class="sd">        1-&gt;[22:23]</span>
+
+<span class="sd">        :param coref_string: such a string</span>
+<span class="sd">        :return: coref dict with &#39;s_id&#39; and &#39;i_list&#39;</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">mfas</span> <span class="o">=</span> <span class="p">[</span><span class="n">re</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(((?P&lt;s_id_r&gt;\d+)-&gt;\[(?P&lt;m_start&gt;\d+):(?P&lt;m_end&gt;\d+)\])|((?P&lt;s_id_i&gt;\d+)-&gt;\[(?P&lt;i_list&gt;(?:\d+)(?:,\s*\d+)*)\]))+&quot;</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">coref_string</span><span class="p">]</span>
         <span class="k">return</span> <span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">parse_coref_dict</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">groupdict</span><span class="p">())</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">mfa</span><span class="p">]</span> <span class="k">if</span> <span class="n">mfa</span> <span class="k">else</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">mfa</span> <span class="ow">in</span> <span class="n">mfas</span><span class="p">]</span></div>
 
 
 
 <div class="viewcode-block" id="CorpusReader.parse_coref_dict"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader.parse_coref_dict">[docs]</a>    <span class="k">def</span> <span class="nf">parse_coref_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">{</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
+        <span class="sd">&#39;&#39;&#39; Parses the content of the coref_dict to some normal data</span>
 
+<span class="sd">            :param d: dict with either &#39;s_id_r&#39; and &#39;m_start&#39;, &#39;m_end&#39; or &#39;s_id_i&#39; and &#39;i_list&#39;</span>
+<span class="sd">            :return: coref dict with &#39;s_id&#39; and &#39;i_list&#39;</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;s_id_r&#39;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;s_id&#39;</span><span class="p">:</span> <span class="nb">int</span> <span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;s_id_r&#39;</span><span class="p">]),</span>
+                    <span class="s1">&#39;i_list&#39;</span> <span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;m_start&#39;</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;m_end&#39;</span><span class="p">])))}</span>
+        <span class="k">elif</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;s_id_i&#39;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;s_id&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;s_id_i&#39;</span><span class="p">]),</span>
+                    <span class="s1">&#39;i_list&#39;</span><span class="p">:</span>  <span class="nb">eval</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;i_list&#39;</span><span class="p">])}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span> <span class="p">(</span><span class="s1">&#39;coref dict with bad indices&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="CorpusReader.lemmatize_text"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader.lemmatize_text">[docs]</a>    <span class="k">def</span> <span class="nf">lemmatize_text</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

@@ -83,6 +83,8 @@
               <p class="caption"><span class="caption-text">Table of Contents</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">How it works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="textlinguistics.html">Textlinguistic tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basic_annotations.html">bayessoassdsdsdsdskr</a></li>
 </ul>
 
             
@@ -147,99 +149,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-dict_tools">
-<span id="dict-tools-module"></span><h1>dict_tools module<a class="headerlink" href="#module-dict_tools" title="Permalink to this headline">¶</a></h1>
-<dl class="function">
-<dt id="dict_tools.balance_complex_tuple_dict">
-<code class="descclassname">dict_tools.</code><code class="descname">balance_complex_tuple_dict</code><span class="sig-paren">(</span><em>d</em>, <em>_sort=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dict_tools.html#balance_complex_tuple_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dict_tools.balance_complex_tuple_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Balancing a complex dict, meaning, that the keys and tghe values point transitive to another.</p>
-<p>The dict can have strings, lists of strings and tuples of strings as keys. The lists are split up
-when rearranging the keys and combined, if packed to a value-of the balanced dict.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dict_tools</span> <span class="k">import</span> <span class="o">*</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="p">{</span>
-<span class="gp">... </span>            <span class="p">(</span><span class="s1">&#39;differ&#39;</span><span class="p">):[</span><span class="s1">&#39;equal&#39;</span><span class="p">],</span>
-<span class="gp">... </span>            <span class="p">(</span><span class="s1">&#39;have&#39;</span><span class="p">,</span><span class="s1">&#39;*&#39;</span><span class="p">,</span><span class="s1">&#39;in&#39;</span><span class="p">,</span> <span class="s1">&#39;common&#39;</span><span class="p">):[(</span><span class="s1">&#39;differ&#39;</span><span class="p">,</span><span class="s1">&#39;in&#39;</span><span class="p">),</span> <span class="s1">&#39;differ&#39;</span><span class="p">,</span> <span class="s1">&#39;derive&#39;</span><span class="p">]</span>
-<span class="gp">... </span>    <span class="p">}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">balance_complex_tuple_dict</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">d</span><span class="p">),</span> <span class="n">_sort</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">{&#39;differ&#39;: [(&#39;have&#39;, &#39;*&#39;, &#39;in&#39;, &#39;common&#39;), &#39;equal&#39;], (&#39;have&#39;, &#39;*&#39;, &#39;in&#39;, &#39;common&#39;): [(&#39;differ&#39;, &#39;in&#39;), &#39;differ&#39;, &#39;derive&#39;], &#39;equal&#39;: [&#39;differ&#39;], (&#39;differ&#39;, &#39;in&#39;): [(&#39;have&#39;, &#39;*&#39;, &#39;in&#39;, &#39;common&#39;)], &#39;derive&#39;: [(&#39;have&#39;, &#39;*&#39;, &#39;in&#39;, &#39;common&#39;)]}</span>
-</pre></div>
-</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>d</strong> – dict with strings and lists and lists of tuples in it, that will be balanced</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="dict_tools.dict_compare">
-<code class="descclassname">dict_tools.</code><code class="descname">dict_compare</code><span class="sig-paren">(</span><em>d1</em>, <em>d2</em>, <em>ignore_order=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dict_tools.html#dict_compare"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dict_tools.dict_compare" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function compares two dicts.</p>
-<blockquote>
-<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d1</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">x</span><span class="o">+</span><span class="mi">2</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">)]))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d2</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">9</span><span class="p">),</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span><span class="n">x</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">)]))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d1</span>
-<span class="go">{0: [9, 10, 11], 1: [10, 11, 12], 2: [11, 12, 13], 3: [12, 13, 14], 4: [13, 14, 15], 5: [14, 15, 16], 6: [15, 16, 17], 7: [16, 17, 18], 8: [17, 18, 19], 9: [18, 19, 20]}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d2</span>
-<span class="go">{1: [12, 11, 10], 2: [13, 12, 11], 3: [14, 13, 12], 4: [15, 14, 13], 5: [16, 15, 14], 6: [17, 16, 15], 7: [18, 17, 16], 8: [19, 18, 17]}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">dict_compare</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span><span class="n">d2</span><span class="p">)</span>
-<span class="go">({0, 9}, set(), {1: ([10, 11, 12], [12, 11, 10]), 2: ([11, 12, 13], [13, 12, 11]), 3: ([12, 13, 14], [14, 13, 12]), 4: ([13, 14, 15], [15, 14, 13]), 5: ([14, 15, 16], [16, 15, 14]), 6: ([15, 16, 17], [17, 16, 15]), 7: ([16, 17, 18], [18, 17, 16]), 8: ([17, 18, 19], [19, 18, 17])}, set())</span>
-</pre></div>
-</div>
-</div></blockquote>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>d1</strong> – dict</li>
-<li><strong>d2</strong> – dict</li>
-<li><strong>ignore_order</strong> – ignore the order of the keys</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">4-tuple of set: added, removed, modified, same</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="dict_tools.invert_dict">
-<code class="descclassname">dict_tools.</code><code class="descname">invert_dict</code><span class="sig-paren">(</span><em>d</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dict_tools.html#invert_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dict_tools.invert_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the anti-dict, where the keys become the values and the values become the keys.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dict_tools</span> <span class="k">import</span> <span class="o">*</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="p">{</span>
-<span class="gp">... </span>            <span class="mi">1</span><span class="p">:[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span>
-<span class="gp">... </span>            <span class="mi">6</span><span class="p">:[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
-<span class="gp">... </span>    <span class="p">}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">invert_dict</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-<span class="go">{1: [1, 6], 2: [1], 3: [1, 6], 4: [6]}</span>
-</pre></div>
-</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>d</strong> – dict of keyable values (also with lists)</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">inverted dict</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="dict_tools.update">
-<code class="descclassname">dict_tools.</code><code class="descname">update</code><span class="sig-paren">(</span><em>d</em>, <em>u</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dict_tools.html#update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dict_tools.update" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+  <div class="section" id="dict-tools-module">
+<h1>dict_tools module<a class="headerlink" href="#dict-tools-module" title="Permalink to this headline">¶</a></h1>
 </div>
 
 

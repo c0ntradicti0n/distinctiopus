@@ -154,12 +154,15 @@
 <span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
 <span class="kn">import</span> <span class="nn">textwrap</span>
-<span class="kn">from</span> <span class="nn">corutine_utils</span> <span class="k">import</span> <span class="n">coroutine</span>
+<span class="kn">from</span> <span class="nn">littletools.corutine_utils</span> <span class="k">import</span> <span class="n">coroutine</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 <span class="kn">import</span> <span class="nn">matplotlib</span>
+
+<span class="kn">from</span> <span class="nn">littletools.digraph_tools</span> <span class="k">import</span> <span class="n">neo4j2nx</span>
+<span class="kn">from</span> <span class="nn">littletools.nested_list_tools</span> <span class="k">import</span> <span class="n">flatten_reduce</span>
+
 <span class="n">matplotlib</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;TkAgg&#39;</span><span class="p">)</span>
-<span class="kn">import</span> <span class="nn">pylab</span> <span class="k">as</span> <span class="nn">plt</span>
 
 <span class="kn">from</span> <span class="nn">contradictrix</span> <span class="k">import</span> <span class="n">Contradiction</span>
 <span class="kn">from</span> <span class="nn">predicatrix2</span> <span class="k">import</span> <span class="n">Predication</span>
@@ -204,6 +207,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;CREATE INDEX ON :Nlp(s_id, i_s)&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DataframeCursorilyLogician.annotate_horizon"><a class="viewcode-back" href="../CursorilyLogician.html#CursorilyLogician.DataframeCursorilyLogician.annotate_horizon">[docs]</a>    <span class="k">def</span> <span class="nf">annotate_horizon</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">horizon</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; writes in a column &#39;horizon&#39; a list of ids of the following n sentences</span>
+
+<span class="sd">        :param horizon: nomber of sentences to look forward</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">def</span> <span class="nf">horizon_from_row</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
             <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sentence_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">:</span><span class="n">x</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="n">horizon</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sentence_df</span><span class="p">[</span><span class="s1">&#39;horizon&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sentence_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
@@ -213,6 +221,10 @@
 
 
 <div class="viewcode-block" id="DataframeCursorilyLogician.annotate_predicates"><a class="viewcode-back" href="../CursorilyLogician.html#CursorilyLogician.DataframeCursorilyLogician.annotate_predicates">[docs]</a>    <span class="k">def</span> <span class="nf">annotate_predicates</span> <span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Call the function to annotate the predicates for each sentence and puts them into a column &#39;predication&#39;</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">def</span> <span class="nf">analyse_predications</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Predicatrix</span><span class="o">.</span><span class="n">analyse_predication</span> <span class="p">(</span><span class="n">doc</span><span class="o">=</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;spacy_doc&#39;</span><span class="p">],</span> <span class="n">coref</span><span class="o">=</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;coref&#39;</span><span class="p">],</span> <span class="n">s_id</span><span class="o">=</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sentence_df</span><span class="p">[</span><span class="s1">&#39;predication&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sentence_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
@@ -284,10 +296,13 @@
 
 
 <div class="viewcode-block" id="DataframeCursorilyLogician.get_marked_predication"><a class="viewcode-back" href="../CursorilyLogician.html#CursorilyLogician.DataframeCursorilyLogician.get_marked_predication">[docs]</a>    <span class="k">def</span> <span class="nf">get_marked_predication</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s_id</span><span class="p">,</span> <span class="n">horizon</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Collect all particular predications in that sentence. It also looks, if there were more blocks of predicates</span>
-<span class="sd">        found.</span>
+        <span class="sd">&#39;&#39;&#39; Collect all predicates, that have a certain marker in them.</span>
+
+<span class="sd">        It&#39;s  usefull, if you want to look for sentences with certain phrases like &#39;for example&#39;, &#39;in contrast&#39;,</span>
+<span class="sd">        &#39;except&#39;. I searches for the the string, that makes the mark.</span>
 
 <span class="sd">        :param s_id: id of the sentense</span>
+<span class="sd">        :param horizon: how many sentences to look forward</span>
 <span class="sd">        :return: list of predicate dicts.</span>
 
 <span class="sd">        &#39;&#39;&#39;</span>
@@ -295,11 +310,12 @@
         <span class="n">markers_pos</span> <span class="o">=</span> <span class="s1">&#39;thus_ADV&#39;</span>
         <span class="n">markers_text</span> <span class="o">=</span> <span class="s1">&#39;for instance&#39;</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sentence_df</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="ow">in</span> <span class="n">horizon</span> <span class="o">&amp;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sentence_df</span><span class="p">[</span><span class="s1">&#39;text_pos_&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">markers_pos</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">&amp;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sentence_df</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">markers_text</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sentence_df</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">horizon</span><span class="p">)</span> <span class="o">&amp;</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sentence_df</span><span class="p">[</span><span class="s1">&#39;text_pos_&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">markers_pos</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sentence_df</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">markers_text</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="kc">False</span><span class="p">)))</span>
 
-        <span class="n">predicates</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">sentence_df</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="s1">&#39;predication&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+        <span class="n">predicates</span> <span class="o">=</span>  <span class="n">flatten_reduce</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sentence_df</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="s1">&#39;predication&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
         <span class="k">if</span> <span class="n">predicates</span><span class="p">:</span>
             <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">predicates</span></div>
@@ -317,7 +333,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">Contradictrix</span><span class="o">.</span><span class="n">find_contradictive</span><span class="p">(</span>
                 <span class="n">x</span><span class="p">[</span><span class="s1">&#39;predication&#39;</span><span class="p">],</span>
                 <span class="n">x</span><span class="p">[</span><span class="s1">&#39;predications_in_range&#39;</span><span class="p">],</span>
-                <span class="n">out</span><span class="o">=</span><span class="s1">&#39;ex&#39;</span><span class="p">,</span>
                 <span class="n">graph_coro</span><span class="o">=</span><span class="n">put_contradiction_into_gdb</span><span class="p">)</span></div>
 
 
@@ -343,16 +358,15 @@
 <div class="viewcode-block" id="DataframeCursorilyLogician.get_addressed_coref"><a class="viewcode-back" href="../CursorilyLogician.html#CursorilyLogician.DataframeCursorilyLogician.get_addressed_coref">[docs]</a>    <span class="k">def</span> <span class="nf">get_addressed_coref</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coref</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Analyses a coref mention and looks it up in the Database for predications.</span>
 
-
 <span class="sd">        :param coref: dict  with sentence id, start and end of the mention</span>
-<span class="sd">        :return:</span>
+<span class="sd">        :return: a list of coreferenced predicates</span>
 <span class="sd">        &#39;&#39;&#39;</span>
 
-        <span class="n">s_id</span>  <span class="o">=</span> <span class="n">coref</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">]</span>
-        <span class="n">m_start</span> <span class="o">=</span> <span class="n">coref</span><span class="p">[</span><span class="s1">&#39;m_start&#39;</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span>
-        <span class="n">m_end</span>   <span class="o">=</span> <span class="n">coref</span><span class="p">[</span><span class="s1">&#39;m_end&#39;</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span>
+        <span class="n">s_id</span>  <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">coref</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">])</span>
+        <span class="n">i_list</span> <span class="o">=</span> <span class="n">coref</span><span class="p">[</span><span class="s1">&#39;i_list&#39;</span><span class="p">]</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Predicatrix</span><span class="o">.</span><span class="n">predicate_df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;s_id==@s_id&quot;</span><span class="p">)[</span><span class="s1">&#39;i_s&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
-            <span class="k">lambda</span> <span class="n">ex_i</span><span class="p">:</span> <span class="kc">True</span> <span class="k">if</span> <span class="p">[</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m_start</span><span class="p">,</span> <span class="n">m_end</span><span class="p">)</span> <span class="k">if</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">ex_i</span><span class="p">]</span> <span class="k">else</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="k">lambda</span> <span class="n">ex_i</span><span class="p">:</span> <span class="kc">True</span> <span class="k">if</span> <span class="p">[</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">i_list</span> <span class="k">if</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">ex_i</span><span class="p">]</span> <span class="k">else</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">mask</span><span class="o">.</span><span class="n">any</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Predicatrix</span><span class="o">.</span><span class="n">predicate_df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;s_id==@s_id&quot;</span><span class="p">)[</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s1">&#39;records&#39;</span><span class="p">)</span></div>
 
 
@@ -360,7 +374,7 @@
         <span class="sd">&#39;&#39;&#39; Get the predicates, that are coreferenced by the coreference tags of another preducate.</span>
 
 <span class="sd">        :param pred: predication tuple</span>
-<span class="sd">        :return: list oft predicate dicts</span>
+<span class="sd">        :return: list oft predicate dicts or [] if not found</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">pred</span><span class="p">[</span><span class="s1">&#39;coref&#39;</span><span class="p">]):</span>
             <span class="n">corefs_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">pred</span><span class="p">[</span><span class="s1">&#39;coref&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">x</span><span class="p">]</span>
@@ -380,11 +394,12 @@
 <span class="sd">            These routines reclassify some of the contradictions, because also talking about examples can seem to be</span>
 <span class="sd">            anithetical, if the explanation of the instanciated concept is repeated.</span>
 
+<span class="sd">        :return: None</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="c1"># Lookup what contradicitons were found</span>
         <span class="n">contradictions</span>           <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_from_gdb</span><span class="p">(</span><span class="s1">&#39;contradiction&#39;</span><span class="p">))</span>
 
-        <span class="c1"># Coroutine for writing-tasks, no values stored here</span>
+        <span class="c1"># Coroutine for writing the simmix ressults into the gdb</span>
         <span class="n">put_correlation_into_gdb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">put_into_gdb</span><span class="p">(</span><span class="s2">&quot;Connotation&quot;</span><span class="p">,</span> <span class="s2">&quot;correlation&quot;</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">contra1</span><span class="p">,</span> <span class="n">contra2</span> <span class="ow">in</span> <span class="n">contradictions</span><span class="p">:</span>
@@ -400,17 +415,15 @@
 <div class="viewcode-block" id="DataframeCursorilyLogician.get_opposed_constellation_gdb"><a class="viewcode-back" href="../CursorilyLogician.html#CursorilyLogician.DataframeCursorilyLogician.get_opposed_constellation_gdb">[docs]</a>    <span class="k">def</span> <span class="nf">get_opposed_constellation_gdb</span> <span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the pattern, that gave a contradiction-opposition-pair</span>
 
-<span class="sd">        :return: 2tuple-2tuple-list-predicate-dict</span>
+<span class="sd">         :return: 2tuple-2tuple-list-predicate-dict</span>
+
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">query</span> <span class="o">=</span> \
-            <span class="sd">&quot;&quot;&quot; MATCH (pred1)--(pred2)--(pred3)--(pred4)</span>
-
-<span class="sd">                WHERE (pred1)-[:CORRELATION {SpecialKind:&#39;correlated&#39;}]-(pred3) AND</span>
-<span class="sd">            </span>
-<span class="sd">                     (pred1)-[:CORRELATION {SpecialKind:&#39;opposed&#39;}]-(pred2) AND</span>
-<span class="sd">                     (pred2)-[:CORRELATION {SpecialKind:&#39;correlated&#39;}]-(pred4) AND</span>
-<span class="sd">                     (pred4)-[:CORRELATION {SpecialKind:&#39;opposed&#39;}]-(pred3)                AND ID(pred1)&lt;ID(pred2)</span>
-<span class="sd">               RETURN pred1, pred2, pred3, pred4&quot;&quot;&quot;</span>
+            <span class="sd">&quot;&quot;&quot;MATCH (pred1)-[:CORRELATION {SpecialKind:&#39;correlated&#39;}]-(pred3),</span>
+<span class="sd">      (pred1)-[:CORRELATION {SpecialKind:&#39;opposed&#39;}]-(pred2),</span>
+<span class="sd">      (pred2)-[:CORRELATION {SpecialKind:&#39;correlated&#39;}]-(pred4),</span>
+<span class="sd">      (pred3)-[:CORRELATION {SpecialKind:&#39;opposed&#39;}]-(pred4)      </span>
+<span class="sd">RETURN pred1, pred2, pred3, pred4&quot;&quot;&quot;</span>
 
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;query neo4j for reading by this:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">query</span><span class="p">)</span>
         <span class="n">records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
@@ -426,8 +439,9 @@
 
 <div class="viewcode-block" id="DataframeCursorilyLogician.annotate_subjects_and_aspects"><a class="viewcode-back" href="../CursorilyLogician.html#CursorilyLogician.DataframeCursorilyLogician.annotate_subjects_and_aspects">[docs]</a>    <span class="k">def</span> <span class="nf">annotate_subjects_and_aspects</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Look for some common arguments of the contradicting and correlating predications.</span>
-<span class="sd">        These may may they be the logical subjects, the pre&quot;&quot;&quot;</span>
+<span class="sd">            These may may they be the logical subjects, the pre&quot;&quot;&quot;</span>
 
+<span class="sd">        :return: None</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="c1"># Say, after annotation of the contradictions and their correlating modifyers we have a pair of &#39;opposed&#39;</span>
         <span class="c1"># nodes, as annotated by the correlatrix.</span>
@@ -436,7 +450,6 @@
 
         <span class="n">put_arg_into_gdb</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">put_into_gdb</span><span class="p">(</span><span class="s1">&#39;denotation&#39;</span><span class="p">,</span> <span class="s1">&#39;argument&#39;</span><span class="p">)</span>
         <span class="n">put_deno_into_gdb</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">put_into_gdb</span><span class="p">(</span><span class="s1">&#39;denotation&#39;</span><span class="p">,</span> <span class="s1">&#39;subjects_aspects&#39;</span><span class="p">)</span>
-
 
         <span class="k">for</span> <span class="n">oppo</span> <span class="ow">in</span> <span class="n">opposed_pair_pairs</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">Subj_Aspectrix</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
@@ -448,6 +461,8 @@
 
     <span class="n">kind_color_map</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;subject&#39;</span>           <span class="p">:</span> <span class="s1">&#39;#5B6C5D&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;aspect&#39;</span><span class="p">:</span> <span class="s1">&#39;#5B6C5D&#39;</span><span class="p">,</span>
+
             <span class="s1">&#39;predicate&#39;</span>         <span class="p">:</span> <span class="s1">&#39;#9FFFF5&#39;</span><span class="p">,</span>
             <span class="s1">&#39;example&#39;</span>           <span class="p">:</span> <span class="s1">&#39;#59C9A5&#39;</span><span class="p">,</span>
             <span class="s1">&#39;explanation&#39;</span>       <span class="p">:</span> <span class="s1">&#39;#56E39F&#39;</span><span class="p">,</span>
@@ -458,41 +473,88 @@
         <span class="p">}</span>
     <span class="n">edge_label_map</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;exclusive&#39;</span>         <span class="p">:</span> <span class="s1">&#39;side of distinction&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;aspect&#39;</span><span class="p">:</span> <span class="s1">&#39;aspect&#39;</span><span class="p">,</span>
+
             <span class="s1">&#39;subject&#39;</span>           <span class="p">:</span> <span class="s1">&#39;subject&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;aspects&#39;</span><span class="p">:</span> <span class="s1">&#39;aspects&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;subjects&#39;</span><span class="p">:</span> <span class="s1">&#39;subjects&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;opposed&#39;</span><span class="p">:</span><span class="s1">&#39;contrast&#39;</span><span class="p">,</span>
+
             <span class="s1">&#39;predicate&#39;</span>         <span class="p">:</span> <span class="s1">&#39;sentence&#39;</span><span class="p">,</span>
             <span class="s1">&#39;example&#39;</span>           <span class="p">:</span> <span class="s1">&#39;example&#39;</span><span class="p">,</span>
             <span class="s1">&#39;explanation&#39;</span>       <span class="p">:</span> <span class="s1">&#39;explanation&#39;</span><span class="p">,</span>
             <span class="s1">&#39;differential_layer&#39;</span><span class="p">:</span> <span class="s1">&#39;aspect&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;correl&#39;</span>            <span class="p">:</span> <span class="s1">&#39;correlating part&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;center&#39;</span>            <span class="p">:</span> <span class="s2">&quot;let&#39;s distinguish&quot;</span><span class="p">,</span>
-            <span class="s1">&#39;contra&#39;</span>            <span class="p">:</span> <span class="s1">&#39;contradicting part&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;correlated&#39;</span>        <span class="p">:</span> <span class="s1">&#39;correlation&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;center&#39;</span>            <span class="p">:</span> <span class="s2">&quot;distinction&quot;</span><span class="p">,</span>
+            <span class="s1">&#39;contra&#39;</span>            <span class="p">:</span> <span class="s1">&#39;contrast&#39;</span><span class="p">,</span>
             <span class="s1">&#39;computed&#39;</span>          <span class="p">:</span> <span class="s1">&#39;compared with&#39;</span><span class="p">,</span>
-            <span class="kc">None</span>                <span class="p">:</span> <span class="s1">&#39;?&#39;</span>
+            <span class="s1">&#39;abc&#39;</span>                <span class="p">:</span> <span class="s1">&#39;?&#39;</span>
         <span class="p">}</span>
 
 
-<div class="viewcode-block" id="DataframeCursorilyLogician.draw_as_dot_digraph"><a class="viewcode-back" href="../CursorilyLogician.html#CursorilyLogician.DataframeCursorilyLogician.draw_as_dot_digraph">[docs]</a>    <span class="k">def</span> <span class="nf">draw_as_dot_digraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">digraph</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-        <span class="n">H</span> <span class="o">=</span> <span class="n">digraph</span>
+<div class="viewcode-block" id="DataframeCursorilyLogician.draw"><a class="viewcode-back" href="../CursorilyLogician.html#CursorilyLogician.DataframeCursorilyLogician.draw">[docs]</a>    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Make a nice materialized graph from the distinction query</span>
+
+<span class="sd">            :param G: nx.Multidigraph</span>
+<span class="sd">            :param path: Where to put the file</span>
+<span class="sd">            :return: None</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;distinction.svg&#39;</span>
+
+        <span class="kn">import</span> <span class="nn">pylab</span> <span class="k">as</span> <span class="nn">pylab</span>
+        <span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">plt</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">pyplot</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+
+
+
         <span class="k">def</span> <span class="nf">wrap</span> <span class="p">(</span><span class="n">strs</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">strs</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
 
-        <span class="n">wrapped_node_labels</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span><span class="n">wrap</span><span class="p">(</span><span class="n">d</span><span class="p">)}</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">H</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;label&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">d</span><span class="p">}</span>
-        <span class="n">nx</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">wrapped_node_labels</span><span class="p">)</span>
+        <span class="c1">#wrapped_node_labels = {n: {&#39;label&#39;:wrap(d)} for n, d in G.nodes(data=&#39;text&#39;) if d}</span>
+        <span class="n">wrapped_node_labels</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="n">wrap</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;text&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">d</span><span class="p">}</span>
 
-        <span class="n">edge_labels</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(((</span><span class="n">u</span><span class="p">,</span><span class="n">v</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;xlabel&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_label_map</span><span class="p">[</span><span class="n">d</span><span class="p">]})</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span><span class="n">v</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">H</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;xlabel&#39;</span><span class="p">))</span>
-        <span class="n">nx</span><span class="o">.</span><span class="n">set_edge_attributes</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">edge_labels</span><span class="p">)</span>
+        <span class="n">edge_labels</span> <span class="o">=</span> <span class="p">{(</span><span class="n">u</span><span class="p">,</span><span class="n">v</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span> <span class="p">{</span><span class="s1">&#39;xlabel&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_label_map</span><span class="p">[</span><span class="n">d</span><span class="p">]}</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span><span class="n">v</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;SpecialKind&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;what?&#39;</span><span class="p">)}</span>
+        <span class="n">node_colors</span> <span class="o">=</span>  <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;style&#39;</span><span class="p">:</span><span class="s1">&#39;filled&#39;</span><span class="p">,</span> <span class="s1">&#39;fillcolor&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">kind_color_map</span><span class="p">[</span><span class="n">d</span><span class="p">]}</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;SpecialKind&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">d</span><span class="p">}</span>
 
-        <span class="n">node_colors</span> <span class="o">=</span>  <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;style&#39;</span><span class="p">:</span><span class="s1">&#39;filled&#39;</span><span class="p">,</span> <span class="s1">&#39;fillcolor&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">kind_color_map</span><span class="p">[</span><span class="n">d</span><span class="p">]}</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">H</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;kind&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">d</span><span class="p">}</span>
-        <span class="n">nx</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">node_colors</span><span class="p">)</span>
+        <span class="n">nx</span><span class="o">.</span><span class="n">set_edge_attributes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">edge_labels</span><span class="p">)</span>
+        <span class="c1">#nx.set_node_attributes(G, wrapped_node_labels)</span>
+        <span class="n">nx</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">node_colors</span><span class="p">)</span>
 
-        <span class="n">H</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s1">&#39;graph&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;rankdir&#39;</span><span class="p">:</span> <span class="s1">&#39;LR&#39;</span><span class="p">,</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s1">&#39;graph&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;rankdir&#39;</span><span class="p">:</span> <span class="s1">&#39;LR&#39;</span><span class="p">,</span>
                             <span class="s1">&#39;style&#39;</span><span class="p">:</span> <span class="s1">&#39;filled&#39;</span><span class="p">,</span>
                             <span class="s1">&#39;splines&#39;</span><span class="p">:</span><span class="s1">&#39;curved&#39;</span><span class="p">}</span>
+        <span class="n">kamada_kawai</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">drawing</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">kamada_kawai_layout</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
 
-        <span class="n">A</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">drawing</span><span class="o">.</span><span class="n">nx_agraph</span><span class="o">.</span><span class="n">to_agraph</span><span class="p">(</span><span class="n">H</span><span class="p">)</span>
-        <span class="n">A</span><span class="o">.</span><span class="n">layout</span><span class="p">(</span><span class="s1">&#39;dot&#39;</span><span class="p">)</span>
-        <span class="n">A</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;found_distinction.svg&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span></div>
+        <span class="c1">#spectral = nx.spectral_layout(G)</span>
+        <span class="n">spring</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">spring_layout</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+        <span class="c1">#dot_layout = graphviz_layout(G, prog=&#39;dot&#39;)</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">kamada_kawai</span>
+
+        <span class="n">options</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;node_color&#39;</span><span class="p">:</span> <span class="s1">&#39;blue&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;node_size&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="s1">&#39;arrowstyle&#39;</span><span class="p">:</span> <span class="s1">&#39;-|&gt;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;arrowsize&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx</span><span class="p">(</span><span class="n">G</span><span class="p">,</span>
+                         <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span>
+                         <span class="n">labels</span><span class="o">=</span><span class="n">wrapped_node_labels</span><span class="p">,</span>
+                         <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                         <span class="n">font_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                         <span class="o">**</span><span class="n">options</span><span class="p">)</span>
+        <span class="c1">#nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, rotate=False)</span>
+
+        <span class="c1">#plt.title(&quot;\n&quot;.join([wrap(x, 90) for x in [title, wff_nice, wff_ugly]]), pad=20)</span>
+        <span class="c1">#pylab.axis(&#39;off&#39;)</span>
+        <span class="n">pylab</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+        <span class="n">pylab</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span></div>
+        <span class="c1">#A = nx.drawing.nx_agraph.to_agraph(G)</span>
+        <span class="c1">#A.layout(&#39;dot&#39;)</span>
+        <span class="c1">#A.draw(path = &quot;found_distinction.svg&quot;)</span>
 
 
 <div class="viewcode-block" id="DataframeCursorilyLogician.add_determined_expression"><a class="viewcode-back" href="../CursorilyLogician.html#CursorilyLogician.DataframeCursorilyLogician.add_determined_expression">[docs]</a>    <span class="k">def</span> <span class="nf">add_determined_expression</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">general_kind</span><span class="p">,</span> <span class="n">special_kind</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">):</span>
@@ -501,7 +563,8 @@
 <span class="sd">            :param general_kind: some string property of all members, that are added by this function</span>
 <span class="sd">            :param special_kind: some string property of all members, that is special for the new members each</span>
 <span class="sd">            :param n1: predicate dict 1</span>
-<span class="sd">            :param n2: predicate dict 2</span>
+<span class="sd">            :param n2: predicate dict</span>
+<span class="sd">            :return: None</span>
 
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">query</span> <span class="o">=</span> \
@@ -526,8 +589,9 @@
     <span class="k">def</span> <span class="nf">put_into_gdb</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">general_kind</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; This returns a subgraph of the graph, selected by the &#39;general_kind&#39; param.</span>
 
-<span class="sd">        :param general_kind: some string property of all members, that are added by this function</span>
-<span class="sd">        :return: list of Predicate-dict-2tuples</span>
+<span class="sd">            :param general_kind: some string property of all members, that are added by this function</span>
+<span class="sd">            :return: list of Predicate-dict-2tuples</span>
+
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="k">yield</span><span class="p">)</span>
@@ -543,8 +607,9 @@
 <div class="viewcode-block" id="DataframeCursorilyLogician.get_from_gdb"><a class="viewcode-back" href="../CursorilyLogician.html#CursorilyLogician.DataframeCursorilyLogician.get_from_gdb">[docs]</a>    <span class="k">def</span> <span class="nf">get_from_gdb</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns pairs of in certain way connected nodes from neo4j</span>
 
-<span class="sd">        :param kind: this certain kind of connection; its a property of the graph edges</span>
-<span class="sd">        :yield: tuples of contradicting predicates</span>
+<span class="sd">            :param kind: this certain kind of connection; its a property of the graph edges</span>
+<span class="sd">            :return: tuples of contradicting predicates</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">query</span> <span class="o">=</span> <span class="p">(</span>
             <span class="sa">r</span><span class="sd">&quot;&quot;&quot;MATCH path = (a)-[:%s]-&gt;(b) </span>
@@ -553,32 +618,46 @@
         <span class="p">)</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;query neo4j:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">query</span><span class="p">)</span>
         <span class="n">records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+        
         <span class="n">records</span> <span class="o">=</span> <span class="p">[</span>
             <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_predication</span><span class="p">(</span><span class="n">pair</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]),</span>
              <span class="bp">self</span><span class="o">.</span><span class="n">get_predication</span><span class="p">(</span><span class="n">pair</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]))</span>
             <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">records</span>
         <span class="p">]</span>
+        <span class="k">assert</span> <span class="nb">all</span> <span class="p">(</span><span class="n">records</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">all</span> <span class="p">(</span><span class="nb">all</span> <span class="p">(</span><span class="n">pair</span><span class="p">)</span> <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">records</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">records</span></div>
 
 <div class="viewcode-block" id="DataframeCursorilyLogician.move_labels"><a class="viewcode-back" href="../CursorilyLogician.html#CursorilyLogician.DataframeCursorilyLogician.move_labels">[docs]</a>    <span class="k">def</span> <span class="nf">move_labels</span> <span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Calls a neo4j apoc function to give labels to the node from a property named &#39;label&#39;</span>
+
+<span class="sd">            :return: None</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;MATCH (n:Nlp)</span>
 <span class="s2">CALL apoc.create.addLabels( id(n), [ n.label ] ) YIELD node</span>
-<span class="s2">REMOVE node.genre</span>
 <span class="s2">RETURN node&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">query</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataframeCursorilyLogician.query_distinctions"><a class="viewcode-back" href="../CursorilyLogician.html#CursorilyLogician.DataframeCursorilyLogician.query_distinctions">[docs]</a>    <span class="k">def</span> <span class="nf">query_distinctions</span> <span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Match (a:DISTINGUISH8), (b:DISTINGUISH8)</span>
-<span class="sd">        Where a.first = b.second or a.second = b.first</span>
-<span class="sd">        Merge (a)-[:KNIT]-(b)</span>
-<span class="sd">        return a,b</span>
+        <span class="sd">&quot;&quot;&quot; Makes the query for the distinctions in neo4j.</span>
+
+<span class="sd">            It looks for at least two constrasting, correlated pairs of predicates with the same subjects and the same</span>
+<span class="sd">            aspects</span>
+
+<span class="sd">            :return: None</span>
+<span class="sd">            Match (a:DISTINGUISH8), (b:DISTINGUISH8)</span>
+<span class="sd">            Where a.first = b.second or a.second = b.first</span>
+<span class="sd">            Merge (a)-[:KNIT]-(b)</span>
+<span class="sd">            return a,b</span>
 
 
-<span class="sd">        MATCH (n1)--(n2)</span>
-<span class="sd">        WHERE n1.s_id = n2.s_id and all(x IN n1.i_s WHERE x IN n2.i_s)</span>
-<span class="sd">        return n2,n1</span>
+<span class="sd">            MATCH (n1)--(n2)</span>
+<span class="sd">            WHERE n1.s_id = n2.s_id and all(x IN n1.i_s WHERE x IN n2.i_s)</span>
+<span class="sd">            return n2,n1</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">query</span> <span class="o">=</span> \
             <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -586,26 +665,38 @@
 <span class="sd">(pred3)-[r1{SpecialKind:&#39;correlated&#39;}]-(pred1),</span>
 <span class="sd">(pred2)-[r2{SpecialKind:&#39;correlated&#39;}]-(pred4),</span>
 <span class="sd">(pred4)-[r3{SpecialKind:&#39;opposed&#39;}]-(pred3), </span>
+<span class="sd">(pred1)-[r0{SpecialKind:&#39;opposed&#39;}]-(pred2),</span>
+
 <span class="sd">(pred1)-[r4{SpecialKind:&#39;subject&#39;}]-(arg1), </span>
 <span class="sd">(pred2)-[r5{SpecialKind:&#39;subject&#39;}]-(arg2),</span>
 <span class="sd">(pred3)-[r6{SpecialKind:&#39;aspect&#39;}]-(arg3), </span>
 <span class="sd">(pred4)-[r7{SpecialKind:&#39;aspect&#39;}]-(arg4),</span>
 <span class="sd">(arg1)-[r8{SpecialKind:&#39;subjects&#39;}]-(arg2),</span>
 <span class="sd">(arg3)-[r9{SpecialKind:&#39;aspects&#39;}]-(arg4)</span>
-<span class="sd">WHERE ID(pred1)&lt;ID(pred2)</span>
-<span class="sd">MERGE (pred1)-[r10:KN]-(d:DISTINGUISH8 {first:[ID(arg1), ID(pred1), ID(pred3), ID(arg3)], second:[ID(arg2), ID(pred2), ID(pred4), ID(arg4)]})-[:KN]-(pred2)</span>
+<span class="sd">//MERGE (pred1)-[r10:KN]-(d:DISTINGUISH8 {first:[ID(arg1), ID(pred1), ID(pred3), ID(arg3)], second:[ID(arg2), ID(pred2), ID(pred4), ID(arg4)]})-[:KN]-(pred2)</span>
+<span class="sd">SET </span>
+<span class="sd">pred1.d = True, pred2.d=True, pred3.d = True, pred4.d=True, </span>
+<span class="sd">arg1.d = True, arg2.d=True, arg3.d=True, arg4.d=True, </span>
+<span class="sd">r1.d=True, r2.d=True, r4.d=True, r5.d=True, r6.d=True, r7.d=True, r8.d=True, r9.d=True</span>
 <span class="sd">RETURN arg1, arg2, pred1, pred2, pred3, pred4, arg3, arg4</span>
 <span class="sd">&quot;&quot;&quot;</span>
-
-
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span> <span class="p">(</span><span class="s2">&quot;query neo4j for distinctions&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">distinction_df</span> <span class="o">=</span>  <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">())</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span>
             <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]</span>
         <span class="p">)</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">neo4j2nx</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="n">subgraph_marker</span><span class="o">=</span><span class="s1">&#39;d&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="s1">&#39;img/&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">distinction_df</span></div>
 
+
 <div class="viewcode-block" id="DataframeCursorilyLogician.cleanup_debug_img"><a class="viewcode-back" href="../CursorilyLogician.html#CursorilyLogician.DataframeCursorilyLogician.cleanup_debug_img">[docs]</a>    <span class="k">def</span> <span class="nf">cleanup_debug_img</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">shutil</span>
+        <span class="sd">&#39;&#39;&#39; Deletes the content of the &#39;./img&#39; folder, that only new pictures are there.</span>
+<span class="sd">        These pictures are usefull for debugging.</span>
+
+<span class="sd">            :return: None</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="kn">import</span> <span class="nn">os</span>
         <span class="n">folder</span> <span class="o">=</span> <span class="s1">&#39;./img&#39;</span>
         <span class="k">for</span> <span class="n">the_file</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
             <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">the_file</span><span class="p">)</span>

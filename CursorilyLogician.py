@@ -57,6 +57,11 @@ class DataframeCursorilyLogician:
         self.graph.run("CREATE INDEX ON :Nlp(s_id, i_s)")
 
     def annotate_horizon (self, horizon=3):
+        ''' writes in a column 'horizon' a list of ids of the following n sentences
+
+        :param horizon: nomber of sentences to look forward
+        :return: None
+        '''
         def horizon_from_row(x):
             return list(self.sentence_df.loc[x.name:x.name + horizon + 1].index)
         self.sentence_df['horizon'] = self.sentence_df.apply(
@@ -66,6 +71,10 @@ class DataframeCursorilyLogician:
 
 
     def annotate_predicates (self):
+        ''' Call the function to annotate the predicates for each sentence and puts them into a column 'predication'
+
+        :return: None
+        '''
         def analyse_predications(x):
             return self.Predicatrix.analyse_predication (doc=x['spacy_doc'], coref=x['coref'], s_id=x['s_id'])
         self.sentence_df['predication'] = self.sentence_df.apply(
@@ -199,9 +208,8 @@ class DataframeCursorilyLogician:
     def get_addressed_coref (self, coref):
         ''' Analyses a coref mention and looks it up in the Database for predications.
 
-
         :param coref: dict  with sentence id, start and end of the mention
-        :return:
+        :return: a list of coreferenced predicates
         '''
 
         s_id  = str(coref['s_id'])
@@ -216,7 +224,7 @@ class DataframeCursorilyLogician:
         ''' Get the predicates, that are coreferenced by the coreference tags of another preducate.
 
         :param pred: predication tuple
-        :return: list oft predicate dicts
+        :return: list oft predicate dicts or [] if not found
         '''
         if any(pred['coref']):
             corefs_list = [x for x in pred['coref'] if x]
@@ -236,6 +244,7 @@ class DataframeCursorilyLogician:
             These routines reclassify some of the contradictions, because also talking about examples can seem to be
             anithetical, if the explanation of the instanciated concept is repeated.
 
+        :return: None
         '''
         # Lookup what contradicitons were found
         contradictions           = list(self.get_from_gdb('contradiction'))
@@ -256,7 +265,8 @@ class DataframeCursorilyLogician:
     def get_opposed_constellation_gdb (self):
         ''' Returns the pattern, that gave a contradiction-opposition-pair
 
-        :return: 2tuple-2tuple-list-predicate-dict
+         :return: 2tuple-2tuple-list-predicate-dict
+
         '''
         query = \
             """MATCH (pred1)-[:CORRELATION {SpecialKind:'correlated'}]-(pred3),
@@ -279,8 +289,9 @@ RETURN pred1, pred2, pred3, pred4"""
 
     def annotate_subjects_and_aspects(self):
         ''' Look for some common arguments of the contradicting and correlating predications.
-        These may may they be the logical subjects, the pre"""
+            These may may they be the logical subjects, the pre"""
 
+        :return: None
         '''
         # Say, after annotation of the contradictions and their correlating modifyers we have a pair of 'opposed'
         # nodes, as annotated by the correlatrix.
@@ -289,7 +300,6 @@ RETURN pred1, pred2, pred3, pred4"""
 
         put_arg_into_gdb     = self.put_into_gdb('denotation', 'argument')
         put_deno_into_gdb    = self.put_into_gdb('denotation', 'subjects_aspects')
-
 
         for oppo in opposed_pair_pairs:
             self.Subj_Aspectrix.annotate(
@@ -403,7 +413,8 @@ RETURN pred1, pred2, pred3, pred4"""
             :param general_kind: some string property of all members, that are added by this function
             :param special_kind: some string property of all members, that is special for the new members each
             :param n1: predicate dict 1
-            :param n2: predicate dict 2
+            :param n2: predicate dict
+            :return: None
 
         '''
         query = \
@@ -428,8 +439,9 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}', i_s:{i_s1}}})
     def put_into_gdb (self, label, general_kind):
         ''' This returns a subgraph of the graph, selected by the 'general_kind' param.
 
-        :param general_kind: some string property of all members, that are added by this function
-        :return: list of Predicate-dict-2tuples
+            :param general_kind: some string property of all members, that are added by this function
+            :return: list of Predicate-dict-2tuples
+
         '''
         while True:
             data = (yield)
@@ -445,8 +457,9 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}', i_s:{i_s1}}})
     def get_from_gdb (self, kind):
         """ Returns pairs of in certain way connected nodes from neo4j
 
-        :param kind: this certain kind of connection; its a property of the graph edges
-        :yield: tuples of contradicting predicates
+            :param kind: this certain kind of connection; its a property of the graph edges
+            :return: tuples of contradicting predicates
+
         """
         query = (
             r"""MATCH path = (a)-[:%s]->(b) 
@@ -467,6 +480,11 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}', i_s:{i_s1}}})
         return records
 
     def move_labels (self):
+        ''' Calls a neo4j apoc function to give labels to the node from a property named 'label'
+
+            :return: None
+
+        '''
         query = """MATCH (n:Nlp)
 CALL apoc.create.addLabels( id(n), [ n.label ] ) YIELD node
 RETURN node"""
@@ -474,16 +492,22 @@ RETURN node"""
 
 
     def query_distinctions (self):
-        """
-        Match (a:DISTINGUISH8), (b:DISTINGUISH8)
-        Where a.first = b.second or a.second = b.first
-        Merge (a)-[:KNIT]-(b)
-        return a,b
+        """ Makes the query for the distinctions in neo4j.
+
+            It looks for at least two constrasting, correlated pairs of predicates with the same subjects and the same
+            aspects
+
+            :return: None
+            Match (a:DISTINGUISH8), (b:DISTINGUISH8)
+            Where a.first = b.second or a.second = b.first
+            Merge (a)-[:KNIT]-(b)
+            return a,b
 
 
-        MATCH (n1)--(n2)
-        WHERE n1.s_id = n2.s_id and all(x IN n1.i_s WHERE x IN n2.i_s)
-        return n2,n1
+            MATCH (n1)--(n2)
+            WHERE n1.s_id = n2.s_id and all(x IN n1.i_s WHERE x IN n2.i_s)
+            return n2,n1
+
         """
         query = \
             r"""
@@ -516,6 +540,12 @@ RETURN arg1, arg2, pred1, pred2, pred3, pred4, arg3, arg4
 
 
     def cleanup_debug_img(self):
+        ''' Deletes the content of the './img' folder, that only new pictures are there.
+        These pictures are usefull for debugging.
+
+            :return: None
+
+        '''
         import os
         folder = './img'
         for the_file in os.listdir(folder):

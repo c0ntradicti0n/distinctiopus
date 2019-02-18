@@ -220,10 +220,8 @@
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">pyxdameraulevenshtein</span> <span class="k">import</span> <span class="n">damerau_levenshtein_distance</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">nested_list_tools</span> <span class="k">import</span> <span class="n">check_for_tuple_in_list</span><span class="p">,</span> <span class="n">flatten</span><span class="p">,</span> <span class="n">flatten_reduce</span><span class="p">,</span> <span class="n">flatten_list</span><span class="p">,</span> <span class="n">type_spec</span><span class="p">,</span> <span class="n">existent</span>
-<span class="kn">import</span> <span class="nn">dict_tools</span>
-<span class="kn">import</span> <span class="nn">abstractness_estimator</span>
-
+<span class="kn">from</span> <span class="nn">littletools.nested_list_tools</span> <span class="k">import</span> <span class="n">check_for_tuple_in_list</span><span class="p">,</span> <span class="n">flatten</span><span class="p">,</span> <span class="n">flatten_reduce</span><span class="p">,</span> <span class="n">flatten_list</span><span class="p">,</span> <span class="n">type_spec</span><span class="p">,</span> <span class="n">existent</span>
+<span class="kn">from</span> <span class="nn">littletools</span> <span class="k">import</span> <span class="n">abstractness_estimator</span><span class="p">,</span> <span class="n">dict_tools</span><span class="p">,</span> <span class="n">nested_list_tools</span>
 
 <span class="n">uppercase_abc</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_uppercase</span><span class="p">)</span>
 <span class="n">uppercase_bca</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_uppercase</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
@@ -1004,7 +1002,7 @@
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">res</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">fun</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">NotImplementedError</span> <span class="p">(</span><span class="s2">&quot;return beam from the distance measure!&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">NotImplementedError</span> <span class="p">(</span><span class="s2">&quot;return beam from the distance measure! </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">fun</span><span class="p">))</span>
                 <span class="n">sim</span> <span class="o">+=</span> <span class="n">res</span>
                 <span class="n">b</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">sim</span><span class="p">,</span> <span class="n">b</span>
@@ -1020,9 +1018,9 @@
 <span class="sd">            :return: 0 or 1 (if left), {}</span>
 
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">pos1</span>  <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;i_s&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="n">ex1</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">1000</span>
-        <span class="n">pos2</span>  <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;i_s&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="n">ex2</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">1000</span>
-        <span class="k">return</span> <span class="n">pos1</span><span class="o">&lt;</span><span class="n">pos2</span><span class="p">,</span> <span class="p">{}</span></div>
+        <span class="n">pos1</span>  <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;i_s&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">ex1</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">])</span><span class="o">*</span><span class="mi">1000</span>
+        <span class="n">pos2</span>  <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;i_s&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">ex2</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">])</span><span class="o">*</span><span class="mi">1000</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">pos1</span><span class="o">&lt;</span><span class="n">pos2</span><span class="p">),</span> <span class="p">{}</span></div>
 
 <div class="viewcode-block" id="Simmix.right"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.right">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">right</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
@@ -1033,9 +1031,9 @@
 <span class="sd">            :return: 0 or 1 (if right), {}</span>
 
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">pos1</span>  <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;i_s&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="n">ex1</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">1000</span>
-        <span class="n">pos2</span>  <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;i_s&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="n">ex2</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">1000</span>
-        <span class="k">return</span>  <span class="n">pos1</span><span class="o">&gt;</span><span class="n">pos2</span><span class="p">,</span> <span class="p">{}</span></div>
+        <span class="n">pos1</span>  <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ex1</span><span class="p">[</span><span class="s2">&quot;i_s&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">ex1</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">])</span><span class="o">*</span><span class="mi">1000</span>
+        <span class="n">pos2</span>  <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ex2</span><span class="p">[</span><span class="s2">&quot;i_s&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">ex2</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">])</span><span class="o">*</span><span class="mi">1000</span>
+        <span class="k">return</span>  <span class="nb">int</span><span class="p">(</span><span class="n">pos1</span><span class="o">&gt;</span><span class="n">pos2</span><span class="p">),</span> <span class="p">{}</span></div>
 
 
 <div class="viewcode-block" id="Simmix.boolean_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.boolean_sim">[docs]</a>    <span class="k">def</span> <span class="nf">boolean_sim</span> <span class="p">(</span><span class="n">attrib_dict</span><span class="p">):</span>
@@ -1122,7 +1120,6 @@
             <span class="k">return</span> <span class="n">cost</span><span class="p">,</span> <span class="p">{}</span>
         <span class="k">return</span> <span class="n">excluding_pair_boolean_sim_generated</span></div>
 <div class="viewcode-block" id="Simmix.formula_prooves"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.formula_prooves">[docs]</a>    <span class="k">def</span> <span class="nf">formula_prooves</span><span class="p">(</span><span class="n">fit_mix</span><span class="p">):</span>
-        <span class="kn">import</span> <span class="nn">pyprover</span>
         <span class="nd">@Simmix</span><span class="o">.</span><span class="n">standard_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
         <span class="k">def</span> <span class="nf">formula_prooves_generated</span><span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
@@ -1362,7 +1359,6 @@
 
 <div class="viewcode-block" id="TestSimmix"><a class="viewcode-back" href="../simmix.html#simmix.TestSimmix">[docs]</a><span class="k">class</span> <span class="nc">TestSimmix</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
 <div class="viewcode-block" id="TestSimmix.test_one_to_one_simple"><a class="viewcode-back" href="../simmix.html#simmix.TestSimmix.test_one_to_one_simple">[docs]</a>    <span class="k">def</span> <span class="nf">test_one_to_one_simple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">import</span> <span class="nn">nested_list_tools</span>
         <span class="n">exs2</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
         <span class="n">exs1</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">weighted_res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">]])</span>
@@ -1394,7 +1390,7 @@
 <div class="viewcode-block" id="TestSimmix.test_excluding_pair"><a class="viewcode-back" href="../simmix.html#simmix.TestSimmix.test_excluding_pair">[docs]</a>    <span class="k">def</span> <span class="nf">test_excluding_pair</span> <span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="kn">import</span> <span class="nn">spacy</span>
         <span class="n">nlp</span> <span class="o">=</span> <span class="n">spacy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;en_core_web_sm&#39;</span><span class="p">)</span>
-        <span class="kn">from</span> <span class="nn">dict_tools</span> <span class="k">import</span> <span class="n">balance_complex_tuple_dict</span>
+        <span class="kn">from</span> <span class="nn">littletools.dict_tools</span> <span class="k">import</span> <span class="n">balance_complex_tuple_dict</span>
         <span class="kn">import</span> <span class="nn">word_definitions</span>
 
         <span class="n">s1</span> <span class="o">=</span> <span class="n">nlp</span><span class="p">(</span><span class="s2">&quot;On the other hand things are said to be named Univocally, which have both the name the definition answering to the name in common&quot;</span><span class="p">)</span>
@@ -1418,7 +1414,7 @@
 
     <span class="k">def</span> <span class="nf">test_antonym_dict_for_symmetry</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="kn">import</span> <span class="nn">word_definitions</span>
-        <span class="kn">from</span> <span class="nn">dict_tools</span> <span class="k">import</span> <span class="n">dict_compare</span>
+        <span class="kn">from</span> <span class="nn">littletools.dict_tools</span> <span class="k">import</span> <span class="n">dict_compare</span>
 
         <span class="n">d1</span> <span class="o">=</span> <span class="n">dict_tools</span><span class="o">.</span><span class="n">invert_dict</span><span class="p">(</span><span class="n">word_definitions</span><span class="o">.</span><span class="n">antonym_dict</span><span class="p">[</span><span class="s1">&#39;lemma_&#39;</span><span class="p">])</span>
         <span class="n">d2</span> <span class="o">=</span> <span class="n">word_definitions</span><span class="o">.</span><span class="n">antonym_dict</span><span class="p">[</span><span class="s1">&#39;lemma_&#39;</span><span class="p">]</span>

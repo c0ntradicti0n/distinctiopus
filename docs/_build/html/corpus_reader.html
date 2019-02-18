@@ -83,6 +83,8 @@
               <p class="caption"><span class="caption-text">Table of Contents</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">How it works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="textlinguistics.html">Textlinguistic tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basic_annotations.html">bayessoassdsdsdsdskr</a></li>
 </ul>
 
             
@@ -257,14 +259,43 @@ per observation in the output table</p>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="corpus_reader.CorpusReader.parse_coref_str">
-<code class="descname">parse_coref_str</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/corpus_reader.html#CorpusReader.parse_coref_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#corpus_reader.CorpusReader.parse_coref_str" title="Permalink to this definition">¶</a></dt>
+<dt id="corpus_reader.CorpusReader.override_spacy">
+<code class="descname">override_spacy</code><span class="sig-paren">(</span><em>tldpth</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/corpus_reader.html#CorpusReader.override_spacy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#corpus_reader.CorpusReader.override_spacy" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="corpus_reader.CorpusReader.parse_coref_dict">
 <code class="descname">parse_coref_dict</code><span class="sig-paren">(</span><em>d</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/corpus_reader.html#CorpusReader.parse_coref_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#corpus_reader.CorpusReader.parse_coref_dict" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Parses the content of the coref_dict to some normal data</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>d</strong> – dict with either ‘s_id_r’ and ‘m_start’, ‘m_end’ or ‘s_id_i’ and ‘i_list’</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">coref dict with ‘s_id’ and ‘i_list’</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="corpus_reader.CorpusReader.parse_coref_str">
+<code class="descname">parse_coref_str</code><span class="sig-paren">(</span><em>coref_string</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/corpus_reader.html#CorpusReader.parse_coref_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#corpus_reader.CorpusReader.parse_coref_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>parses coref mentions in two formats. Either ranges or lists of token indices</p>
+<p>7-&gt;[6,1,2,3]
+1-&gt;[22:23]</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>coref_string</strong> – such a string</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">coref dict with ‘s_id’ and ‘i_list’</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="corpus_reader.CorpusReader.pattern">

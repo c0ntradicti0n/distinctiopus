@@ -83,6 +83,8 @@
               <p class="caption"><span class="caption-text">Table of Contents</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">How it works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="textlinguistics.html">Textlinguistic tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basic_annotations.html">bayessoassdsdsdsdskr</a></li>
 </ul>
 
             
@@ -147,40 +149,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-list_and_dict_type">
-<span id="list-and-dict-type-module"></span><h1>list_and_dict_type module<a class="headerlink" href="#module-list_and_dict_type" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
-<dt id="list_and_dict_type.L">
-<em class="property">class </em><code class="descclassname">list_and_dict_type.</code><code class="descname">L</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/list_and_dict_type.html#L"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#list_and_dict_type.L" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></p>
-<p>A subclass of list that can accept additional attributes.
-Should be able to be used just like a regular list.</p>
-<p>The problem:
-a = [1, 2, 4, 8]
-a.x = “Hey!” # AttributeError: ‘list’ object has no attribute ‘x’</p>
-<p>The solution:
-a = L(1, 2, 4, 8)
-a.x = “Hey!”
-print a       # [1, 2, 4, 8]
-print a.x     # “Hey!”
-print len(a)  # 4</p>
-<p>You can also do these:
-a = L( 1, 2, 4, 8 , x=”Hey!” )                 # [1, 2, 4, 8]
-a = L( 1, 2, 4, 8 )( x=”Hey!” )                # [1, 2, 4, 8]
-a = L( [1, 2, 4, 8] , x=”Hey!” )               # [1, 2, 4, 8]
-a = L( {1, 2, 4, 8} , x=”Hey!” )               # [1, 2, 4, 8]
-a = L( [2 ** b for b in range(4)] , x=”Hey!” ) # [1, 2, 4, 8]
-a = L( (2 ** b for b in range(4)) , x=”Hey!” ) # [1, 2, 4, 8]
-a = L( 2 ** b for b in range(4) )( x=”Hey!” )  # [1, 2, 4, 8]
-a = L( 2 )                                     # [2]</p>
-<dl class="method">
-<dt id="list_and_dict_type.L.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/list_and_dict_type.html#L.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#list_and_dict_type.L.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
-</dd></dl>
-
-</dd></dl>
-
+  <div class="section" id="list-and-dict-type-module">
+<h1>list_and_dict_type module<a class="headerlink" href="#list-and-dict-type-module" title="Permalink to this headline">¶</a></h1>
 </div>
 
 

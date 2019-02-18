@@ -40,8 +40,8 @@ class Correlation(Pairix):
             In part the graph is cleaned, because also exmaples can be marked as seemingly contradictions.
             On the other side the same operation is done for additional (sub)predications in context, following
             coreferential relations
-        '''
 
+        '''
         poss_correlations = self.correlative.choose(           # What correlates
             possible_to_correlate,
             layout='1:1')

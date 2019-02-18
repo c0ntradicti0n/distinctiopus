@@ -156,45 +156,42 @@
 <span class="kn">from</span> <span class="nn">allennlp.commands.elmo</span> <span class="k">import</span> <span class="n">ElmoEmbedder</span>
 <span class="kn">import</span> <span class="nn">spacy</span>
 
-
 <span class="kn">import</span> <span class="nn">logging</span>
-
-
 <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">NullHandler</span><span class="p">())</span>
 
-<span class="kn">from</span> <span class="nn">nested_list_tools</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">digraph_tools</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dict_tools</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">littletools.nested_list_tools</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">littletools.digraph_tools</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">littletools.dict_tools</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">simmix</span> <span class="k">import</span> <span class="n">Simmix</span>
 <span class="kn">import</span> <span class="nn">word_definitions</span>
-<span class="kn">import</span> <span class="nn">tdfidf_tool</span>
-<span class="kn">from</span> <span class="nn">generator_tools</span> <span class="k">import</span> <span class="n">count_up</span>
+<span class="kn">from</span> <span class="nn">littletools</span> <span class="k">import</span> <span class="n">tdfidf_tool</span>
+<span class="kn">from</span> <span class="nn">littletools.generator_tools</span> <span class="k">import</span> <span class="n">count_up</span>
 
 
 <div class="viewcode-block" id="Predication"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication">[docs]</a><span class="k">class</span> <span class="nc">Predication</span><span class="p">():</span>
 <div class="viewcode-block" id="Predication.__init__"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">corpus</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; This module lets you translate natural language expressions into predicative chunks, to analyse the</span>
-<span class="sd">        parts of sentences and their relatitions.</span>
+<span class="sd">            parts of sentences and their relatitions.</span>
 
-<span class="sd">        For the chunking intialize the model and call `analyse_predication` and you get back a hard-core-annotated expression</span>
+<span class="sd">            For the chunking intialize the model and call `analyse_predication` and you get back a hard-core-annotated expression</span>
 
-<span class="sd">        These chunks are dicts of other properties, that represent a part of the sentence with different properties.</span>
-<span class="sd">        A predicate for instance, contains</span>
+<span class="sd">            These chunks are dicts of other properties, that represent a part of the sentence with different properties.</span>
+<span class="sd">            A predicate for instance, contains</span>
 
-<span class="sd">        &gt;&gt;&gt; import spacy</span>
-<span class="sd">        &gt;&gt;&gt; nlp = spacy.load(&#39;en_core_web_sm&#39;)</span>
-<span class="sd">        &gt;&gt;&gt; P = Predication()</span>
-<span class="sd">        &gt;&gt;&gt; text = nlp (&#39;What is going on here?&#39;)</span>
-<span class="sd">        &gt;&gt;&gt; pred = P.analyse_predication(doc=text, s_id=&#39;count_yourself&#39;)</span>
-<span class="sd">        &gt;&gt;&gt; pred[0][&#39;dep_&#39;]</span>
-<span class="sd">        [&#39;nsubj&#39;, &#39;aux&#39;, &#39;ROOT&#39;, &#39;prt&#39;, &#39;advmod&#39;, &#39;punct&#39;]</span>
-<span class="sd">        &gt;&gt;&gt; pred[0][&#39;text&#39;]</span>
-<span class="sd">        [&#39;What&#39;, &#39;is&#39;, &#39;going&#39;, &#39;on&#39;, &#39;here&#39;, &#39;?&#39;]</span>
+<span class="sd">            &gt;&gt;&gt; import spacy</span>
+<span class="sd">            &gt;&gt;&gt; nlp = spacy.load(&#39;en_core_web_sm&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; P = Predication()</span>
+<span class="sd">            &gt;&gt;&gt; text = nlp (&#39;What is going on here?&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; pred = P.analyse_predication(doc=text, s_id=&#39;count_yourself&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; pred[0][&#39;dep_&#39;]</span>
+<span class="sd">            [&#39;nsubj&#39;, &#39;aux&#39;, &#39;ROOT&#39;, &#39;prt&#39;, &#39;advmod&#39;, &#39;punct&#39;]</span>
+<span class="sd">            &gt;&gt;&gt; pred[0][&#39;text&#39;]</span>
+<span class="sd">            [&#39;What&#39;, &#39;is&#39;, &#39;going&#39;, &#39;on&#39;, &#39;here&#39;, &#39;?&#39;]</span>
 
-<span class="sd">        :param corpus: a corpus_reader_object, to overlook the document once, to precompute all lemmata and</span>
-<span class="sd">        td-idf-values.</span>
+<span class="sd">            :param corpus: a corpus_reader_object, to overlook the document once, to precompute all lemmata and</span>
+<span class="sd">            td-idf-values.</span>
+
 <span class="sd">        &#39;&#39;&#39;</span>
-
         <span class="k">if</span> <span class="n">corpus</span><span class="p">:</span>
             <span class="n">lemmatized_text</span> <span class="o">=</span> <span class="n">corpus</span><span class="o">.</span><span class="n">lemmatize_text</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tdfidf</span> <span class="o">=</span> <span class="n">tdfidf_tool</span><span class="o">.</span><span class="n">tdfidf</span><span class="p">(</span><span class="n">lemmatized_text</span><span class="p">)</span>
@@ -280,7 +277,7 @@
 
 <span class="sd">            :param doc: spacy doctument</span>
 <span class="sd">            :param s_id: id of sentence, use `s_id=&#39;count_yourself&#39;` for not caring for this. In these cases, the td-idf</span>
-<span class="sd">            information is not possible to compute</span>
+<span class="sd">            information is not possible to compute, because one does not know, to which text this belongs</span>
 <span class="sd">            :param kwargs:  :func:`~predcicatrix.Predication.collect_all_predicates`</span>
 <span class="sd">            :return: list of predicate_dicts</span>
 
@@ -323,20 +320,20 @@
 <div class="viewcode-block" id="Predication.build_predicate"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication.build_predicate">[docs]</a>    <span class="k">def</span> <span class="nf">build_predicate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">predicate_i</span><span class="p">,</span> <span class="n">arguments_i</span><span class="p">,</span> <span class="n">full_ex_i</span><span class="p">,</span> <span class="n">doc</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Build a dict from information over a predicate</span>
 
-<span class="sd">        :param predicate_i: indices of predicates</span>
-<span class="sd">        :param arguments_i: indices of arguments as list of list</span>
-<span class="sd">        :param full_ex_i:  all indices</span>
-<span class="sd">        :param doc: the spacy document</span>
-<span class="sd">        :return: dict wth</span>
-<span class="sd">                     &quot;predicate&quot;    : spacy tokens  of predicate,</span>
-<span class="sd">                     &quot;predicate_i&quot;  : indices of that,</span>
-<span class="sd">                     &quot;arguments&quot;    : spacy tokens of arguments,</span>
-<span class="sd">                     &quot;arguments_i&quot;  : indices of that,</span>
-<span class="sd">                     &quot;full_ex&quot;      : all spacy tokens,</span>
-<span class="sd">                     &quot;i_s&quot;          : indices of that</span>
-<span class="sd">                     &quot;doc&quot;          : spacy tokens</span>
-<span class="sd">                     &quot;text&quot;         : list of words,</span>
-<span class="sd">                     &quot;key&quot;          : a unique identifyer for that predicate</span>
+<span class="sd">            :param predicate_i: indices of predicates</span>
+<span class="sd">            :param arguments_i: indices of arguments as list of list</span>
+<span class="sd">            :param full_ex_i:  all indices</span>
+<span class="sd">            :param doc: the spacy document</span>
+<span class="sd">            :return: dict wth</span>
+<span class="sd">                         &quot;predicate&quot;    : spacy tokens  of predicate,</span>
+<span class="sd">                         &quot;predicate_i&quot;  : indices of that,</span>
+<span class="sd">                         &quot;arguments&quot;    : spacy tokens of arguments,</span>
+<span class="sd">                         &quot;arguments_i&quot;  : indices of that,</span>
+<span class="sd">                         &quot;full_ex&quot;      : all spacy tokens,</span>
+<span class="sd">                         &quot;i_s&quot;          : indices of that</span>
+<span class="sd">                         &quot;doc&quot;          : spacy tokens</span>
+<span class="sd">                         &quot;text&quot;         : list of words,</span>
+<span class="sd">                         &quot;key&quot;          : a unique identifyer for that predicate</span>
 
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -358,17 +355,37 @@
             <span class="p">}</span>
         <span class="k">return</span> <span class="n">predicate</span></div>
 
-<div class="viewcode-block" id="Predication.post_process_arguments"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication.post_process_arguments">[docs]</a>    <span class="k">def</span> <span class="nf">post_process_arguments</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arguments_i</span><span class="p">,</span><span class="n">too_deep_i</span><span class="p">,</span> <span class="n">doc</span><span class="p">):</span>
+<div class="viewcode-block" id="Predication.post_process_arguments"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication.post_process_arguments">[docs]</a>    <span class="k">def</span> <span class="nf">post_process_arguments</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arguments_i</span><span class="p">,</span><span class="n">doc</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Iterate through arguments and give back valid noun/pronoun-cores</span>
+
+<span class="sd">            :param arguments_i: indices of possible argument tokens in the sentence (list(list))</span>
+<span class="sd">            :param doc: spacy doc</span>
+<span class="sd">            :return: list of argument core tokens</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">arguments_i</span><span class="p">:</span>
-            <span class="n">arg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collect_substancial_argument</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">too_deep_i</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span>
+            <span class="n">arg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collect_substancial_argument</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">arg</span><span class="p">:</span>
                 <span class="k">yield</span> <span class="n">arg</span></div>
 
 
-<div class="viewcode-block" id="Predication.collect_substancial_argument"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication.collect_substancial_argument">[docs]</a>    <span class="k">def</span> <span class="nf">collect_substancial_argument</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg_i</span><span class="p">,</span> <span class="n">too_deep_i</span><span class="p">,</span> <span class="n">doc</span><span class="p">):</span>
+<div class="viewcode-block" id="Predication.collect_substancial_argument"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication.collect_substancial_argument">[docs]</a>    <span class="k">def</span> <span class="nf">collect_substancial_argument</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg_i</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="s1">&#39;i&#39;</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; From an argument expression take the noun-core and not its dependents</span>
+
+<span class="sd">            :param arg_i: indices of possible argument tokens in the sentence</span>
+<span class="sd">            :param doc: spacy document</span>
+<span class="sd">            :return: list of spacy tokens</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">arg</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">arg_i</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">doc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">pos_</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;NOUN&#39;</span><span class="p">,</span> <span class="s1">&#39;PRON&#39;</span><span class="p">]:</span>
-                <span class="k">return</span> <span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">i</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">rights</span> <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">too_deep_i</span><span class="p">]</span></div>
+            <span class="k">if</span> <span class="n">doc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">pos_</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;NOUN&#39;</span><span class="p">,</span> <span class="s1">&#39;PRON&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">doc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dep_</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;nsubjpass&#39;</span><span class="p">,</span><span class="s1">&#39;nsubj&#39;</span><span class="p">,</span> <span class="s1">&#39;obj&#39;</span><span class="p">,</span> <span class="s1">&#39;pobj&#39;</span><span class="p">,</span> <span class="s1">&#39;dobj&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">out</span> <span class="o">==</span> <span class="s1">&#39;i&#39;</span><span class="p">:</span>
+                    <span class="n">arg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="c1">#+ [r.i for r in doc[i].rights if r.i not in too_deep_i]</span>
+                <span class="k">if</span> <span class="n">out</span> <span class="o">==</span> <span class="s1">&#39;t&#39;</span><span class="p">:</span>
+                    <span class="n">arg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">arg</span></div>
+
 
 
 <div class="viewcode-block" id="Predication.collect_predicates"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication.collect_predicates">[docs]</a>    <span class="k">def</span> <span class="nf">collect_predicates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root_token</span><span class="p">,</span> <span class="n">arg_markers</span><span class="p">,</span> <span class="n">too_deep_markers</span><span class="p">,</span> <span class="n">ellipsis_resolution</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -380,23 +397,23 @@
 <span class="sd">            one expression for the information of the concept (the function-name, the Begriff), and its arguments (the</span>
 <span class="sd">            arguments of the function, the individuals and variables for them).</span>
 
-<span class="sd">        :param root_token: verbal or substantive root word</span>
-<span class="sd">        :param arg_markers: what kinds of dependences to take arguments</span>
-<span class="sd">        :param too_deep_markers: where to cut the expression because of deepness</span>
-<span class="sd">        :param ellipsis_resolution: if coordinative bindings should be dissolved every time</span>
-<span class="sd">             (and the elliptical part doubbled for the second part)</span>
-<span class="sd">        :param no_zero_args:</span>
-<span class="sd">             its not allowed for predications to have zero arugments</span>
-<span class="sd">        :param mother:</span>
-<span class="sd">             the whole expression should appear as result</span>
-<span class="sd">        :param attributive_ordering:</span>
-<span class="sd">             False (default):</span>
-<span class="sd">                 A verbal is the root of the predicative structure and dependents with noun or pronoun cores are the &#39;arguments&#39;</span>
-<span class="sd">             True:</span>
-<span class="sd">                 If the predicate is triggered by an adjective-substantive-junction, then the substantive (with its</span>
-<span class="sd">                 dependents) is the lonly argument and the adjective with its dependents is the predicate</span>
+<span class="sd">            :param root_token: verbal or substantive root word</span>
+<span class="sd">            :param arg_markers: what kinds of dependences to take arguments</span>
+<span class="sd">            :param too_deep_markers: where to cut the expression because of deepness</span>
+<span class="sd">            :param ellipsis_resolution: if coordinative bindings should be dissolved every time</span>
+<span class="sd">                 (and the elliptical part doubbled for the second part)</span>
+<span class="sd">            :param no_zero_args:</span>
+<span class="sd">                 its not allowed for predications to have zero arugments</span>
+<span class="sd">            :param mother:</span>
+<span class="sd">                 the whole expression should appear as result</span>
+<span class="sd">            :param attributive_ordering:</span>
+<span class="sd">                 False (default):</span>
+<span class="sd">                     A verbal is the root of the predicative structure and dependents with noun or pronoun cores are the &#39;arguments&#39;</span>
+<span class="sd">                 True:</span>
+<span class="sd">                     If the predicate is triggered by an adjective-substantive-junction, then the substantive (with its</span>
+<span class="sd">                     dependents) is the lonly argument and the adjective with its dependents is the predicate</span>
 
-<span class="sd">        :return: dict from :func:`~predicatrix2.Predication.build_predicate`</span>
+<span class="sd">            :return: dict from :func:`~predicatrix2.Predication.build_predicate`</span>
 
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">predicate_i</span>    <span class="o">=</span> <span class="p">[]</span>
@@ -451,13 +468,11 @@
             <span class="n">predicate_i</span>  <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">elliptical</span><span class="p">)</span> <span class="o">+</span> <span class="n">predicate_i</span>
 
         <span class="n">arguments_i</span>    <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">arguments_dependent_i</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">predicate_i</span><span class="p">:</span>
             <span class="n">subleaf</span> <span class="o">=</span> <span class="n">root_token</span><span class="o">.</span><span class="n">doc</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">subleaf</span><span class="o">.</span><span class="n">dep_</span> <span class="ow">in</span> <span class="n">arg_markers</span><span class="p">:</span>
                 <span class="n">argument_i</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">i</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">subleaf</span><span class="o">.</span><span class="n">subtree</span><span class="p">]</span>
                 <span class="n">arguments_i</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">argument_i</span><span class="p">)</span>
-
 
         <span class="n">predicate_i</span> <span class="o">=</span>  <span class="nb">set</span><span class="p">(</span><span class="n">predicate_i</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">flatten</span><span class="p">(</span><span class="n">arguments_i</span><span class="p">[:]))</span>
         <span class="n">arguments_i</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">arg_i</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">too_deep_i</span><span class="p">[:]))</span> <span class="k">for</span> <span class="n">arg_i</span> <span class="ow">in</span> <span class="n">arguments_i</span><span class="p">]</span>
@@ -480,7 +495,7 @@
             <span class="n">predicate_i</span><span class="p">,</span> <span class="n">arguments_i</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">flatten_list</span><span class="p">(</span><span class="n">arguments_i</span><span class="p">)),</span> <span class="p">[</span><span class="n">predicate_i</span><span class="p">]</span>
 
         <span class="n">doc</span> <span class="o">=</span> <span class="n">root_token</span><span class="o">.</span><span class="n">doc</span>
-        <span class="n">arguments_i</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">post_process_arguments</span><span class="p">(</span><span class="n">arguments_i</span><span class="p">,</span> <span class="n">too_deep_i</span><span class="p">,</span> <span class="n">doc</span><span class="p">))</span>
+        <span class="n">arguments_i</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">post_process_arguments</span><span class="p">(</span><span class="n">arguments_i</span><span class="p">,</span> <span class="n">doc</span><span class="p">))</span>
         <span class="n">predicate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_predicate</span><span class="p">(</span><span class="n">predicate_i</span><span class="p">,</span><span class="n">arguments_i</span><span class="p">,</span><span class="n">full_ex_i</span><span class="p">,</span><span class="n">doc</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">predicate</span></div>
 
@@ -541,7 +556,8 @@
                      <span class="n">logging</span><span class="o">.</span><span class="n">error</span> <span class="p">(</span><span class="s2">&quot;negations is int? </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">negations</span><span class="p">)))</span>
         <span class="k">return</span> <span class="n">ps</span></div>
 
-<div class="viewcode-block" id="Predication.attribute_contained_predicates"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication.attribute_contained_predicates">[docs]</a>    <span class="k">def</span> <span class="nf">attribute_contained_predicates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ps</span><span class="p">,</span> <span class="n">expand</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Predication.attribute_contained_predicates"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication.attribute_contained_predicates">[docs]</a>    <span class="k">def</span> <span class="nf">attribute_contained_predicates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ps</span><span class="p">):</span>
         <span class="n">ps</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">ps</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;i_s&#39;</span><span class="p">]))</span>
 
         <span class="n">Sub_sim</span> <span class="o">=</span> <span class="n">Simmix</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">sub_i</span><span class="p">,</span>  <span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
@@ -640,28 +656,20 @@
             <span class="n">predicate</span><span class="p">[</span><span class="s2">&quot;lemma_tag_&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">ex</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">lemma_</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">ex</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">tag_</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">predicate</span><span class="p">[</span><span class="s1">&#39;i_s&#39;</span><span class="p">]]</span>
         <span class="k">return</span> <span class="n">ps</span></div>
 
+
 <div class="viewcode-block" id="Predication.collect_all_predicates"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication.collect_all_predicates">[docs]</a>    <span class="k">def</span> <span class="nf">collect_all_predicates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ex</span><span class="p">,</span> <span class="n">coref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">s_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="n">paint_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Extracts a multitude of properties from a natural language expression, including grammar</span>
-<span class="sd">        imformation, word2vec, some importance weight in the document, some kind of cursorily logical</span>
-<span class="sd">        formula with a dictionary, to what expressions the constants in the formula belong to.</span>
+<span class="sd">            imformation, word2vec, some importance weight in the document, some kind of cursorily logical</span>
+<span class="sd">            formula with a dictionary, to what expressions the constants in the formula belong to.</span>
 
-<span class="sd">        :param ex:</span>
-<span class="sd">            string or spracy instance of the language expression</span>
-<span class="sd">        :return:</span>
-<span class="sd">            dictionary of properties of the expression</span>
+<span class="sd">            :param ex:</span>
+<span class="sd">                string or spracy instance of the language expression</span>
+<span class="sd">            :return:</span>
+<span class="sd">                dictionary of properties of the expression</span>
+
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">global</span> <span class="n">nlp</span>
-
         <span class="k">if</span> <span class="ow">not</span> <span class="n">ex</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">ex</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
-            <span class="n">ex</span> <span class="o">=</span> <span class="n">nlp</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">ex</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
-            <span class="k">def</span> <span class="nf">listwrapper</span> <span class="p">(</span><span class="n">ex</span><span class="p">):</span>
-                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ex</span><span class="p">:</span>
-                    <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">collect_all_predicates</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-            <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">listwrapper</span><span class="p">(</span><span class="n">ex</span><span class="p">),[])</span>
-
 
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span> <span class="p">(</span><span class="s2">&quot;predicates for &#39;</span><span class="si">%s</span><span class="s2">&#39;,&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">))</span>
 
@@ -738,27 +746,23 @@
 <div class="viewcode-block" id="Predication.get_coreferenced_argument"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication.get_coreferenced_argument">[docs]</a>    <span class="k">def</span> <span class="nf">get_coreferenced_argument</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coref</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">coref</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
-        <span class="n">s_id</span>  <span class="o">=</span> <span class="n">coref</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">]</span>
-        <span class="n">m_start</span> <span class="o">=</span> <span class="n">coref</span><span class="p">[</span><span class="s1">&#39;m_start&#39;</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span>
-        <span class="n">m_end</span>   <span class="o">=</span> <span class="n">coref</span><span class="p">[</span><span class="s1">&#39;m_end&#39;</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span>
+        <span class="n">s_id</span>  <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">coref</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">])</span>
+        <span class="n">i_list</span> <span class="o">=</span> <span class="n">coref</span><span class="p">[</span><span class="s1">&#39;i_list&#39;</span><span class="p">]</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">argument_df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;s_id==@s_id&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
-                <span class="k">lambda</span> <span class="n">ex</span><span class="p">:</span>
-                <span class="kc">True</span>
-                <span class="k">if</span> <span class="p">(</span>
-                        <span class="nb">all</span><span class="p">(</span><span class="n">m</span> <span class="ow">in</span> <span class="n">ex</span><span class="p">[</span><span class="s1">&#39;i_s&#39;</span><span class="p">]</span>
-                            <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m_start</span><span class="p">,</span> <span class="n">m_end</span><span class="p">))</span>
-                        <span class="ow">and</span> <span class="s1">&#39;NOUN&#39;</span> <span class="ow">in</span> <span class="n">ex</span><span class="p">[</span><span class="s1">&#39;pos_&#39;</span><span class="p">])</span>
-                <span class="k">else</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="k">lambda</span> <span class="n">ex</span><span class="p">:</span> <span class="nb">all</span> <span class="p">(</span><span class="n">m</span> <span class="ow">in</span> <span class="n">ex</span><span class="p">[</span><span class="s1">&#39;i_s&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">i_list</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="s1">&#39;NOUN&#39;</span> <span class="ow">in</span> <span class="n">ex</span><span class="p">[</span><span class="s1">&#39;pos_&#39;</span><span class="p">]),</span>
             <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
         <span class="n">referenced</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">argument_df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;s_id==@s_id&quot;</span><span class="p">)[</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">nsmallest</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s1">&#39;len&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s1">&#39;records&#39;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">referenced</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">referenced</span> <span class="o">==</span> <span class="p">[[[]]]:</span>
-                <span class="n">a</span><span class="o">=</span><span class="mi">1</span>
             <span class="k">return</span> <span class="n">referenced</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[]</span></div>
+            <span class="n">doc</span><span class="p">,</span> <span class="n">elmo_embeddings</span><span class="p">,</span> <span class="n">importance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">argument_df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;s_id==@s_id&quot;</span><span class="p">)[[</span><span class="s1">&#39;doc&#39;</span><span class="p">,</span> <span class="s1">&#39;elmo_embeddings_full&#39;</span><span class="p">,</span> <span class="s1">&#39;importance_full&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">arg_tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collect_substancial_argument</span><span class="p">(</span><span class="n">i_list</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="s1">&#39;t&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">arg_tokens</span> <span class="o">==</span> <span class="p">[]:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="n">arg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sp_imp_elmo_dictize_ex</span><span class="p">(</span><span class="n">ex</span><span class="o">=</span><span class="n">arg_tokens</span><span class="p">,</span> <span class="n">coref</span><span class="o">=</span><span class="p">[[]]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">doc</span><span class="p">),</span> <span class="n">elmo_embeddings</span><span class="o">=</span><span class="n">elmo_embeddings</span><span class="p">,</span> <span class="n">importance</span><span class="o">=</span><span class="n">importance</span><span class="p">,</span> <span class="n">s_id</span><span class="o">=</span><span class="n">s_id</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">arg</span></div>
 
 <div class="viewcode-block" id="Predication.sp_imp_elmo_dictize_ex"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication.sp_imp_elmo_dictize_ex">[docs]</a>    <span class="k">def</span> <span class="nf">sp_imp_elmo_dictize_ex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ex</span><span class="p">,</span> <span class="n">coref</span><span class="p">,</span> <span class="n">elmo_embeddings</span><span class="p">,</span> <span class="n">importance</span><span class="p">,</span> <span class="n">s_id</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">ex</span><span class="p">:</span>
@@ -797,6 +801,8 @@
 
                 <span class="s2">&quot;importance&quot;</span>      <span class="p">:</span> <span class="n">importance</span><span class="p">[</span><span class="n">i_s</span><span class="p">],</span>
                 <span class="s2">&quot;elmo_embeddings&quot;</span> <span class="p">:</span> <span class="n">elmo_embeddings</span><span class="p">[:,</span><span class="n">i_s</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+                <span class="s2">&quot;elmo_embeddings_full&quot;</span><span class="p">:</span> <span class="n">elmo_embeddings</span><span class="p">,</span>
+                <span class="s2">&quot;importance_full&quot;</span><span class="p">:</span> <span class="n">importance</span><span class="p">,</span>
 
                 <span class="s2">&quot;key&quot;</span>             <span class="p">:</span> <span class="s2">&quot;arg&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arg_key_gen</span><span class="p">))</span>
             <span class="p">}</span>
@@ -809,14 +815,10 @@
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coreferenced_expression</span><span class="p">,</span> <span class="n">corefs</span><span class="p">))</span></div>
 <div class="viewcode-block" id="Predication.coreferenced_expression"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication.coreferenced_expression">[docs]</a>    <span class="k">def</span> <span class="nf">coreferenced_expression</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coref</span><span class="p">):</span>
         <span class="n">s_id</span> <span class="o">=</span> <span class="n">coref</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">]</span>
-        <span class="n">m_start</span> <span class="o">=</span> <span class="n">coref</span><span class="p">[</span><span class="s1">&#39;m_start&#39;</span><span class="p">]</span>
-        <span class="n">m_end</span> <span class="o">=</span> <span class="n">coref</span><span class="p">[</span><span class="s1">&#39;m_end&#39;</span><span class="p">]</span>
-
+        <span class="n">i_list</span> <span class="o">=</span> <span class="n">coref</span><span class="p">[</span><span class="s1">&#39;i_list&#39;</span><span class="p">]</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Predicatrix</span><span class="o">.</span><span class="n">predicate_df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;s_id==@s_id&quot;</span><span class="p">)[</span><span class="s1">&#39;i_s&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
-            <span class="k">lambda</span> <span class="n">ex_i</span><span class="p">:</span> <span class="kc">True</span> <span class="k">if</span> <span class="p">[</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m_start</span><span class="p">,</span> <span class="n">m_end</span><span class="p">)</span> <span class="k">if</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">ex_i</span><span class="p">]</span> <span class="k">else</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="k">lambda</span> <span class="n">ex_i</span><span class="p">:</span> <span class="kc">True</span> <span class="k">if</span> <span class="p">[</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">i_list</span> <span class="k">if</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">ex_i</span><span class="p">]</span> <span class="k">else</span> <span class="kc">False</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Predicatrix</span><span class="o">.</span><span class="n">predicate_df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;s_id==@s_id&quot;</span><span class="p">)[</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s1">&#39;records&#39;</span><span class="p">)</span></div>
-
-
 
 
 <div class="viewcode-block" id="Predication.formalize"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication.formalize">[docs]</a>    <span class="k">def</span> <span class="nf">formalize</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">pred</span><span class="p">,</span> <span class="n">elmo_embeddings</span><span class="p">,</span> <span class="n">importance</span><span class="p">):</span>

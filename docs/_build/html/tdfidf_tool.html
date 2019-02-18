@@ -83,6 +83,8 @@
               <p class="caption"><span class="caption-text">Table of Contents</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">How it works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="textlinguistics.html">Textlinguistic tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basic_annotations.html">bayessoassdsdsdsdskr</a></li>
 </ul>
 
             
@@ -147,61 +149,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-tdfidf_tool">
-<span id="tdfidf-tool-module"></span><h1>tdfidf_tool module<a class="headerlink" href="#module-tdfidf_tool" title="Permalink to this headline">¶</a></h1>
-<p>This module computes some ‘importance’ of words for a corpus with the tdf-idf-measure as a whole document.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">test</span> <span class="o">=</span> <span class="n">tdfidf</span><span class="p">(</span><span class="s1">&#39;This seems to be a document about Abraham. this seems to be another document Abraham. that seems not to be a document about Abraham. An this seems to be just shit Abrahamn Obrobobom Abraham Abraham.&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">get_vector</span><span class="p">(</span><span class="s1">&#39;this&#39;</span><span class="p">))</span>
-<span class="go">0.29559878344928797</span>
-</pre></div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">importance_of_word</span><span class="p">(</span><span class="s1">&#39;this&#39;</span><span class="p">))</span>
-<span class="go">0.7044012165507121</span>
-</pre></div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">sentence2vec</span><span class="p">([</span><span class="s2">&quot;this&quot;</span><span class="p">,</span><span class="s2">&quot;seems&quot;</span><span class="p">,</span><span class="s2">&quot;not&quot;</span><span class="p">]))</span>
-<span class="go">[0.70440122 0.60586829 0.90146707]</span>
-</pre></div>
-</div>
-<dl class="class">
-<dt id="tdfidf_tool.tdfidf">
-<em class="property">class </em><code class="descclassname">tdfidf_tool.</code><code class="descname">tdfidf</code><span class="sig-paren">(</span><em>corpus_lemmata</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tdfidf_tool.html#tdfidf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tdfidf_tool.tdfidf" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="method">
-<dt id="tdfidf_tool.tdfidf.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>corpus_lemmata</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tdfidf_tool.html#tdfidf.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tdfidf_tool.tdfidf.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="tdfidf_tool.tdfidf.get_vector">
-<code class="descname">get_vector</code><span class="sig-paren">(</span><em>word</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tdfidf_tool.html#tdfidf.get_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tdfidf_tool.tdfidf.get_vector" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="tdfidf_tool.tdfidf.half_importance">
-<code class="descname">half_importance</code><span class="sig-paren">(</span><em>str_list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tdfidf_tool.html#tdfidf.half_importance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tdfidf_tool.tdfidf.half_importance" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="tdfidf_tool.tdfidf.importance_of_word">
-<code class="descname">importance_of_word</code><span class="sig-paren">(</span><em>word</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tdfidf_tool.html#tdfidf.importance_of_word"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tdfidf_tool.tdfidf.importance_of_word" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="tdfidf_tool.tdfidf.sentence2relevantwords">
-<code class="descname">sentence2relevantwords</code><span class="sig-paren">(</span><em>str_list</em>, <em>min_thr</em>, <em>max_thr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tdfidf_tool.html#tdfidf.sentence2relevantwords"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tdfidf_tool.tdfidf.sentence2relevantwords" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="tdfidf_tool.tdfidf.sentence2vec">
-<code class="descname">sentence2vec</code><span class="sig-paren">(</span><em>str_list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tdfidf_tool.html#tdfidf.sentence2vec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tdfidf_tool.tdfidf.sentence2vec" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+  <div class="section" id="tdfidf-tool-module">
+<h1>tdfidf_tool module<a class="headerlink" href="#tdfidf-tool-module" title="Permalink to this headline">¶</a></h1>
 </div>
 
 

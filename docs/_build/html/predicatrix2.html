@@ -83,6 +83,8 @@
               <p class="caption"><span class="caption-text">Table of Contents</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">How it works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="textlinguistics.html">Textlinguistic tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basic_annotations.html">bayessoassdsdsdsdskr</a></li>
 </ul>
 
             
@@ -199,7 +201,7 @@ A predicate for instance, contains</p>
 </tr>
 </tbody>
 </table>
-<p>information is not possible to compute
+<p>information is not possible to compute, because one does not know, to which text this belongs
 :param kwargs:  <code class="xref py py-func docutils literal notranslate"><span class="pre">collect_all_predicates()</span></code>
 :return: list of predicate_dicts</p>
 </dd></dl>
@@ -216,7 +218,7 @@ A predicate for instance, contains</p>
 
 <dl class="method">
 <dt id="predicatrix2.Predication.attribute_contained_predicates">
-<code class="descname">attribute_contained_predicates</code><span class="sig-paren">(</span><em>ps</em>, <em>expand=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.attribute_contained_predicates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.attribute_contained_predicates" title="Permalink to this definition">¶</a></dt>
+<code class="descname">attribute_contained_predicates</code><span class="sig-paren">(</span><em>ps</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.attribute_contained_predicates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.attribute_contained_predicates" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -285,21 +287,13 @@ formula with a dictionary, to what expressions the constants in the formula belo
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="predicatrix2.Predication.collect_substancial_argument">
-<code class="descname">collect_substancial_argument</code><span class="sig-paren">(</span><em>arg_i</em>, <em>too_deep_i</em>, <em>doc</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.collect_substancial_argument"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.collect_substancial_argument" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="predicatrix2.Predication.collect_predicates">
 <code class="descname">collect_predicates</code><span class="sig-paren">(</span><em>root_token</em>, <em>arg_markers</em>, <em>too_deep_markers</em>, <em>ellipsis_resolution=True</em>, <em>no_zero_args=True</em>, <em>mother=False</em>, <em>attributive_ordering=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.collect_predicates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.collect_predicates" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Extract the predicative structure arising from a special triggering word, that can be handled like in</dt>
-<dd><p class="first">predicate logic.</p>
-<p class="last">A predicate is divided into two major parts:
+<dd><p>Extract the predicative structure arising from a special triggering word, that can be handled like in
+predicate logic.</p>
+<p>A predicate is divided into two major parts:
 one expression for the information of the concept (the function-name, the Begriff), and its arguments (the
 arguments of the function, the individuals and variables for them).</p>
-</dd>
-</dl>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -324,6 +318,27 @@ dependents) is the lonly argument and the adjective with its dependents is the p
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict from <a class="reference internal" href="#predicatrix2.Predication.build_predicate" title="predicatrix2.Predication.build_predicate"><code class="xref py py-func docutils literal notranslate"><span class="pre">build_predicate()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="predicatrix2.Predication.collect_substancial_argument">
+<code class="descname">collect_substancial_argument</code><span class="sig-paren">(</span><em>arg_i</em>, <em>doc</em>, <em>out='i'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.collect_substancial_argument"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.collect_substancial_argument" title="Permalink to this definition">¶</a></dt>
+<dd><p>From an argument expression take the noun-core and not its dependents</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>arg_i</strong> – indices of possible argument tokens in the sentence</li>
+<li><strong>doc</strong> – spacy document</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">list of spacy tokens</p>
 </td>
 </tr>
 </tbody>
@@ -392,8 +407,24 @@ dependents) is the lonly argument and the adjective with its dependents is the p
 
 <dl class="method">
 <dt id="predicatrix2.Predication.post_process_arguments">
-<code class="descname">post_process_arguments</code><span class="sig-paren">(</span><em>arguments_i</em>, <em>too_deep_i</em>, <em>doc</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.post_process_arguments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.post_process_arguments" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="descname">post_process_arguments</code><span class="sig-paren">(</span><em>arguments_i</em>, <em>doc</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/predicatrix2.html#Predication.post_process_arguments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#predicatrix2.Predication.post_process_arguments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate through arguments and give back valid noun/pronoun-cores</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>arguments_i</strong> – indices of possible argument tokens in the sentence (list(list))</li>
+<li><strong>doc</strong> – spacy doc</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">list of argument core tokens</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="predicatrix2.Predication.pprint_key_dict">
