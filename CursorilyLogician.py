@@ -342,26 +342,35 @@ RETURN pred1, pred2, pred3, pred4"""
         '''
         path = path + 'distinction.svg'
 
-        import pylab as plt
+        import pylab as pylab
+        import matplotlib as plt
+        fig = plt.pyplot.gcf()
+        fig.set_size_inches(30, 30)
+
+
+
         def wrap (strs):
             return textwrap.fill(strs, 20)
 
-        wrapped_node_labels = {n: {'label':wrap(d)} for n, d in G.nodes(data='text') if d}
+        #wrapped_node_labels = {n: {'label':wrap(d)} for n, d in G.nodes(data='text') if d}
+        wrapped_node_labels = {n: wrap(d) for n, d in G.nodes(data='text') if d}
+
         edge_labels = {(u,v,1): {'xlabel': self.edge_label_map[d]} for u,v, d in G.edges(data='SpecialKind', default='what?')}
         node_colors =  {n: {'style':'filled', 'fillcolor':self.kind_color_map[d]} for n, d in G.nodes(data='SpecialKind') if d}
 
         nx.set_edge_attributes(G, edge_labels)
-        nx.set_node_attributes(G, wrapped_node_labels)
+        #nx.set_node_attributes(G, wrapped_node_labels)
         nx.set_node_attributes(G, node_colors)
 
         G.graph['graph'] = {'rankdir': 'LR',
                             'style': 'filled',
                             'splines':'curved'}
+        kamada_kawai = nx.drawing.layout.kamada_kawai_layout(G)
 
-        spectral = nx.spectral_layout(G)
-        #spring = nx.spring_layout(G)
+        #spectral = nx.spectral_layout(G)
+        spring = nx.spring_layout(G)
         #dot_layout = graphviz_layout(G, prog='dot')
-        pos = spectral
+        pos = kamada_kawai
 
         options = {
             'node_color': 'blue',
@@ -381,8 +390,8 @@ RETURN pred1, pred2, pred3, pred4"""
 
         #plt.title("\n".join([wrap(x, 90) for x in [title, wff_nice, wff_ugly]]), pad=20)
         #pylab.axis('off')
-        plt.savefig(path, dpi=200)
-        plt.clf()
+        pylab.savefig(path, dpi=200)
+        pylab.clf()
         #A = nx.drawing.nx_agraph.to_agraph(G)
         #A.layout('dot')
         #A.draw(path = "found_distinction.svg")
@@ -460,7 +469,6 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}', i_s:{i_s1}}})
     def move_labels (self):
         query = """MATCH (n:Nlp)
 CALL apoc.create.addLabels( id(n), [ n.label ] ) YIELD node
-REMOVE node.genre
 RETURN node"""
         self.graph.run(query)
 
@@ -483,6 +491,8 @@ MATCH
 (pred3)-[r1{SpecialKind:'correlated'}]-(pred1),
 (pred2)-[r2{SpecialKind:'correlated'}]-(pred4),
 (pred4)-[r3{SpecialKind:'opposed'}]-(pred3), 
+(pred1)-[r0{SpecialKind:'opposed'}]-(pred2),
+
 (pred1)-[r4{SpecialKind:'subject'}]-(arg1), 
 (pred2)-[r5{SpecialKind:'subject'}]-(arg2),
 (pred3)-[r6{SpecialKind:'aspect'}]-(arg3), 
@@ -490,7 +500,10 @@ MATCH
 (arg1)-[r8{SpecialKind:'subjects'}]-(arg2),
 (arg3)-[r9{SpecialKind:'aspects'}]-(arg4)
 //MERGE (pred1)-[r10:KN]-(d:DISTINGUISH8 {first:[ID(arg1), ID(pred1), ID(pred3), ID(arg3)], second:[ID(arg2), ID(pred2), ID(pred4), ID(arg4)]})-[:KN]-(pred2)
-SET pred1.d = True, pred2.d=True, pred3.d = True, pred4.d=True, arg1.d = True, arg2.d=True, arg3.d=True, arg4.d=True, r1.d=True, r2.d=True, r3.d=True,r4.d=True,r5.d=True,r6.d=True,r7.d=True,r8.d=True,r9.d=True
+SET 
+pred1.d = True, pred2.d=True, pred3.d = True, pred4.d=True, 
+arg1.d = True, arg2.d=True, arg3.d=True, arg4.d=True, 
+r1.d=True, r2.d=True, r4.d=True, r5.d=True, r6.d=True, r7.d=True, r8.d=True, r9.d=True
 RETURN arg1, arg2, pred1, pred2, pred3, pred4, arg3, arg4
 """
         logging.info ("query neo4j for distinctions")
