@@ -52,7 +52,7 @@ class Correlation(Pairix):
         correlation = self.distinct.choose(                    # not too much
             ([contradiction],
              poss_correlations),
-            n=int((len(poss_correlations)+1)/2),
+            n=int(1),
             minimize=True,
             layout='n',
             out='ex',
@@ -103,11 +103,11 @@ class Correlation(Pairix):
                     key_trigg2 = "contra"   + contradicting_pred [1][0]['id']
                     key_trigg1 = "contra"   + contradicting_pred [0][0]['id']
 
-                    dig.add_edge (key_trigg1, key_corr1, label = "*correlated")
-                    dig.add_edge (key_trigg2, key_corr2, label = "*correlated")
+                    dig.add_edge (key_trigg1, key_corr1, label = "correlated")
+                    dig.add_edge (key_trigg2, key_corr2, label = "correlated")
 
-                    dig.add_edge (key_corr1, key_corr2, label = "*opposed")
-                    dig.add_edge (key_corr2, key_corr1, label = "*opposed")
+                    dig.add_edge (key_corr1, key_corr2, label = "opposed")
+                    dig.add_edge (key_corr2, key_corr1, label = "opposed")
 
         for contra, correl in correlation:
            add_edge_between(contra, correl)

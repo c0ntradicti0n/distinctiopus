@@ -42,5 +42,5 @@
 42	name	name	NOUN	NN	_	40	pobj	1-68	_
 43	differs	differ	VERB	VBZ	_	14	conj	1-69	_
 44	for	for	ADP	IN	_	43	prep	1-70	_
-45	each	each	DET	DT	_	44	pobj	1-71	_
+45	each	each	DET	DT	_	44	pobj	1-71	1->[4,5,8,9,10,11]
 46	.	.	PUNCT	.	_	43	punct	1-72	_

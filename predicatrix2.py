@@ -95,8 +95,15 @@ class Predication():
         self.predicate_df = pandas.DataFrame()
         self.argument_df = pandas.DataFrame()
 
-        return None
 
+    def analyse_predications(self, sentence_df_row):
+        ''' Collect all information from a sentence DataFrame row and analyse that predication with this tool
+
+            :param sentence_df_row: df with 'spacy_doc' and 'coref' and 's_id' columns
+            :return: predicate dict
+
+        '''
+        return self.analyse_predication (doc=sentence_df_row['spacy_doc'], coref=sentence_df_row['coref'], s_id=sentence_df_row['s_id'])
 
     def spacy_dep_ (ex):
         return set (x.dep_ for x in ex )

@@ -18,28 +18,36 @@ class Contradiction:
     def __init__(self):
         ''' This module lets you find the contradictions between the predicates.
 
-        The constructor sets up the filters to find them.
-        Call then :func:`~contradix.Contradiction.find_contradcitions` on predicates
+            The constructor sets up the filters to find them.
+            Call then :func:`~contradix.Contradiction.find_contradictions` on predicates
 
-        Example
-        -------
+            Example
+            =======
 
-        Get some annotated text data...
+            Get some annotated text data...
 
-        >>> from corpus_reader import CorpusReader
-        >>> corpus = CorpusReader(corpus_path='./corpora/aristotle_categories/import_conll', only=[10, 11, 12, 13, 14, 15, 16, 17])
-        >>> from predicatrix2 import Predication
+            >>> from corpus_reader import CorpusReader
+            >>> corpus = CorpusReader(corpus_path='./corpora/aristotle_categories/import_conll', only=[9,12,14,16])
+            >>> from predicatrix2 import Predication
 
-        Extract some predicates:
 
-        >>> P = Predication(corpus)
-        >>> predications1 = P.predicate_df.iloc[0,1,2,3,4]
-        >>> predications2 = P.predicate_df.iloc[3,4,5,6,6,7]
-        >>> C = Contradiction()
+            Extract some predicates
 
-        Get the contradiction from them:
+            >>> P = Predication(corpus)
+            >>> from littletools.nested_list_tools import type_spec, flatten_reduce
+            >>> ps = flatten_reduce (corpus.sentence_df.apply(P.analyse_predications, axis=1, result_type="reduce").values.tolist())
 
-        >>> C.find_contradictive(predicates1=predications1, predicates2=predications2)
+            Look at the type, its a list of dicts
+
+            >>> print (type_spec (ps))
+                list<dict<str, ...>>
+            >>> C = Contradiction()
+            >>> C.find_contradictive(ps,ps)
+            [([0], [1, 2, 3]), ([1], [0, 2, 3]), ([2], [0, 1, 3]), ([3], [0, 1, 2])]
+
+            This means, the sentence no 0 contradicts sentences 1,2,3 and so on
+            Problems with this arise from faulty grammar, missing antonym information, bad sentence splitting or maybe the
+            phrase has a more complex paraphrasing structure of the contrasting phrase
 
         '''
         fit_mix_neg = \
@@ -91,8 +99,8 @@ class Contradiction:
             put_into_nx = self.put_into_nx(general_kind='contradiction', G=G)
             graph_coro = [graph_coro, put_into_nx ]
 
-        negation_contradictions = self.Contra_Neg.choose ((predicates1, predicates2), type='*negation', layout='n', out='i', graph_coro=graph_coro, **kwargs)
-        antonym_contradictions  = self.Contra_Anto.choose((predicates1, predicates2), type='*antonym',  layout='n', out='i', graph_coro=graph_coro, **kwargs)
+        negation_contradictions = self.Contra_Neg.choose ((predicates1, predicates2), type='negation', layout='n', out='i', graph_coro=graph_coro, **kwargs)
+        antonym_contradictions  = self.Contra_Anto.choose((predicates1, predicates2), type='antonym',  layout='n', out='i', graph_coro=graph_coro, **kwargs)
         logging.info("contradictions by antonym : %s" % str (antonym_contradictions))
         logging.info("contradictions by negation: %s" % str (negation_contradictions))
 
@@ -108,17 +116,41 @@ class Contradiction:
 
 
     def wrap (self, line):
+        ''' wrap the line
+
+        :param line: just a string with text
+
+        '''
         return textwrap.fill(line, 50)
 
-    def add_possible_correlation_node (self, G, predicate_dict, kind=None):
+
+    def add_possible_contrasting_node (self, G, predicate_dict, kind=None):
+        ''' Add a node to networkx for debugging the contradiction
+
+            :param G: networkx graph
+            :param predicate_dict: dict with 'key' and 'text'
+            :param kind: special attribute for the node
+
+        '''
         key_co1 = kind + predicate_dict['key']
         label = self.wrap(" ".join(predicate_dict['text']))
         G.add_node (key_co1, label=label, kind=kind)
 
-    def add_correlation_edge (self, G, predicate_dict1, predicate_dict2, label=None, kind = None):
+
+    def add_correlation_edge (self, G, predicate_dict1, predicate_dict2, label=None, kind=None):
+        ''' Add an edge to networkx for debugging purposes on the contradictions
+
+            :param G: networkx graph
+            :param predicate_dict1: predicate dict with 'key'
+            :param predicate_dict2: the same
+            :param label: label for the edge
+            :param kind: special attribute for the edge
+
+        '''
         key_co1 = kind + predicate_dict1['key']
         key_co2 = kind + predicate_dict2['key']
         G.add_edge(key_co1, key_co2, label=label)
+
 
     def add_determined_expression_nx(self, G, general_kind, special_kind, n1, n2):
         ''' Throws node data into neo4j by expanding data as dictionary.
@@ -127,7 +159,7 @@ class Contradiction:
             :param special_kind: Property "SpecialKind" in the GDB ('anonym'/'negation')
             :param n1: predicate dict 1
             :param n2: predicate dict 2
-            :return:
+
         '''
         if isinstance(n1, list):
             logging.warning("node data is list... taking first")
@@ -140,10 +172,12 @@ class Contradiction:
         self.add_nx_node(G,n2)
         self.add_nx_edge(G,n1,n2, general_kind, special_kind)
 
+
     def add_nx_node(self, G, n):
         G.add_node(n['id'],
                    s_id=n['s_id'],
                    label=self.wrap(" ".join(n['text']).replace("'", "")))
+
 
     def add_nx_edge(self, G, n1, n2, general_kind, special_kind):
         G.add_edge (n1['id'], n2['id'],
@@ -176,10 +210,13 @@ class Contradiction:
 
 
     def draw_key_graphs(self, G):
+        ''' Draw a picture for debugging
+
+        :param G: networkx directed graph
+        :return:
+        '''
         import pylab as plt
         path = './img/contradiction' +  str(next(self.contra_counter)) + ".svg"
-
-
 
         G.graph['graph'] = {'rankdir': 'LR','splines':'line'}
         G.graph['edges'] = {'arrowsize': '4.0'}

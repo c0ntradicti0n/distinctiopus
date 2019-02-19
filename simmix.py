@@ -1023,12 +1023,13 @@ class Simmix:
         @Simmix.standard_range(0, 4)
         def formula_contradicts_generated (ex1,ex2):
             """
-            :param ex1:
-            :param ex2:
-                    pyproover formulas with "pyproover." prefix for proposition "A"
+                :param ex1:
+                :param ex2:
+                        pyproover formulas with "pyproover." prefix for proposition "A"
 
-            :return:
-                    1 True for both, 0.7 for one direction of contradicting, 0 for nothing
+                :return:
+                        1 True for both, 0.7 for one direction of contradicting, 0 for nothing
+
             """
             if symmetric:
                 res1, b1 = formula_contradicts_generated(ex1, ex2)
@@ -1168,7 +1169,8 @@ class Simmix:
         '''
         if isinstance(graph_coro, list):
             for gc in graph_coro:
-                self.write_to_graph(gc, type, exs1, exs2, left_value, right_values)
+                if not gc == None:
+                    self.write_to_graph(gc, type, exs1, exs2, left_value, right_values)
             return
 
         l_s = Simmix.expressions_list(left_value, right_values, exs1, exs2)

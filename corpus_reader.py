@@ -121,13 +121,13 @@ class CorpusReader:
         :return: coref dict with 's_id' and 'i_list'
 
         '''
-        mfas = [re.finditer(r"(((?P<s_id_r>\d+)->\[(?P<m_start>\d+):(?P<m_end>\d+)\])|((?P<s_id_i>\d+)->\[(?P<i_list>(?:\d+)(?:,\s*\d+)*)\]))+", y) for y in coref_string]
+        mfas = [re.finditer(r"(((?P<s_id_r>\d+)->\[(?P<m_start>\d+):(?P<m_end>\d+)\])|((?P<s_id_i>\d+)->(?P<i_list>\[(?:\d+)(?:,\s*\d+)*\])))+", y) for y in coref_string]
         return [[self.parse_coref_dict(m.groupdict()) for m in mfa] if mfa else [] for mfa in mfas]
 
 
 
     def parse_coref_dict(self, d):
-        ''' Parses the content of the coref_dict to some normal data
+        ''' Parses the content of th3->[6]e coref_dict to some normal data
 
             :param d: dict with either 's_id_r' and 'm_start', 'm_end' or 's_id_i' and 'i_list'
             :return: coref dict with 's_id' and 'i_list'

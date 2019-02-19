@@ -39,7 +39,7 @@ class DataframeCursorilyLogician:
     def __init__(self, corpus):
         ''' Set up all the textsuntactical models and the graph database
 
-        :param corpus: corpus instance with loaded conlls
+            :param corpus: corpus instance with loaded conlls
 
         '''
         self.cleanup_debug_img()
@@ -56,6 +56,7 @@ class DataframeCursorilyLogician:
         self.graph.run("MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r")
         self.graph.run("CREATE INDEX ON :Nlp(s_id, i_s)")
 
+
     def annotate_horizon (self, horizon=3):
         ''' writes in a column 'horizon' a list of ids of the following n sentences
 
@@ -70,33 +71,40 @@ class DataframeCursorilyLogician:
                                                    axis=1)
 
 
+    def collect_predicates_from_rows(self, sentence_df_row):
+        ''' Collect predicates from the df in the horizon and put them in the row of the predicate
+
+        :param sentence_df_row: df with 'horizon'
+        :return: the predicates in the horizon
+
+        '''
+        if sentence_df_row['horizon']:
+            return list(itertools.chain.from_iterable(list(self.sentence_df.loc[sentence_df_row['horizon']]['predication'])))
+        else:
+            return None
+
     def annotate_predicates (self):
         ''' Call the function to annotate the predicates for each sentence and puts them into a column 'predication'
 
-        :return: None
+            :return: None
         '''
-        def analyse_predications(x):
-            return self.Predicatrix.analyse_predication (doc=x['spacy_doc'], coref=x['coref'], s_id=x['s_id'])
+
         self.sentence_df['predication'] = self.sentence_df.apply(
-                                                   analyse_predications,
+                                                   self.Predicatrix.analyse_predications,
                                                    result_type="reduce",
                                                    axis=1)
-        def collect_predicates_from_rows(x):
-            if x['horizon']:
-                return list(itertools.chain.from_iterable(list(self.sentence_df.loc[x['horizon']]['predication'])))
-            else:
-                return None
+
         self.sentence_df['predications_in_range'] = self.sentence_df.apply(
-                                                   collect_predicates_from_rows,
+                                                   self.collect_predicates_from_rows,
                                                    result_type="reduce",
                                                    axis=1)
 
     def get_predicates_in_horizon(self, s_id):
         ''' Collects the predicates, that are in the annotatet range, befor and after the sentence, where to look for
-        intresting expressions
+            intresting expressions
 
-        :param s_id: id of the sentence
-        :return: list of super-predicates, means they all have the property of having 'part_predications' under it
+            :param s_id: id of the sentence
+            :return: list of super-predicates, means they all have the property of having 'part_predications' under it
 
         '''
         return self.sentence_df.query('s_id==@s_id')['predications_in_range'].values[0]
@@ -104,10 +112,10 @@ class DataframeCursorilyLogician:
 
     def get_predication(self, id):
         ''' Finds the predicate dict, that a special id belongs to by looking it up in the DataFrame in the Predication-
-        module.
+            module.
 
-        :param id: id of that predicate
-        :return: predicate-dict
+            :param id: id of that predicate
+            :return: predicate-dict
 
         '''
         if isinstance(id, list):
@@ -119,10 +127,10 @@ class DataframeCursorilyLogician:
 
     def get_part_predication(self, pred):
         ''' Collect all particular predications in that sentence. It also looks, if there were more blocks of predicates
-        found.
+            found.
 
-        :param s_id: id of the sentense
-        :return: list of predicate dicts.
+            :param s_id: id of the sentense
+            :return: list of predicate dicts.
 
         '''
         return [pp
@@ -133,10 +141,10 @@ class DataframeCursorilyLogician:
 
     def get_part_predication(self, s_id):
         ''' Collect all particular predications in that sentence. It also looks, if there were more blocks of predicates
-        found.
+            found.
 
-        :param s_id: id of the sentense
-        :return: list of predicate dicts.
+            :param s_id: id of the sentense
+            :return: list of predicate dicts.
 
         '''
         return [pp
@@ -148,12 +156,12 @@ class DataframeCursorilyLogician:
     def get_marked_predication(self, s_id, horizon=2):
         ''' Collect all predicates, that have a certain marker in them.
 
-        It's  usefull, if you want to look for sentences with certain phrases like 'for example', 'in contrast',
-        'except'. I searches for the the string, that makes the mark.
+            It's  usefull, if you want to look for sentences with certain phrases like 'for example', 'in contrast',
+            'except'. I searches for the the string, that makes the mark.
 
-        :param s_id: id of the sentense
-        :param horizon: how many sentences to look forward
-        :return: list of predicate dicts.
+            :param s_id: id of the sentense
+            :param horizon: how many sentences to look forward
+            :return: list of predicate dicts.
 
         '''
         horizon = list(range(int(s_id) + 1, int(s_id) + horizon + 1))
@@ -189,10 +197,10 @@ class DataframeCursorilyLogician:
     def get_correllation_preds(self, pred):
         '''  Collect the predicates, that can be modifyers to the predicate.
 
-        These are either in the same sentence or the coreferenced predicates or in the sentence after
+            These are either in the same sentence or the coreferenced predicates or in the sentence after
 
-        :param pred: the predicate
-        :return: list of predicate_tuples
+            :param pred: the predicate
+            :return: list of predicate_tuples
 
         '''
         if pred == []:
@@ -208,10 +216,10 @@ class DataframeCursorilyLogician:
     def get_addressed_coref (self, coref):
         ''' Analyses a coref mention and looks it up in the Database for predications.
 
-        :param coref: dict  with sentence id, start and end of the mention
-        :return: a list of coreferenced predicates
-        '''
+            :param coref: dict  with sentence id, start and end of the mention
+            :return: a list of coreferenced predicates
 
+        '''
         s_id  = str(coref['s_id'])
         i_list = coref['i_list']
         mask = self.Predicatrix.predicate_df.query("s_id==@s_id")['i_s'].apply(
@@ -223,8 +231,9 @@ class DataframeCursorilyLogician:
     def get_coreferenced_preds (self, pred):
         ''' Get the predicates, that are coreferenced by the coreference tags of another preducate.
 
-        :param pred: predication tuple
-        :return: list oft predicate dicts or [] if not found
+            :param pred: predication tuple
+            :return: list oft predicate dicts or [] if not found
+
         '''
         if any(pred['coref']):
             corefs_list = [x for x in pred['coref'] if x]
@@ -244,7 +253,7 @@ class DataframeCursorilyLogician:
             These routines reclassify some of the contradictions, because also talking about examples can seem to be
             anithetical, if the explanation of the instanciated concept is repeated.
 
-        :return: None
+            :return: None
         '''
         # Lookup what contradicitons were found
         contradictions           = list(self.get_from_gdb('contradiction'))
@@ -265,7 +274,7 @@ class DataframeCursorilyLogician:
     def get_opposed_constellation_gdb (self):
         ''' Returns the pattern, that gave a contradiction-opposition-pair
 
-         :return: 2tuple-2tuple-list-predicate-dict
+            :return: 2tuple-2tuple-list-predicate-dict
 
         '''
         query = \
@@ -291,11 +300,11 @@ RETURN pred1, pred2, pred3, pred4"""
         ''' Look for some common arguments of the contradicting and correlating predications.
             These may may they be the logical subjects, the pre"""
 
-        :return: None
+            :return: None
+
         '''
         # Say, after annotation of the contradictions and their correlating modifyers we have a pair of 'opposed'
         # nodes, as annotated by the correlatrix.
-
         opposed_pair_pairs   = self.get_opposed_constellation_gdb()
 
         put_arg_into_gdb     = self.put_into_gdb('denotation', 'argument')
@@ -308,7 +317,7 @@ RETURN pred1, pred2, pred3, pred4"""
                 graph_coro_arg_binding=put_deno_into_gdb
                 )
 
-
+    ''' Colors for the final graph'''
     kind_color_map = {
             'subject'           : '#5B6C5D',
             'aspect': '#5B6C5D',
@@ -321,6 +330,8 @@ RETURN pred1, pred2, pred3, pred4"""
             'center'            : '#ECFEE8',
             'contra'            : '#EF6F6C'
         }
+
+    '''Edge labels for the final graph'''
     edge_label_map = {
             'exclusive'         : 'side of distinction',
             'aspect': 'aspect',
@@ -356,8 +367,6 @@ RETURN pred1, pred2, pred3, pred4"""
         import matplotlib as plt
         fig = plt.pyplot.gcf()
         fig.set_size_inches(30, 30)
-
-
 
         def wrap (strs):
             return textwrap.fill(strs, 20)
@@ -424,10 +433,13 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}', i_s:{i_s1}}})
                 MERGE (b:Nlp {{s_id:{s_id2}, text:'{text2}', i_s:{i_s2}}}) 
                 ON CREATE SET b.label='{label}', b.id={id2}
                 ON MATCH SET b.id=b.id+[{id2}]
+                MERGE (a)-[:{special_kind_u} {{SpecialKind:'{special_kind}'}}]-(b)
                 MERGE (a)-[:{general_kind} {{SpecialKind:'{special_kind}'}}]-(b)""".format(
                 label=label.upper(),
                 general_kind=general_kind.upper(),
                 special_kind=special_kind,
+                special_kind_u=special_kind.upper(),
+
                 id1=n1['id'],      s_id1=n1['s_id'],       i_s1=n1['i_s'],      text1=" ".join(n1['text']).replace("'", ""),
                 id2=n2['id'],      s_id2=n2['s_id'],       i_s2=n2['i_s'],      text2=" ".join(n2['text']).replace("'", ""),
                 )
@@ -488,7 +500,6 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}', i_s:{i_s1}}})
         query = """MATCH (n:Nlp)
 CALL apoc.create.addLabels( id(n), [ n.label ] ) YIELD node
 RETURN node"""
-        self.graph.run(query)
 
 
     def query_distinctions (self):
