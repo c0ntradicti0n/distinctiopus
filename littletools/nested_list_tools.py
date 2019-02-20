@@ -34,6 +34,25 @@ def flatten_list(l):
             yield el
 
 
+from itertools import tee
+
+def pairwise(iterable):
+    """ Iterate on pairs through the list, return iterator
+        s -> (s0,s1), (s1,s2), (s2, s3),
+
+        >>> list(pairwise([1,2,3,4]))
+        [(1, 2), (2, 3), (3, 4)]
+
+        :param: iterator/sequence
+        :return: pair iterator
+
+    """
+    # From itertools recipes. now it's heavily documented
+    a, b = tee(iterable)
+    next(b, None)
+    return zip(a, b)
+
+
 def curry(function, *args, **kwargs):
     ''' Apply arguments to a function, but leave the last one out
 
@@ -74,6 +93,7 @@ def on_each_iterable (lol, fun):
     else:
         out = lol
     return out
+
 
 def stack_matryoshka(list_to_nest):
     ''' Put lists, that fit into the elements of a list together.

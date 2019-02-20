@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from littletools.corutine_utils import coroutine
 from littletools.generator_tools import count_up
-from predicatrix2 import Predication
+from predicatrix import Predication
 import word_definitions
 from simmix import Simmix
 
@@ -28,8 +28,7 @@ class Contradiction:
 
             >>> from corpus_reader import CorpusReader
             >>> corpus = CorpusReader(corpus_path='./corpora/aristotle_categories/import_conll', only=[9,12,14,16])
-            >>> from predicatrix2 import Predication
-
+            >>> from predicatrix import Predication
 
             Extract some predicates
 

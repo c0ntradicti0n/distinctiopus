@@ -60,6 +60,7 @@
 
 '''
 import types
+from addict import Dict
 import scipy
 import numpy as np
 import numpy_indexed as npi
@@ -89,7 +90,7 @@ def cartesian_product_itertools(arrays):
 
 class Simmix:
     def __init__ (self, similarity_composition, n=1):
-        r''' Setup, which functions are taken to compute a similarity matrix to choose from some natural language expressions, that are already analysed in the manner of :mod:`~predicatrix2.Predication`.
+        r''' Setup, which functions are taken to compute a similarity matrix to choose from some natural language expressions, that are already analysed in the manner of :mod:`~predicatrix.Predication`.
 
             Under the hood a similarity matrix is computed by a cartesian product of the two samples of expressions as
             two vectors and a vector valued function,
@@ -932,22 +933,27 @@ class Simmix:
         """ The defined pair of values mustn't occur in one of the statements at once and in the other. """
         if not attrib_dict:
             raise ValueError("Dictionary of atrributes and values can't be " + str(attrib_dict))
+
+        def match(needle, stack):
+            val = (needle in stack or
+                   (isinstance(needle, tuple) and check_for_tuple_in_list(stack, needle)))
+            return val
+
         @Simmix.standard_range(0, 4)
-        def excluding_pair_boolean_sim_generated(ex1,ex2):
+        def excluding_pair_boolean_sim_generated(ex1, ex2):
             cost = 0
-            ex1 = ex1["full_ex"]
-            ex2 = ex2["full_ex"]
-            def match (needle, stack):
-                val  = (needle in stack or
-                        (isinstance(needle, tuple) and check_for_tuple_in_list(stack,needle)))
-                return val
+            antonym_pair = []
+            beam = Dict()  # addict Dict for nested dict
+
+            fex1 = ex1["full_ex"]
+            fex2 = ex2["full_ex"]
 
             for attr, single_attrib_dict in attrib_dict.items():
-                comp_elements1 = [getattr(x, attr) for x in ex1]
+                comp_elements1 = [getattr(x, attr) for x in fex1]
 
                 for key, item in single_attrib_dict.items():
                     if (match(key, comp_elements1)):
-                            comp_elements2 = [getattr(x,attr) for x in ex2]
+                            comp_elements2 = [getattr(x,attr) for x in fex2]
                             that_key_cost =  int(item in comp_elements2)
                             if isinstance(item,list):
                                 for it in item:
@@ -961,14 +967,14 @@ class Simmix:
                                                              comp_elements2, it))
                                         that_key_cost += actual_cost
                                         if actual_cost:
+                                            antonym_pair.append((key, it))
                                             logging.info('pair of antonyms found -- "%s" and "%s"' % (key, it))
-
-
                             cost += that_key_cost
-
-
-            return cost, {}
+            beam[ex1['id']][ex2['id']] = antonym_pair
+            return cost, beam
         return excluding_pair_boolean_sim_generated
+
+
     def formula_prooves(fit_mix):
         @Simmix.standard_range(0, 4)
         def formula_prooves_generated(ex1, ex2):
@@ -1005,16 +1011,11 @@ class Simmix:
                     triggers.append((k1[0],k2[0]))
                 cost += new_cost
 
-            beam = {}
+            beam = Dict()
             if cost:
                 logging.info("contradiction by antonyms")
-                beam = {ex1['id']:
-                            {ex2['id']:
-                                 {"trigger"   : triggers,
-                                  "key_to_key": str(key_char_to_key_char),
-                                 }
-                            }
-                        }
+                beam[ex1['id']][ex2['id']].trigger = triggers
+                beam[ex1['id']][ex2['id']].key_to_key = key_char_to_key_char
             return cost, beam
         return formula_prooves_generated
 
@@ -1061,16 +1062,11 @@ class Simmix:
                     triggers.append((k1[0],k2[0]))
                 cost += new_cost
 
-            beam = {}
+            beam = Dict()
             if cost :
                 logging.info("contradiction by negation")
-                beam = {ex1['id']:
-                            {ex2['id']:
-                                 {"trigger"   : triggers,
-                                  "key_to_key":str(key_char_to_key_char),
-                                 }
-                            }
-                        }
+                beam[ex1['id']][ex2['id']].trigger = triggers
+                beam[ex1['id']][ex2['id']].key_to_key = str(key_char_to_key_char)
             return cost, beam
         return formula_contradicts_generated
 

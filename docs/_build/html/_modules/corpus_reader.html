@@ -271,13 +271,13 @@
 <span class="sd">        :return: coref dict with &#39;s_id&#39; and &#39;i_list&#39;</span>
 
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">mfas</span> <span class="o">=</span> <span class="p">[</span><span class="n">re</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(((?P&lt;s_id_r&gt;\d+)-&gt;\[(?P&lt;m_start&gt;\d+):(?P&lt;m_end&gt;\d+)\])|((?P&lt;s_id_i&gt;\d+)-&gt;\[(?P&lt;i_list&gt;(?:\d+)(?:,\s*\d+)*)\]))+&quot;</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">coref_string</span><span class="p">]</span>
+        <span class="n">mfas</span> <span class="o">=</span> <span class="p">[</span><span class="n">re</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(((?P&lt;s_id_r&gt;\d+)-&gt;\[(?P&lt;m_start&gt;\d+):(?P&lt;m_end&gt;\d+)\])|((?P&lt;s_id_i&gt;\d+)-&gt;(?P&lt;i_list&gt;\[(?:\d+)(?:,\s*\d+)*\])))+&quot;</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">coref_string</span><span class="p">]</span>
         <span class="k">return</span> <span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">parse_coref_dict</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">groupdict</span><span class="p">())</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">mfa</span><span class="p">]</span> <span class="k">if</span> <span class="n">mfa</span> <span class="k">else</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">mfa</span> <span class="ow">in</span> <span class="n">mfas</span><span class="p">]</span></div>
 
 
 
 <div class="viewcode-block" id="CorpusReader.parse_coref_dict"><a class="viewcode-back" href="../corpus_reader.html#corpus_reader.CorpusReader.parse_coref_dict">[docs]</a>    <span class="k">def</span> <span class="nf">parse_coref_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Parses the content of the coref_dict to some normal data</span>
+        <span class="sd">&#39;&#39;&#39; Parses the content of th3-&gt;[6]e coref_dict to some normal data</span>
 
 <span class="sd">            :param d: dict with either &#39;s_id_r&#39; and &#39;m_start&#39;, &#39;m_end&#39; or &#39;s_id_i&#39; and &#39;i_list&#39;</span>
 <span class="sd">            :return: coref dict with &#39;s_id&#39; and &#39;i_list&#39;</span>

@@ -9,13 +9,13 @@ import pandas as pd
 
 import matplotlib
 
-from littletools.digraph_tools import neo4j2nx
+from littletools.digraph_tools import neo4j2nx_root
 from littletools.nested_list_tools import flatten_reduce
 
 matplotlib.use('TkAgg')
 
 from contradictrix import Contradiction
-from predicatrix2 import Predication
+from predicatrix import Predication
 from correlatrix import Correlation
 from subj_and_aspectrix import Subjects_and_aspects
 
@@ -279,10 +279,11 @@ class DataframeCursorilyLogician:
         '''
         query = \
             """MATCH (pred1)-[:CORRELATION {SpecialKind:'correlated'}]-(pred3),
-      (pred1)-[:CORRELATION {SpecialKind:'opposed'}]-(pred2),
-      (pred2)-[:CORRELATION {SpecialKind:'correlated'}]-(pred4),
-      (pred3)-[:CORRELATION {SpecialKind:'opposed'}]-(pred4)      
-RETURN pred1, pred2, pred3, pred4"""
+              (pred1)-[:CORRELATION {SpecialKind:'opposed'}]-(pred2),
+              (pred2)-[:CORRELATION {SpecialKind:'correlated'}]-(pred4),
+              (pred3)-[:CORRELATION {SpecialKind:'opposed'}]-(pred4)      
+              RETURN pred1, pred2, pred3, pred4
+              """
 
         logging.info("query neo4j for reading by this:\n%s" % query)
         records = self.graph.run(query).data()
@@ -317,6 +318,7 @@ RETURN pred1, pred2, pred3, pred4"""
                 graph_coro_arg_binding=put_deno_into_gdb
                 )
 
+
     ''' Colors for the final graph'''
     kind_color_map = {
             'subject'           : '#5B6C5D',
@@ -331,26 +333,16 @@ RETURN pred1, pred2, pred3, pred4"""
             'contra'            : '#EF6F6C'
         }
 
-    '''Edge labels for the final graph'''
+
+    '''Edge labels for the final picture'''
     edge_label_map = {
-            'exclusive'         : 'side of distinction',
-            'aspect': 'aspect',
-
-            'subject'           : 'subject',
-            'aspects': 'aspects',
-            'subjects': 'subjects',
-            'opposed':'contrast',
-
-            'predicate'         : 'sentence',
-            'example'           : 'example',
-            'explanation'       : 'explanation',
-            'differential_layer': 'aspect',
-            'correlated'        : 'correlation',
-            'center'            : "distinction",
-            'contra'            : 'contrast',
-            'computed'          : 'compared with',
-            'abc'                : '?'
-        }
+        'D_IN' : 'distinguished in',
+        'D_TO' : 'this side',
+        'SUBJECT': 'thema',
+        'ASPECT': 'rhema',
+        'SUBJECTS_ASPECTS': 'subj or aspect?',
+        'what?': '???'
+    }
 
 
     def draw(self, G, path):
@@ -363,6 +355,7 @@ RETURN pred1, pred2, pred3, pred4"""
         '''
         path = path + 'distinction.svg'
 
+        from networkx.drawing.nx_agraph import graphviz_layout
         import pylab as pylab
         import matplotlib as plt
         fig = plt.pyplot.gcf()
@@ -372,13 +365,13 @@ RETURN pred1, pred2, pred3, pred4"""
             return textwrap.fill(strs, 20)
 
         #wrapped_node_labels = {n: {'label':wrap(d)} for n, d in G.nodes(data='text') if d}
-        wrapped_node_labels = {n: wrap(d) for n, d in G.nodes(data='text') if d}
+        wrapped_node_labels = {n: {'label': wrap(d)} for n, d in G.nodes(data='text') if d}
 
-        edge_labels = {(u,v,1): {'xlabel': self.edge_label_map[d]} for u,v, d in G.edges(data='SpecialKind', default='what?')}
+        edge_labels = {(u,v,1): {'xlabel': self.edge_label_map[d]} for u,v, d in G.edges(data='kind', default='what?')}
         node_colors =  {n: {'style':'filled', 'fillcolor':self.kind_color_map[d]} for n, d in G.nodes(data='SpecialKind') if d}
 
         nx.set_edge_attributes(G, edge_labels)
-        #nx.set_node_attributes(G, wrapped_node_labels)
+        nx.set_node_attributes(G, wrapped_node_labels)
         nx.set_node_attributes(G, node_colors)
 
         G.graph['graph'] = {'rankdir': 'LR',
@@ -388,8 +381,8 @@ RETURN pred1, pred2, pred3, pred4"""
 
         #spectral = nx.spectral_layout(G)
         spring = nx.spring_layout(G)
-        #dot_layout = graphviz_layout(G, prog='dot')
-        pos = kamada_kawai
+        dot_layout = graphviz_layout(G, prog='dot')
+        pos = spring
 
         options = {
             'node_color': 'blue',
@@ -409,11 +402,12 @@ RETURN pred1, pred2, pred3, pred4"""
 
         #plt.title("\n".join([wrap(x, 90) for x in [title, wff_nice, wff_ugly]]), pad=20)
         #pylab.axis('off')
+
         pylab.savefig(path, dpi=200)
         pylab.clf()
-        #A = nx.drawing.nx_agraph.to_agraph(G)
-        #A.layout('dot')
-        #A.draw(path = "found_distinction.svg")
+        A = nx.drawing.nx_agraph.to_agraph(G)
+        A.layout('dot')
+        A.draw(path = "found_distinction.svg")
 
 
     def add_determined_expression (self, label, general_kind, special_kind, n1, n2):
@@ -443,7 +437,7 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}', i_s:{i_s1}}})
                 id1=n1['id'],      s_id1=n1['s_id'],       i_s1=n1['i_s'],      text1=" ".join(n1['text']).replace("'", ""),
                 id2=n2['id'],      s_id2=n2['s_id'],       i_s2=n2['i_s'],      text2=" ".join(n2['text']).replace("'", ""),
                 )
-        logging.info ("querying neo4j the following:\n %s" % query)
+        logging.info ("querying neo4j for %s" % general_kind)
         self.graph.run(query)
 
 
@@ -478,7 +472,7 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}', i_s:{i_s1}}})
                 WHERE ID(a) < ID(b)
                 RETURN a,b """ % kind.upper()
         )
-        logging.info("query neo4j:\n%s" % query)
+        logging.info("query neo4j for %s" % kind)
         records = self.graph.run(query).data()
         
         records = [
@@ -500,7 +494,7 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}', i_s:{i_s1}}})
         query = """MATCH (n:Nlp)
 CALL apoc.create.addLabels( id(n), [ n.label ] ) YIELD node
 RETURN node"""
-
+        self.graph.run(query)
 
     def query_distinctions (self):
         """ Makes the query for the distinctions in neo4j.
@@ -509,43 +503,43 @@ RETURN node"""
             aspects
 
             :return: None
-            Match (a:DISTINGUISH8), (b:DISTINGUISH8)
-            Where a.first = b.second or a.second = b.first
-            Merge (a)-[:KNIT]-(b)
-            return a,b
-
-
-            MATCH (n1)--(n2)
-            WHERE n1.s_id = n2.s_id and all(x IN n1.i_s WHERE x IN n2.i_s)
-            return n2,n1
 
         """
         query = \
             r"""
-MATCH
-(pred3)-[r1{SpecialKind:'correlated'}]-(pred1),
-(pred2)-[r2{SpecialKind:'correlated'}]-(pred4),
-(pred4)-[r3{SpecialKind:'opposed'}]-(pred3), 
-(pred1)-[r0{SpecialKind:'opposed'}]-(pred2),
-
-(pred1)-[r4{SpecialKind:'subject'}]-(arg1), 
-(pred2)-[r5{SpecialKind:'subject'}]-(arg2),
-(pred3)-[r6{SpecialKind:'aspect'}]-(arg3), 
-(pred4)-[r7{SpecialKind:'aspect'}]-(arg4),
-(arg1)-[r8{SpecialKind:'subjects'}]-(arg2),
-(arg3)-[r9{SpecialKind:'aspects'}]-(arg4)
-//MERGE (pred1)-[r10:KN]-(d:DISTINGUISH8 {first:[ID(arg1), ID(pred1), ID(pred3), ID(arg3)], second:[ID(arg2), ID(pred2), ID(pred4), ID(arg4)]})-[:KN]-(pred2)
-SET 
-pred1.d = True, pred2.d=True, pred3.d = True, pred4.d=True, 
-arg1.d = True, arg2.d=True, arg3.d=True, arg4.d=True, 
-r1.d=True, r2.d=True, r4.d=True, r5.d=True, r6.d=True, r7.d=True, r8.d=True, r9.d=True
-RETURN arg1, arg2, pred1, pred2, pred3, pred4, arg3, arg4
-"""
+            // group all contradictions by an id
+            CALL algo.unionFind('CONNOTATION', 'CONTRADICTION', {write:true, partitionProperty:"cluster"})
+            YIELD nodes as n1
+            // group all the correlated hcains by an id
+            CALL algo.unionFind('CONNOTATION', 'CORRELATED', {write:true, partitionProperty:"side"})
+            YIELD nodes as n2
+            
+            // find the greater and smaller sections, what is distinguished
+            MATCH (a:CONNOTATION)--(b:CONNOTATION)
+            WHERE a.cluster = b.cluster and not a.side = b.side
+            
+            // create the nodes first
+            MERGE (x:CORE {cluster:a.cluster, id:a.cluster})
+            // create the sides
+            MERGE (y:SIDE {cluster:a.cluster, side:a.side, id:a.side})
+            MERGE (z:SIDE {cluster:a.cluster, side:b.side, id:b.side})
+            
+            // connect CORE and sides
+            MERGE (x)-[:D_IN]->(y)
+            MERGE (x)-[:D_IN]->(z)
+            
+            // connect CORE, SIDE
+            MERGE (a)<-[:D_TO]-(y)
+            MERGE (b)<-[:D_TO]-(z)
+            
+            return x
+            """
         logging.info ("query neo4j for distinctions")
         self.distinction_df =  pd.DataFrame(self.graph.run(query).data()).applymap(
             lambda x: x['text']
         )
-        G = neo4j2nx (self.graph, subgraph_marker='d')
+
+        G = neo4j2nx_root (self.graph, markers=['CORE', 'SIDE', 'CORRELATED', 'DENOTATION'])
         self.draw(G,'img/')
         return self.distinction_df
 

@@ -41,7 +41,6 @@ def parse_webanno():
     return None
 
 
-
 def main():
     logging_setup()
     if args.webanno_tsv:
@@ -55,11 +54,11 @@ def main():
     Logician.annotate_contradictions()
     Logician.annotate_correlations()
     Logician.annotate_subjects_and_aspects()
-
     Logician.move_labels()
-    df = Logician.query_distinctions()
-    print(df.to_excel(args.conll+"/../output.xlsx"))
 
+    df = Logician.query_distinctions()
+
+    #print(df.to_excel(args.conll+"/../output.xlsx"))
     #Logician.draw_as_dot_digraph(digraph, args.work_dir + "/found_distinctions." + args.output)
     return 0
 

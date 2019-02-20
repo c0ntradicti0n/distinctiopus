@@ -1,26 +1,18 @@
-class HardcoreExpression (dict):
+import addict
+import cytoolz
+
+class HardcoreExpression (addict):
     def __init__ (self, d=None):
-        s_id
-        i_s
-        text
-        spacy_tokens
-        doc
-        dep_
-        dep
-        pos_
-        pos
-        tag_
-        tag
-        lemma_
-        lemma
-        importance
-        elmo_origninal
-        elmo_sum
+
 
     def get_coreferenced(self):
+        if 'coref' in self
 
     def __str__(self):
-        return ...
+        if 'text' in self:
+            return self['text']
+        else:
+            return super.__str__(self)
 
 
 
@@ -36,5 +28,9 @@ class Argument (HardcoreExpression):
     def __init__ (self, d=None):
 
 class HardcoreTuple (tuple):
+    def __init__(self):
+        pass
 
-class HardcoreList (list):
+class HardcoreList (L):
+    def __init__(self):
+        pass

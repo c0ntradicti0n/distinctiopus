@@ -1,5 +1,5 @@
 from pairix import Pairix
-from predicatrix2 import Predication
+from predicatrix import Predication
 from corpus_reader import nlp
 from littletools.corutine_utils import coroutine
 from littletools.generator_tools import count_up

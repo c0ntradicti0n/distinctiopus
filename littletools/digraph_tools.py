@@ -1,5 +1,7 @@
 import networkx as nx
 
+from littletools.nested_list_tools import pairwise
+
 
 def transitive_reduction(G):
     """ Returns transitive reduction of a directed graph
@@ -60,8 +62,7 @@ def source_sink_generator (DiG):
 
 
 
-
-def rs2graph(rs):
+def rs2graph(rs, G=None):
     """ Materialze the records of pyneo in networkx
 
         :param rs: records from query
@@ -69,22 +70,23 @@ def rs2graph(rs):
 
     """
     # http://www.solasistim.net/posts/neo4j_to_networkx/
-    G = nx.MultiDiGraph()
+    if G == None:
+        G = nx.MultiDiGraph()
 
     def add_nodes_and_edge(tup):
         (n1, n2, r) = tup
-        G.add_node(str(set(n1['id'])), **n1)
-        G.add_node(str(set(n2['id'])), **n2)
-        G.add_edge(str(set(n1['id'])), str(set(n2['id'])), **r)
+
+        G.add_node(n1.identity, kind=list(n1.labels), **n1)
+        G.add_node(n2.identity, kind=list(n1.labels), **n2)
+        G.add_edge(n1.identity, n2.identity, kind=r)
 
     result_tups = list(tuple(r) for r in rs)
     for tup in result_tups:
         add_nodes_and_edge(tup)
-
     return G
 
 
-def neo4j2nx (pyneo4j, subgraph_marker):
+def neo4j2nx_mycel (pyneo4j, subgraph_marker):
     ''' Write a subgraph in neo4j, where a certain attribute is set, to nx
 
         :param pyneo4j: pyneo instance to call `run`
@@ -101,4 +103,22 @@ def neo4j2nx (pyneo4j, subgraph_marker):
     G = rs2graph(record)
     return G
 
+
+def neo4j2nx_root (pyneo4j, markers):
+    ''' Write a subgraph in neo4j, where a certain attribute is set, to nx
+
+        :param pyneo4j: pyneo instance to call `run`
+        :param subgraph_marker: the marker, that is set in the graph, just the property name
+        :return: nx.MultiDiGraph
+
+    '''
+    G = nx.MultiDiGraph()
+    for head, child in pairwise(markers):
+        query = r"""
+        MATCH(a:{head})-[r]->(b:{child})
+        RETURN a, b, type(r)
+        """.format(head=head, child=child)
+        record =  pyneo4j.run (query)
+        G = rs2graph(record, G)
+    return G
 

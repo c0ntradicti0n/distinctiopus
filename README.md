@@ -28,11 +28,11 @@ It is important, that you install the dependencies in a `virtualenv`, because of
 (= `spacy-nightly`), that must be silently installed over `spacy 2.0.18`. because AllenAI again uses the sentence 
 segmentation of spacy, but checks for the installed version (this works, if you install `spacy-nightly` after `spacy==2.0.18`, to override it)
 
-* [NeuralCoref](https://github.com/huggingface/neuralcoref)
+   * [NeuralCoref](https://github.com/huggingface/neuralcoref)
 
 Use the model `en_coref_sm` in Prepr0cess0r.
-
-* [AllenAI's](https://allennlp.org) [Elmo Embedder](https://github.com/allenai/allennlp/blob/master/tutorials/how_to/elmo.md)
+ 
+   * [AllenAI's](https://allennlp.org) [Elmo Embedder](https://github.com/allenai/allennlp/blob/master/tutorials/how_to/elmo.md)
 
 For this you can fetch the models with `wget` from the S0krates's home directory:
 
@@ -42,39 +42,23 @@ For this you can fetch the models with `wget` from the S0krates's home directory
     wget "https://s3-us-west-2.amazonaws.com/allennlp/models/elmo/2x4096_512_2048cnn_2xhighway/elmo_2x4096_512_2048cnn_2xhighway_weights.hdf5"
 
 
-* [NLTK](https://www.nltk.org)
+  * [NLTK](https://www.nltk.org)
 
 It it used because of wordnet for fetching antonyms and abstractness.
 
-* [Neo4J](https://neo4j.com/)
+  * [Neo4J](https://neo4j.com/)
 
 If you didn't install Neo4J with autostart, start it:
 
      sudo service neo4j start
  
-
-* [Prepr0cess0r](https://github.com/c0ntradicti0n/Prepr0cess0r)
-
+  * [Prepr0cess0r](https://github.com/c0ntradicti0n/Prepr0cess0r)
 
 If you want to mine distinctions of your choice, you have also to preprocess the text, to obtain a folder of conll-files for your text.
 This is necessary combine the best features of each of these tools, because in other dimensions they may have not so nice results.
 This is possible with the text-preprocessor tool, I build, watch out here for using this before:
 
 ### Installing
-
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
-
-```
-Give the example
-```
-
-And repeat
-
-```
-until finished
-```
 
 End with an example of getting some data out of the system or using it for a little demo
 
@@ -108,16 +92,13 @@ To see the docs, go along here:
 
 ## Contributing
 
-
 ## Versioning
-
 
 ## Authors
 *** Stefan Werner *** 
 See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 
 ## License
-
 
 ## Acknowledgments
 

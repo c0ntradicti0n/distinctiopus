@@ -1173,12 +1173,13 @@
         <span class="nd">@Simmix</span><span class="o">.</span><span class="n">standard_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
         <span class="k">def</span> <span class="nf">formula_contradicts_generated</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span><span class="n">ex2</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            :param ex1:</span>
-<span class="sd">            :param ex2:</span>
-<span class="sd">                    pyproover formulas with &quot;pyproover.&quot; prefix for proposition &quot;A&quot;</span>
+<span class="sd">                :param ex1:</span>
+<span class="sd">                :param ex2:</span>
+<span class="sd">                        pyproover formulas with &quot;pyproover.&quot; prefix for proposition &quot;A&quot;</span>
 
-<span class="sd">            :return:</span>
-<span class="sd">                    1 True for both, 0.7 for one direction of contradicting, 0 for nothing</span>
+<span class="sd">                :return:</span>
+<span class="sd">                        1 True for both, 0.7 for one direction of contradicting, 0 for nothing</span>
+
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="k">if</span> <span class="n">symmetric</span><span class="p">:</span>
                 <span class="n">res1</span><span class="p">,</span> <span class="n">b1</span> <span class="o">=</span> <span class="n">formula_contradicts_generated</span><span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">)</span>
@@ -1318,7 +1319,8 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">graph_coro</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">gc</span> <span class="ow">in</span> <span class="n">graph_coro</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">write_to_graph</span><span class="p">(</span><span class="n">gc</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">exs1</span><span class="p">,</span> <span class="n">exs2</span><span class="p">,</span> <span class="n">left_value</span><span class="p">,</span> <span class="n">right_values</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">gc</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">write_to_graph</span><span class="p">(</span><span class="n">gc</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">exs1</span><span class="p">,</span> <span class="n">exs2</span><span class="p">,</span> <span class="n">left_value</span><span class="p">,</span> <span class="n">right_values</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="n">l_s</span> <span class="o">=</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">expressions_list</span><span class="p">(</span><span class="n">left_value</span><span class="p">,</span> <span class="n">right_values</span><span class="p">,</span> <span class="n">exs1</span><span class="p">,</span> <span class="n">exs2</span><span class="p">)</span>

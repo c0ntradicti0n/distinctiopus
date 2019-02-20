@@ -243,10 +243,17 @@
              <span class="s1">&#39;i&#39;</span><span class="p">:</span> <span class="n">Predication</span><span class="o">.</span><span class="n">spacy_i</span><span class="p">}</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">predicate_df</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">argument_df</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">argument_df</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span></div>
 
-        <span class="k">return</span> <span class="kc">None</span></div>
 
+<div class="viewcode-block" id="Predication.analyse_predications"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication.analyse_predications">[docs]</a>    <span class="k">def</span> <span class="nf">analyse_predications</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sentence_df_row</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Collect all information from a sentence DataFrame row and analyse that predication with this tool</span>
+
+<span class="sd">            :param sentence_df_row: df with &#39;spacy_doc&#39; and &#39;coref&#39; and &#39;s_id&#39; columns</span>
+<span class="sd">            :return: predicate dict</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">analyse_predication</span> <span class="p">(</span><span class="n">doc</span><span class="o">=</span><span class="n">sentence_df_row</span><span class="p">[</span><span class="s1">&#39;spacy_doc&#39;</span><span class="p">],</span> <span class="n">coref</span><span class="o">=</span><span class="n">sentence_df_row</span><span class="p">[</span><span class="s1">&#39;coref&#39;</span><span class="p">],</span> <span class="n">s_id</span><span class="o">=</span><span class="n">sentence_df_row</span><span class="p">[</span><span class="s1">&#39;s_id&#39;</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="Predication.spacy_dep_"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication.spacy_dep_">[docs]</a>    <span class="k">def</span> <span class="nf">spacy_dep_</span> <span class="p">(</span><span class="n">ex</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">set</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dep_</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ex</span> <span class="p">)</span></div>

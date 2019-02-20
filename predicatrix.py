@@ -28,6 +28,9 @@ class Predication():
             These chunks are dicts of other properties, that represent a part of the sentence with different properties.
             A predicate for instance, contains
 
+            Example 1
+            =========
+
             >>> import spacy
             >>> nlp = spacy.load('en_core_web_sm')
             >>> P = Predication()
@@ -37,6 +40,20 @@ class Predication():
             ['nsubj', 'aux', 'ROOT', 'prt', 'advmod', 'punct']
             >>> pred[0]['text']
             ['What', 'is', 'going', 'on', 'here', '?']
+
+            Or if you load a corpus, you can specify the predicates you want like this:
+
+            Example 2
+            =========
+
+            >>> from corpus_reader import CorpusReader
+            >>> corpus = CorpusReader(corpus_path='./corpora/aristotle_categories/import_conll', only=[16])
+            >>> from predicatrix import Predication
+            >>> P = Predication(corpus)
+            >>> from littletools.nested_list_tools import type_spec, flatten_reduce
+            >>> ps = flatten_reduce (corpus.sentence_df.apply(P.analyse_predications, axis=1, result_type="reduce").values.tolist())
+            >>> print (type_spec(ps))
+            list<dict<str, ...>>
 
             :param corpus: a corpus_reader_object, to overlook the document once, to precompute all lemmata and
             td-idf-values.
@@ -270,7 +287,7 @@ class Predication():
                      If the predicate is triggered by an adjective-substantive-junction, then the substantive (with its
                      dependents) is the lonly argument and the adjective with its dependents is the predicate
 
-            :return: dict from :func:`~predicatrix2.Predication.build_predicate`
+            :return: dict from :func:`~predicatrix.Predication.build_predicate`
 
         '''
         predicate_i    = []

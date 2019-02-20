@@ -83,10 +83,14 @@ class CorpusReader:
 
         :param x: pandas Series of Enhanced UD
         :return: index list
+
         '''
         invisible_nodes_translation_dict = dict(zip(x['inv_id'],list(range(len(x)))))
         x['id'] = invisible_nodes_translation_dict.values()
-        x['head_id'] = [ invisible_nodes_translation_dict[h] for h in x['inv_head_id']]
+        try:
+            x['head_id'] = [ invisible_nodes_translation_dict[h] for h in x['inv_head_id']]
+        except KeyError:
+            a = 1
         return x
 
 

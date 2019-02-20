@@ -212,15 +212,12 @@ and second it evaluates the similarity of these phrases, what would be the fitti
 <dl class="method">
 <dt id="CursorilyLogician.DataframeCursorilyLogician.annotate_correlations">
 <code class="descname">annotate_correlations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/CursorilyLogician.html#DataframeCursorilyLogician.annotate_correlations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CursorilyLogician.DataframeCursorilyLogician.annotate_correlations" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Look for pairs of hypotactical and paratactical and anaphorical expressions with similar semantics and</dt>
-<dd><p class="first">modalities</p>
+<dd><p>Look for pairs of hypotactical and paratactical and anaphorical expressions with similar semantics and
+modalities</p>
 <p>That means expressions, that both talk about examples or that both give reasons or are a modifyer to the
 seemingly contradictions, that are found.</p>
-<p class="last">These routines reclassify some of the contradictions, because also talking about examples can seem to be
+<p>These routines reclassify some of the contradictions, because also talking about examples can seem to be
 anithetical, if the explanation of the instanciated concept is repeated.</p>
-</dd>
-</dl>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -264,10 +261,8 @@ anithetical, if the explanation of the instanciated concept is repeated.</p>
 <dl class="method">
 <dt id="CursorilyLogician.DataframeCursorilyLogician.annotate_subjects_and_aspects">
 <code class="descname">annotate_subjects_and_aspects</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/CursorilyLogician.html#DataframeCursorilyLogician.annotate_subjects_and_aspects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CursorilyLogician.DataframeCursorilyLogician.annotate_subjects_and_aspects" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Look for some common arguments of the contradicting and correlating predications.</dt>
-<dd>These may may they be the logical subjects, the pre”“”</dd>
-</dl>
+<dd><p>Look for some common arguments of the contradicting and correlating predications.
+These may may they be the logical subjects, the pre”“”</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -293,6 +288,22 @@ These pictures are usefull for debugging.</p>
 </tbody>
 </table>
 </div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="CursorilyLogician.DataframeCursorilyLogician.collect_predicates_from_rows">
+<code class="descname">collect_predicates_from_rows</code><span class="sig-paren">(</span><em>sentence_df_row</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CursorilyLogician.html#DataframeCursorilyLogician.collect_predicates_from_rows"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CursorilyLogician.DataframeCursorilyLogician.collect_predicates_from_rows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Collect predicates from the df in the horizon and put them in the row of the predicate</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sentence_df_row</strong> – df with ‘horizon’</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the predicates in the horizon</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -477,7 +488,8 @@ module.</p>
 <dl class="attribute">
 <dt id="CursorilyLogician.DataframeCursorilyLogician.kind_color_map">
 <code class="descname">kind_color_map</code><em class="property"> = {'aspect': '#5B6C5D', 'center': '#ECFEE8', 'contra': '#EF6F6C', 'correl': '#465775', 'differential_layer': 'crimson', 'example': '#59C9A5', 'explanation': '#56E39F', 'predicate': '#9FFFF5', 'subject': '#5B6C5D'}</em><a class="headerlink" href="#CursorilyLogician.DataframeCursorilyLogician.kind_color_map" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Edge labels for the final graph</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="CursorilyLogician.DataframeCursorilyLogician.move_labels">

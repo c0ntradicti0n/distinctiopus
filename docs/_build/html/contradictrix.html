@@ -164,30 +164,52 @@
 <code class="descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/contradictrix.html#Contradiction.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#contradictrix.Contradiction.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>This module lets you find the contradictions between the predicates.</p>
 <p>The constructor sets up the filters to find them.
-Call then <code class="xref py py-func docutils literal notranslate"><span class="pre">find_contradcitions()</span></code> on predicates</p>
+Call then <code class="xref py py-func docutils literal notranslate"><span class="pre">find_contradictions()</span></code> on predicates</p>
 <p>Get some annotated text data…</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">corpus_reader</span> <span class="k">import</span> <span class="n">CorpusReader</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">corpus</span> <span class="o">=</span> <span class="n">CorpusReader</span><span class="p">(</span><span class="n">corpus_path</span><span class="o">=</span><span class="s1">&#39;./corpora/aristotle_categories/import_conll&#39;</span><span class="p">,</span> <span class="n">only</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">17</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">corpus</span> <span class="o">=</span> <span class="n">CorpusReader</span><span class="p">(</span><span class="n">corpus_path</span><span class="o">=</span><span class="s1">&#39;./corpora/aristotle_categories/import_conll&#39;</span><span class="p">,</span> <span class="n">only</span><span class="o">=</span><span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">16</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">predicatrix2</span> <span class="k">import</span> <span class="n">Predication</span>
 </pre></div>
 </div>
-<p>Extract some predicates:</p>
+<p>Extract some predicates</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">P</span> <span class="o">=</span> <span class="n">Predication</span><span class="p">(</span><span class="n">corpus</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">predications1</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">predicate_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">predications2</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">predicate_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">littletools.nested_list_tools</span> <span class="k">import</span> <span class="n">type_spec</span><span class="p">,</span> <span class="n">flatten_reduce</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ps</span> <span class="o">=</span> <span class="n">flatten_reduce</span> <span class="p">(</span><span class="n">corpus</span><span class="o">.</span><span class="n">sentence_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">analyse_predications</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">result_type</span><span class="o">=</span><span class="s2">&quot;reduce&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Look at the type, its a list of dicts</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="p">(</span><span class="n">type_spec</span> <span class="p">(</span><span class="n">ps</span><span class="p">))</span>
+<span class="go">    list&lt;dict&lt;str, ...&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">C</span> <span class="o">=</span> <span class="n">Contradiction</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">C</span><span class="o">.</span><span class="n">find_contradictive</span><span class="p">(</span><span class="n">ps</span><span class="p">,</span><span class="n">ps</span><span class="p">)</span>
+<span class="go">[([0], [1, 2, 3]), ([1], [0, 2, 3]), ([2], [0, 1, 3]), ([3], [0, 1, 2])]</span>
 </pre></div>
 </div>
-<p>Get the contradiction from them:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">C</span><span class="o">.</span><span class="n">find_contradictive</span><span class="p">(</span><span class="n">predicates1</span><span class="o">=</span><span class="n">predications1</span><span class="p">,</span> <span class="n">predicates2</span><span class="o">=</span><span class="n">predications2</span><span class="p">)</span>
-</pre></div>
-</div>
+<p>This means, the sentence no 0 contradicts sentences 1,2,3 and so on
+Problems with this arise from faulty grammar, missing antonym information, bad sentence splitting or maybe the
+phrase has a more complex paraphrasing structure of the contrasting phrase</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="contradictrix.Contradiction.add_correlation_edge">
 <code class="descname">add_correlation_edge</code><span class="sig-paren">(</span><em>G</em>, <em>predicate_dict1</em>, <em>predicate_dict2</em>, <em>label=None</em>, <em>kind=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/contradictrix.html#Contradiction.add_correlation_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#contradictrix.Contradiction.add_correlation_edge" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Add an edge to networkx for debugging purposes on the contradictions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>G</strong> – networkx graph</li>
+<li><strong>predicate_dict1</strong> – predicate dict with ‘key’</li>
+<li><strong>predicate_dict2</strong> – the same</li>
+<li><strong>label</strong> – label for the edge</li>
+<li><strong>kind</strong> – special attribute for the edge</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="contradictrix.Contradiction.add_determined_expression_nx">
@@ -197,15 +219,12 @@ Call then <code class="xref py py-func docutils literal notranslate"><span class
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>general_kind</strong> – Property “GeneralKind” in the GDB</li>
 <li><strong>special_kind</strong> – Property “SpecialKind” in the GDB (‘anonym’/’negation’)</li>
 <li><strong>n1</strong> – predicate dict 1</li>
 <li><strong>n2</strong> – predicate dict 2</li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
 </td>
 </tr>
 </tbody>
@@ -225,12 +244,37 @@ Call then <code class="xref py py-func docutils literal notranslate"><span class
 <dl class="method">
 <dt id="contradictrix.Contradiction.add_possible_contrasting_node">
 <code class="descname">add_possible_contrasting_node</code><span class="sig-paren">(</span><em>G</em>, <em>predicate_dict</em>, <em>kind=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/contradictrix.html#Contradiction.add_possible_contrasting_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#contradictrix.Contradiction.add_possible_contrasting_node" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Add a node to networkx for debugging the contradiction</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>G</strong> – networkx graph</li>
+<li><strong>predicate_dict</strong> – dict with ‘key’ and ‘text’</li>
+<li><strong>kind</strong> – special attribute for the node</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="contradictrix.Contradiction.draw_key_graphs">
 <code class="descname">draw_key_graphs</code><span class="sig-paren">(</span><em>G</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/contradictrix.html#Contradiction.draw_key_graphs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#contradictrix.Contradiction.draw_key_graphs" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Draw a picture for debugging</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>G</strong> – networkx directed graph</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="contradictrix.Contradiction.find_contradictive">
@@ -268,7 +312,16 @@ See <code class="xref py py-data docutils literal notranslate"><span class="pre"
 <dl class="method">
 <dt id="contradictrix.Contradiction.wrap">
 <code class="descname">wrap</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/contradictrix.html#Contradiction.wrap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#contradictrix.Contradiction.wrap" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>wrap the line</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>line</strong> – just a string with text</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </dd></dl>
 
