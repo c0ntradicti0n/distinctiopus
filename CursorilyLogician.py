@@ -4,6 +4,8 @@
 import itertools
 import networkx as nx
 import textwrap
+
+from hardcore_annotated_expression import HEAL, HEAT
 from littletools.corutine_utils import coroutine
 import pandas as pd
 
@@ -110,21 +112,6 @@ class DataframeCursorilyLogician:
         return self.sentence_df.query('s_id==@s_id')['predications_in_range'].values[0]
 
 
-    def get_predication(self, id):
-        ''' Finds the predicate dict, that a special id belongs to by looking it up in the DataFrame in the Predication-
-            module.
-
-            :param id: id of that predicate
-            :return: predicate-dict
-
-        '''
-        if isinstance(id, list):
-            if len(id)!=0:
-                id=id[0]
-        id = str(id)
-        return self.Predicatrix.predicate_df.query('id==@id').to_dict(orient='records')
-
-
     def get_part_predication(self, pred):
         ''' Collect all particular predications in that sentence. It also looks, if there were more blocks of predicates
             found.
@@ -210,22 +197,7 @@ class DataframeCursorilyLogician:
         predicates_in_sentence = self.get_part_predication(s_id)        # predicates from same sentence
         coref_preds            = self.get_coreferenced_preds (pred)     # predicates that are coreferencing/-ed
         marked_preds           = self.get_marked_predication (s_id)     # predicates with examples or meaning explanations ('e.g.', 'by saying that I mean')
-        return predicates_in_sentence + coref_preds + marked_preds
-
-
-    def get_addressed_coref (self, coref):
-        ''' Analyses a coref mention and looks it up in the Database for predications.
-
-            :param coref: dict  with sentence id, start and end of the mention
-            :return: a list of coreferenced predicates
-
-        '''
-        s_id  = str(coref['s_id'])
-        i_list = coref['i_list']
-        mask = self.Predicatrix.predicate_df.query("s_id==@s_id")['i_s'].apply(
-            lambda ex_i: True if [m for m in i_list if m in ex_i] else False)
-        assert mask.any()
-        return self.Predicatrix.predicate_df.query("s_id==@s_id")[mask].to_dict(orient='records')
+        return HEAL(predicates_in_sentence + coref_preds + marked_preds)
 
 
     def get_coreferenced_preds (self, pred):
@@ -237,7 +209,7 @@ class DataframeCursorilyLogician:
         '''
         if any(pred['coref']):
             corefs_list = [x for x in pred['coref'] if x]
-            preds = [p for corefs in corefs_list for coref in corefs for p in self.get_addressed_coref(coref)]
+            preds = [p for corefs in corefs_list for coref in corefs for p in self.Predicatrix.get_addressed_coref(coref)]
             return preds
         else:
             return []
@@ -256,7 +228,7 @@ class DataframeCursorilyLogician:
             :return: None
         '''
         # Lookup what contradicitons were found
-        contradictions           = list(self.get_from_gdb('contradiction'))
+        contradictions           = self.get_from_gdb('contradiction')
 
         # Coroutine for writing the simmix ressults into the gdb
         put_correlation_into_gdb = self.put_into_gdb("Connotation", "correlation")
@@ -266,8 +238,8 @@ class DataframeCursorilyLogician:
             poss_correl_r = self.get_correllation_preds(contra2)
 
             self.Correlatrix.annotate_correlations(
-                contradiction= (contra1, contra2),
-                possible_to_correlate=(poss_correl_l, poss_correl_r),
+                contradiction= HEAT((contra1, contra2)),
+                possible_to_correlate=HEAT((poss_correl_l, poss_correl_r)),
                 graph_coro=put_correlation_into_gdb)
 
 
@@ -288,10 +260,10 @@ class DataframeCursorilyLogician:
         logging.info("query neo4j for reading by this:\n%s" % query)
         records = self.graph.run(query).data()
         records = [
-            (((self.get_predication(tuple4['pred1']['id']),
-               self.get_predication(tuple4['pred2']['id'])),
-              (self.get_predication(tuple4['pred3']['id']),
-               self.get_predication(tuple4['pred4']['id']))))
+            (((self.Predicatrix.get_predication(tuple4['pred1']['id']),
+               self.Predicatrix.get_predication(tuple4['pred2']['id'])),
+              (self.Predicatrix.get_predication(tuple4['pred3']['id']),
+               self.Predicatrix.get_predication(tuple4['pred4']['id']))))
             for tuple4 in records
         ]
         return records
@@ -339,8 +311,12 @@ class DataframeCursorilyLogician:
         'D_IN' : 'distinguished in',
         'D_TO' : 'this side',
         'SUBJECT': 'thema',
+        'SUBJECTS': 'themas',
         'ASPECT': 'rhema',
-        'SUBJECTS_ASPECTS': 'subj or aspect?',
+        'ASPECTS': 'rhemas',
+        'SUBJECTS_ASPECTS': 'del',
+        'COMPARED':'really comparated',
+        'ARGUMENT':'del',
         'what?': '???'
     }
 
@@ -420,13 +396,24 @@ class DataframeCursorilyLogician:
             :return: None
 
         '''
+        if  isinstance(n1, list) and  isinstance(n2, list):
+            for a,b in zip(n1,n2):
+                self.add_determined_expression(label, general_kind, special_kind, a,b)
+            return
+        elif isinstance(n1, list):
+            n1 = n1[0]
+            logging.warning ('unqual list balance')
+        elif isinstance(n2, list):
+            n2 = n2[0]
+            logging.warning ('unqual list balance')
+
         query = \
-r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}', i_s:{i_s1}}}) 
+r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}'}}) 
                 ON CREATE SET a.label='{label}', a.id={id1}
-                ON MATCH SET a.id=a.id+[{id1}]   
-                MERGE (b:Nlp {{s_id:{s_id2}, text:'{text2}', i_s:{i_s2}}}) 
+                //ON MATCH SET a.id=a.id+[{id1}]   
+                MERGE (b:Nlp {{s_id:{s_id2}, text:'{text2}'}}) 
                 ON CREATE SET b.label='{label}', b.id={id2}
-                ON MATCH SET b.id=b.id+[{id2}]
+                //ON MATCH SET b.id=b.id+[{id2}]
                 MERGE (a)-[:{special_kind_u} {{SpecialKind:'{special_kind}'}}]-(b)
                 MERGE (a)-[:{general_kind} {{SpecialKind:'{special_kind}'}}]-(b)""".format(
                 label=label.upper(),
@@ -446,7 +433,7 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}', i_s:{i_s1}}})
         ''' This returns a subgraph of the graph, selected by the 'general_kind' param.
 
             :param general_kind: some string property of all members, that are added by this function
-            :return: list of Predicate-dict-2tuples
+            :return: list of Pred-dict-2tuples
 
         '''
         while True:
@@ -475,11 +462,11 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}', i_s:{i_s1}}})
         logging.info("query neo4j for %s" % kind)
         records = self.graph.run(query).data()
         
-        records = [
-            (self.get_predication(pair['a']['id']),
-             self.get_predication(pair['b']['id']))
+        records = HEAL([
+            HEAT((self.Predicatrix.get_predication(pair['a']['id']),
+                  self.Predicatrix.get_predication(pair['b']['id'])))
             for pair in records
-        ]
+        ])
         assert all (records)
         assert all (all (pair) for pair in records)
 
@@ -532,6 +519,14 @@ RETURN node"""
             MERGE (a)<-[:D_TO]-(y)
             MERGE (b)<-[:D_TO]-(z)
             
+            // connect other nodes, that are out of the distinction cluster because of other antonyms, but correlated and opposed
+            //WITH a as a, b as b, x as x, z as z, y as y
+
+            //MATCH (a)-[:CORRELATED]-(h:CONNOTATION)--(i:CONNOTATION)-[:CORRELATED]-(b), (h)-[:OPPOSED]-(i)
+            //WHERE not h.cluster = i.cluster and h.side = i.side 
+            //     MERGE (h)<-[:D_TO]-(y)
+            //     MERGE (i)<-[:D_TO]-(z)
+            
             return x
             """
         logging.info ("query neo4j for distinctions")
@@ -539,7 +534,7 @@ RETURN node"""
             lambda x: x['text']
         )
 
-        G = neo4j2nx_root (self.graph, markers=['CORE', 'SIDE', 'CORRELATED', 'DENOTATION'])
+        G = neo4j2nx_root (self.graph, markers=['CORE', 'SIDE', 'CONNOTATION', 'DENOTATION'])
         self.draw(G,'img/')
         return self.distinction_df
 

@@ -51,7 +51,7 @@ class Contradiction:
         '''
         fit_mix_neg = \
              Simmix ( [(1,Simmix.elmo_sim(), 0.5,1),
-                       (1, Simmix.common_words_sim, 0.5,1),
+                       (1, Simmix.common_words_sim(), 0.5,1),
                         ],
                       n=None)
         self.Contra_Neg  = \
@@ -74,7 +74,7 @@ class Contradiction:
         ''' Tbis function  searches in two lists of predicate-dict for contradictions, that are caused by antonym- and
             negation.
 
-            These Predicate have a special distribution of negation particles.
+            These Pred have a special distribution of negation particles.
             See :func:`~predcicatrix.Predication.attribute_negation_sentence_predicates`
 
             Antonyms come from nltk.WordNet and there is a list in `word_definitions`.
@@ -190,7 +190,7 @@ class Contradiction:
         ''' This returns a subgraph of the graph, selected by the 'general_kind' param.
 
         :param general_kind: some string property of all members, that are added by this function
-        :return: list of Predicate-dict-2tuples
+        :return: list of Pred-dict-2tuples
 
         '''
         while True:

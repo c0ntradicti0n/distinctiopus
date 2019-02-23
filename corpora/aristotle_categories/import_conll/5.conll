@@ -1,4 +1,4 @@
-1	Things	thing	NOUN	NNS	_	3	nsubjpass	5-190	5->[11:12]
+1	Things	thing	NOUN	NNS	_	3	nsubjpass	5-190	5->[9:10],5->[11:12]
 2	are	be	VERB	VBP	_	3	auxpass	5-191	_
 3	said	say	VERB	VBN	_	3	ROOT	5-192	_
 4	to	to	PART	TO	_	6	aux	5-193	_
@@ -6,9 +6,9 @@
 6	named	name	VERB	VBN	_	3	xcomp	5-195	_
 7	Derivatively	derivatively	ADV	RB	_	6	advmod	5-196	_
 8	,	,	PUNCT	,	_	6	punct	5-197	_
-9	which	which	ADJ	WDT	_	10	nsubj	5-198	_
+9	which	which	DET	WDT	_	10	nsubj	5-198	5->[1:2]
 10	derive	derive	VERB	VBP	_	6	conj	5-199	_
-11	their	-PRON-	ADJ	PRP$	_	12	poss	5-200	5->[1:2],5->[21:22]
+11	their	-PRON-	ADJ	PRP$	_	12	poss	5-200	5->[1:2]
 12	name	name	NOUN	NN	_	10	dobj	5-201	5->[21:22]
 13	from	from	ADP	IN	_	10	prep	5-202	_
 14	some	some	DET	DT	_	16	det	5-203	_

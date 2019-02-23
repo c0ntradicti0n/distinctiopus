@@ -10,7 +10,7 @@
 10	be	be	VERB	VB	_	11	auxpass	3-108	_
 11	named	name	VERB	VBN	_	8	xcomp	3-109	_
 12	Univocally	univocally	ADV	RB	_	11	oprd	3-110	_
-13	which	which	ADJ	WDT	_	14	nsubj	3-111	3->[6]
+13	which	which	DET	WDT	_	14	nsubj	3-111	3->[6:7]
 14	have	have	VERB	VBP	_	8	ccomp	3-112	_
 15	both	both	CCONJ	CC	_	17	preconj	3-113	_
 16	the	the	DET	DT	_	17	det	3-114	_

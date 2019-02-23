@@ -16,6 +16,14 @@ relationship {
   caption: "<type>";
 }
 
+node.CORE {
+     color: #904E55;
+}
+node.SIDE {
+     color: #AA1155;
+}
+
+
 node.Nlp {
    caption:"{text}";
 }

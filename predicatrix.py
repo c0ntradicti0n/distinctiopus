@@ -18,6 +18,9 @@ from littletools import tdfidf_tool
 from littletools.generator_tools import count_up
 
 
+from hardcore_annotated_expression import PredMom, Pred, HEAL, Argu
+
+
 class Predication():
     def __init__(self, corpus=None):
         ''' This module lets you translate natural language expressions into predicative chunks, to analyse the
@@ -54,6 +57,10 @@ class Predication():
             >>> ps = flatten_reduce (corpus.sentence_df.apply(P.analyse_predications, axis=1, result_type="reduce").values.tolist())
             >>> print (type_spec(ps))
             list<dict<str, ...>>
+
+
+            There are special Datatypes defined 'HAE, HEAL, HEAT, that simply manage
+            some conversions (to string for printing), that simply inherit from dict, tuple, list.
 
             :param corpus: a corpus_reader_object, to overlook the document once, to precompute all lemmata and
             td-idf-values.
@@ -211,22 +218,35 @@ class Predication():
 
         '''
         try:
-            predicate =  [doc[x] for x in predicate_i]
-            arguments = [[doc[x] for x in arg_i] for arg_i in arguments_i]
+            predicate_ex =  [doc[x] for x in predicate_i]
+            arguments_ex = [[doc[x] for x in arg_i] for arg_i in arguments_i]
             full_ex   =  [doc[x] for x in full_ex_i]
         except TypeError:
             raise ValueError ('Computed empty value error')
 
-        predicate = {"predicate": predicate,
+        predicate = Pred({"predicate": predicate_ex,
                      "predicate_i"  : predicate_i,
-                     "arguments"    : arguments,
+                     "arguments"    : arguments_ex,
                      "arguments_i"  : arguments_i,
                      "full_ex"      : full_ex,
                      "i_s"          : full_ex_i,
                      "doc"          : doc,
                      "text"         : [str(x.text) for x in full_ex][:],
                      "key"          : str(next(self.pred_key_gen))
-            }
+                          })
+
+        """
+        predicate.predicate   = predicate_ex
+        predicate.predicate_i = predicate_i,
+        predicate.arguments   = arguments_ex
+        predicate.arguments_i = arguments_i
+        predicate.full_ex     = full_ex
+        predicate.i_s         = full_ex_i
+        predicate.doc         = doc
+        predicate.text        = [str(x.text) for x in full_ex][:]
+        predicate.key         = str(next(self.pred_key_gen))
+        """
+
         return predicate
 
     def post_process_arguments (self, arguments_i,doc):
@@ -444,12 +464,11 @@ class Predication():
         contain =  Sub_sim.choose ((ps[:], ps[:]), out='2t', layout='n')
 
         if not contain:
-            # If there is no dependent structure, its just one predicate
+            # If there is no dependent structure, its just one predicate, that contains itself for convenience
             for p in ps:
-                p['part_predications'] = [p]
+                p['part_predications'] = HEAL([p])
             return ps
 
-        nodes = flatten (contain[:])
         edges = contain
 
         containment_structure = nx.DiGraph()
@@ -463,7 +482,7 @@ class Predication():
         p_new = []
         for r in source_nodes:
                  sub_predicates                 = [ps[r]] + [ps[x] for x in nx.algorithms.descendants(containment_structure, r)]
-                 ps[r]['part_predications']     = sorted(sub_predicates, key=lambda x:len(x['i_s']))
+                 ps[r]['part_predications']     = HEAL(sorted(sub_predicates, key=lambda x:len(x['i_s'])))
                  ps[r]['containment_structure'] = containment_structure
                  if len(sub_predicates) != len(containment_structure.nodes) - 1:
                      logging.error("graph bigger than predicates!")
@@ -545,8 +564,6 @@ class Predication():
         if not ex:
             return None
 
-        logging.info ("predicates for '%s'," % str(ex))
-
         elmo_embeddings = self.elmo.embed_sentence([x.text for x in ex])
 
         try:
@@ -585,12 +602,14 @@ class Predication():
                                          elmo_embeddings,
                                          importance,
                                          s_id)
+            p = Pred(p)
 
         ps = self.attribute_contained_predicates(ps)
         ps = self.attribute_negation_sentence_predicates(ps)
 
         for p in ps:
             p = self.formalize(p, elmo_embeddings, importance)
+
         if not ps:
             text = " ".join([x.text for x in ex])
             logging.error("No predication found in expression: '%s'." % text )
@@ -599,16 +618,76 @@ class Predication():
         if paint_graph:
             self.draw_predicate_structure(ps,"./img/predicate" + ps[0]['key']+".svg")
 
+        ps = HEAL([PredMom(p) for p in ps])
         self.append_to_predicate_df(ps)
         self.append_to_argument_df(ps)
+        logging.info ('predicates found %s' % (ps))
+
         return ps
 
+
     def append_to_predicate_df (self, ps):
+        ''' There is a predicate df to look up coreferences and ids, if a predicate expression is addressed by coref or
+            some external database, to what we don't want to tell everything
+
+            :param ps: list of predicates
+
+        '''
         self.predicate_df = self.predicate_df.append(ps)
         self.predicate_df = self.predicate_df.append([part_p for p in ps for part_p in p['part_predications']])
 
 
+    def get_predication(self, id):
+        ''' Finds the predicate dict, that a special id belongs to by looking it up in the DataFrame in the Predication-
+            module.
+
+            :param id: id of that predicate
+            :return: predicate-dict
+
+        '''
+        if isinstance(id, list):
+            if len(id)!=0:
+                id=id[0]
+        id = str(id)
+        rec = self.predicate_df.query('id==@id').to_dict(orient='records')
+        return HEAL([Pred(r) for r in rec])
+
+
+    def get_addressed_coref (self, coref):
+        ''' Analyses a coref mention and looks it up in the Database for predications.
+
+            :param coref: dict  with sentence id, start and end of the mention
+            :return: a list of coreferenced predicates
+
+        '''
+        s_id  = str(coref['s_id'])
+        i_list = coref['i_list']
+
+        score = self.predicate_df.reset_index().query("s_id==@s_id")['i_s'].apply(lambda ex_i:
+                                                                                   (len ([m for m in i_list if m in ex_i])*2
+                                                                                  - len ([m for m in i_list if m not in ex_i]) )
+                                                                                  / len(ex_i)
+                                                                                 )
+        mask = score > 1
+        if not mask.any():
+            mask = score == score.max()
+        assert mask.any()
+        try:
+            rec = self.predicate_df.reset_index().query("s_id==@s_id")[mask].to_dict(orient='record')
+        except IndexError:
+            raise
+
+        return HEAL([Pred(r) for r in rec])
+
+
+
     def append_to_argument_df (self, ps):
+        ''' There is a DataFrame with all the argumentes found to look up coreferences and ids, if an expression is
+            addressed by coref or some external database, to what we don't want to tell everything
+
+            :param ps: list of arguments
+
+        '''
         arguments = flatten_reduce( list( map (lambda x: x['arguments'], ps) ))
         self.argument_df = self.argument_df.append(arguments)
 
@@ -647,7 +726,7 @@ class Predication():
 
         i_s = [x.i for x in ex]
         try:
-            d = {
+            d = Argu({
                 "id": str(next(self.id_generator)),
                 "s_id"            : s_id,
                 "i_s"             : i_s,
@@ -679,7 +758,7 @@ class Predication():
                 "importance_full": importance,
 
                 "key"             : "arg" + str(next(self.arg_key_gen))
-            }
+            })
         except IndexError:
             raise IndexError ('indices out of range of coref')
         return d
@@ -735,7 +814,7 @@ class Predication():
         return None
 
     def print_predicate(self,predicate, debug = False):
-        print("Predicate: "+" ".join(predicate['text']))
+        print("Pred: "+" ".join(predicate['text']))
         pprint.pprint(str(predicate['wff_nice_and']))
         pprint.pprint(str(predicate['wff_nice_or']))
         self.pprint_key_dict(predicate)
@@ -759,7 +838,7 @@ class Predication():
             fp.write(str(predicate['wff'])+"\n")
             fp.write(str(({ str(k): str([x.text for x in val['full_ex']]) + "\n" for k, val in predicate['wff_dict'].items()}))+"\n")
         except:
-            logging.error("Predicate is a scalar? " + str(predicate))
+            logging.error("Pred is a scalar? " + str(predicate))
         return None
 
     def draw_predicate_structure(self, ps, path):

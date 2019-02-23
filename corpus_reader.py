@@ -58,10 +58,11 @@ class CorpusReader:
         all_sentences, all_conlls = self.load_all_conlls(corpus_path, only=only)
         self.df = pd.DataFrame(all_conlls)
 
-        # translate also normal conll-nodes as well as invisible knodes to some nice id
+        # translate also normal conll-nodes as well as invisible nodes to some nice id
         # groupby makes the grouped value invisible to the function, copy it
-        self.df['s_id2'] = self.df ['s_id'] # 
-        self.df = self.df.groupby('s_id').apply(lambda x: self.renumerate_word_ids(x))
+        self.df['s_id2'] = self.df ['s_id'] #
+        self.invisible_translation_dict = {}
+        self.df = self.df.groupby('s_id').apply(lambda x: self.renumerate_word_ids(x, update_translation_dict=self.invisible_translation_dict))
 
         # parse columns to int
         num_cols = ["s_id", "head_id", "id"]
@@ -71,7 +72,7 @@ class CorpusReader:
         self.sentence_df = self.df.groupby('s_id').apply(self.aggregate_sentences)
         
 
-    def renumerate_word_ids(self, x):
+    def renumerate_word_ids(self, x, update_translation_dict=None):
         ''' In conll files normal id's are ints, but invisible nodes have to be re-enumerated.
 
          If you annotated `hidden nodes` with this syntax for the id: '1.1', they are recounted here.
@@ -82,10 +83,16 @@ class CorpusReader:
          grammatical well-formedness
 
         :param x: pandas Series of Enhanced UD
+        :param update_translation_dict: collect all the ids translated, for translating coref, that must happen after translating everything
         :return: index list
 
         '''
+        try:
+            s_id = x['s_id2'].iloc[0]
+        except KeyError:
+            raise
         invisible_nodes_translation_dict = dict(zip(x['inv_id'],list(range(len(x)))))
+        update_translation_dict.update({s_id:invisible_nodes_translation_dict})
         x['id'] = invisible_nodes_translation_dict.values()
         try:
             x['head_id'] = [ invisible_nodes_translation_dict[h] for h in x['inv_head_id']]
@@ -118,31 +125,42 @@ class CorpusReader:
     def parse_coref_str(self, coref_string):
         ''' parses coref mentions in two formats. Either ranges or lists of token indices
 
-        7->[6,1,2,3]
-        1->[22:23]
+        7->[6,1,2,3] makes s_id = 7, i_list = [5,0,1,2]
+        1->[22:23]   makes s_id = 1, i_list = [21]
+        8->[12.1:15] makes s_id = 8, i_list = []
 
         :param coref_string: such a string
         :return: coref dict with 's_id' and 'i_list'
 
         '''
-        mfas = [re.finditer(r"(((?P<s_id_r>\d+)->\[(?P<m_start>\d+):(?P<m_end>\d+)\])|((?P<s_id_i>\d+)->(?P<i_list>\[(?:\d+)(?:,\s*\d+)*\])))+", y) for y in coref_string]
+        mfas = [re.finditer(r"(((?P<s_id_r>\d+)->\[(?P<m_start>\d+(?:\.\d+)?):(?P<m_end>\d+(?:\.\d+)?)\])|((?P<s_id_i>\d+(?:\.\d+)?)->(?P<i_list>\[(?:\d+(?:\.\d+)?)(?:,\s*\d+(?:\.\d+)?)*\])))+", y) for y in coref_string]
         return [[self.parse_coref_dict(m.groupdict()) for m in mfa] if mfa else [] for mfa in mfas]
 
 
+    invisible_node = re.compile(r"\d+(?:\.\d+)?")
+    def parse_invisible_node(self, s_id, node):
+        return self.invisible_translation_dict [s_id][node]
+
 
     def parse_coref_dict(self, d):
-        ''' Parses the content of th3->[6]e coref_dict to some normal data
+        ''' Parses the content of the coref_dict to some typed data
 
             :param d: dict with either 's_id_r' and 'm_start', 'm_end' or 's_id_i' and 'i_list'
             :return: coref dict with 's_id' and 'i_list'
 
         '''
         if d['s_id_r']:
-            return {'s_id': int (d['s_id_r']),
-                    'i_list' : list(range (int(d['m_start']), int(d['m_end'])))}
+            s_id = d['s_id_r']
+            m_start = self.parse_invisible_node(s_id, d['m_start'])
+            m_end = self.parse_invisible_node(s_id, d['m_end'])
+            return {'s_id'   : int(s_id),
+                    'i_list' : list(range (m_start, m_end))}
         elif d['s_id_i']:
-            return {'s_id': int(d['s_id_i']),
-                    'i_list':  eval(d['i_list'])}
+            s_id = d['s_id_i']
+            nodes = self.invisible_node.finditer(d['i_list'])
+            i_list = [self.parse_invisible_node(s_id, i.group(0)) for i in nodes]
+            return {'s_id': int(s_id),
+                    'i_list': i_list}
         else:
             raise ValueError ('coref dict with bad indices')
 

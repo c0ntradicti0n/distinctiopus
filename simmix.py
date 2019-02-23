@@ -64,6 +64,7 @@ from addict import Dict
 import scipy
 import numpy as np
 import numpy_indexed as npi
+from cytoolz.dicttoolz import copy
 from sklearn import preprocessing
 import itertools
 import pyprover
@@ -74,6 +75,8 @@ import logging
 from littletools.nested_list_tools import check_for_tuple_in_list, flatten, flatten_reduce, flatten_list, type_spec, existent
 from littletools import abstractness_estimator, dict_tools, nested_list_tools
 
+from hardcore_annotated_expression import HEAT, HEAL
+
 uppercase_abc = list(string.ascii_uppercase)
 uppercase_bca = list(string.ascii_uppercase)[::-1]
 
@@ -81,6 +84,17 @@ uppercase_bca = list(string.ascii_uppercase)[::-1]
 def cartesian_product_itertools(arrays):
     ''' Cartesian product, that works with functions and combinations of parameters and returns an ordered output, that
         can be sliced with numpy and axis-indexing
+
+        Example
+        =======
+
+        >>> import addict
+        >>> from numpy import array
+        >>> from itertools import product
+        >>> a = addict.Dict({'y':{'a':1}})
+        >>> b = addict.Dict({'t':{'o':2}})
+        >>> f = lambda x:x+1
+        >>> array(list(product([a],[b],[f])))
 
     '''
     # https://stackoverflow.com/questions/11144513/numpy-cartesian-product-of-x-and-y-array-points-into-single-array-of-2d-points
@@ -225,7 +239,7 @@ class Simmix:
             tuple of lists of expressions, meaning the dictionaries or what is compared for you
         :param out:
             defines the structure of the returned value
-            default=None: the chosed expressions are returned
+            default=fNone: the chosed expressions are returned
             'i': only the indices
             'r': only the indices of the right value are returned
             '2t': pairs of tuples (for building a graph
@@ -340,6 +354,7 @@ class Simmix:
 
         left_value = None
         right_values = None
+
         if layout == "1:1":
             weighted_res = weighted_res.reshape((len(exs1), len(exs2)))
 
@@ -372,19 +387,28 @@ class Simmix:
             left_value, right_values = Simmix.one_to_one(weighted_res, exs1, exs2, mask)
 
         elif layout == 'n':
-            chords = np.divmod(best_n, len(exs2))
-            chords = np.column_stack(chords)
-            left_value = np.unique(chords[:, 0])  # unique values, centers of different
-            # clusters
-            right_values = npi.group_by(chords[:, 0]).split(chords[:, 1])  # groupby the other values, that form
-            # the clusters and concat all these
-            # ex1 is comparable to all these
+            ''' compute choordinates within in the cube by divmod, that means, try to divide through the length of the rows (=y)
+            and the rest is the the position in the col (=x)
+            
+            for instance this means:
+            coordinates =  <class 'tuple'>: (array([0]), array([6])) '''
+            coodinates = np.divmod(best_n, len(exs2))
+
+            ''' zip the numpy arrays '''
+            coodinates = np.column_stack(coodinates)
+
+            ''' decompose and uniquify the arrays, we need a list for left and a list of lists for right'''
+            ''' these are the centers of the similar clusters'''
+            left_value = np.unique(coodinates[:, 0])
+
+            ''' these are different nodes, that belong to them'''
+            right_values = npi.group_by(coodinates[:, 0]).split(coodinates[:, 1])
 
         if not graph_coro == None:
             self.write_to_graph (graph_coro=graph_coro, type=type, exs1=exs1, exs2=exs2, left_value=left_value, right_values=right_values)
 
         if not out or out == 'ex':
-            return Simmix.expressions_list(left_value, right_values, exs1, exs2)
+            return self.expressions_list(left_value, right_values, exs1, exs2)
         elif out == 'i':
             return self.i_list(left_value, right_values)
         elif out == 'r':
@@ -403,7 +427,7 @@ class Simmix:
             return graph_coro
         elif out == '(i,ex)':
             return (self.i_list(left_value, right_values),
-                    Simmix.expressions_list(left_value, right_values, exs1, exs2))
+                    self.expressions_list(left_value, right_values, exs1, exs2))
         else:
             raise NotImplementedError("What the else could out be returned? Wrong parameter for 'out'")
 
@@ -423,7 +447,7 @@ class Simmix:
         r_values = [[r] for r in res[1][res_mask].tolist()]
         return l_values, r_values
 
-    def expressions_list (left_value, right_values, exs1, exs2):
+    def expressions_list (self, left_value, right_values, exs1, exs2):
         ''' Collects the expressions from the indices
 
         :param left_value: list of ints, indices for exs1
@@ -431,9 +455,25 @@ class Simmix:
         :param exs1: list of dicts or list of tuples of list of dicts
         :param exs2: list of dicts or list of tuples of list of dicts
 
+        :return: list of tuples of lists of dicts or
+                 list of tuple of list of tuple of list of dict
+
         '''
-        return [([exs1[left_value[l]]], [exs2[r] for r in right_values[l]])
+        try:
+            triggers = [[self.beam[exs1[left_value[l]]['id']][exs2[r]['id']] for r in right_values[l]]
+                      for l in range(len(left_value))]
+        except KeyError:
+            logging.warning ('beam has wrong ids %s ' % self.funs)
+            triggers = [[]] * len(left_value)
+        except TypeError:
+            logging.warning('beam for multi sim choice not implemented... %s ' % self.funs)
+            triggers = [[]] * len(left_value)
+
+
+        exss = [(HEAL([exs1[left_value[l]]]),
+                 HEAL([exs2[r] for r in right_values[l]]))
                   for l in range(len(left_value))]
+        return HEAL(HEAT(tup, trigger=trig) for tup, trig in zip (exss, triggers))
 
     def i_list (self, left_value, right_values):
         return [([left_value[l]], [r for r in right_values[l]])
@@ -463,7 +503,10 @@ class Simmix:
         '''
         grammar1  = ex1['pos']
         grammar2  = ex2['pos']
-        return -damerau_levenshtein_distance(grammar1, grammar2) /(len(ex1) + len(ex2)), {}
+        res = -damerau_levenshtein_distance(grammar1, grammar2) /(len(ex1) + len(ex2))
+        beam = Dict()
+        beam[ex1['id']][ex2['id']].trigger_thing = res
+        return res, beam
 
 
     @standard_range(-1, 0)
@@ -477,7 +520,10 @@ class Simmix:
         '''
         grammar1  = ex1["dep"]
         grammar2  = ex2["dep"]
-        return -damerau_levenshtein_distance(grammar1, grammar2) / (len(ex1) + len(ex2)) , {}
+        res = -damerau_levenshtein_distance(grammar1, grammar2) / (len(ex1) + len(ex2))
+        beam = Dict()
+        beam[ex1['id']][ex2['id']].trigger_thing = res
+        return res, beam
 
 
     @standard_range(-1, 0)
@@ -519,33 +565,45 @@ class Simmix:
         '''
         str1  = ex1["text"]
         str2  = ex2["text"]
-        return -damerau_levenshtein_distance(str1, str2) / (len(ex1) + len(ex2)) , {}
+        res = -damerau_levenshtein_distance(str1, str2) / (len(ex1) + len(ex2))
+        beam = Dict()
+        beam[ex1['id']][ex2['id']].trigger_thing = res
+        return res, beam
 
+    def common_words_sim(invert = False):
+        if not invert:
+            factor = 1
+        else:
+            factor = -1
+        @Simmix.standard_range(-1, 1)
+        def common_words_sim_generated (ex1, ex2):
+            ''' This function gives weighted score for common words and negative weighted score for words, that appear only
+                in one expressions.
 
-    @standard_range(-0.9, 0.9)
-    def common_words_sim (ex1, ex2):
-        ''' This function gives weighted score for common words and negative weighted score for words, that appear only
-            in one expressions.
+                The weight of the weighted score is the tdidf-score in the document.
 
-            The weight of the weighted score is the tdidf-score in the document.
+                .. math::
 
-            .. math::
+                    c = \dfrac{\sum_{n=1}^{|W_{x_1} \cup W_{x_2}|} 2 \text{tf-idf}(w_n,x_1, D) -    \text{tf-idf}(w_n,x_1, D) -  \text{tf-idf}(w_n,x_2, D)}{|W_{x_1} \cup W_{x_2}|}
 
-                c = \dfrac{\sum_{n=1}^{|W_{x_1} \cup W_{x_2}|} 2 \text{tf-idf}(w_n,x_1, D) -    \text{tf-idf}(w_n,x_1, D) -  \text{tf-idf}(w_n,x_2, D)}{|W_{x_1} \cup W_{x_2}|}
+                :param ex1: dict with 'importance' and 'lemma'
+                :param ex2: dict with 'importance' and 'lemma'
+                :return: c and backtracking beam {}
 
-            :param ex1: dict with 'importance' and 'lemma'
-            :param ex2: dict with 'importance' and 'lemma'
-            :return: c and backtracking beam {}
-
-        '''
-        # A bit something else than this: https://en.wikipedia.org/wiki/Overlap_coefficient
-        str1  = ex1["lemma"]
-        str2  = ex2["lemma"]
-        res = (len([ex1['importance'][i] for i,x in enumerate(str1) if x in str2]) +
-               len([ex2['importance'][i] for i, x in enumerate(str2) if x in str1]) -
-               len([ex1['importance'][i] for i, x in enumerate(str1) if x not in str2]) -
-               len([ex2['importance'][i] for i, x in enumerate(str2) if x in str1]))/(len(ex1) + len(ex2))
-        return res, {}
+            '''
+            # A bit something else than this: https://en.wikipedia.org/wiki/Overlap_coefficient
+            str1  = ex1["lemma"]
+            str2  = ex2["lemma"]
+            sum1  = sum(ex1['importance'][i]**factor for i,x in enumerate(str1))
+            sum2  = sum(ex2['importance'][i]**factor for i,x in enumerate(str2))
+            res = (sum([ex1['importance'][i]**factor for i,x in enumerate(str1) if x in str2]) +
+                   sum([ex2['importance'][i]**factor for i, x in enumerate(str2) if x in str1]) -
+                   sum([ex1['importance'][i]**factor for i, x in enumerate(str1) if x not in str2]) -
+                   sum([ex2['importance'][i]**factor for i, x in enumerate(str2) if x in str1]))/(sum1 + sum2)
+            beam = Dict()
+            beam[ex1['id']][ex2['id']].trigger_thing = res
+            return res, beam
+        return common_words_sim_generated
 
 
     @standard_range(-1, 0)
@@ -628,14 +686,14 @@ class Simmix:
             vectors1 = ex1["elmo_embeddings"]
             vectors2 = ex2["elmo_embeddings"]
             total_length = max(len(ex1["full_ex"]), len (ex2["full_ex"]))
-            try:
-                return \
-                    -(np.log( (total_length/np.e+np.e)) *
+            res = (-(np.log( (total_length/np.e+np.e)) *
                      scipy.spatial.distance.cosine(vectors1[0,:],vectors2[0,:])+
                      scipy.spatial.distance.cosine(vectors1[1,:],vectors2[1,:])+
-                     scipy.spatial.distance.cosine(vectors1[2,:],vectors2[2,:])), {}
-            except IndexError:
-                raise IndexError
+                     scipy.spatial.distance.cosine(vectors1[2,:],vectors2[2,:])))
+
+            beam = Dict()
+            beam[ex1['id']][ex2['id']].trigger_thing = res
+            return res, beam
         return elmo_sim_generated
 
 
@@ -728,7 +786,11 @@ class Simmix:
         '''
         text1        = ex1["text"]
         text2        = ex2["text"]
-        return all(w in text1 for w in text2) or all(w in text2 for w in text1), {}
+        res =  int (all(w in text1 for w in text2) or all(w in text2 for w in text1))
+        beam = Dict()
+        beam[ex1['id']][ex2['id']].trigger_thing = res
+        return res, beam
+
 
     @standard_range(0, 1)
     def sub_i (ex1, ex2):
@@ -815,6 +877,63 @@ class Simmix:
         return abs (len (is1)-len(is2)), {}
 
 
+    def multi_cross2tup_sim(fun, n=2):
+        ''' This wrapper turns a functions, that evaluate pairs of expression, into functions, that work with tuples (!)
+        of expressions, to evaluate these tuples in a crossing over way. So with (1,2) and (3,4) you gonna compare 1
+        with 4 and 2 with 3.
+
+        Example
+        -------
+        With input like this, every value value in a pair is compared to the cross over value of the other pair
+
+        >>> data = ([{'id': '1','text': ['I', 'am', 'here']}],[{'id': '2', 'text': ['I', 'am', 'there']}]), ([{'id': '3', 'text': ['I', 'was', 'here']}],[{'id': '4','text': ['I', 'was', 'there']}])
+        >>> Simmix.multi_cross2tup_sim(Simmix.fuzzystr_sim, n=2)(*data)
+        (-1.0, {'1': {'4': {'trigger_thing': -0.5}}, '2': {'3': {'trigger_thing': -0.5}}})
+
+        So, with a result of 2*-.5, you get -1 for this fuzzy logic cross over comparison of these two tuples in data.
+        Beware, that in the tuples the predicate dicts must be encapsulated in lists.
+
+        >>> data1 = ([{'id': '1','text': ['You', 'are', 'here']}],[{'id': '2', 'text': ['You', 'was', 'there']}]), ([{'id': '3', 'text': ['I', 'am']}],[{'id': '4','text': ['I', 'was', 'there', 'not']}])
+        >>> data2 = ([{'id': '1','text': ['I', 'am', 'here']}],[{'id': '2', 'text': ['I', 'am', 'there']}]), ([{'id': '3', 'text': ['I', 'am']}],[{'id': '4','text': ['I', 'was', 'there', 'not']}])
+        >>> data3 = ([{'id': '1','text': ['I', 'am', 'here']}],[{'id': '2', 'text': ['I', 'am', 'there']}]), ([{'id': '3', 'text': ['I', 'am']}],[{'id': '4','text': ['am','here']}])
+
+        >>> Simmix.multi_cross2tup_sim(Simmix.boolean_subsame_sim, n=2)(*data1)
+        (0, {'1': {'4': {'trigger_thing': 0}}, '2': {'3': {'trigger_thing': 0}}})
+        >>> Simmix.multi_cross2tup_sim(Simmix.boolean_subsame_sim, n=2)(*data2)
+        (1, {'1': {'4': {'trigger_thing': 0}}, '2': {'3': {'trigger_thing': 1}}})
+        >>> Simmix.multi_cross2tup_sim(Simmix.boolean_subsame_sim, n=2)(*data3)
+        (2, {'1': {'4': {'trigger_thing': 1}}, '2': {'3': {'trigger_thing': 1}}})
+
+        If you want to know, if one of the expressions is contained in the opposite position, do this
+
+
+        :param n: How many values are maximally expected in these lists? The expected range of the multi-fun is the
+            square of this
+        :return: wrapped function
+
+        '''
+        n **= 2
+        beam = Dict()
+        @Simmix.standard_range(fun.min*n,fun.max*n)  # n depends on fun!
+        def multi_cross2tup_sim (exs1,exs2):
+            b = copy(beam)
+            sim = 0
+            if not exs1 or not exs2:
+                raise ValueError ("one of the expressions is empty")
+
+            ex11, ex12 = exs1
+            ex21, ex22 = exs2
+
+            res1, d1 = fun (ex11[0], ex22[0])
+            res2, d2 = fun (ex12[0], ex21[0])
+            res = res1 + res2
+
+            b.update(d1)
+            b.update(d2)
+            return res, b
+        return multi_cross2tup_sim
+
+
     def multi_sim(fun, n=2):
         ''' This wrapper turns functions, that evaluate pairs of expression, into functions, that work with tuples (!)
         of expressions. This is done by comparing each value in these list with each value in the other list.
@@ -842,18 +961,25 @@ class Simmix:
 
         '''
         n **= 2
-        b = {}
+        beam = Dict()
         @Simmix.standard_range(fun.min*n,fun.max*n)  # depends on fun!
         def multi_generated (exs1,exs2):
+            b = copy(beam)
             sim = 0
             if not exs1 or not exs2:
                 raise ValueError ("one of the expressions is empty")
 
-            for ex1, ex2 in itertools.product(flatten_reduce(exs1), flatten_reduce(exs2)):
+            for t1, t2 in itertools.product(enumerate(flatten_reduce(exs1)), enumerate(flatten_reduce(exs2))):
+                i1, ex1 = t1
+                i2, ex2 = t2
                 try:
                     res, d = fun (ex1, ex2)
                 except TypeError:
                     raise NotImplementedError ("return beam from the distance measure! %s" % str(fun))
+                if not d:
+                    raise NotImplementedError ("beam empty! %s" % str(fun))
+
+
                 sim += res
                 b.update(d)
             return sim, b
@@ -871,7 +997,11 @@ class Simmix:
         '''
         pos1  = max(ex1["i_s"]) + int(ex1['s_id'])*1000
         pos2  = min(ex2["i_s"]) + int(ex2['s_id'])*1000
-        return int(pos1<pos2), {}
+        res = int(pos1<pos2)
+        beam = Dict()
+        beam[ex1['id']][ex2['id']].trigger_thing = res
+        return res, beam
+
 
     @standard_range(0, 1)
     def right (ex1, ex2):
@@ -970,7 +1100,7 @@ class Simmix:
                                             antonym_pair.append((key, it))
                                             logging.info('pair of antonyms found -- "%s" and "%s"' % (key, it))
                             cost += that_key_cost
-            beam[ex1['id']][ex2['id']] = antonym_pair
+            beam[ex1['id']][ex2['id']].trigger_thing = antonym_pair
             return cost, beam
         return excluding_pair_boolean_sim_generated
 
@@ -1002,13 +1132,14 @@ class Simmix:
             cost = 0
             triggers = []
 
-            for k1, k2 in key_to_key:
+            for t in key_to_key:
+                k1, k2 = t
                 new_cost = Simmix.do_logic(
                     formulas = (f1, f2),
                     key_rel = {k1[0]['key']: k2[0]['key']},
                     negate_one=True)
                 if new_cost:
-                    triggers.append((k1[0],k2[0]))
+                    triggers.append(t)
                 cost += new_cost
 
             beam = Dict()
@@ -1169,12 +1300,14 @@ class Simmix:
                     self.write_to_graph(gc, type, exs1, exs2, left_value, right_values)
             return
 
-        l_s = Simmix.expressions_list(left_value, right_values, exs1, exs2)
+        l_s = Simmix.expressions_list(self, left_value, right_values, exs1, exs2)
         t_s = Simmix.reduce_i_s_pair_tuples(l_s)
+
         if isinstance(exs1[0], dict) and isinstance(exs2[0], dict):
             all_triggers = flatten_list([self.beam[ex1['id']][ex2['id']]['trigger'] for ex1, ex2 in t_s])
             for trigger in all_triggers:
                 graph_coro.send(trigger + (type,))
+
         elif isinstance(exs1[0], tuple):
             (type_l_pair, type_r_pair, type_between) = type
             for trigger in t_s:

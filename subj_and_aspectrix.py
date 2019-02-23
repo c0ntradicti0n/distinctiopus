@@ -20,7 +20,7 @@ class Subjects_and_aspects(Pairix):
     '''
     def __init__(self, corpus):
         self.similar = \
-            Simmix([(20, Simmix.common_words_sim, 0.1, 1),
+            Simmix([(20, Simmix.common_words_sim(), 0.1, 1),
                     (1, Simmix.dep_sim, 0.1, 1),
                     (1, Simmix.pos_sim, 0.1, 1),
                     (1, Simmix.tag_sim, 0.1, 1),
@@ -28,7 +28,7 @@ class Subjects_and_aspects(Pairix):
                    )
 
         self.filter1 = \
-            Simmix([(18, Simmix.multi_sim( Simmix.common_words_sim, n=2), 0.1, 1),
+            Simmix([(18, Simmix.multi_sim( Simmix.common_words_sim(), n=2), 0.1, 1),
                     #(    3, Simmix.multi_sim(Simmix.elmo_layer_sim(layer=[0, 1]) ), 0.2, 1),
                     #(    4, Simmix.multi_sim(Simmix.head_dep_sim), 0.0, 1),
                     #(1, Simmix.multi_sim(Simmix.pos_sim, n=2), 0.1, 1),
@@ -278,7 +278,7 @@ class Subjects_and_aspects(Pairix):
         ''' This returns a subgraph of the graph, selected by the 'general_kind' param.
 
         :param general_kind: some string property of all members, that are added by this function
-        :return: list of Predicate-dict-2tuples
+        :return: list of Pred-dict-2tuples
 
         '''
         while True:

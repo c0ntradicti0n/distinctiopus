@@ -40,3 +40,23 @@ class L(list):
     def __call__(self, **kwargs):
         self.__dict__.update(kwargs)
         return self
+
+
+
+class T(tuple):
+    """ The same with a tuple
+    """
+
+    def __new__(cls, args, **kwargs):
+        return super(T, cls).__new__(cls, tuple (args))
+
+    def __init__(self, args, **kwargs):
+        if len(args) == 1 and hasattr(args[0], '__iter__'):
+            tuple.__new__(self, args[0])
+        else:
+            tuple.__new__(type(args), args)
+        self.__dict__.update(kwargs)
+
+    def __call__(self, **kwargs):
+        self.__dict__.update(kwargs)
+        return self

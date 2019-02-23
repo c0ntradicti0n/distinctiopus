@@ -3,7 +3,7 @@
 3	speech	speech	NOUN	NN	_	2	pobj	7-237	_
 4	are	be	VERB	VBP	_	4	ROOT	7-238	_
 5	either	either	CCONJ	CC	_	6	preconj	7-239	_
-6	simple	simple	ADJ	JJ	_	4	acomp	7-240	8->[4:5]
+6	simple	simple	ADJ	JJ	_	4	acomp	7-240	8->[12.1:15]
 7	or	or	CCONJ	CC	_	6	cc	7-241	_
-8	composite	composite	ADJ	JJ	_	6	conj	7-242	8->[15:16]
+8	composite	composite	ADJ	JJ	_	6	conj	7-242	8->[1:5]
 9	.	.	PUNCT	.	_	4	punct	7-243	_

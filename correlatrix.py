@@ -3,6 +3,8 @@ import networkx as nx
 from pairix import Pairix
 from simmix import Simmix
 
+from hardcore_annotated_expression import HEAL, HEAT
+
 class Correlation(Pairix):
     def __init__(self):
         ''' This module looks for pairwise modifying expressions in the horizon of a predicate
@@ -11,7 +13,7 @@ class Correlation(Pairix):
 
         # This looks for relativly similar phrases to get some pairs that are possible modifiers to the contradiction
         self.correlative = \
-            Simmix([(3, Simmix.common_words_sim, 0.35, 1),
+            Simmix([(3, Simmix.common_words_sim (invert=True), 0.35, 1),
                     (1, Simmix.dep_sim, 0.65, 1),
                     (1, Simmix.pos_sim, 0.65, 1),
                     (1, Simmix.elmo_sim(), 0.35,1),
@@ -20,9 +22,15 @@ class Correlation(Pairix):
                     ],
                    )
 
+        # That's a distinctive criterium, predicates cant be correlated with a part of itself on the opposite direction at all
+        self.distinct_from_the_opposite = \
+            Simmix([(1, Simmix.multi_cross2tup_sim(fun=Simmix.boolean_subsame_sim,n=2), 0, 0.1)
+                    ],
+                   n=None)
+
         # That's a distinctive criterium, that the correlative keys can't be too similar to the contradicting pair
         self.distinct = \
-            Simmix([(1, Simmix.multi_sim(fun=Simmix.common_words_sim, n=7), 0, 0.95),
+            Simmix([(1, Simmix.multi_sim(fun=Simmix.common_words_sim(), n=7), 0, 0.95),
                     (1, Simmix.multi_sim(fun=Simmix.elmo_sim(), n=7), 0, 0.95),
                     (1, Simmix.multi_sim(fun=Simmix.dep_sim, n=7), 0.0, 1),
                     (1, Simmix.multi_sim(fun=Simmix.pos_sim,n=7), 0.0, 1)
@@ -41,6 +49,12 @@ class Correlation(Pairix):
             On the other side the same operation is done for additional (sub)predications in context, following
             coreferential relations
 
+            :param contradiction: pair of predicates
+            :param possible_to_correlate: list of predicate pairs, that should be evaluated for being as distinct as possible
+            :param graph_coro: coroutine for graph wirting
+            :param save_graph: set to True, if results should be written to the graph db
+            :return correlating-correlated predicate pair list
+
         '''
         poss_correlations = self.correlative.choose(           # What correlates
             possible_to_correlate,
@@ -49,9 +63,16 @@ class Correlation(Pairix):
         if not poss_correlations:
             return []
 
+        poss_correlations_no_opps = self.distinct_from_the_opposite.choose(                    # not too much
+            HEAT((HEAL([contradiction]),
+             poss_correlations)),
+            n=len(poss_correlations),
+            minimize=True,
+            layout='n',
+            out='ex')
+
         correlation = self.distinct.choose(                    # not too much
-            ([contradiction],
-             poss_correlations),
+            poss_correlations_no_opps[0],
             n=int(1),
             minimize=True,
             layout='n',
