@@ -13,11 +13,11 @@ class Correlation(Pairix):
 
         # This looks for relativly similar phrases to get some pairs that are possible modifiers to the contradiction
         self.correlative = \
-            Simmix([(3, Simmix.common_words_sim (invert=True), 0.35, 1),
-                    (1, Simmix.dep_sim, 0.65, 1),
-                    (1, Simmix.pos_sim, 0.65, 1),
-                    (1, Simmix.elmo_sim(), 0.35,1),
-                    (1,Simmix.fuzzystr_sim, 0.3,1),
+            Simmix([(3, Simmix.common_words_sim (invert=True), 0.45, 1),
+                    (1, Simmix.dep_sim, 0.25, 1),
+                    (1, Simmix.pos_sim, 0.25, 1),
+                    (1, Simmix.elmo_sim(), 0.45,1),
+                    (1,Simmix.fuzzystr_sim, 0.33,1),
                     (-1000, Simmix.boolean_subsame_sim, 0, 0.1)
                     ],
                    )
@@ -70,6 +70,9 @@ class Correlation(Pairix):
             minimize=True,
             layout='n',
             out='ex')
+
+        if not poss_correlations_no_opps:
+            return []
 
         correlation = self.distinct.choose(                    # not too much
             poss_correlations_no_opps[0],

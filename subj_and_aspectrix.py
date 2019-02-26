@@ -1,3 +1,4 @@
+from hardcore_annotated_expression import HEAT
 from pairix import Pairix
 from predicatrix import Predication
 from corpus_reader import nlp
@@ -20,7 +21,7 @@ class Subjects_and_aspects(Pairix):
     '''
     def __init__(self, corpus):
         self.similar = \
-            Simmix([(20, Simmix.common_words_sim(), 0.1, 1),
+            Simmix([(20, Simmix.common_words_sim(), 0.5, 1),
                     (1, Simmix.dep_sim, 0.1, 1),
                     (1, Simmix.pos_sim, 0.1, 1),
                     (1, Simmix.tag_sim, 0.1, 1),
@@ -75,7 +76,12 @@ class Subjects_and_aspects(Pairix):
             else:
                 new_arguments.append(argument)
         assert all (new_arguments)
-        assert new_arguments
+        try:
+            assert new_arguments
+        except AssertionError:
+            print (arguments)
+            raise
+
         return new_arguments
 
     def get_arguments(self, argument):
@@ -217,10 +223,10 @@ class Subjects_and_aspects(Pairix):
             return []
 
 
-        graph_coro_arg_binding.send ((pred1, subject1) + ('subject',))
-        graph_coro_arg_binding.send ((pred2, subject2) + ('subject',))
-        graph_coro_arg_binding.send ((pred3, aspect1) + ('aspect',))
-        graph_coro_arg_binding.send ((pred4, aspect2) + ('aspect',))
+        graph_coro_arg_binding.send (HEAT((pred1, subject1), type='subject'))
+        graph_coro_arg_binding.send (HEAT((pred2, subject2), type='subject'))
+        graph_coro_arg_binding.send (HEAT((pred3, aspect1), type='aspect'))
+        graph_coro_arg_binding.send (HEAT((pred4, aspect2), type='aspect'))
 
         if paint_graph:
             #put_into_nx.send('draw')
@@ -283,8 +289,9 @@ class Subjects_and_aspects(Pairix):
         '''
         while True:
             data = (yield)
-            if isinstance(data, tuple) and len(data) == 3:
-                n1, n2, special_kind = data
+            if isinstance(data, tuple) and len(data) == 2:
+                n1, n2 = data
+                special_kind = data.type
                 self.add_determined_expression_nx(G, general_kind, special_kind, n1, n2)
             elif isinstance(data, str) and data=='draw':
                 self.draw_key_graphs(G)

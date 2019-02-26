@@ -195,8 +195,9 @@ class Contradiction:
         '''
         while True:
             data = (yield)
-            if isinstance(data, tuple) and len(data) == 3:
-                n1, n2, special_kind = data
+            if isinstance(data, tuple) and len(data) == 2:
+                n1, n2 = data
+                special_kind = data.type
                 self.add_determined_expression_nx(G, general_kind, special_kind, n1, n2)
             elif isinstance(data, dict):
                 self.add_nx_node(G, data)

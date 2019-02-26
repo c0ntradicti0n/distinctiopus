@@ -259,13 +259,13 @@ class DataframeCursorilyLogician:
 
         logging.info("query neo4j for reading by this:\n%s" % query)
         records = self.graph.run(query).data()
-        records = [
-            (((self.Predicatrix.get_predication(tuple4['pred1']['id']),
-               self.Predicatrix.get_predication(tuple4['pred2']['id'])),
-              (self.Predicatrix.get_predication(tuple4['pred3']['id']),
-               self.Predicatrix.get_predication(tuple4['pred4']['id']))))
+        records = HEAL([
+            HEAT((HEAT((self.Predicatrix.get_predication(tuple4['pred1']['id']),
+               self.Predicatrix.get_predication(tuple4['pred2']['id']))),
+              HEAT((self.Predicatrix.get_predication(tuple4['pred3']['id']),
+               self.Predicatrix.get_predication(tuple4['pred4']['id'])))))
             for tuple4 in records
-        ]
+        ])
         return records
 
 
@@ -308,6 +308,7 @@ class DataframeCursorilyLogician:
 
     '''Edge labels for the final picture'''
     edge_label_map = {
+        'D'    : 'originates from',
         'D_IN' : 'distinguished in',
         'D_TO' : 'this side',
         'SUBJECT': 'thema',
@@ -386,7 +387,7 @@ class DataframeCursorilyLogician:
         A.draw(path = "found_distinction.svg")
 
 
-    def add_determined_expression (self, label, general_kind, special_kind, n1, n2):
+    def add_determined_expression (self, label, general_kind, special_kind, n1, n2, reason):
         ''' Throws node data into neo4j by expanding data as dictionary.
 
             :param general_kind: some string property of all members, that are added by this function
@@ -398,7 +399,7 @@ class DataframeCursorilyLogician:
         '''
         if  isinstance(n1, list) and  isinstance(n2, list):
             for a,b in zip(n1,n2):
-                self.add_determined_expression(label, general_kind, special_kind, a,b)
+                self.add_determined_expression(label, general_kind, special_kind, a,b, reason)
             return
         elif isinstance(n1, list):
             n1 = n1[0]
@@ -414,12 +415,13 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}'}})
                 MERGE (b:Nlp {{s_id:{s_id2}, text:'{text2}'}}) 
                 ON CREATE SET b.label='{label}', b.id={id2}
                 //ON MATCH SET b.id=b.id+[{id2}]
-                MERGE (a)-[:{special_kind_u} {{SpecialKind:'{special_kind}'}}]-(b)
-                MERGE (a)-[:{general_kind} {{SpecialKind:'{special_kind}'}}]-(b)""".format(
+                MERGE (a)-[:{special_kind_u} {{SpecialKind:'{special_kind}', Reason:{reason}}}]-(b)
+                MERGE (a)-[:{general_kind} {{SpecialKind:'{special_kind}', Reason:{reason}}}]-(b)""".format(
                 label=label.upper(),
                 general_kind=general_kind.upper(),
                 special_kind=special_kind,
                 special_kind_u=special_kind.upper(),
+                reason=sorted(list(reason)),
 
                 id1=n1['id'],      s_id1=n1['s_id'],       i_s1=n1['i_s'],      text1=" ".join(n1['text']).replace("'", ""),
                 id2=n2['id'],      s_id2=n2['s_id'],       i_s2=n2['i_s'],      text2=" ".join(n2['text']).replace("'", ""),
@@ -438,9 +440,17 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}'}})
         '''
         while True:
             data = (yield)
-            if isinstance(data, tuple) and len(data) == 3:
-                n1, n2, special_kind =  data
-                self.add_determined_expression(label, general_kind, special_kind, n1, n2)
+            if isinstance(data, tuple) and len(data) == 2:
+                n1, n2 =  data
+
+                special_kind = data.type
+                if hasattr(data, 'reason'):
+                    reason = data.reason
+                else:
+                    logging.error('no \'reason\' keyword in data!')
+                    reason = []
+
+                self.add_determined_expression(label, general_kind, special_kind, n1, n2, reason)
             else:
                 logging.error('Value could not be set because I don\'t know how to deal with the type')
                 raise ValueError('Value could not be set because I don\'t know how to deal with the type')
@@ -492,51 +502,73 @@ RETURN node"""
             :return: None
 
         """
-        query = \
+        logging.info ("query neo4j for distinctions")
+        logging.info ("query neo4j for sides and cores")
+
+        query_contradiction_clusters = \
             r"""
             // group all contradictions by an id
             CALL algo.unionFind('CONNOTATION', 'CONTRADICTION', {write:true, partitionProperty:"cluster"})
-            YIELD nodes as n1
-            // group all the correlated hcains by an id
+            YIELD nodes"""
+        self.graph.run(query_contradiction_clusters)
+
+        query_side_clusters = \
+            r"""// group all the correlated hcains by an id
             CALL algo.unionFind('CONNOTATION', 'CORRELATED', {write:true, partitionProperty:"side"})
-            YIELD nodes as n2
-            
-            // find the greater and smaller sections, what is distinguished
-            MATCH (a:CONNOTATION)--(b:CONNOTATION)
-            WHERE a.cluster = b.cluster and not a.side = b.side
-            
-            // create the nodes first
-            MERGE (x:CORE {cluster:a.cluster, id:a.cluster})
+            YIELD nodes"""
+        self.graph.run(query_side_clusters)
+
+        query_build_cores = \
+            r"""// create the nodes first
+            MATCH (a:CONNOTATION)-[c:CONTRADICTION]-(b:CONNOTATION)
+            WHERE a.cluster=b.cluster or a.side = b.side
+            MERGE (x:CORE {Reason:c.Reason})
+            SET x.cluster=a.cluster, b.cluster = a.cluster, x.id = a.cluster
+            RETURN x
+            """
+        self.graph.run(query_build_cores)
+
+        query_connect_cores_sides = \
+            r"""
             // create the sides
-            MERGE (y:SIDE {cluster:a.cluster, side:a.side, id:a.side})
-            MERGE (z:SIDE {cluster:a.cluster, side:b.side, id:b.side})
-            
+            MATCH (a:CONNOTATION)--(b:CONNOTATION), (x:CORE)
+            WHERE a.cluster = b.cluster and not a.side = b.side and x.cluster=a.cluster and x.cluster=b.cluster
+            MERGE (y:SIDE {side:a.side, id:a.side})
+            MERGE (z:SIDE {side:b.side, id:b.side})        
             // connect CORE and sides
             MERGE (x)-[:D_IN]->(y)
-            MERGE (x)-[:D_IN]->(z)
-            
-            // connect CORE, SIDE
-            MERGE (a)<-[:D_TO]-(y)
-            MERGE (b)<-[:D_TO]-(z)
-            
-            // connect other nodes, that are out of the distinction cluster because of other antonyms, but correlated and opposed
-            //WITH a as a, b as b, x as x, z as z, y as y
-
-            //MATCH (a)-[:CORRELATED]-(h:CONNOTATION)--(i:CONNOTATION)-[:CORRELATED]-(b), (h)-[:OPPOSED]-(i)
-            //WHERE not h.cluster = i.cluster and h.side = i.side 
-            //     MERGE (h)<-[:D_TO]-(y)
-            //     MERGE (i)<-[:D_TO]-(z)
-            
-            return x
+            MERGE (x)-[:D_IN]->(z)            
+            RETURN x, y, z
             """
-        logging.info ("query neo4j for distinctions")
-        self.distinction_df =  pd.DataFrame(self.graph.run(query).data()).applymap(
-            lambda x: x['text']
-        )
+        self.graph.run(query_connect_cores_sides).data()
 
-        G = neo4j2nx_root (self.graph, markers=['CORE', 'SIDE', 'CONNOTATION', 'DENOTATION'])
+        query_super_cores = r"""            
+            CALL algo.unionFind(
+              'MATCH (c:SIDE) RETURN id(c) as id',
+              'MATCH (c1:SIDE)<-[f1:D_IN]-(:CORE)-[f2:D_IN]->(c2:SIDE)
+               RETURN id(c1) as source, id(c2) as target',
+              {graph:'cypher',write:true, partitionProperty:'origin'}
+            )
+            Yield nodes
+            MATCH (s1:SIDE)<-[f1:D_IN]-(:CORE)-[f2:D_IN]->(s2:SIDE)
+            WHERE s1.origin = s2.origin
+            MERGE (x:REAL_CORE {origin: s1.origin})
+            MERGE (x)-[:D]->(s1)
+            MERGE (x)-[:D]->(s2)
+            return s1, s2, x"""
+        logging.info ("query neo4j for super cores")
+        self.graph.run(query_super_cores).data()
+
+        query_connect_connotation_sides = \
+        r"""// connect
+        Match (s:SIDE), (n:CONNOTATION)
+        WHERE s.side = n.side
+        MERGE  (n)<-[: D_TO]-(s)
+        return n,s
+        """
+        self.graph.run(query_connect_connotation_sides)
+        G = neo4j2nx_root (self.graph, markers=['REAL_CORE', 'SIDE', 'CONNOTATION', 'DENOTATION'])
         self.draw(G,'img/')
-        return self.distinction_df
 
 
     def cleanup_debug_img(self):

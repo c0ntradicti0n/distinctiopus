@@ -8,7 +8,7 @@
 8	to	to	PART	TO	_	9	aux	18-301	_
 9	prevent	prevent	VERB	VB	_	7	relcl	18-302	_
 10	such	such	ADJ	JJ	_	11	amod	18-303	_
-11	being	be	VERB	VBG	_	6	attr	18-304	_
+11	being	be	VERB	VBG	_	6	attr	18-304	17->[9:19]
 12	present	present	ADJ	JJ	_	11	acomp	18-305	_
 13	in	in	ADP	IN	_	11	prep	18-306	_
 14	a	a	DET	DT	_	15	det	18-307	_

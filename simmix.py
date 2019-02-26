@@ -505,7 +505,7 @@ class Simmix:
         grammar2  = ex2['pos']
         res = -damerau_levenshtein_distance(grammar1, grammar2) /(len(ex1) + len(ex2))
         beam = Dict()
-        beam[ex1['id']][ex2['id']].trigger_thing = res
+        beam[ex1['id']][ex2['id']].reason = res
         return res, beam
 
 
@@ -522,7 +522,7 @@ class Simmix:
         grammar2  = ex2["dep"]
         res = -damerau_levenshtein_distance(grammar1, grammar2) / (len(ex1) + len(ex2))
         beam = Dict()
-        beam[ex1['id']][ex2['id']].trigger_thing = res
+        beam[ex1['id']][ex2['id']].reason = res
         return res, beam
 
 
@@ -567,7 +567,7 @@ class Simmix:
         str2  = ex2["text"]
         res = -damerau_levenshtein_distance(str1, str2) / (len(ex1) + len(ex2))
         beam = Dict()
-        beam[ex1['id']][ex2['id']].trigger_thing = res
+        beam[ex1['id']][ex2['id']].reason = res
         return res, beam
 
     def common_words_sim(invert = False):
@@ -601,7 +601,7 @@ class Simmix:
                    sum([ex1['importance'][i]**factor for i, x in enumerate(str1) if x not in str2]) -
                    sum([ex2['importance'][i]**factor for i, x in enumerate(str2) if x in str1]))/(sum1 + sum2)
             beam = Dict()
-            beam[ex1['id']][ex2['id']].trigger_thing = res
+            beam[ex1['id']][ex2['id']].reason = res
             return res, beam
         return common_words_sim_generated
 
@@ -692,7 +692,7 @@ class Simmix:
                      scipy.spatial.distance.cosine(vectors1[2,:],vectors2[2,:])))
 
             beam = Dict()
-            beam[ex1['id']][ex2['id']].trigger_thing = res
+            beam[ex1['id']][ex2['id']].reason = res
             return res, beam
         return elmo_sim_generated
 
@@ -788,7 +788,7 @@ class Simmix:
         text2        = ex2["text"]
         res =  int (all(w in text1 for w in text2) or all(w in text2 for w in text1))
         beam = Dict()
-        beam[ex1['id']][ex2['id']].trigger_thing = res
+        beam[ex1['id']][ex2['id']].reason = res
         return res, beam
 
 
@@ -888,7 +888,7 @@ class Simmix:
 
         >>> data = ([{'id': '1','text': ['I', 'am', 'here']}],[{'id': '2', 'text': ['I', 'am', 'there']}]), ([{'id': '3', 'text': ['I', 'was', 'here']}],[{'id': '4','text': ['I', 'was', 'there']}])
         >>> Simmix.multi_cross2tup_sim(Simmix.fuzzystr_sim, n=2)(*data)
-        (-1.0, {'1': {'4': {'trigger_thing': -0.5}}, '2': {'3': {'trigger_thing': -0.5}}})
+        (-1.0, {'1': {'4': {'reason': -0.5}}, '2': {'3': {'reason': -0.5}}})
 
         So, with a result of 2*-.5, you get -1 for this fuzzy logic cross over comparison of these two tuples in data.
         Beware, that in the tuples the predicate dicts must be encapsulated in lists.
@@ -898,11 +898,11 @@ class Simmix:
         >>> data3 = ([{'id': '1','text': ['I', 'am', 'here']}],[{'id': '2', 'text': ['I', 'am', 'there']}]), ([{'id': '3', 'text': ['I', 'am']}],[{'id': '4','text': ['am','here']}])
 
         >>> Simmix.multi_cross2tup_sim(Simmix.boolean_subsame_sim, n=2)(*data1)
-        (0, {'1': {'4': {'trigger_thing': 0}}, '2': {'3': {'trigger_thing': 0}}})
+        (0, {'1': {'4': {'reason': 0}}, '2': {'3': {'reason': 0}}})
         >>> Simmix.multi_cross2tup_sim(Simmix.boolean_subsame_sim, n=2)(*data2)
-        (1, {'1': {'4': {'trigger_thing': 0}}, '2': {'3': {'trigger_thing': 1}}})
+        (1, {'1': {'4': {'reason': 0}}, '2': {'3': {'reason': 1}}})
         >>> Simmix.multi_cross2tup_sim(Simmix.boolean_subsame_sim, n=2)(*data3)
-        (2, {'1': {'4': {'trigger_thing': 1}}, '2': {'3': {'trigger_thing': 1}}})
+        (2, {'1': {'4': {'reason': 1}}, '2': {'3': {'reason': 1}}})
 
         If you want to know, if one of the expressions is contained in the opposite position, do this
 
@@ -999,7 +999,7 @@ class Simmix:
         pos2  = min(ex2["i_s"]) + int(ex2['s_id'])*1000
         res = int(pos1<pos2)
         beam = Dict()
-        beam[ex1['id']][ex2['id']].trigger_thing = res
+        beam[ex1['id']][ex2['id']].reason = res
         return res, beam
 
 
@@ -1100,7 +1100,7 @@ class Simmix:
                                             antonym_pair.append((key, it))
                                             logging.info('pair of antonyms found -- "%s" and "%s"' % (key, it))
                             cost += that_key_cost
-            beam[ex1['id']][ex2['id']].trigger_thing = antonym_pair
+            beam[ex1['id']][ex2['id']].reason = antonym_pair
             return cost, beam
         return excluding_pair_boolean_sim_generated
 
@@ -1139,13 +1139,16 @@ class Simmix:
                     key_rel = {k1[0]['key']: k2[0]['key']},
                     negate_one=True)
                 if new_cost:
+                    t.reason = set(flatten([d['reason'] for d in t.trigger]))
                     triggers.append(t)
                 cost += new_cost
 
             beam = Dict()
             if cost:
                 logging.info("contradiction by antonyms")
+                reasons = set(flatten([d['reason'] for t in triggers for d in t.trigger]))
                 beam[ex1['id']][ex2['id']].trigger = triggers
+                beam[ex1['id']][ex2['id']].reason  = reasons
                 beam[ex1['id']][ex2['id']].key_to_key = key_char_to_key_char
             return cost, beam
         return formula_prooves_generated
@@ -1184,20 +1187,24 @@ class Simmix:
             cost = 0
             triggers = []
 
-            for k1, k2 in key_to_key:
+            for t in key_to_key:
+                k1, k2 = t
                 new_cost = Simmix.do_logic(
                     formulas = (f1, f2),
                     key_rel = {k1[0]['key']: k2[0]['key']}
                 )
                 if new_cost:
-                    triggers.append((k1[0],k2[0]))
+                    t.reason = 'neg' #set(flatten([d['reason'] for d in t.trigger]))
+                    triggers.append(t)
                 cost += new_cost
 
             beam = Dict()
             if cost :
                 logging.info("contradiction by negation")
+                reasons = set(flatten([d['reason'] for t in triggers for d in t.trigger]))
                 beam[ex1['id']][ex2['id']].trigger = triggers
-                beam[ex1['id']][ex2['id']].key_to_key = str(key_char_to_key_char)
+                beam[ex1['id']][ex2['id']].reason  = 'neg'
+                beam[ex1['id']][ex2['id']].key_to_key = key_char_to_key_char
             return cost, beam
         return formula_contradicts_generated
 
@@ -1306,7 +1313,8 @@ class Simmix:
         if isinstance(exs1[0], dict) and isinstance(exs2[0], dict):
             all_triggers = flatten_list([self.beam[ex1['id']][ex2['id']]['trigger'] for ex1, ex2 in t_s])
             for trigger in all_triggers:
-                graph_coro.send(trigger + (type,))
+                trigger.type = type
+                graph_coro.send(trigger)
 
         elif isinstance(exs1[0], tuple):
             (type_l_pair, type_r_pair, type_between) = type
@@ -1317,15 +1325,15 @@ class Simmix:
                     ex21 = trigger[1][0][0]
                     ex22 = trigger[1][1][0]
 
-                    lr1_edge = (ex11, ex21)
-                    lr2_edge = (ex12, ex22)
-                    orig_l_edge = (ex11, ex12)
-                    orig_r_edge = (ex21, ex22)
+                    orig_l_edge = HEAT((ex11, ex12), type=type_l_pair)
+                    orig_r_edge = HEAT((ex21, ex22), type=type_r_pair)
+                    lr1_edge = HEAT((ex11, ex21), type=type_between)
+                    lr2_edge = HEAT((ex12, ex22), type=type_between)
 
-                    graph_coro.send(orig_l_edge + (type_l_pair,))
-                    graph_coro.send(orig_r_edge + (type_r_pair,))
-                    graph_coro.send(lr1_edge + (type_between,))
-                    graph_coro.send(lr2_edge + (type_between,))
+                    graph_coro.send(orig_l_edge)
+                    graph_coro.send(orig_r_edge)
+                    graph_coro.send(lr1_edge)
+                    graph_coro.send(lr2_edge)
                 except TypeError:
                     raise TypeError(
                         "one of the edges didn't have the list-tuple-dict-list-specification\n"
