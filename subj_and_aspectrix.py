@@ -1,10 +1,7 @@
-from hardcore_annotated_expression import HEAT
+from hardcore_annotated_expression import eT, apply_fun_to_nested, eL, eD
 from pairix import Pairix
-from predicatrix import Predication
-from corpus_reader import nlp
 from littletools.corutine_utils import coroutine
-from littletools.generator_tools import count_up
-from littletools.nested_list_tools import curry
+from littletools.nested_list_tools import curry, flatten_reduce, recursive_map
 from simmix import Simmix
 
 import networkx as nx
@@ -15,51 +12,29 @@ logging.captureWarnings(True)
 logging.getLogger().setLevel(logging.INFO)
 
 
-class Subjects_and_aspects(Pairix):
+class Subjects_and_Aspects(Pairix):
     ''' This module finds pairs of arguments, that are the subjects and aspects for a pair of a pair of expressions
 
     '''
     def __init__(self, corpus):
         self.similar = \
-            Simmix([(20, Simmix.common_words_sim(), 0.5, 1),
+            Simmix([(3, Simmix.fuzzytext_sim, 0.1, 1),
+                    (2, Simmix.elmo_sim(), 0.1,1),
                     (1, Simmix.dep_sim, 0.1, 1),
                     (1, Simmix.pos_sim, 0.1, 1),
-                    (1, Simmix.tag_sim, 0.1, 1),
-                    ],
+                    (1, Simmix.tag_sim, 0.1, 1)]
                    )
 
-        self.filter1 = \
-            Simmix([(18, Simmix.multi_sim( Simmix.common_words_sim(), n=2), 0.1, 1),
-                    #(    3, Simmix.multi_sim(Simmix.elmo_layer_sim(layer=[0, 1]) ), 0.2, 1),
-                    #(    4, Simmix.multi_sim(Simmix.head_dep_sim), 0.0, 1),
-                    #(1, Simmix.multi_sim(Simmix.pos_sim, n=2), 0.1, 1),
-                    #(1, Simmix.multi_sim(Simmix.tag_sim, n=2), 0.1, 1),
-                    #(-1000, Simmix.multi_sim(Simmix.boolean_subsame_sim, n=2),      0.0, 0.1)
-                    ],
-                   n=100)
-
         self.theme_rheme = \
-             Simmix ([(1, Simmix.multi_sim(Simmix.left_sim, n=2), 0.0, 1),
-                     (-1000, Simmix.multi_sim(Simmix.boolean_subsame_sim, n=2), 0.0, 0.1)],
-                     n=1)
-
-        global nlp
-        standard_ex = nlp("The thing is round from the right side.")
-
-        self.P = Predication (corpus)
-        self.standard_predicate              = self.P.collect_all_predicates(standard_ex)
-        self.standard_entity_exs             = self.standard_predicate[0]['arguments'][0:1]
-        self.standard_aspect_exs             = self.standard_predicate[0]['arguments'][1:2]
-
-        self.pattern_pair_ent = [(self.standard_entity_exs, self.standard_entity_exs)]
-        self.pattern_pair_asp = [(self.standard_aspect_exs, self.standard_aspect_exs)]
-
-        self.counter = count_up()
+             Simmix ([#(1, Simmix.multi_sim(Simmix.left_sim, n=6), 0.0, 1),
+                      (1, Simmix.multi_paral_tup_sim(Simmix.subj_asp_sim, n=4), 0.0, 1),
+                      (-1000, Simmix.multi_sim(Simmix.boolean_subsame_sim, n=6), 0.0, 0.1)],
+        n=1)
 
 
     def argument_or_reference_instead (self, arguments):
         ''' This exchanges in the list of arguments the ones, that are referencing to other nouns, and keep the ones,
-        that are fine
+        that are fine.
 
         :param arguments: argument dicts
         :return: lists with some changes of same len
@@ -69,32 +44,41 @@ class Subjects_and_aspects(Pairix):
         for argument in arguments:
             reference = argument['coreferenced'](argument['coref'])
             if reference:
-                if reference[0]:
-                    new_arguments.append(reference[0])
-                else:
-                    new_arguments.append(argument)
+                new_arguments.extend(reference)
             else:
                 new_arguments.append(argument)
-        assert all (new_arguments)
+
         try:
-            assert new_arguments
+            assert new_arguments and all (new_arguments)
         except AssertionError:
             print (arguments)
             raise
 
         return new_arguments
 
-    def get_arguments(self, argument):
+
+    def get_arguments(self, predicate_s):
         ''' Gets the arguments of the predicate
 
-            :param argument: predicate-dict
+            :param predicate_s: predicate-dict or predicate list
             :return: argument-dict
 
         '''
-        arguments = argument['arguments']
-        argument = self.argument_or_reference_instead (arguments)
-        assert argument
-        return argument
+        if isinstance(predicate_s, list):
+            arguments = eL(flatten_reduce([self.get_arguments(pred) for pred in predicate_s]))
+            if len (arguments.unique()) != len(arguments):
+                logging.warning("INDEED AN EFFECT!!! %d" % (len (arguments.unique())- len(arguments)))
+            return arguments.unique()
+
+
+        arguments = predicate_s['arguments']
+        try:
+            assert (arguments)
+        except:
+            raise
+        arguments_ref = self.argument_or_reference_instead (arguments)
+        assert arguments_ref
+        return arguments_ref
 
 
     def get_correlated (self, pair):
@@ -107,10 +91,67 @@ class Subjects_and_aspects(Pairix):
         arguments = self.get_arguments(pair[0][0]), self.get_arguments(pair[1][0])
         if not all(arguments):
             raise ValueError ('no argument for predicate, that can be referenced?')
-        return self.similar.choose(arguments, layout='1:1', out='ex')
+        return self.similar.choose(arguments, layout='n', n=100,  out='ex')
 
 
-    def annotate(self, opposed_pair_pair=None, graph_coro_subj_asp=None, graph_coro_arg_binding=None, paint_graph=True):
+    def check_ness_spans(self, expressions, ness_fun=None):
+        ''' Map some scoring function to a list of expressions (lists of tokens) and sum up the results
+
+        :param expressions: list of list of spacy tokens
+        :param ness_fun: function, that takes a list of spacy tokens
+        :return: summed score
+
+        '''
+        x = apply_fun_to_nested (data=expressions, attribute='full_ex', fun=curry(self.check_ness_list_of_tokens, ness_fun=ness_fun), reduce=True)
+        try:
+             return [l[0] * l[1] for t in x for l in t]
+        except TypeError:
+             raise
+
+
+    def check_ness_list_of_tokens(self, ex, ness_fun=None):
+        ''' Apply the subject-aspect-ness function to the expression, get the scores and sum them up
+
+        :param ex: list of spacy tokens
+        :param ness_fun: scoring function
+        :return: sum of scores
+
+        '''
+        return sum(map(ness_fun, ex))
+
+
+    def score_expressions(self, exs, ness_fun=None):
+        ''' gets a pair (or list of expression) and compute the score for every combination
+
+        :param exs: expressions, lists/tuples of predicate dict
+        :param ness_fun: scoring function
+        :return: sum of score
+
+        '''
+        return [self.check_ness_spans(ex, ness_fun) for ex in exs]
+
+
+    def subjects_aspects(self, correlates):
+        '''
+
+        :param correlates:
+        :return:
+        '''
+        score1 = np.asarray(list(map(curry(self.score_expressions, ness_fun=self.subjectness_word), correlates)))
+        score2 = np.asarray(list(map(curry(self.score_expressions, ness_fun=self.aspectness_word), correlates)))
+
+        subj_i = np.argmax(score1)
+        aspe_i = np.argmax(score2)
+
+        if subj_i == aspe_i:
+            # It's better to put the aspect elsewhere, because the aspect can be hidden in nested phrases,
+            # only of there are enough values
+            if aspe_i < len(score2):
+                aspe_i = score2.argsort()[::-1][0]
+        return correlates[subj_i], correlates[aspe_i]
+
+
+    def annotate(self, clusters=None, graph_coro_subj_asp=None, graph_coro_arg_binding=None, paint_graph=True):
         ''' Annotates the correlations, that means expressions that are similar to each other and are distinct from the
             pair, that was found as excluding each other. For instance 'from the one side' and 'from the other side'.
 
@@ -125,84 +166,63 @@ class Subjects_and_aspects(Pairix):
             start with these cases and then tell, that in one case you have in the other not warranty, you speak about
             these cases.
 
-            :param opposed_pair_pair: 2tuple-2tuple-list-predicate-dicts, so 4 predicates in contradicting/corralating
+            :param clusters: 2tuple-2tuple-list-predicate-dicts, so 4 predicates in contradicting/corralating
                 constellation
             :param graph_coro: coroutine to connect the subjects and aspects to debug their bindings
             :param graph_coro_arg_binding: coroutine to connect subject and aspects to their predicates
 
         '''
-        if paint_graph:
-            G = nx.DiGraph()
-            put_into_nx = self.put_into_nx(general_kind='contradiction', G=G)
-            graph_coro_subj_asp = [graph_coro_subj_asp, put_into_nx ]
+        #if paint_graph:
+        #    G = nx.DiGraph()
+        #    put_into_nx = self.put_into_nx(general_kind='contradiction', G=G)
+        #    graph_coro_subj_asp = [graph_coro_subj_asp, put_into_nx ]
+        graph_funs = [graph_coro_subj_asp]
 
-        oppo1, oppo2 = opposed_pair_pair
-        poss_correlates1 = self.get_correlated(oppo1)
-        poss_correlates2 = self.get_correlated(oppo2)
+        arguments_for_sides = apply_fun_to_nested (fun=self.get_arguments, attribute='predicate_id', data=clusters )
 
-        if not poss_correlates1 or not poss_correlates2:
-            return []
+        to_correlate = eL(
+            [eT(tuple(
+                eL(flatten_reduce([sd['predicate_id'] for sd in cl['nucleus']['sides']])).unique()))
+                for cl in arguments_for_sides]).unique()
 
-        def subjectness_word(token):
-            res = 0
-            if token.pos_ == 'NOUN':
-                res += 2
-            if token.head.dep_ == 'ROOT':
-                res += 20
-            if token.head.dep_ in ['acl', 'rcl']:
-                res += 1
-            return res
+        correlated = eL(
+            [self.similar.choose(data=(to_corr.unique(), to_corr.unique()), layout='n', n=100, out='ex')
+             for to_corr in to_correlate])
 
-        def aspectness_word(token):
-            res = 0
-            if token.dep_ in ['obj', 'pobj', 'dobj']:
-                res += 2
-            if token.head.dep_ != 'ROOT':
-                res += 1
-            return res
+        to_distinguish =  eL(
+            [eT([eL(flatten_reduce(list(corr[0]) + list(corr[1])))
+                 for corr in cl])
+             for cl in correlated])
 
-        def evaluate_subject_on_pair (pair, ness_fun = None):
-            '''
-
-            :param pair:
-            :param ness_fun: a function like `subject-ness_word(token)` or `aspect-ness(token`
-            :return:
-
-            '''
-            def check_subjectness_spans (expressions):
-                return sum (map(check_subjectness_span, expressions))
-            def check_subjectness_span  (expression):
-                return check_subjectness_list_of_tokens(expression['full_ex'])
-            def check_subjectness_list_of_tokens(span):
-                return sum (map(ness_fun, span))
-            return check_subjectness_spans(pair[0]) + check_subjectness_spans(pair[1])
-
-        def subjects_aspects (correlates):
-            score1 = np.array(list(map (curry(evaluate_subject_on_pair, ness_fun= subjectness_word), correlates)))
-            score2 = np.array(list(map (curry(evaluate_subject_on_pair, ness_fun= aspectness_word), correlates)))
-            subj_i = np.argmax(score1)
-            aspe_i = np.argmax(score2)
-            if subj_i == aspe_i:
-                # It's better to put the aspect elsewhere, because the aspect can be hidden in nested phrases,
-                # only of there are enough values
-                if aspe_i < len (score2):
-                    aspe_i = score2.argsort()[::-1][0]
-            return correlates[subj_i], correlates[aspe_i]
-
-        poss_subjects1, poss_aspects1 = subjects_aspects (poss_correlates1)
-        poss_subjects2, poss_aspects2 = subjects_aspects (poss_correlates2)
-
-        subjects_aspects = self.theme_rheme.choose(
-            ([poss_subjects1, poss_subjects2], [poss_aspects2, poss_aspects1]),
-            n=1,
+        subjects_aspects = eL(
+            [self.theme_rheme.choose(
+            (corr, corr),
+            n=4,
             minimize=False,
             layout='n',
             out='ex',
-            type=("subjects", "aspects", "compared"),
-            graph_coro=graph_coro_subj_asp)                             # Put it in the graph
+            type=("subjects", "aspects", "compared"))
+             for corr in to_distinguish])                   # Put it in the graph
 
-        if not subjects_aspects:
-            return []
+        def graph_write (x):
+            x.type    = 'subj_aspe'
+            x[0].type = 'subjects'
+            x[0][0].type = 'subjects'
+
+            x[1].type = 'aspects'
+            x[1][0].type = 'aspects'
+
+            query = "\n".join(x.neo4j_write())
+            print (query)
+            return [f(query) for f in graph_funs]
+
+        written = apply_fun_to_nested (fun=graph_write,
+                                       other_criterium=(
+                                           lambda x: isinstance(x, eT) and isinstance(x[0], eL) and isinstance(x[1], eL)
+                                                     and isinstance(x[0][0], eL) and isinstance(x[0][0][0], eD)),
+                                       data=subjects_aspects )
+
+        print (written)
 
         subject1 = subjects_aspects[0][0][0][0][0]
         subject2 = subjects_aspects[0][0][0][1][0]
@@ -214,19 +234,17 @@ class Subjects_and_aspects(Pairix):
         pred3    = oppo2[0][0]
         pred4    = oppo2[1][0]
 
-        if not (
-            Simmix.same_sent_sim(subject1, pred1) and
-            Simmix.same_sent_sim(subject2, pred2) and
-            Simmix.same_sent_sim(aspect1, pred3) and
-            Simmix.same_sent_sim(aspect2, pred4) ):
-            logging.warning ('subjects and aspects not from the same sentence')
-            return []
+        same_sentence = (Simmix.same_sent_sim(subject1, pred1) ,
+            Simmix.same_sent_sim(subject2, pred2) ,
+            Simmix.same_sent_sim(aspect1, pred3) ,
+            Simmix.same_sent_sim(aspect2, pred4))
+        if not all(same_sentence):
+            logging.warning ('subjects and aspects not from the same sentence %s' % (str(same_sentence)))
 
-
-        graph_coro_arg_binding.send (HEAT((pred1, subject1), type='subject'))
-        graph_coro_arg_binding.send (HEAT((pred2, subject2), type='subject'))
-        graph_coro_arg_binding.send (HEAT((pred3, aspect1), type='aspect'))
-        graph_coro_arg_binding.send (HEAT((pred4, aspect2), type='aspect'))
+        graph_coro_arg_binding.send (eT((pred1, subject1), type='subject'))
+        graph_coro_arg_binding.send (eT((pred2, subject2), type='subject'))
+        graph_coro_arg_binding.send (eT((pred3, aspect1), type='aspect'))
+        graph_coro_arg_binding.send (eT((pred4, aspect2), type='aspect'))
 
         if paint_graph:
             #put_into_nx.send('draw')

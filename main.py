@@ -53,13 +53,12 @@ def main():
     Logician.annotate_predicates()
     Logician.annotate_contradictions()
     Logician.annotate_correlations()
+
+    Logician.cluster_distinctions()
+
     Logician.annotate_subjects_and_aspects()
-    Logician.move_labels()
 
-    df = Logician.query_distinctions()
-
-    #print(df.to_excel(args.conll+"/../output.xlsx"))
-    #Logician.draw_as_dot_digraph(digraph, args.work_dir + "/found_distinctions." + args.output)
+    Logician.draw_distinctions()
     return 0
 
 if __name__ == '__main__':

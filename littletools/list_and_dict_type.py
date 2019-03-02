@@ -1,4 +1,5 @@
 # http://code.activestate.com/recipes/579103-python-addset-attributes-to-list/
+import types
 
 
 class L(list):
@@ -42,7 +43,6 @@ class L(list):
         return self
 
 
-
 class T(tuple):
     """ The same with a tuple
     """
@@ -51,10 +51,16 @@ class T(tuple):
         return super(T, cls).__new__(cls, tuple (args))
 
     def __init__(self, args, **kwargs):
+        if isinstance(args, types.GeneratorType):
+            args = tuple(args)
         if len(args) == 1 and hasattr(args[0], '__iter__'):
             tuple.__new__(self, args[0])
         else:
-            tuple.__new__(type(args), args)
+            try:
+                tuple.__new__(type(args), args)
+            except TypeError:
+                tuple.__new__(tuple, args)
+                print ("list where there shouldn't be a list")
         self.__dict__.update(kwargs)
 
     def __call__(self, **kwargs):

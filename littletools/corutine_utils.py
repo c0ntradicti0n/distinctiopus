@@ -9,3 +9,12 @@ def coroutine(func):
         next(cr)
         return cr
     return start
+
+def generator(gen):
+    def new_gen(x):
+        g = gen(x)
+        value = g.next()
+        for v in g:
+            yield value
+            value = v
+    return new_gen

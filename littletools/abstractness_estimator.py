@@ -94,3 +94,8 @@ if __name__ == '__main__':
     print ('NOTE: unknown words are considered concrete')
     for word in ['hoge', 'dsfijf', '!!??']:
         print ('', word, ae.estimate(word))
+
+
+    print ('NOTE: unknown words are considered concrete')
+    for word in ['both', 'other', 'hunt']:
+        print ('', word, ae.estimate(word))

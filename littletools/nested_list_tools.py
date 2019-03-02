@@ -25,6 +25,8 @@ def flatten_reduce(iterable):
             return iterable
     except IndexError:
         raise ValueError("Value empty")
+    except KeyError:
+        raise ValueError("Value is a dict, list expected!")
 
 def flatten_list(l):
     for el in l:
@@ -66,6 +68,7 @@ def curry(function, *args, **kwargs):
         return function (x, *args, **kwargs)
     return fun_new
 
+
 def on_each_level (lol, fun, out = []):
     ''' If you have a nested list and you want to apply a function on the elements of the list, you have to go through
     all the levels, this functions does this recursively and applys the function
@@ -82,6 +85,39 @@ def on_each_level (lol, fun, out = []):
         else:
             out.append(on_each_level(x, fun, []))
     return out
+
+
+from collections import Sequence
+
+def recursive_map (func, seq, d=0, x_max_d=5, other_criterium=None):
+    if d>= x_max_d:
+        return seq
+
+    if other_criterium:
+        if other_criterium(seq):
+            #seq = type(seq)((k, recursive_map(func, v, d=d+1, x_max_d=x_max_d, other_criterium=other_criterium)) for k, v in seq.items())
+            res = func(seq)
+            return res
+
+    if isinstance(seq, dict) and not other_criterium:
+        seq = type(seq)((k, recursive_map(func, v, d=d+1, x_max_d=x_max_d, other_criterium=other_criterium)) for k, v in seq.items())
+        res = func(seq)
+        return res
+
+    elif isinstance(seq, Sequence):
+        res = []
+        for item in seq:
+            if isinstance(item, Sequence):
+                res.append(recursive_map(func, item, d=d+1, x_max_d=x_max_d, other_criterium=other_criterium))
+            elif isinstance(item, dict):
+                res.append(recursive_map(func, item, d=d+1, x_max_d=x_max_d, other_criterium=other_criterium))
+            else:
+                res.append(func(item))
+        return res
+
+    else:
+        return seq
+
 
 
 def on_each_iterable (lol, fun):

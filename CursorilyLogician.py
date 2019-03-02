@@ -2,24 +2,28 @@
 # -*- coding: utf-8 -*-
 
 import itertools
+import time
+from _signal import pause
+from os import wait
+
 import networkx as nx
 import textwrap
 
-from hardcore_annotated_expression import HEAL, HEAT
+from hardcore_annotated_expression import eL, eT, apply_fun_to_attribute_of_ex, ltd_ify, apply_fun_to_nested
 from littletools.corutine_utils import coroutine
 import pandas as pd
 
 import matplotlib
 
 from littletools.digraph_tools import neo4j2nx_root
-from littletools.nested_list_tools import flatten_reduce
+from littletools.nested_list_tools import flatten_reduce, recursive_map, curry
 
 matplotlib.use('TkAgg')
 
 from contradictrix import Contradiction
 from predicatrix import Predication
 from correlatrix import Correlation
-from subj_and_aspectrix import Subjects_and_aspects
+from subj_and_aspectrix import Subjects_and_Aspects
 
 import logging
 logging.getLogger(__name__).addHandler(logging.NullHandler())
@@ -52,7 +56,7 @@ class DataframeCursorilyLogician:
         self.Predicatrix    = Predication(corpus)
         self.Contradictrix  = Contradiction ()
         self.Correlatrix    = Correlation()
-        self.Subj_Aspectrix = Subjects_and_aspects(corpus)
+        self.Subj_Aspectrix = Subjects_and_Aspects(corpus)
 
         self.graph = py2neo.Graph("bolt://localhost:7687", auth=("s0krates", "password"))
         self.graph.run("MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r")
@@ -63,7 +67,7 @@ class DataframeCursorilyLogician:
         ''' writes in a column 'horizon' a list of ids of the following n sentences
 
         :param horizon: nomber of sentences to look forward
-        :return: None
+
         '''
         def horizon_from_row(x):
             return list(self.sentence_df.loc[x.name:x.name + horizon + 1].index)
@@ -88,7 +92,6 @@ class DataframeCursorilyLogician:
     def annotate_predicates (self):
         ''' Call the function to annotate the predicates for each sentence and puts them into a column 'predication'
 
-            :return: None
         '''
 
         self.sentence_df['predication'] = self.sentence_df.apply(
@@ -166,7 +169,6 @@ class DataframeCursorilyLogician:
         return predicates
 
 
-
     def annotate_contradictions(self):
         ''' Looks first for pairs of phrases with negations and antonyms in an horizon
             and second it evaluates the similarity of these phrases, what would be the fitting counterpart for that one
@@ -197,7 +199,7 @@ class DataframeCursorilyLogician:
         predicates_in_sentence = self.get_part_predication(s_id)        # predicates from same sentence
         coref_preds            = self.get_coreferenced_preds (pred)     # predicates that are coreferencing/-ed
         marked_preds           = self.get_marked_predication (s_id)     # predicates with examples or meaning explanations ('e.g.', 'by saying that I mean')
-        return HEAL(predicates_in_sentence + coref_preds + marked_preds)
+        return eL(predicates_in_sentence + coref_preds + marked_preds)
 
 
     def get_coreferenced_preds (self, pred):
@@ -225,7 +227,6 @@ class DataframeCursorilyLogician:
             These routines reclassify some of the contradictions, because also talking about examples can seem to be
             anithetical, if the explanation of the instanciated concept is repeated.
 
-            :return: None
         '''
         # Lookup what contradicitons were found
         contradictions           = self.get_from_gdb('contradiction')
@@ -238,57 +239,61 @@ class DataframeCursorilyLogician:
             poss_correl_r = self.get_correllation_preds(contra2)
 
             self.Correlatrix.annotate_correlations(
-                contradiction= HEAT((contra1, contra2)),
-                possible_to_correlate=HEAT((poss_correl_l, poss_correl_r)),
+                contradiction= eT((contra1, contra2)),
+                possible_to_correlate=eT((poss_correl_l, poss_correl_r)),
                 graph_coro=put_correlation_into_gdb)
 
 
-    def get_opposed_constellation_gdb (self):
+    def get_clusters (self):
         ''' Returns the pattern, that gave a contradiction-opposition-pair
 
             :return: 2tuple-2tuple-list-predicate-dict
 
         '''
         query = \
-            """MATCH (pred1)-[:CORRELATION {SpecialKind:'correlated'}]-(pred3),
-              (pred1)-[:CORRELATION {SpecialKind:'opposed'}]-(pred2),
-              (pred2)-[:CORRELATION {SpecialKind:'correlated'}]-(pred4),
-              (pred3)-[:CORRELATION {SpecialKind:'opposed'}]-(pred4)      
-              RETURN pred1, pred2, pred3, pred4
+            """ MATCH (conno:CONNOTATION)--(side:SIDE)--(nucleus:REAL_CORE)
+                WITH 
+                    nucleus, 
+                    { 
+                        side : side.side, 
+                        predicate_id : COLLECT(conno.id)
+                    } AS sides
+                WITH 
+                    { 
+                        nucleus : nucleus.origin, 
+                        sides : COLLECT(sides)
+                    } AS nucleus
+                RETURN nucleus
               """
 
         logging.info("query neo4j for reading by this:\n%s" % query)
         records = self.graph.run(query).data()
-        records = HEAL([
-            HEAT((HEAT((self.Predicatrix.get_predication(tuple4['pred1']['id']),
-               self.Predicatrix.get_predication(tuple4['pred2']['id']))),
-              HEAT((self.Predicatrix.get_predication(tuple4['pred3']['id']),
-               self.Predicatrix.get_predication(tuple4['pred4']['id'])))))
-            for tuple4 in records
-        ])
-        return records
+        time.sleep(0.2)
+
+
+        predicates = apply_fun_to_nested(fun=self.Predicatrix.get_predication, attribute='predicate_id', data=records)
+
+        return predicates
 
 
     def annotate_subjects_and_aspects(self):
-        ''' Look for some common arguments of the contradicting and correlating predications.
-            These may may they be the logical subjects, the pre"""
+        ''' Look for common arguments of the contradicting and correlating predications.
 
-            :return: None
+            These are evaluated to be more the subject of the sentences, that the distinction is applied to, or to be
+            the aspects, that are some tokens for addressing the perspective which feature of the subject is focussed
+            by the other expressions, that correlate to the expressions with the subject"""
 
         '''
-        # Say, after annotation of the contradictions and their correlating modifyers we have a pair of 'opposed'
-        # nodes, as annotated by the correlatrix.
-        opposed_pair_pairs   = self.get_opposed_constellation_gdb()
+        clusters   = self.get_clusters()
 
         put_arg_into_gdb     = self.put_into_gdb('denotation', 'argument')
         put_deno_into_gdb    = self.put_into_gdb('denotation', 'subjects_aspects')
 
-        for oppo in opposed_pair_pairs:
-            self.Subj_Aspectrix.annotate(
-                opposed_pair_pair   = oppo,
-                graph_coro_subj_asp= put_arg_into_gdb,
-                graph_coro_arg_binding=put_deno_into_gdb
-                )
+        self.Subj_Aspectrix.annotate(
+            clusters= clusters,
+            graph_coro_subj_asp=self.just_write_to_gdb,
+            graph_coro_arg_binding=self.just_write_to_gdb
+            )
 
 
     ''' Colors for the final graph'''
@@ -428,6 +433,7 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}'}})
                 )
         logging.info ("querying neo4j for %s" % general_kind)
         self.graph.run(query)
+        time.sleep(0.02)
 
 
     @coroutine
@@ -457,6 +463,11 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}'}})
         return None
 
 
+    def just_write_to_gdb (self, query):
+        ''' This function just calls the run command to get in touch with neo4j'''
+        return self.graph.run(query)
+
+
     def get_from_gdb (self, kind):
         """ Returns pairs of in certain way connected nodes from neo4j
 
@@ -471,16 +482,18 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}'}})
         )
         logging.info("query neo4j for %s" % kind)
         records = self.graph.run(query).data()
+        time.sleep(0.2)
+
         
-        records = HEAL([
-            HEAT((self.Predicatrix.get_predication(pair['a']['id']),
-                  self.Predicatrix.get_predication(pair['b']['id'])))
+        records = eL([
+            eT((self.Predicatrix.get_predication(pair['a']['id']),
+                self.Predicatrix.get_predication(pair['b']['id'])))
             for pair in records
         ])
         assert all (records)
         assert all (all (pair) for pair in records)
-
         return records
+
 
     def move_labels (self):
         ''' Calls a neo4j apoc function to give labels to the node from a property named 'label'
@@ -489,11 +502,14 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}'}})
 
         '''
         query = """MATCH (n:Nlp)
-CALL apoc.create.addLabels( id(n), [ n.label ] ) YIELD node
-RETURN node"""
-        self.graph.run(query)
+        CALL apoc.create.addLabels( id(n), [ n.label ] ) YIELD node
+        RETURN node
+        """
+        res = self.graph.run(query)
+        time.sleep(0.2)
 
-    def query_distinctions (self):
+
+    def cluster_distinctions (self):
         """ Makes the query for the distinctions in neo4j.
 
             It looks for at least two constrasting, correlated pairs of predicates with the same subjects and the same
@@ -503,6 +519,9 @@ RETURN node"""
 
         """
         logging.info ("query neo4j for distinctions")
+
+        self.move_labels()
+
         logging.info ("query neo4j for sides and cores")
 
         query_contradiction_clusters = \
@@ -510,13 +529,11 @@ RETURN node"""
             // group all contradictions by an id
             CALL algo.unionFind('CONNOTATION', 'CONTRADICTION', {write:true, partitionProperty:"cluster"})
             YIELD nodes"""
-        self.graph.run(query_contradiction_clusters)
 
         query_side_clusters = \
             r"""// group all the correlated hcains by an id
             CALL algo.unionFind('CONNOTATION', 'CORRELATED', {write:true, partitionProperty:"side"})
             YIELD nodes"""
-        self.graph.run(query_side_clusters)
 
         query_build_cores = \
             r"""// create the nodes first
@@ -524,9 +541,7 @@ RETURN node"""
             WHERE a.cluster=b.cluster or a.side = b.side
             MERGE (x:CORE {Reason:c.Reason})
             SET x.cluster=a.cluster, b.cluster = a.cluster, x.id = a.cluster
-            RETURN x
             """
-        self.graph.run(query_build_cores)
 
         query_connect_cores_sides = \
             r"""
@@ -538,9 +553,8 @@ RETURN node"""
             // connect CORE and sides
             MERGE (x)-[:D_IN]->(y)
             MERGE (x)-[:D_IN]->(z)            
-            RETURN x, y, z
+            //RETURN x, y, z
             """
-        self.graph.run(query_connect_cores_sides).data()
 
         query_super_cores = r"""            
             CALL algo.unionFind(
@@ -555,18 +569,27 @@ RETURN node"""
             MERGE (x:REAL_CORE {origin: s1.origin})
             MERGE (x)-[:D]->(s1)
             MERGE (x)-[:D]->(s2)
-            return s1, s2, x"""
-        logging.info ("query neo4j for super cores")
-        self.graph.run(query_super_cores).data()
+            //return s1, s2, x"""
 
         query_connect_connotation_sides = \
-        r"""// connect
-        Match (s:SIDE), (n:CONNOTATION)
-        WHERE s.side = n.side
-        MERGE  (n)<-[: D_TO]-(s)
-        return n,s
+            r"""// connect
+            Match (s:SIDE), (n:CONNOTATION)
+            WHERE s.side = n.side
+            MERGE  (n)<-[: D_TO]-(s)
+            return n,s
         """
-        self.graph.run(query_connect_connotation_sides)
+
+        all_queries = [query_contradiction_clusters, query_side_clusters, query_build_cores, query_connect_cores_sides, query_super_cores, query_connect_connotation_sides]
+
+        self.graph.run("\nWITH count(*) as dummy\n".join(all_queries))
+
+        time.sleep(0.2)
+
+
+
+
+
+    def draw_distinctions(self):
         G = neo4j2nx_root (self.graph, markers=['REAL_CORE', 'SIDE', 'CONNOTATION', 'DENOTATION'])
         self.draw(G,'img/')
 

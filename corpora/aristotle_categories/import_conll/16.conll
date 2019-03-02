@@ -7,7 +7,7 @@
 7	class	class	NOUN	NN	_	2	attr	_	_
 8	of	of	ADP	IN	_	7	prep	_	_
 9	things	thing	NOUN	NNS	_	8	pobj	_	_
-10	which	which	DET	WDT	_	11	nsubj	_	16->[9]
+10	which	which	PRON	WDT	_	11	nsubj	_	16->[9]
 11	are	be	VERB	VBP	_	9	relcl	_	_
 12	neither	neither	CCONJ	CC	_	13	preconj	_	_
 13	present	present	ADJ	JJ	_	11	acomp	_	_

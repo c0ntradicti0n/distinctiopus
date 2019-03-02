@@ -421,7 +421,7 @@
                 <span class="n">graph_coro</span><span class="o">=</span><span class="n">put_correlation_into_gdb</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DataframeCursorilyLogician.get_opposed_constellation_gdb"><a class="viewcode-back" href="../CursorilyLogician.html#CursorilyLogician.DataframeCursorilyLogician.get_opposed_constellation_gdb">[docs]</a>    <span class="k">def</span> <span class="nf">get_opposed_constellation_gdb</span> <span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DataframeCursorilyLogician.get_clusters"><a class="viewcode-back" href="../CursorilyLogician.html#CursorilyLogician.DataframeCursorilyLogician.get_clusters">[docs]</a>    <span class="k">def</span> <span class="nf">get_clusters</span> <span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the pattern, that gave a contradiction-opposition-pair</span>
 
 <span class="sd">            :return: 2tuple-2tuple-list-predicate-dict</span>
@@ -455,7 +455,7 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="c1"># Say, after annotation of the contradictions and their correlating modifyers we have a pair of &#39;opposed&#39;</span>
         <span class="c1"># nodes, as annotated by the correlatrix.</span>
-        <span class="n">opposed_pair_pairs</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_opposed_constellation_gdb</span><span class="p">()</span>
+        <span class="n">opposed_pair_pairs</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_clusters</span><span class="p">()</span>
 
         <span class="n">put_arg_into_gdb</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">put_into_gdb</span><span class="p">(</span><span class="s1">&#39;denotation&#39;</span><span class="p">,</span> <span class="s1">&#39;argument&#39;</span><span class="p">)</span>
         <span class="n">put_deno_into_gdb</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">put_into_gdb</span><span class="p">(</span><span class="s1">&#39;denotation&#39;</span><span class="p">,</span> <span class="s1">&#39;subjects_aspects&#39;</span><span class="p">)</span>
@@ -652,7 +652,7 @@
 <span class="s2">RETURN node&quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="DataframeCursorilyLogician.query_distinctions"><a class="viewcode-back" href="../CursorilyLogician.html#CursorilyLogician.DataframeCursorilyLogician.query_distinctions">[docs]</a>    <span class="k">def</span> <span class="nf">query_distinctions</span> <span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DataframeCursorilyLogician.cluster_distinctions"><a class="viewcode-back" href="../CursorilyLogician.html#CursorilyLogician.DataframeCursorilyLogician.cluster_distinctions">[docs]</a>    <span class="k">def</span> <span class="nf">cluster_distinctions</span> <span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Makes the query for the distinctions in neo4j.</span>
 
 <span class="sd">            It looks for at least two constrasting, correlated pairs of predicates with the same subjects and the same</span>

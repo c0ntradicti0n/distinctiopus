@@ -1,6 +1,6 @@
 1	By	by	ADP	IN	_	7	prep	11-114	_
-2	being	be	VERB	VBG	_	1	pcomp	11-115	_
-3	Presentinasubject	presentinasubject	PROPN	NNP	_	2	attr	11-116	_
+2	being	be	VERB	VBG	_	1	amod	11-115	_
+3	Presentinasubject	presentinasubject	PROPN	NNP	_	2	pobj	11-116	_
 4	I	-PRON-	PRON	PRP	_	7	nsubj	11-117	_
 5	do	do	VERB	VBP	_	7	aux	11-118	_
 6	not	not	ADV	RB	_	7	neg	11-119	_

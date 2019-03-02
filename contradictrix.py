@@ -36,10 +36,6 @@ class Contradiction:
             >>> from littletools.nested_list_tools import type_spec, flatten_reduce
             >>> ps = flatten_reduce (corpus.sentence_df.apply(P.analyse_predications, axis=1, result_type="reduce").values.tolist())
 
-            Look at the type, its a list of dicts
-
-            >>> print (type_spec (ps))
-                list<dict<str, ...>>
             >>> C = Contradiction()
             >>> C.find_contradictive(ps,ps)
             [([0], [1, 2, 3]), ([1], [0, 2, 3]), ([2], [0, 1, 3]), ([3], [0, 1, 2])]
@@ -50,8 +46,8 @@ class Contradiction:
 
         '''
         fit_mix_neg = \
-             Simmix ( [(1,Simmix.elmo_sim(), 0.5,1),
-                       (1, Simmix.common_words_sim(), 0.5,1),
+             Simmix ( [(1,Simmix.elmo_sim(), 0.35,1),
+                       #(4, Simmix.common_words_sim(), 0.15,1),
                         ],
                       n=None)
         self.Contra_Neg  = \

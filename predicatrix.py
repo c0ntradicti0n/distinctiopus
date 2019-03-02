@@ -18,7 +18,7 @@ from littletools import tdfidf_tool
 from littletools.generator_tools import count_up
 
 
-from hardcore_annotated_expression import PredMom, Pred, HEAL, Argu
+from hardcore_annotated_expression import PredMom, Pred, eL, Argu
 
 
 class Predication():
@@ -59,7 +59,7 @@ class Predication():
             list<dict<str, ...>>
 
 
-            There are special Datatypes defined 'HAE, HEAL, HEAT, that simply manage
+            There are special Datatypes defined 'eD, eL, eT, that simply manage
             some conversions (to string for printing), that simply inherit from dict, tuple, list.
 
             :param corpus: a corpus_reader_object, to overlook the document once, to precompute all lemmata and
@@ -76,7 +76,7 @@ class Predication():
         weight_file = './others_models/elmo_2x1024_128_2048cnn_1xhighway_weights.hdf5'
         self.elmo = ElmoEmbedder(options_file=options_file, weight_file=weight_file)
 
-        self.attributive_arg_markers       = ['amod', 'acl', 'prep', 'compound', 'appos']  # genitiv/dativ objects?
+        self.attributive_arg_markers       = ['acl', 'prep', 'compound', 'appos']  # genitiv/dativ objects? amod?
         self.verbal_arg_markers            = ['nsubjpass', 'nsubj', 'obj', 'dobj', 'iobj', 'pobj', 'attr']
         self.attributive_too_deep_markers  = ['punct', 'advcl']
         self.verbal_too_deep_markers       = ['punct', 'advcl', 'relcl']
@@ -278,8 +278,18 @@ class Predication():
                     arg.append(i) #+ [r.i for r in doc[i].rights if r.i not in too_deep_i]
                 if out == 't':
                     arg.append(doc[i])
+
         return arg
 
+
+    def arg_stop (self, s):
+        arg = [s]
+        for ch in s.children:
+            if (
+               ch.dep_ in ['appos ', 'det', 'amod', 'det', 'prep', 'pobj', 'csubj', 'nsubj', 'npasssubj', 'obj', 'dobj']
+            and ch.text not in ['as', 'like']):
+                arg.extend(self.arg_stop(ch))
+        return arg
 
 
     def collect_predicates(self, root_token, arg_markers, too_deep_markers, ellipsis_resolution=True,
@@ -365,7 +375,7 @@ class Predication():
         for j in predicate_i:
             subleaf = root_token.doc[j]
             if subleaf.dep_ in arg_markers:
-                argument_i = [s.i for s in subleaf.subtree]
+                argument_i = [x.i for x in self.arg_stop(subleaf)]
                 arguments_i.append(argument_i)
 
         predicate_i =  set(predicate_i) - set(flatten(arguments_i[:]))
@@ -466,7 +476,7 @@ class Predication():
         if not contain:
             # If there is no dependent structure, its just one predicate, that contains itself for convenience
             for p in ps:
-                p['part_predications'] = HEAL([p])
+                p['part_predications'] = eL([p])
             return ps
 
         edges = contain
@@ -482,12 +492,13 @@ class Predication():
         p_new = []
         for r in source_nodes:
                  sub_predicates                 = [ps[r]] + [ps[x] for x in nx.algorithms.descendants(containment_structure, r)]
-                 ps[r]['part_predications']     = HEAL(sorted(sub_predicates, key=lambda x:len(x['i_s'])))
+                 ps[r]['part_predications']     = eL(sorted(sub_predicates, key=lambda x:len(x['i_s'])))
                  ps[r]['containment_structure'] = containment_structure
                  if len(sub_predicates) != len(containment_structure.nodes) - 1:
                      logging.error("graph bigger than predicates!")
                  p_new.append(ps[r])
         return p_new
+
 
     def collect_all_simple_predicates (self,ex):
         a_roots = list(self.get_attributive_roots(ex))
@@ -618,7 +629,7 @@ class Predication():
         if paint_graph:
             self.draw_predicate_structure(ps,"./img/predicate" + ps[0]['key']+".svg")
 
-        ps = HEAL([PredMom(p) for p in ps])
+        ps = eL([PredMom(p) for p in ps])
         self.append_to_predicate_df(ps)
         self.append_to_argument_df(ps)
         logging.info ('predicates found %s' % (ps))
@@ -647,10 +658,11 @@ class Predication():
         '''
         if isinstance(id, list):
             if len(id)!=0:
-                id=id[0]
+                return [self.get_predication(i) for i in id]
+
         id = str(id)
         rec = self.predicate_df.query('id==@id').to_dict(orient='records')
-        return HEAL([Pred(r) for r in rec])
+        return eL([Pred(r) for r in rec])
 
 
     def get_addressed_coref (self, coref):
@@ -677,7 +689,7 @@ class Predication():
         except IndexError:
             raise
 
-        return HEAL([Pred(r) for r in rec])
+        return eL([Pred(r) for r in rec])
 
 
 
@@ -689,16 +701,47 @@ class Predication():
 
         '''
         arguments = flatten_reduce( list( map (lambda x: x['arguments'], ps) ))
-        self.argument_df = self.argument_df.append(arguments)
+        new_arguments = []
+        if not self.argument_df.empty:
+            for arg in arguments:
+                mask = (self.argument_df["i_s"].apply(lambda x: set(arg['i_s'])==set(x)) & (self.argument_df['s_id']==arg['s_id']))
+                if not mask.any():
+                    new_arguments.append(arg)
+                else:
+                    already_in_df = self.argument_df['id'][mask].values
+                    try:
+                        assert len(already_in_df) == 1
+                    except:
+                        raise
+                    arg['id'] = already_in_df[0]
+        else:
+            new_arguments = arguments
+        self.argument_df = self.argument_df.append(new_arguments)
 
 
     def get_coreferenced_arguments(self, corefs):
-        return list (map(self.get_coreferenced_argument, corefs))
+        if not corefs:
+            return []
+        else:
+            arguments = eL([x for x in flatten_reduce(list(map(self.get_coreferenced_argument, corefs))) if x])
+            return arguments
 
 
     def get_coreferenced_argument(self, coref):
-        if not coref:
-            return None
+        ''' We get the coreferenced arguments from the arguments-dataframe, that was build while constructing all
+        predicate or we reconstruct it.
+
+        There two ways of getting the argument:
+        * Either these noun-cored expressions are in the ext as they are, like:
+             The [blue wolf] roars to the moon. He (= blue wolf) was spayed blue by conservationists.
+        * Or you have to construct it from a verbal expression:
+             The the wolf was spayed blue and the ants were spayed green by conservationists. The latter (= the green
+              ants) are save now.
+
+        :param coref: coreference mention with i_list and s_id
+        :return: list of Argu_s
+
+        '''
         s_id  = str(coref['s_id'])
         i_list = coref['i_list']
         mask = self.argument_df.query("s_id==@s_id").apply(
@@ -707,15 +750,17 @@ class Predication():
 
         referenced = self.argument_df.query("s_id==@s_id")[mask].nsmallest(n=1, columns='len').to_dict(orient='records')
 
+        # If not found, construct it
         if referenced:
-            return referenced[0]
+            return [Argu(x) for x in referenced]
         else:
             doc, elmo_embeddings, importance = self.argument_df.query("s_id==@s_id")[['doc', 'elmo_embeddings_full', 'importance_full']].values[0]
             arg_tokens = self.collect_substancial_argument(i_list, doc, out='t')
             if arg_tokens == []:
-                return None
-            arg = self.sp_imp_elmo_dictize_ex(ex=arg_tokens, coref=[[]]*len(doc), elmo_embeddings=elmo_embeddings, importance=importance, s_id=s_id)
+                return []
+            arg = Argu(self.sp_imp_elmo_dictize_ex(ex=arg_tokens, coref=[[]]*len(doc), elmo_embeddings=elmo_embeddings, importance=importance, s_id=s_id))
             return arg
+
 
     def sp_imp_elmo_dictize_ex(self, ex, coref, elmo_embeddings, importance, s_id):
         if not ex:
@@ -757,11 +802,50 @@ class Predication():
                 "elmo_embeddings_full": elmo_embeddings,
                 "importance_full": importance,
 
+                "subj_score"      : sum([self.subjectness_word(t) for t in ex]),
+                "aspe_score"      : sum([self.aspectness_word(t) for t in ex]),
+
                 "key"             : "arg" + str(next(self.arg_key_gen))
             })
         except IndexError:
             raise IndexError ('indices out of range of coref')
         return d
+
+
+    def subjectness_word(self, token):
+        ''' Give score for something being a theme of a certain token.
+
+        If an expression is a noun and is more connected to the ROOT, then its probably the subject.
+
+        :param token:
+        :return: score
+
+        '''
+        res = int (10*token.i/len(token.doc))
+        if token.pos_ == 'NOUN':
+            res += 2
+        if token.head.dep_ == 'ROOT':
+            res += 20
+        if token.head.dep_ in ['acl', 'rcl']:
+            res += 1
+        return res
+
+
+    def aspectness_word(self, token):
+        ''' Give score for something being a theme of a certain token.
+
+        If an expression is a noun and is more connected to the ROOT, then its probably the subject.
+
+        :param token:
+        :return: score
+
+        '''
+        res = int(10*(len(token.doc)-token.i)/len(token.doc))
+        if token.dep_ in ['obj', 'pobj', 'dobj']:
+            res += 2
+        if token.head.dep_ != 'ROOT':
+            res += 1
+        return res
 
 
     def coreferenced_expressions (self, corefs):

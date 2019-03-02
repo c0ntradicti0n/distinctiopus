@@ -75,7 +75,7 @@ import logging
 from littletools.nested_list_tools import check_for_tuple_in_list, flatten, flatten_reduce, flatten_list, type_spec, existent
 from littletools import abstractness_estimator, dict_tools, nested_list_tools
 
-from hardcore_annotated_expression import HEAT, HEAL
+from hardcore_annotated_expression import eT, eL
 
 uppercase_abc = list(string.ascii_uppercase)
 uppercase_bca = list(string.ascii_uppercase)[::-1]
@@ -226,6 +226,7 @@ class Simmix:
 
 
     def choose(self, data,
+               input='tuple',
                out=None,
                layout=None,
                n=None,
@@ -262,6 +263,8 @@ class Simmix:
             list of tuples of lists of ints or indexed expressions, according to the chosen 'out' parameter
 
         '''
+        my_args = locals().copy()
+
         exs1 = None
         exs2 = None
         self.beam = {}
@@ -270,31 +273,38 @@ class Simmix:
         if layout == None:
             raise ValueError ("'layout' must be given")
 
-        if isinstance(data, list) or isinstance(data, types.GeneratorType):
+        if isinstance(data, tuple) and len(data) >  2:
+            results = []
+            for combo in itertools.combinations(data, 2):
+                my_args['data'] = combo
+                my_args['n'] = 100
+                results.append(Simmix.choose(**my_args))
+            return results
+
+        elif isinstance(data, list) or isinstance(data, types.GeneratorType):
             tuples = []
             for tup in data:
-                tuples += self.choose(tup, out=out, layout=layout)
+                my_args['data'] = tup
+                tuples += Simmix.choose(**my_args)
             return tuples
 
-        elif isinstance(data, tuple):
+        elif isinstance(data, tuple) and len(data) == 2:
             exs1, exs2 = (data[0], data[1])
 
-            # expressions1 * expressions2 * funs
+
         sim_cube = cartesian_product_itertools([
             exs1,
             exs2,
             self.funs
         ])
 
-        # apply funs   res_cube.reshape(len(exs1), len(exs2), -1)
         try:
             res_cube = np.apply_along_axis(self.apply_sim_fun, 1, sim_cube)
             res_cube = res_cube.reshape(len(exs1), len(exs2), -1)
         except np.core._internal.AxisError as e:
             raise ValueError('expression is empty %s' % (str((exs1, exs2))))
         except TypeError as e:
-            raise TypeError (
-                str(e) + "\nor you forgot the multi-wrapper, when using a function for tuples as simmix expressions")
+            raise TypeError (str(e) + "\nor you forgot the multi-wrapper, when using a function for tuples as simmix expressions")
 
         # get cubic shape back and floating points for the numbers
         res_cube = res_cube.reshape((-1, len(self.funs)))
@@ -304,19 +314,29 @@ class Simmix:
         # but first, check, if these values
         exceeds_min = res_cube < self.minmax_defaults[0]
         exceeds_max = res_cube > self.minmax_defaults[1]
+
         if exceeds_min.any() or exceeds_max.any():
-            logger = logging.getLogger(__name__)
-            exceeds_range_msg = \
-                ("Similarity results exceed minmax defaults, required for constant scaling in normalization."
-                 + "\nfuns=" + str(self.funs)
-                 + "\nminmax_defaults=" + np.array2string(self.minmax_defaults,
-                                                          formatter={'float_kind': lambda x: "%.2f" % x})
-                 + "\ncube=\n" + np.array2string(res_cube, formatter={'float_kind': lambda x: "%.2f" % x})
-                 + "\nmin on mask \n" + str(exceeds_min)
-                 + "\nmax on mask \n" + str(exceeds_max))
-            logger.error(exceeds_range_msg)
-            print(exceeds_range_msg)
-            # raise ValueError("Similarity results exceed minmax defaults, required for constant scaling in normalization. Info printet above.")
+            exceeding_min = np.unique(np.where(exceeds_min)[0])
+            exceeding_max = np.unique(np.where(exceeds_max)[1])
+
+
+            if exceeds_min.any():
+                 logging.error(
+                     "\n\n***********************************************************************************\n"
+                     "Similarity results exceed max defaults, required for constant scaling in normalization.\n"
+                     "Function: {fun} from threshold: {thresh} to minimally: {value}".format(
+                        fun=str(self.funs[exceeding_min]),
+                        thresh=str(self.minmax_defaults[0][exceeding_min]),
+                        value=str(res_cube[exceeds_min[:]].min())))
+            if exceeds_max.any():
+                 logging.error(
+                     "\n\n***********************************************************************************\n"
+                     "Similarity results exceed max defaults, required for constant scaling in normalization.\n"
+                     "Function: {fun} from threshold: {thresh} to maximally: {value}".format(
+                        fun=str(self.funs[exceeding_max]),
+                        thresh=str(self.minmax_defaults[1][exceeding_max]),
+                        value=str(res_cube[exceeds_max[:]].max())))
+
 
         res_cube = np.append(res_cube, self.minmax_defaults, axis=0)
         # scale
@@ -470,10 +490,10 @@ class Simmix:
             triggers = [[]] * len(left_value)
 
 
-        exss = [(HEAL([exs1[left_value[l]]]),
-                 HEAL([exs2[r] for r in right_values[l]]))
+        exss = [(eL([exs1[left_value[l]]]),
+                 eL([exs2[r] for r in right_values[l]]))
                   for l in range(len(left_value))]
-        return HEAL(HEAT(tup, trigger=trig) for tup, trig in zip (exss, triggers))
+        return eL(eT(tup, trigger=trig) for tup, trig in zip (exss, triggers))
 
     def i_list (self, left_value, right_values):
         return [([left_value[l]], [r for r in right_values[l]])
@@ -570,12 +590,28 @@ class Simmix:
         beam[ex1['id']][ex2['id']].reason = res
         return res, beam
 
+    @standard_range(-1, 0)
+    def fuzzytext_sim (ex1, ex2):
+        ''' Compares the text tags. Levenstejn distance per total length of both expresiions
+
+        :param ex1: dict with ['text']
+        :param ex2: dict with ['text']
+        :return: float and bracktracking {}
+
+        '''
+        str1  = " ".join (ex1["text"])
+        str2  = " ".join (ex2["text"])
+        res = -damerau_levenshtein_distance(str1, str2) / max (len(ex1),len(ex2))
+        beam = Dict()
+        beam[ex1['id']][ex2['id']].reason = res
+        return res, beam
+
     def common_words_sim(invert = False):
         if not invert:
             factor = 1
         else:
             factor = -1
-        @Simmix.standard_range(-1, 1)
+        @Simmix.standard_range(0, 20)
         def common_words_sim_generated (ex1, ex2):
             ''' This function gives weighted score for common words and negative weighted score for words, that appear only
                 in one expressions.
@@ -596,10 +632,12 @@ class Simmix:
             str2  = ex2["lemma"]
             sum1  = sum(ex1['importance'][i]**factor for i,x in enumerate(str1))
             sum2  = sum(ex2['importance'][i]**factor for i,x in enumerate(str2))
-            res = (sum([ex1['importance'][i]**factor for i,x in enumerate(str1) if x in str2]) +
+            res = ((sum([ex1['importance'][i]**factor for i,x in enumerate(str1) if x in str2]) +
                    sum([ex2['importance'][i]**factor for i, x in enumerate(str2) if x in str1]) -
                    sum([ex1['importance'][i]**factor for i, x in enumerate(str1) if x not in str2]) -
-                   sum([ex2['importance'][i]**factor for i, x in enumerate(str2) if x in str1]))/(sum1 + sum2)
+                   sum([ex2['importance'][i]**factor for i, x in enumerate(str2) if x in str1])) + 3 )/(sum1 + sum2)
+            if res < 0:
+                res = 0
             beam = Dict()
             beam[ex1['id']][ex2['id']].reason = res
             return res, beam
@@ -610,7 +648,7 @@ class Simmix:
     def head_dep_sim (ex1, ex2):
         ''' Compares the dep tags. Levenstejn distance per total length of both expresions
 
-        :param ex1: dict with ['full_ex', head, dep, tag, pos]
+        :parcommon_wordam ex1: dict with ['full_ex', head, dep, tag, pos]
         :param ex2: dict with ['dep']
         :return: float and bracktracking {}
 
@@ -934,6 +972,116 @@ class Simmix:
         return multi_cross2tup_sim
 
 
+
+    def multi_paral2tup_sim(fun, n=2):
+        ''' This wrapper turns a functions, that evaluate pairs of expression, into functions, that work with tuples (!)
+        of expressions, to evaluate these tuples in a parallel way. So with (1,2) and (3,4) you gonna compare 1
+        with 2 and 3 with 4, as it is in these tuples.
+
+        Example
+        -------
+        With input like this, every value value in a pair is compared to the cross over value of the other pair
+
+        >>> data = ([{'id': '1','text': ['I', 'am', 'here']}],[{'id': '2', 'text': ['I', 'am', 'there']}]), ([{'id': '3', 'text': ['I', 'was', 'here']}],[{'id': '4','text': ['I', 'was', 'there']}])
+        >>> Simmix.multi_paral2tup_sim(Simmix.fuzzystr_sim, n=2)(*data)
+        (-1.0, {'1': {'4': {'reason': -0.5}}, '2': {'3': {'reason': -0.5}}})
+
+        So, with a result of 2*-.5, you get -1 for this fuzzy logic cross over comparison of these two tuples in data.
+        Beware, that in the tuples the predicate dicts must be encapsulated in lists.
+
+        >>> data1 = ([{'id': '1','text': ['You', 'are', 'here']}],[{'id': '2', 'text': ['You', 'was', 'there']}]), ([{'id': '3', 'text': ['I', 'am']}],[{'id': '4','text': ['I', 'was', 'there', 'not']}])
+        >>> data2 = ([{'id': '1','text': ['I', 'am', 'here']}],[{'id': '2', 'text': ['I', 'am', 'there']}]), ([{'id': '3', 'text': ['I', 'am']}],[{'id': '4','text': ['I', 'was', 'there', 'not']}])
+        >>> data3 = ([{'id': '1','text': ['I', 'am', 'here']}],[{'id': '2', 'text': ['I', 'am', 'there']}]), ([{'id': '3', 'text': ['I', 'am']}],[{'id': '4','text': ['am','here']}])
+
+        >>> Simmix.multi_paral2tup_sim(Simmix.boolean_subsame_sim, n=2)(*data1)
+        (0, {'1': {'4': {'reason': 0}}, '2': {'3': {'reason': 0}}})
+        >>> Simmix.multi_paral2tup_sim(Simmix.boolean_subsame_sim, n=2)(*data2)
+        (1, {'1': {'4': {'reason': 0}}, '2': {'3': {'reason': 1}}})
+        >>> Simmix.multi_paral2tup_sim(Simmix.boolean_subsame_sim, n=2)(*data3)
+        (2, {'1': {'4': {'reason': 1}}, '2': {'3': {'reason': 1}}})
+
+        If you want to know, if one of the expressions is contained in the opposite position, do this
+
+
+        :param n: How many values are maximally expected in these lists? The expected range of the multi-fun is the
+            square of this
+        :return: wrapped function
+
+        '''
+        n **= 2
+        beam = Dict()
+        @Simmix.standard_range(fun.min*n,fun.max*n)  # n depends on fun!
+        def multi_paral2tup_sim (exs1,exs2):
+            b = copy(beam)
+            sim = 0
+            if not exs1 or not exs2:
+                raise ValueError ("one of the expressions is empty")
+
+            ex11, ex12 = exs1
+            ex21, ex22 = exs2
+
+            res1, d1 = fun (ex11[0], ex12[0])
+            res2, d2 = fun (ex12[0], ex22[0])
+            res = res1 + res2
+
+            b.update(d1)
+            b.update(d2)
+            return res, b
+        return multi_paral2tup_sim
+
+    def multi_paral_tup_sim(fun, n=4):
+        ''' This wrapper turns functions, that evaluate pairs of expression, into functions, that work with tuples (!)
+        of expressions. This is done by comparing each value in these list with each value in the other list.
+
+        Example
+        -------
+        define the function like this
+
+        >>> sx = Simmix (
+               [(1, Simmix.multi_sim(Simmix.fuzzystr_sim, n=7), 0.5, 1)]
+               )
+
+        and work with data that are a tuple lists of tuples of tuples lists of predicate-dicts
+
+        >>> data = (
+                    [([{'text': ..., ...}],[{'text': ..., ...}])],
+                    [([{'text': ..., ...}],[{'text': ..., ...}])])
+
+        That you need, if you want to filter the results of simmix again with simmix, for example what pairs of
+        expressions fit to other expressions.
+
+        :param n: How many values are maximally expected in these lists? The expected range of the multi-fun is the
+            square of this
+        :return: wrapped function
+
+        '''
+        n **= 2
+        beam = Dict()
+
+        @Simmix.standard_range(fun.min * n, fun.max * n)  # depends on fun!
+        def multi_paral_tup_generated(exs1, exs2):
+            b = copy(beam)
+            sim = 0
+            if not exs1 or not exs2:
+                raise ValueError("one of the expressions is empty")
+
+            for ex1, ex2 in itertools.product(flatten_reduce(exs1), flatten_reduce(exs2)):
+
+                try:
+                    res, d = fun(ex1, ex2)
+                except TypeError:
+                    raise NotImplementedError("return beam from the distance measure! %s" % str(fun))
+                if not d:
+                    raise NotImplementedError("beam empty! %s" % str(fun))
+
+                sim += res
+                b.update(d)
+            return sim, b
+
+
+        return multi_paral_tup_generated
+
+
     def multi_sim(fun, n=2):
         ''' This wrapper turns functions, that evaluate pairs of expression, into functions, that work with tuples (!)
         of expressions. This is done by comparing each value in these list with each value in the other list.
@@ -969,16 +1117,14 @@ class Simmix:
             if not exs1 or not exs2:
                 raise ValueError ("one of the expressions is empty")
 
-            for t1, t2 in itertools.product(enumerate(flatten_reduce(exs1)), enumerate(flatten_reduce(exs2))):
-                i1, ex1 = t1
-                i2, ex2 = t2
+            for ex1, ex2 in itertools.product(flatten_reduce(exs1), flatten_reduce(exs2)):
+
                 try:
                     res, d = fun (ex1, ex2)
                 except TypeError:
                     raise NotImplementedError ("return beam from the distance measure! %s" % str(fun))
                 if not d:
                     raise NotImplementedError ("beam empty! %s" % str(fun))
-
 
                 sim += res
                 b.update(d)
@@ -1265,28 +1411,6 @@ class Simmix:
         return cost
 
 
-    def beam_under_construction (ex1, ex2, info):
-        return {ex1['id']:
-                    {ex2['id']:
-                         info
-                     }
-                }
-
-
-    def abtract_conrete_sim():
-        ae = abstractness_estimator.AbstractnessEstimator()
-
-        @Simmix.standard_range(0, 1)
-        def _abstract_conrete_sim(ex1, ex2):
-            most_important1 = ex1['importance'].argmax()
-            most_important2 = ex2['importance'].argmax()
-            word1 = ex1['text'][most_important1]
-            word2 = ex2['text'][most_important2]
-            beam = Simmix.beam_under_construction(ex1, ex2, (word1, word2))
-            return ae.estimate(word1) > ae.estimate(word2), beam
-        return _abstract_conrete_sim
-
-
     def write_to_graph(self, graph_coro, type, exs1, exs2, left_value, right_values):
         ''' Write a result to the graph using a coroutine
 
@@ -1325,10 +1449,10 @@ class Simmix:
                     ex21 = trigger[1][0][0]
                     ex22 = trigger[1][1][0]
 
-                    orig_l_edge = HEAT((ex11, ex12), type=type_l_pair)
-                    orig_r_edge = HEAT((ex21, ex22), type=type_r_pair)
-                    lr1_edge = HEAT((ex11, ex21), type=type_between)
-                    lr2_edge = HEAT((ex12, ex22), type=type_between)
+                    orig_l_edge = eT((ex11, ex12), type=type_l_pair)
+                    orig_r_edge = eT((ex21, ex22), type=type_r_pair)
+                    lr1_edge = eT((ex11, ex21), type=type_between)
+                    lr2_edge = eT((ex12, ex22), type=type_between)
 
                     graph_coro.send(orig_l_edge)
                     graph_coro.send(orig_r_edge)
@@ -1343,6 +1467,12 @@ class Simmix:
                          type_spec(lr1_edge),
                          type_spec(lr2_edge)))
 
+    @standard_range(-100, 100)
+    def subj_asp_sim (ex1, ex2):
+        beam = Dict()
+        res = (ex1['subj_score'] + ex2['aspe_score']) - ex1['aspe_score'] - ex2['subj_score']
+        beam[ex1['id']][ex2['id']].reason = res
+        return res, beam
 
 import unittest
 
