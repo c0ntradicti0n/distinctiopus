@@ -66,6 +66,7 @@ import numpy as np
 import numpy_indexed as npi
 from cytoolz.dicttoolz import copy
 from sklearn import preprocessing
+import hdbscan
 import itertools
 import pyprover
 import string
@@ -75,10 +76,12 @@ import logging
 from littletools.nested_list_tools import check_for_tuple_in_list, flatten, flatten_reduce, flatten_list, type_spec, existent
 from littletools import abstractness_estimator, dict_tools, nested_list_tools
 
-from hardcore_annotated_expression import eT, eL
+from hardcore_annotated_expression import eT, eL, eD, ltd_ify
 
 uppercase_abc = list(string.ascii_uppercase)
 uppercase_bca = list(string.ascii_uppercase)[::-1]
+
+
 
 
 def cartesian_product_itertools(arrays):
@@ -255,7 +258,9 @@ class Simmix:
         :param layout:
             default=None behavior like n=1
             '1:1' means for each one element of the one expression is eactly one chosen from the other
-            'n:m' for samples of n elements are fitting m other elements chosen from the other expression
+            'hdbscan':
+                 for samples of n elements are fitting m other elements chosen from the other expression, works only
+                 for samples with >10 elements
         :param n:
             default=1
             count of best n solutions, also clusters of expressions of the one are chosen to fit to a cluster of the other
@@ -346,9 +351,51 @@ class Simmix:
         if output == True:
             print(trans_cube)
 
+
+
         # apply weights: matrix dot vector = summed up vector with one value for each vector
         weighted_res = trans_cube.dot(self.weights)  # Matrix times weight
         weighted = weighted_res.reshape(len(exs1), len(exs2))
+
+        if layout=='hdbscan':
+            matrix = self.scaler.fit_transform(weighted)
+            #matrix[matrix <= 0.3] = np.inf
+            #matrix[matrix >= 1] = np.inf
+            if exs1 == exs2 and (matrix!=np.inf).any() and len(matrix)>1:
+                dist_matrix = abs(1-matrix)
+                np.fill_diagonal(dist_matrix, 1)
+
+                clusterer = hdbscan.HDBSCAN(min_cluster_size=2,
+
+                                            #min_samples=1,
+                                            metric='precomputed',
+                                            cluster_selection_method='leaf',
+                                            #algorithm='generic'
+                                            )
+                # ``prims_kdtree`` * ``prims_balltree`` * ``boruvka_kdtree`` * ``boruvka_balltree``
+
+                try:
+                    cluster_labels = clusterer.fit_predict(dist_matrix)
+                except ValueError:
+                    raise
+                print ("hdbscan:", cluster_labels)
+                grouped_indices = npi.group_by(cluster_labels).split(list(range(0,len(exs1))))
+                if (sorted(cluster_labels)[0]==-1):
+                    grouped_indices = grouped_indices [1:]
+                print (grouped_indices)
+                return ltd_ify([eT(tuple([exs1[x] for x in arr])) for arr in grouped_indices])
+
+                # from sklearn.cluster import SpectralClustering
+                # sc = SpectralClustering(3, affinity='precomputed', n_init=100,
+                #                        assign_labels='discretize')
+                #sc.fit_predict(weighted)
+                #print(sc.labels_)
+
+                #import markov_clustering as mc
+                #result = mc.run_mcl(weighted, expansion=3, inflation=2.0)  # run MCL with default parameters
+                #clusters = mc.get_clusters(result)  # get clusters
+
+
         # apply filters
         # they are not boolean mask, because the max_n function returns only indices
         # if we got some nan
@@ -1065,6 +1112,7 @@ class Simmix:
             if not exs1 or not exs2:
                 raise ValueError("one of the expressions is empty")
 
+            number = len(exs1) * len(exs2)
             for ex1, ex2 in itertools.product(flatten_reduce(exs1), flatten_reduce(exs2)):
 
                 try:
@@ -1074,11 +1122,9 @@ class Simmix:
                 if not d:
                     raise NotImplementedError("beam empty! %s" % str(fun))
 
-                sim += res
+                sim += res / number
                 b.update(d)
             return sim, b
-
-
         return multi_paral_tup_generated
 
 

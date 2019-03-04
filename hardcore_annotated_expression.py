@@ -16,6 +16,9 @@ from littletools.nested_list_tools import recursive_map, curry, flatten_reduce, 
 
 variable_generator = generate_new_string()
 
+
+
+
 class eD (dict):
     ''' expression dictionary
 
@@ -40,50 +43,26 @@ class eD (dict):
         else:
             return hash(self.__str__(self))
 
+
+    def set_property(self, prop, val):
+        self.__setattr__(prop, val)
+        return self
+
+
     def neo4j_write(self):
         global variable_generator
         self.neo4j_name=next(variable_generator)
         return \
-            """MERGE ({my_name}:Nlp {{s_id:{s_id1}, text:'{text1}'}}) 
-            ON CREATE SET {my_name}.id={id1}\n""".format(
+            """MERGE ({my_name}:{node_type} {{s_id:{s_id1}, text:'{text1}'}})\n""" \
+            """ON CREATE SET {my_name}.id={id1}""".format(
                 my_name=self.neo4j_name,
+                node_type=':'.join(self.node_type),
                 id1   = self['id'],
                 s_id1 = self['s_id'],
                 i_s1  = self['i_s'],
                 text1 = " ".join(self['text']).replace("'", "")
-           )
+                )
 
-
-class PredMom(eD):
-    def __init__ (self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-
-    def __str__(self):
-        if 'text' in self and 'part_predications' in self:
-            return "{text} >>> {predicates}". format(
-                text =  ' '.join(self['text']),
-                predicates = str (self['part_predications']))
-        elif 'text' in self:
-            return ' '.join(self['text'])
-        else:
-            return super.__str__(self)
-
-
-class Pred(eD):
-    def __init__ (self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-
-class Argu (eD):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def __str__(self):
-        return "{a} > sc={sc}, as={ac}".format(
-            sc=self['subj_score'],
-            ac=self['aspe_score'],
-            a=super().__str__())
 
 
 class iterable_neo4j_view:
@@ -105,16 +84,28 @@ class iterable_neo4j_view:
         else:
             reason = 'unknown'
 
-        create_me = """MERGE ({my_name}:{utype} {{AbcName:'{my_name}'}})""".format(my_name=self.neo4j_name,
-                                                                                   utype=type.upper())
+        create_me = """MERGE ({my_name}:{node_type}:{utype} {{AbcName:'{my_name}'}})""".format(
+            my_name=self.neo4j_name,
+            node_type=':'.join(self.node_type),
+            utype=type.upper())
+
         return \
-            childrens_births + [create_me] + ["""
-           MERGE ({my_name})-[:NAMELY {{SpecialKind:'{type}', Reason:'{reason}'}}]->({x})
-           """.format(my_name=self.neo4j_name, x=x, type=type, utype=type.upper(), reason=reason) for x in names] + ["""
-           MERGE ({y})-[:GROUP {{SpecialKind:'{type}', Reason:'{reason}', group:'{my_name}'}}]->({x})
-           """.format(my_name=self.neo4j_name, x=x, y=y, type=type, utype=type.upper(), reason=reason) for x, y in                                                                                                                  combinations(
-                                                                                                                         names,
-                                                                                                                         2)]
+           childrens_births + \
+           [create_me] + \
+           ["""MERGE ({my_name})-[:NAMELY {{SpecialKind:'{type}', Reason:'{reason}'}}]->({x})""".format(
+                my_name=self.neo4j_name,
+                x=x, type=type,
+                utype=type.upper(),
+                reason=reason)
+           for x in names] + \
+           ["""MERGE ({y})-[:GROUP {{SpecialKind:'{type}', Reason:'{reason}', group:'{my_name}'}}]->({x})""".format(
+               my_name=self.neo4j_name,
+               x=x,
+               y=y,
+               type=type,
+               utype=type.upper(),
+               reason=reason)
+           for x, y in  combinations(names, 2)]
 class eT (T, iterable_neo4j_view):
     ''' expression tuple
 
@@ -137,6 +128,11 @@ class eT (T, iterable_neo4j_view):
         except ValueError:
             logging.error ("eT, set bug, set throws {ValueError}The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()")
             return self
+
+
+    def set_property(self, prop, val):
+        self.__setattr__(prop, val)
+        return self
 
 
 class eL (L, iterable_neo4j_view):
@@ -163,8 +159,12 @@ class eL (L, iterable_neo4j_view):
             return self
 
 
+    def set_property(self, prop, val):
+        self.__setattr__(prop, val)
+        return self
 
-def ltd_ify (nltd, d=0):
+
+def ltd_ify (nltd, d=0, node_type=['NLP']):
     ''' Parse all list, tuple, dict types in nested expressions to these special list, tuple, dicts defined here
 
     Eample
@@ -177,16 +177,28 @@ def ltd_ify (nltd, d=0):
     :return: typed nltd
 
     '''
-    if d>5:
+    if d>6:
         return nltd
+
     if isinstance(nltd, tuple):
-        return eT(ltd_ify(x, d=d + 1) if isinstance(x, Iterable) else x for x in nltd)
+        res = eT(ltd_ify(x, d=d + 1, node_type=node_type) if isinstance(x, Iterable) else x for x in nltd)
+        res.set_property('node_type', node_type)
+        return res
 
     elif isinstance(nltd, list):
-        return eL(ltd_ify(x, d=d + 1) if isinstance(x, Iterable) else x for x in nltd)
+        res = eL(ltd_ify(x, d=d + 1, node_type=node_type) if isinstance(x, Iterable) else x for x in nltd)
+        res.set_property('node_type', node_type)
+        return res
 
-    elif isinstance(nltd, dict):
-        return eD({k:ltd_ify(x, d=d + 1) if isinstance(x, Iterable) else x for k, x in nltd.items()})
+    elif isinstance(nltd, dict) and not isinstance(nltd, eD):
+        res = eD({k:ltd_ify(x, d=d + 1, node_type=node_type) if isinstance(x, Iterable) else x for k, x in nltd.items()})
+        res.set_property('node_type', node_type)
+        return res
+
+    elif isinstance(nltd, eD):
+        res = nltd
+        res.set_property('node_type', node_type)
+        return res
 
     return nltd
 
@@ -238,3 +250,35 @@ def apply_fun_to_nested(fun=None, attribute=None, other_criterium=None, data=Non
         raise ValueError ("All parameters must be given. {args}".format(args={'fun':fun, 'attribute':attribute, 'data': bool(data)}))
     return ltd_ify(recursive_map(curry(apply_fun_to_attribute_of_ex, attribute=attribute, fun=fun, reduce=reduce, other_criterium=other_criterium), data, other_criterium=other_criterium))
 
+
+
+class PredMom(eD):
+    def __init__ (self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+    def __str__(self):
+        if 'text' in self and 'part_predications' in self:
+            return "{text} >>> {predicates}". format(
+                text =  ' '.join(self['text']),
+                predicates = str (self['part_predications']))
+        elif 'text' in self:
+            return ' '.join(self['text'])
+        else:
+            return super.__str__(self)
+
+
+class Pred(eD):
+    def __init__ (self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+class Argu (eD):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def __str__(self):
+        return "{a} > sc={sc}, as={ac}".format(
+            sc=self['subj_score'],
+            ac=self['aspe_score'],
+            a=super().__str__())

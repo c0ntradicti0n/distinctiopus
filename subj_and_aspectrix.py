@@ -1,4 +1,4 @@
-from hardcore_annotated_expression import eT, apply_fun_to_nested, eL, eD
+from hardcore_annotated_expression import eT, apply_fun_to_nested, eL, eD, ltd_ify
 from pairix import Pairix
 from littletools.corutine_utils import coroutine
 from littletools.nested_list_tools import curry, flatten_reduce, recursive_map
@@ -18,18 +18,10 @@ class Subjects_and_Aspects(Pairix):
     '''
     def __init__(self, corpus):
         self.similar = \
-            Simmix([(3, Simmix.fuzzytext_sim, 0.1, 1),
-                    (2, Simmix.elmo_sim(), 0.1,1),
-                    (1, Simmix.dep_sim, 0.1, 1),
-                    (1, Simmix.pos_sim, 0.1, 1),
-                    (1, Simmix.tag_sim, 0.1, 1)]
-                   )
+            Simmix([(2, Simmix.elmo_sim(), 0.4,1)])
 
         self.theme_rheme = \
-             Simmix ([#(1, Simmix.multi_sim(Simmix.left_sim, n=6), 0.0, 1),
-                      (1, Simmix.multi_paral_tup_sim(Simmix.subj_asp_sim, n=4), 0.0, 1),
-                      (-1000, Simmix.multi_sim(Simmix.boolean_subsame_sim, n=6), 0.0, 0.1)],
-        n=1)
+             Simmix ([(1, Simmix.multi_paral_tup_sim(Simmix.subj_asp_sim, n=4), 0.2, 1)])
 
 
     def argument_or_reference_instead (self, arguments):
@@ -66,8 +58,8 @@ class Subjects_and_Aspects(Pairix):
         '''
         if isinstance(predicate_s, list):
             arguments = eL(flatten_reduce([self.get_arguments(pred) for pred in predicate_s]))
-            if len (arguments.unique()) != len(arguments):
-                logging.warning("INDEED AN EFFECT!!! %d" % (len (arguments.unique())- len(arguments)))
+            # if len (arguments.unique()) != len(arguments):
+            #    logging.warning("INDEED AN EFFECT!!! %d" % (len (arguments.unique())- len(arguments)))
             return arguments.unique()
 
 
@@ -92,43 +84,6 @@ class Subjects_and_Aspects(Pairix):
         if not all(arguments):
             raise ValueError ('no argument for predicate, that can be referenced?')
         return self.similar.choose(arguments, layout='n', n=100,  out='ex')
-
-
-    def check_ness_spans(self, expressions, ness_fun=None):
-        ''' Map some scoring function to a list of expressions (lists of tokens) and sum up the results
-
-        :param expressions: list of list of spacy tokens
-        :param ness_fun: function, that takes a list of spacy tokens
-        :return: summed score
-
-        '''
-        x = apply_fun_to_nested (data=expressions, attribute='full_ex', fun=curry(self.check_ness_list_of_tokens, ness_fun=ness_fun), reduce=True)
-        try:
-             return [l[0] * l[1] for t in x for l in t]
-        except TypeError:
-             raise
-
-
-    def check_ness_list_of_tokens(self, ex, ness_fun=None):
-        ''' Apply the subject-aspect-ness function to the expression, get the scores and sum them up
-
-        :param ex: list of spacy tokens
-        :param ness_fun: scoring function
-        :return: sum of scores
-
-        '''
-        return sum(map(ness_fun, ex))
-
-
-    def score_expressions(self, exs, ness_fun=None):
-        ''' gets a pair (or list of expression) and compute the score for every combination
-
-        :param exs: expressions, lists/tuples of predicate dict
-        :param ness_fun: scoring function
-        :return: sum of score
-
-        '''
-        return [self.check_ness_spans(ex, ness_fun) for ex in exs]
 
 
     def subjects_aspects(self, correlates):
@@ -186,26 +141,31 @@ class Subjects_and_Aspects(Pairix):
                 for cl in arguments_for_sides]).unique()
 
         correlated = eL(
-            [self.similar.choose(data=(to_corr.unique(), to_corr.unique()), layout='n', n=100, out='ex')
+            [self.similar.choose(data=(to_corr.unique(),
+                                       to_corr.unique()),
+                                 layout='hdbscan',
+                                 n=100)
              for to_corr in to_correlate])
-
-        to_distinguish =  eL(
-            [eT([eL(flatten_reduce(list(corr[0]) + list(corr[1])))
-                 for corr in cl])
-             for cl in correlated])
+        self.neo4j_write_correlated(graph_funs, correlated)
 
         subjects_aspects = eL(
             [self.theme_rheme.choose(
             (corr, corr),
-            n=4,
+            n=60,
             minimize=False,
             layout='n',
             out='ex',
             type=("subjects", "aspects", "compared"))
-             for corr in to_distinguish])                   # Put it in the graph
+             for corr in correlated])                   # Put it in the graph
 
-        def graph_write (x):
-            x.type    = 'subj_aspe'
+        self.neo4j_write(graph_funs, subjects_aspects)
+        print (subjects_aspects)
+        return subjects_aspects
+
+
+    def neo4j_write (self, graph_funs, subjects_aspects):
+        def graph_write_subj_asp(x):
+            x.type = 'subj_aspe'
             x[0].type = 'subjects'
             x[0][0].type = 'subjects'
 
@@ -213,44 +173,31 @@ class Subjects_and_Aspects(Pairix):
             x[1][0].type = 'aspects'
 
             query = "\n".join(x.neo4j_write())
-            print (query)
+            print(query)
             return [f(query) for f in graph_funs]
 
-        written = apply_fun_to_nested (fun=graph_write,
-                                       other_criterium=(
-                                           lambda x: isinstance(x, eT) and isinstance(x[0], eL) and isinstance(x[1], eL)
-                                                     and isinstance(x[0][0], eL) and isinstance(x[0][0][0], eD)),
-                                       data=subjects_aspects )
+        subjects_aspects = ltd_ify(subjects_aspects, node_type=['DENOTATION'])
 
-        print (written)
+        apply_fun_to_nested(fun=graph_write_subj_asp,
+                                      other_criterium=(
+                                          lambda x: isinstance(x, eT) and isinstance(x[0], eL) and isinstance(x[1], eL)
+                                                    and isinstance(x[0][0], eT) and isinstance(x[0][0][0], eD)),
+                                      data=subjects_aspects)
 
-        subject1 = subjects_aspects[0][0][0][0][0]
-        subject2 = subjects_aspects[0][0][0][1][0]
-        aspect1  = subjects_aspects[0][1][0][0][0]
-        aspect2  = subjects_aspects[0][1][0][1][0]
+    def neo4j_write_correlated (self, graph_funs, correlated):
+        def graph_write(x):
+            x.type = 'cluster'
 
-        pred1    = oppo1[0][0]
-        pred2    = oppo1[1][0]
-        pred3    = oppo2[0][0]
-        pred4    = oppo2[1][0]
+            query = "\n".join(x.neo4j_write())
+            print(query)
+            return [f(query) for f in graph_funs]
 
-        same_sentence = (Simmix.same_sent_sim(subject1, pred1) ,
-            Simmix.same_sent_sim(subject2, pred2) ,
-            Simmix.same_sent_sim(aspect1, pred3) ,
-            Simmix.same_sent_sim(aspect2, pred4))
-        if not all(same_sentence):
-            logging.warning ('subjects and aspects not from the same sentence %s' % (str(same_sentence)))
+        subjects_aspects = ltd_ify(correlated, node_type=['CORRELATION'])
 
-        graph_coro_arg_binding.send (eT((pred1, subject1), type='subject'))
-        graph_coro_arg_binding.send (eT((pred2, subject2), type='subject'))
-        graph_coro_arg_binding.send (eT((pred3, aspect1), type='aspect'))
-        graph_coro_arg_binding.send (eT((pred4, aspect2), type='aspect'))
-
-        if paint_graph:
-            #put_into_nx.send('draw')
-            G = self.subj_aspect_to_nxdigraph(poss_correlates1+poss_correlates2, subjects_aspects[0][0], subjects_aspects[0][1])
-            self.draw_subjects_aspects(G)
-        return subjects_aspects
+        apply_fun_to_nested(fun=graph_write,
+                                      other_criterium=(
+                                          lambda x:  isinstance(x, eT) and isinstance(x[0], eD)),
+                                      data=subjects_aspects)
 
 
     def wrap (self, line):

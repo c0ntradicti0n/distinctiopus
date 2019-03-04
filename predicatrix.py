@@ -585,6 +585,8 @@ class Predication():
 
         ps = self.collect_all_simple_predicates(ex)
 
+        dep_tree = self.build_dependency_graph(ex)
+
         if not ps:
             logging.error("no predicates found for %s" % str(ex))
 
@@ -607,12 +609,14 @@ class Predication():
             p["elmo_embeddings_full"]    = elmo_embeddings
             p["importance"]              = importance[p['i_s']]
             p["importance_full"]         = importance
+            p['dep_tree']                = dep_tree
             p['arguments']               = self.sp_imp_elmo_dictize_ex (
                                          p['arguments'],
                                          coref,
                                          elmo_embeddings,
                                          importance,
-                                         s_id)
+                                         s_id,
+                                         dep_tree)
             p = Pred(p)
 
         ps = self.attribute_contained_predicates(ps)
@@ -635,6 +639,14 @@ class Predication():
         logging.info ('predicates found %s' % (ps))
 
         return ps
+
+
+    def build_dependency_graph (self, doc):
+        edges = []
+        for t in doc:
+            edges.append((t.head.i, t.i, {'dep':t.dep_, 'pos':t.pos_, 'tag':t.tag}))
+        G = nx.Graph(edges)
+        return G
 
 
     def append_to_predicate_df (self, ps):
@@ -700,7 +712,7 @@ class Predication():
             :param ps: list of arguments
 
         '''
-        arguments = flatten_reduce( list( map (lambda x: x['arguments'], ps) ))
+        arguments = flatten_reduce( list( map (lambda x: flatten_reduce([x['arguments']] + [part_pred['arguments'] for part_pred in x['part_predications']]), ps) ))
         new_arguments = []
         if not self.argument_df.empty:
             for arg in arguments:
@@ -716,7 +728,9 @@ class Predication():
                     arg['id'] = already_in_df[0]
         else:
             new_arguments = arguments
-        self.argument_df = self.argument_df.append(new_arguments)
+
+        if any (new_arguments):
+            self.argument_df = self.argument_df.append(new_arguments)
 
 
     def get_coreferenced_arguments(self, corefs):
@@ -754,20 +768,20 @@ class Predication():
         if referenced:
             return [Argu(x) for x in referenced]
         else:
-            doc, elmo_embeddings, importance = self.argument_df.query("s_id==@s_id")[['doc', 'elmo_embeddings_full', 'importance_full']].values[0]
+            doc, elmo_embeddings, importance, dep_tree = self.argument_df.query("s_id==@s_id")[['doc', 'elmo_embeddings_full', 'importance_full', 'dep_tree']].values[0]
             arg_tokens = self.collect_substancial_argument(i_list, doc, out='t')
             if arg_tokens == []:
                 return []
-            arg = Argu(self.sp_imp_elmo_dictize_ex(ex=arg_tokens, coref=[[]]*len(doc), elmo_embeddings=elmo_embeddings, importance=importance, s_id=s_id))
+            arg = Argu(self.sp_imp_elmo_dictize_ex(ex=arg_tokens, coref=[[]]*len(doc), elmo_embeddings=elmo_embeddings, importance=importance, s_id=s_id, dep_tree=dep_tree))
             return arg
 
 
-    def sp_imp_elmo_dictize_ex(self, ex, coref, elmo_embeddings, importance, s_id):
+    def sp_imp_elmo_dictize_ex(self, ex, coref, elmo_embeddings, importance, s_id, dep_tree):
         if not ex:
             logging.warning("empty expression for argument?")
             return {}
         if isinstance(ex, list) and not isinstance(ex[0], spacy.tokens.token.Token ):
-            return list (self.sp_imp_elmo_dictize_ex(e, coref, elmo_embeddings, importance, s_id) for e in ex)
+            return list (self.sp_imp_elmo_dictize_ex(e, coref, elmo_embeddings, importance, s_id, dep_tree) for e in ex)
 
         i_s = [x.i for x in ex]
         try:
@@ -797,13 +811,15 @@ class Predication():
                 "coref"           : flatten_reduce([coref[i] for i in i_s]),
                 "coreferenced"    : self.get_coreferenced_arguments,
 
+                "dep_tree"        : dep_tree,
+
                 "importance"      : importance[i_s],
                 "elmo_embeddings" : elmo_embeddings[:,i_s].sum(axis=1),
                 "elmo_embeddings_full": elmo_embeddings,
                 "importance_full": importance,
 
-                "subj_score"      : sum([self.subjectness_word(t) for t in ex]),
-                "aspe_score"      : sum([self.aspectness_word(t) for t in ex]),
+                "subj_score"      : sum([self.subjectness_word(t, dep_tree) for t in ex]),
+                "aspe_score"      : sum([self.aspectness_word(t, dep_tree) for t in ex]),
 
                 "key"             : "arg" + str(next(self.arg_key_gen))
             })
@@ -812,7 +828,7 @@ class Predication():
         return d
 
 
-    def subjectness_word(self, token):
+    def subjectness_word(self, token, dep_tree):
         ''' Give score for something being a theme of a certain token.
 
         If an expression is a noun and is more connected to the ROOT, then its probably the subject.
@@ -821,17 +837,21 @@ class Predication():
         :return: score
 
         '''
-        res = int (10*token.i/len(token.doc))
-        if token.pos_ == 'NOUN':
-            res += 2
-        if token.head.dep_ == 'ROOT':
-            res += 20
-        if token.head.dep_ in ['acl', 'rcl']:
-            res += 1
+
+        root_dep_dist = [nx.shortest_path_length(dep_tree, source=token.i, target=s.root.i)
+                     for s in token.doc.sents
+                     if nx.has_path(dep_tree, token.i, s.root.i)]
+
+        root_pos_dist = [token.i - s.root.i
+                         for s in token.doc.sents
+                         if nx.has_path(dep_tree, token.i, s.root.i)]
+
+
+        res = 100/(sum(root_dep_dist)+1) - 3*sum(root_pos_dist)
         return res
 
 
-    def aspectness_word(self, token):
+    def aspectness_word(self, token, dep_tree):
         ''' Give score for something being a theme of a certain token.
 
         If an expression is a noun and is more connected to the ROOT, then its probably the subject.
@@ -840,11 +860,15 @@ class Predication():
         :return: score
 
         '''
-        res = int(10*(len(token.doc)-token.i)/len(token.doc))
-        if token.dep_ in ['obj', 'pobj', 'dobj']:
-            res += 2
-        if token.head.dep_ != 'ROOT':
-            res += 1
+        root_dep_dist = [nx.shortest_path_length(dep_tree, source=token.i, target=s.root.i)
+                     for s in token.doc.sents
+                     if nx.has_path(dep_tree, token.i, s.root.i)]
+
+        root_pos_dist = [token.i - s.root.i
+                     for s in token.doc.sents
+                     if nx.has_path(dep_tree, token.i, s.root.i)]
+
+        res = sum(root_dep_dist)*10 + sum(root_pos_dist) * 3
         return res
 
 
