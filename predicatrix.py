@@ -1,3 +1,6 @@
+import math
+from functools import lru_cache
+
 import pandas
 import pyprover
 import itertools
@@ -7,6 +10,9 @@ from allennlp.commands.elmo import ElmoEmbedder
 import spacy
 
 import logging
+
+from time_tools import timeit_context
+
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 from littletools.nested_list_tools import *
@@ -54,9 +60,7 @@ class Predication():
             >>> from predicatrix import Predication
             >>> P = Predication(corpus)
             >>> from littletools.nested_list_tools import type_spec, flatten_reduce
-            >>> ps = flatten_reduce (corpus.sentence_df.apply(P.analyse_predications, axis=1, result_type="reduce").values.tolist())
-            >>> print (type_spec(ps))
-            list<dict<str, ...>>
+            >>> corpus.sentence_df.apply(P.analyse_predications, result_type="reduce", axis=1)
 
 
             There are special Datatypes defined 'eD, eL, eT, that simply manage
@@ -78,7 +82,7 @@ class Predication():
 
         self.attributive_arg_markers       = ['acl', 'prep', 'compound', 'appos']  # genitiv/dativ objects? amod?
         self.verbal_arg_markers            = ['nsubjpass', 'nsubj', 'obj', 'dobj', 'iobj', 'pobj', 'attr']
-        self.attributive_too_deep_markers  = ['punct', 'advcl']
+        self.attributive_too_deep_markers  = ['punct', 'advcl', 'relcl']
         self.verbal_too_deep_markers       = ['punct', 'advcl', 'relcl']
         self.ellipsis_too_deep_markers     = ['cc']
 
@@ -127,7 +131,8 @@ class Predication():
             :return: predicate dict
 
         '''
-        return self.analyse_predication (doc=sentence_df_row['spacy_doc'], coref=sentence_df_row['coref'], s_id=sentence_df_row['s_id'])
+        with timeit_context('total'):
+            return self.analyse_predication (doc=sentence_df_row['spacy_doc'], coref=sentence_df_row['coref'], s_id=sentence_df_row['s_id'])
 
     def spacy_dep_ (ex):
         return set (x.dep_ for x in ex )
@@ -174,7 +179,7 @@ class Predication():
         return ps
 
     def get_attributive_roots(self,ex):
-        return (e for e in ex if e.dep_ in ['nsubjpass', 'nsubj', 'obj', 'dobj', 'iobj', 'pobj'])
+        return (e for e in ex if e.dep_ in ['nsubjpass', 'nsubj', 'obj', 'dobj', 'iobj', 'pobj'] and e.tag_ not in ['WDT', 'DET', 'PRON'])
 
     def get_verbal_roots(self,ex):
         v_roots = list(e for e in ex if
@@ -292,8 +297,8 @@ class Predication():
         return arg
 
 
-    def collect_predicates(self, root_token, arg_markers, too_deep_markers, ellipsis_resolution=True,
-                           no_zero_args=True, mother = False, attributive_ordering=False):
+    def collect_grammatical_predicates(self, root_token, arg_markers, too_deep_markers, ellipsis_resolution=True,
+                                       no_zero_args=True, mother = False, attributive_ordering=False):
         ''' Extract the predicative structure arising from a special triggering word, that can be handled like in
             predicate logic.
 
@@ -409,7 +414,12 @@ class Predication():
         p['negation_particle'] = [x for x in p['full_ex'] if x.text in self.negation_list]
         return None
 
-    def attribute_negation_sentence_predicates (self, ps):
+    def organize_negations (self, ps):
+        """ Annotate negations in nested structure
+
+        :param ps: list of predicates
+        :return:
+        """
         for s in ps:
             for p in s['part_predications']:
                 self.attribute_negation_particle(p)
@@ -430,12 +440,8 @@ class Predication():
                     common_negation    = list([n1 for n1 in x['negation_particle'] for n2 in y['negation_particle']
                                                if n1==n2])
                 except TypeError:
-                    logging.error ("Something not iterable:\n%s or %s \n\nfor expression1 %s \nand expression2 %s" %
-                                     (str (x['negation_particle']),
-                                      str(y['negation_particle']),
-                                      str(x['full_ex']),
-                                      str(y['full_ex'])))
-                    continue
+                    pass
+
                 G.edges[edge]['shared_negations'] =  tuple(common_negation)
 
             for path in source_sink_generator(s['containment_structure']):
@@ -455,13 +461,14 @@ class Predication():
                  negations_of_neighbors = flatten([G.nodes[neighbor]['predicate']['negation_particle'] for neighbor in neighbors])
                  try:
                      if (n in flatten (negations_of_neighbors) for n in negations) or negations and not negations_of_neighbors:
-                         negations = attrs['predicate']['negation_particle'] = len(list(neg not in negations_of_neighbors for neg in negations))
+                         attrs['predicate']['negation_particle'] = len(list(neg not in negations_of_neighbors for neg in negations))
                  except  TypeError:
-                     logging.error ("negations is int? %s" % (str(negations)))
+                     pass
+                     #logging.error ("negations is int? %s" % (str(negations)))
         return ps
 
 
-    def attribute_contained_predicates(self, ps):
+    def organize_subpredicates(self, ps):
         ps = sorted(ps, key=lambda x:-len(x['i_s']))
 
         Sub_sim = Simmix([(1, Simmix.sub_i,  0.1, 1),
@@ -471,7 +478,7 @@ class Predication():
         if not ps:
             logging.error ("empty expression_list can't contain any predicate.")
             return []
-        contain =  Sub_sim.choose ((ps[:], ps[:]), out='2t', layout='n')
+        contain =  Sub_sim.choose ((eL(ps[:]), eL(ps[:])), out='2t', layout='n')
 
         if not contain:
             # If there is no dependent structure, its just one predicate, that contains itself for convenience
@@ -494,20 +501,20 @@ class Predication():
                  sub_predicates                 = [ps[r]] + [ps[x] for x in nx.algorithms.descendants(containment_structure, r)]
                  ps[r]['part_predications']     = eL(sorted(sub_predicates, key=lambda x:len(x['i_s'])))
                  ps[r]['containment_structure'] = containment_structure
-                 if len(sub_predicates) != len(containment_structure.nodes) - 1:
-                     logging.error("graph bigger than predicates!")
+                 #if len(sub_predicates) != len(containment_structure.nodes) - 1:
+                 #    logging.error("graph bigger than predicates! %d - %d" % ( len(sub_predicates),len(containment_structure.nodes)-1))
                  p_new.append(ps[r])
         return p_new
 
 
-    def collect_all_simple_predicates (self,ex):
+    def collect_verbal_attributive_grammatical_predicates (self, ex):
         a_roots = list(self.get_attributive_roots(ex))
         v_roots = list(self.get_verbal_roots(ex))
         m_roots = list(self.get_sentence_roots(ex))
 
         a_ps = []
         for x in a_roots:
-            p = self.collect_predicates(
+            p = self.collect_grammatical_predicates(
                     x,
                     self.attributive_arg_markers,
                     self.attributive_too_deep_markers,
@@ -517,7 +524,7 @@ class Predication():
 
         v_ps = []
         for x in v_roots:
-            p = self.collect_predicates(
+            p = self.collect_grammatical_predicates(
                     x,
                     self.verbal_arg_markers,
                     self.verbal_too_deep_markers,
@@ -528,7 +535,7 @@ class Predication():
 
         m_ps = []
         for x in m_roots:
-            p = self.collect_predicates(
+            p = self.collect_grammatical_predicates(
                         x,
                         self.verbal_arg_markers,
                         self.verbal_too_deep_markers,
@@ -574,18 +581,23 @@ class Predication():
         '''
         if not ex:
             return None
+        logging.info('predicates found for %s' % " ".join(x.text for x in ex))
 
-        elmo_embeddings = self.elmo.embed_sentence([x.text for x in ex])
+        with timeit_context('embed'):
+            elmo_embeddings = self.elmo.embed_sentence([x.text for x in ex])
 
-        try:
-            importance = self.tdfidf.sentence2vec([x.lemma_ for x in ex])
-        except AttributeError:
-            logging.warning("No td-idf information was precomputed for this expression, filling it up with 0")
-            importance = self.tdfidf.half_importance([x.lemma_ for x in ex])
+        with timeit_context('weight'):
+            try:
+                importance = self.tdfidf.sentence2vec([x.lemma_ for x in ex])
+            except AttributeError:
+                logging.warning("No td-idf information was precomputed for this expression, filling it up with 0")
+                importance = self.tdfidf.half_importance([x.lemma_ for x in ex])
 
-        ps = self.collect_all_simple_predicates(ex)
+        with timeit_context('filter predicate from spacy'):
+            ps = self.collect_verbal_attributive_grammatical_predicates(ex)
 
-        dep_tree = self.build_dependency_graph(ex)
+        with timeit_context('build nx tree'):
+            dep_tree = self.build_dependency_graph(ex)
 
         if not ps:
             logging.error("no predicates found for %s" % str(ex))
@@ -593,52 +605,63 @@ class Predication():
         if not coref:
             coref = [[]]*len (ex[0].doc)
 
+        with timeit_context('stuff'):
+            for p in ps:
+                try:
+                    c = [coref[i] for i in p['i_s']]
+                except IndexError:
+                    raise
 
-        for p in ps:
-            try:
-                c= [coref[i] for i in p['i_s']]
-            except IndexError:
-                raise
 
+                p["id"]                      = str(next(self.id_generator))
+                p['s_id']                    = s_id
+                p["elmo_embeddings"]         = elmo_embeddings[:,p['i_s']].sum(axis=1)
+                p["coref"]                   = [coref[i] for i in p['i_s']]
+                p["elmo_embeddings_per_word"]= elmo_embeddings[:,p['i_s']]
+                p["elmo_embeddings_full"]    = elmo_embeddings
+                p["importance"]              = importance[p['i_s']]
+                p["importance_full"]         = importance
+                p['dep_tree']                = dep_tree
+                p['arguments']               = eL(self.sp_imp_elmo_dictize_ex (
+                                             p['arguments'],
+                                             coref,
+                                             elmo_embeddings,
+                                             importance,
+                                             s_id,
+                                             dep_tree))(node_type=['HAS_ARGMENTS'])
+                p = Pred(p)
 
-            p["id"]                      = str(next(self.id_generator))
-            p['s_id']                    = s_id
-            p["elmo_embeddings"]         = elmo_embeddings[:,p['i_s']].sum(axis=1)
-            p["coref"]                   = [coref[i] for i in p['i_s']]
-            p["elmo_embeddings_per_word"]= elmo_embeddings[:,p['i_s']]
-            p["elmo_embeddings_full"]    = elmo_embeddings
-            p["importance"]              = importance[p['i_s']]
-            p["importance_full"]         = importance
-            p['dep_tree']                = dep_tree
-            p['arguments']               = self.sp_imp_elmo_dictize_ex (
-                                         p['arguments'],
-                                         coref,
-                                         elmo_embeddings,
-                                         importance,
-                                         s_id,
-                                         dep_tree)
-            p = Pred(p)
+        with timeit_context('cotained'):
+            ps = self.organize_subpredicates(ps)
 
-        ps = self.attribute_contained_predicates(ps)
-        ps = self.attribute_negation_sentence_predicates(ps)
+        with timeit_context('self_neg'):
+            ps = self.organize_negations(ps)
 
-        for p in ps:
-            p = self.formalize(p, elmo_embeddings, importance)
+        with timeit_context('formalize'):
+            for p in ps:
+                p = self.formalize(p, elmo_embeddings, importance)
 
         if not ps:
             text = " ".join([x.text for x in ex])
             logging.error("No predication found in expression: '%s'." % text )
             return []
 
-        if paint_graph:
-            self.draw_predicate_structure(ps,"./img/predicate" + ps[0]['key']+".svg")
+        #with timeit_context('draw'):
+        #    if paint_graph:
+        #        self.draw_predicate_structure(ps,"./img/predicate" + ps[0]['key']+".svg")
 
-        ps = eL([PredMom(p) for p in ps])
-        self.append_to_predicate_df(ps)
-        self.append_to_argument_df(ps)
-        logging.info ('predicates found %s' % (ps))
-
+        with timeit_context('push to dataframes'):
+            self.organize_dfs(ps)
         return ps
+
+    def organize_dfs(self, ps):
+            with timeit_context('type and to database'):
+                ps = eL([PredMom(p) for p in ps])
+            with timeit_context('type and to database'):
+                self.append_to_predicate_df(ps)
+            with timeit_context('type and to database'):
+                self.append_to_argument_df(ps)
+
 
 
     def build_dependency_graph (self, doc):
@@ -656,6 +679,7 @@ class Predication():
             :param ps: list of predicates
 
         '''
+        #self.predicate_df = pandas.DataFrame.from_records(ps)
         self.predicate_df = self.predicate_df.append(ps)
         self.predicate_df = self.predicate_df.append([part_p for p in ps for part_p in p['part_predications']])
 
@@ -712,25 +736,27 @@ class Predication():
             :param ps: list of arguments
 
         '''
-        arguments = flatten_reduce( list( map (lambda x: flatten_reduce([x['arguments']] + [part_pred['arguments'] for part_pred in x['part_predications']]), ps) ))
-        new_arguments = []
-        if not self.argument_df.empty:
-            for arg in arguments:
-                mask = (self.argument_df["i_s"].apply(lambda x: set(arg['i_s'])==set(x)) & (self.argument_df['s_id']==arg['s_id']))
-                if not mask.any():
-                    new_arguments.append(arg)
-                else:
-                    already_in_df = self.argument_df['id'][mask].values
-                    try:
-                        assert len(already_in_df) == 1
-                    except:
-                        raise
-                    arg['id'] = already_in_df[0]
-        else:
-            new_arguments = arguments
+        arguments_mother = flatten_reduce( list( map (lambda x: flatten_reduce( [x['arguments']]), ps) ))
+        arguments_parts  = flatten_reduce( list( map(
+            lambda x: flatten_reduce( [part_pred['arguments']
+                                       for part_pred in x['part_predications']]),
+            ps)))
+        arguments = eL(arguments_mother + arguments_parts)
 
-        if any (new_arguments):
-            self.argument_df = self.argument_df.append(new_arguments)
+        for arg in arguments:
+            if self.argument_df.empty:
+               self.argument_df = self.argument_df.append([arg])
+
+            mask = (self.argument_df["i_s"].apply(lambda x: set(arg['i_s'])==set(x)) & (self.argument_df['s_id']==arg['s_id']))
+            if not mask.any():
+                self.argument_df = self.argument_df.append([arg])
+            else:
+                already_in_df = self.argument_df['id'][mask].values
+                try:
+                    assert len(already_in_df) == 1
+                except:
+                    raise ValueError ("Multiple equal elements in the arugments_df")
+                arg['id'] = already_in_df[0]
 
 
     def get_coreferenced_arguments(self, corefs):
@@ -773,7 +799,7 @@ class Predication():
             if arg_tokens == []:
                 return []
             arg = Argu(self.sp_imp_elmo_dictize_ex(ex=arg_tokens, coref=[[]]*len(doc), elmo_embeddings=elmo_embeddings, importance=importance, s_id=s_id, dep_tree=dep_tree))
-            return arg
+            return [arg]
 
 
     def sp_imp_elmo_dictize_ex(self, ex, coref, elmo_embeddings, importance, s_id, dep_tree):
@@ -795,18 +821,18 @@ class Predication():
                 "full_ex"         : ex,
                 "doc"             : ex[0].doc,
 
-                "dep"             : [x.dep for x in ex],
+                #"dep"             : [x.dep for x in ex],
                 "dep_"            :  [x.dep_ for x in ex],
 
-                "pos"             : [x.pos for x in ex],
+                #"pos"             : [x.pos for x in ex],
                 "pos_"            : [x.pos_ for x in ex],
 
-                "tag"             : [x.tag for x in ex],
-                "tag_"            : [x.tag for x in ex],
+                #"tag"             : [x.tag for x in ex],
+                "tag_"            : [x.tag_ for x in ex],
 
-                "lemma"           : [x.lemma for x in ex],
+                #"lemma"           : [x.lemma for x in ex],
                 "lemma_"          : [x.lemma_ for x in ex],
-                "lemma_tag_"      : [x.lemma_ + '_' + x.tag_ for x in ex],
+                #"lemma_tag_"      : [x.lemma_ + '_' + x.tag_ for x in ex],
 
                 "coref"           : flatten_reduce([coref[i] for i in i_s]),
                 "coreferenced"    : self.get_coreferenced_arguments,
@@ -818,17 +844,18 @@ class Predication():
                 "elmo_embeddings_full": elmo_embeddings,
                 "importance_full": importance,
 
-                "subj_score"      : sum([self.subjectness_word(t, dep_tree) for t in ex]),
-                "aspe_score"      : sum([self.aspectness_word(t, dep_tree) for t in ex]),
+                "subj_score"      : sum([self.subjectness_word(t, dep_tree, s_id) for t in ex])/len(ex),
+                "aspe_score"      : sum([self.aspectness_word(t, dep_tree, s_id) for t in ex])/len(ex),
 
                 "key"             : "arg" + str(next(self.arg_key_gen))
+
             })
         except IndexError:
             raise IndexError ('indices out of range of coref')
         return d
 
 
-    def subjectness_word(self, token, dep_tree):
+    def subjectness_word(self, token, dep_tree, s_id):
         ''' Give score for something being a theme of a certain token.
 
         If an expression is a noun and is more connected to the ROOT, then its probably the subject.
@@ -838,20 +865,23 @@ class Predication():
 
         '''
 
-        root_dep_dist = [nx.shortest_path_length(dep_tree, source=token.i, target=s.root.i)
+        root_dep_dist = [nx.shortest_path_length(dep_tree, source=token.i, target=s.root.i) +50
                      for s in token.doc.sents
                      if nx.has_path(dep_tree, token.i, s.root.i)]
 
-        root_pos_dist = [token.i - s.root.i
+        root_pos_dist = [token.i - s.root.i + 50
                          for s in token.doc.sents
                          if nx.has_path(dep_tree, token.i, s.root.i)]
 
+        s_id_score = 0 # int(s_id)
 
-        res = 100/(sum(root_dep_dist)+1) - 3*sum(root_pos_dist)
+        res = math.pow(1.0001, -100/(sum(root_dep_dist)+1) - sum(root_pos_dist) - (1000 * s_id_score))
+        if res <0:
+            raise ValueError
         return res
 
 
-    def aspectness_word(self, token, dep_tree):
+    def aspectness_word(self, token, dep_tree, s_id):
         ''' Give score for something being a theme of a certain token.
 
         If an expression is a noun and is more connected to the ROOT, then its probably the subject.
@@ -860,15 +890,19 @@ class Predication():
         :return: score
 
         '''
-        root_dep_dist = [nx.shortest_path_length(dep_tree, source=token.i, target=s.root.i)
+        root_dep_dist = [nx.shortest_path_length(dep_tree, source=token.i, target=s.root.i) + 50
                      for s in token.doc.sents
                      if nx.has_path(dep_tree, token.i, s.root.i)]
 
-        root_pos_dist = [token.i - s.root.i
+        root_pos_dist = [token.i - s.root.i+50
                      for s in token.doc.sents
                      if nx.has_path(dep_tree, token.i, s.root.i)]
 
-        res = sum(root_dep_dist)*10 + sum(root_pos_dist) * 3
+        s_id_score = 0 # int(s_id)
+
+        res = math.pow(1.0001, sum(root_dep_dist) + sum(root_pos_dist)) + (1000 * s_id_score/10)
+        if res <0: raise ValueError
+
         return res
 
 

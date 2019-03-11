@@ -37,8 +37,8 @@ class tdfidf:
         try:
             return 1- self.tdf_idf[0,self.tdf_idf_dict[word]]
         except KeyError:
-            if not (word.isdigit()) and (word not in ['.',',','?','!',':',';']):
-                logging.warning ("'%s' not in tdfidf-vocabulary." % word)
+            # if not (word.isdigit()) and (word not in ['.',',','?','!',':',';', '-PRON-', 'a']):
+            #    logging.warning ("'%s' not in tdfidf-vocabulary." % word)
             return 0.2
 
     def sentence2vec(self, str_list):

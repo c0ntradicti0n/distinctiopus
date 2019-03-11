@@ -59,7 +59,10 @@
    >>> superficial_sim.choose(([p1],[p2,p2]))
 
 '''
+import collections
 import types
+from functools import lru_cache
+
 from addict import Dict
 import scipy
 import numpy as np
@@ -73,13 +76,41 @@ import string
 import re
 from pyxdameraulevenshtein import damerau_levenshtein_distance
 import logging
-from littletools.nested_list_tools import check_for_tuple_in_list, flatten, flatten_reduce, flatten_list, type_spec, existent
-from littletools import abstractness_estimator, dict_tools, nested_list_tools
+from littletools.nested_list_tools import check_for_tuple_in_list, flatten, flatten_reduce, flatten_list, type_spec, \
+    existent, collapse
+from littletools import dict_tools, nested_list_tools
 
-from hardcore_annotated_expression import eT, eL, eD, ltd_ify
+from hardcore_annotated_expression import eT, eL, ltd_ify
 
 uppercase_abc = list(string.ascii_uppercase)
 uppercase_bca = list(string.ascii_uppercase)[::-1]
+
+
+def match(needle, stack):
+    val = (needle in stack or
+           (isinstance(needle, tuple) and check_for_tuple_in_list(stack, needle)))
+    return val
+
+def match_comp_els(item, key, comp_elements1, comp_elements2):
+    that_key_cost = int(item in comp_elements2)
+    antonym_pair = None
+    if isinstance(item, list):
+        for it in item:
+            if (match(it, comp_elements2)
+                    and not match(it,
+                                  comp_elements1)  # decisive point, that the antonympair should not itself appear in the one or other phrase
+                    and not match(key, comp_elements2)
+            ):
+                actual_cost = int(it in comp_elements2
+                                  or
+                                  isinstance(it, tuple) and check_for_tuple_in_list(
+                    comp_elements2, it))
+                that_key_cost += actual_cost
+                if actual_cost:
+                    antonym_pair = ((key, it))
+                    logging.info('pair of antonyms found -- "%s" and "%s"' % (key, it))
+                    return that_key_cost, antonym_pair
+    return False, antonym_pair
 
 
 
@@ -208,6 +239,21 @@ class Simmix:
         return wrapper
 
 
+    def multi_fun_doc (fun):
+        ''' Decorator for similarity computing functions, it is later used for normalisation
+
+        :param maxim: maximum value
+        :param maxim: minimum value
+        :return: decorated function
+
+        '''
+        def wrapper(f):
+            f.fun = fun
+            return f
+        return wrapper
+
+
+
     def apply_sim_fun (self, fee):
         ''' Apply the field of functions to the arguments
 
@@ -221,12 +267,17 @@ class Simmix:
         ex1 = fee[0]
         ex2 = fee[1]
         try:
+            fun(ex1, ex2)
+        except ValueError:
+            pass
+        try:
             res, d = fun(ex1,ex2)
             dict_tools.update (self.beam, d)
         except TypeError:
             raise TypeError ("Function doesn't return beam. %s, %s " % (str(fun(ex1,ex2)), str(fun)))
+        except ValueError:
+            raise ValueError(" ". join ([str(fun), str(ex1), str(ex2)]))
         return res
-
 
     def choose(self, data,
                input='tuple',
@@ -296,7 +347,6 @@ class Simmix:
         elif isinstance(data, tuple) and len(data) == 2:
             exs1, exs2 = (data[0], data[1])
 
-
         sim_cube = cartesian_product_itertools([
             exs1,
             exs2,
@@ -321,26 +371,26 @@ class Simmix:
         exceeds_max = res_cube > self.minmax_defaults[1]
 
         if exceeds_min.any() or exceeds_max.any():
-            exceeding_min = np.unique(np.where(exceeds_min)[0])
-            exceeding_max = np.unique(np.where(exceeds_max)[1])
-
-
             if exceeds_min.any():
-                 logging.error(
+                exceeding_min, i_f_min = np.unique(np.where(exceeds_min)[0]), np.unique(np.where(exceeds_min)[1])
+                logging.error(
                      "\n\n***********************************************************************************\n"
-                     "Similarity results exceed max defaults, required for constant scaling in normalization.\n"
-                     "Function: {fun} from threshold: {thresh} to minimally: {value}".format(
-                        fun=str(self.funs[exceeding_min]),
-                        thresh=str(self.minmax_defaults[0][exceeding_min]),
-                        value=str(res_cube[exceeds_min[:]].min())))
+                     "Similarity results exceed minimum defaults, required for constant scaling in normalization.\n"
+                     "Function: {fun} {fun_in_fun} from threshold: {thresh} to maximally: {value}".format(
+                        fun=str(self.funs[i_f_min]),
+                        fun_in_fun = "".join(collapse(['(',[str(f.fun) for f in self.funs[i_f_min] if hasattr(f, 'fun')], ')'])),
+                        thresh=str(self.minmax_defaults[0][i_f_min]),
+                        value=str(res_cube[exceeds_min[:]].min(axis=0))))
             if exceeds_max.any():
-                 logging.error(
+                exceeding_max, i_f_max = np.unique(np.where(exceeds_max)[0]), np.unique(np.where(exceeds_max)[1])
+                logging.error(
                      "\n\n***********************************************************************************\n"
-                     "Similarity results exceed max defaults, required for constant scaling in normalization.\n"
-                     "Function: {fun} from threshold: {thresh} to maximally: {value}".format(
-                        fun=str(self.funs[exceeding_max]),
-                        thresh=str(self.minmax_defaults[1][exceeding_max]),
-                        value=str(res_cube[exceeds_max[:]].max())))
+                     "Similarity results exceed maximum defaults, required for constant scaling in normalization.\n"
+                     "Function: {fun} {fun_in_fun} from threshold: {thresh} to minimally: {value}".format(
+                        fun=str(self.funs[i_f_max]),
+                        fun_in_fun="".join(collapse(['(', [str(f.fun) for f in self.funs[i_f_max] if hasattr(f, 'fun')], ')'])),
+                        thresh=str(self.minmax_defaults[1][i_f_max]),
+                        value=str(res_cube[exceeds_max[:]].max(axis=0))))
 
 
         res_cube = np.append(res_cube, self.minmax_defaults, axis=0)
@@ -351,50 +401,46 @@ class Simmix:
         if output == True:
             print(trans_cube)
 
-
-
         # apply weights: matrix dot vector = summed up vector with one value for each vector
         weighted_res = trans_cube.dot(self.weights)  # Matrix times weight
-        weighted = weighted_res.reshape(len(exs1), len(exs2))
 
         if layout=='hdbscan':
-            matrix = self.scaler.fit_transform(weighted)
+            matrix = self.scaler.fit_transform(weighted_res.reshape(-1, 1))
+            matrix = matrix.reshape(len(exs1), len(exs2))
+            np.fill_diagonal(matrix, 1)
+            dist_matrix = abs(1-matrix)
+
             #matrix[matrix <= 0.3] = np.inf
             #matrix[matrix >= 1] = np.inf
-            if exs1 == exs2 and (matrix!=np.inf).any() and len(matrix)>1:
-                dist_matrix = abs(1-matrix)
-                np.fill_diagonal(dist_matrix, 1)
+            if not exs1 == exs2 and len(matrix)<1:
+                raise ValueError ({"Expression lists for hdbscan must be the same, and the matrix symmetric"})
 
-                clusterer = hdbscan.HDBSCAN(min_cluster_size=2,
+            clusterer = hdbscan.HDBSCAN(min_cluster_size=2,
+                                        #min_samples=1,
+                                        metric='precomputed',
+                                        cluster_selection_method='leaf',
+                                        #algorithm='generic'
+                                        )
 
-                                            #min_samples=1,
-                                            metric='precomputed',
-                                            cluster_selection_method='leaf',
-                                            #algorithm='generic'
-                                            )
-                # ``prims_kdtree`` * ``prims_balltree`` * ``boruvka_kdtree`` * ``boruvka_balltree``
+            try:
+                cluster_labels = clusterer.fit_predict(dist_matrix)
+            except ValueError:
+                raise
+            #print ("hdbscan:", cluster_labels)
 
-                try:
-                    cluster_labels = clusterer.fit_predict(dist_matrix)
-                except ValueError:
-                    raise
-                print ("hdbscan:", cluster_labels)
-                grouped_indices = npi.group_by(cluster_labels).split(list(range(0,len(exs1))))
-                if (sorted(cluster_labels)[0]==-1):
-                    grouped_indices = grouped_indices [1:]
-                print (grouped_indices)
-                return ltd_ify([eT(tuple([exs1[x] for x in arr])) for arr in grouped_indices])
+            if all(cluster_labels == -1):
+                 from sklearn.cluster import SpectralClustering
+                 sc = SpectralClustering(n_clusters=int(len(exs1)/2), affinity='precomputed', n_init=100,
+                                    assign_labels='discretize')
+                 sc.fit_predict(matrix)
+                 #print("sprectral clustering:", sc.labels_)
+                 cluster_labels = sc.labels_
 
-                # from sklearn.cluster import SpectralClustering
-                # sc = SpectralClustering(3, affinity='precomputed', n_init=100,
-                #                        assign_labels='discretize')
-                #sc.fit_predict(weighted)
-                #print(sc.labels_)
-
-                #import markov_clustering as mc
-                #result = mc.run_mcl(weighted, expansion=3, inflation=2.0)  # run MCL with default parameters
-                #clusters = mc.get_clusters(result)  # get clusters
-
+            grouped_indices = npi.group_by(cluster_labels).split(list(range(0,len(exs1))))
+            if (sorted(cluster_labels)[0]==-1):
+                grouped_indices = grouped_indices [1:]
+            #print (grouped_indices)
+            return ltd_ify([eT(tuple([exs1[x] for x in arr])) for arr in grouped_indices])
 
         # apply filters
         # they are not boolean mask, because the max_n function returns only indices
@@ -514,6 +560,7 @@ class Simmix:
         r_values = [[r] for r in res[1][res_mask].tolist()]
         return l_values, r_values
 
+
     def expressions_list (self, left_value, right_values, exs1, exs2):
         ''' Collects the expressions from the indices
 
@@ -533,7 +580,7 @@ class Simmix:
             logging.warning ('beam has wrong ids %s ' % self.funs)
             triggers = [[]] * len(left_value)
         except TypeError:
-            logging.warning('beam for multi sim choice not implemented... %s ' % self.funs)
+            pass
             triggers = [[]] * len(left_value)
 
 
@@ -541,6 +588,7 @@ class Simmix:
                  eL([exs2[r] for r in right_values[l]]))
                   for l in range(len(left_value))]
         return eL(eT(tup, trigger=trig) for tup, trig in zip (exss, triggers))
+
 
     def i_list (self, left_value, right_values):
         return [([left_value[l]], [r for r in right_values[l]])
@@ -558,8 +606,7 @@ class Simmix:
         else:
             return list((y,z) for l, r in x if x for z in r for y in l)
 
-
-    @standard_range(-1, 0)
+    @standard_range(-1.5, 0)
     def pos_sim (ex1, ex2):
         ''' Compares the pos tags. Levenstejn distance per total length of both expressions
 
@@ -575,8 +622,7 @@ class Simmix:
         beam[ex1['id']][ex2['id']].reason = res
         return res, beam
 
-
-    @standard_range(-1, 0)
+    @standard_range(-1.5, 0)
     def dep_sim (ex1, ex2):
         ''' Compares the dep tags. Levenstejn distance per total length of both expresions
 
@@ -592,44 +638,41 @@ class Simmix:
         beam[ex1['id']][ex2['id']].reason = res
         return res, beam
 
-
     @standard_range(-1, 0)
     def lemma_sim (ex1, ex2):
         ''' Compares the lemma tags. Levenstejn distance per total length of both expresiions
 
-        :param ex1: dict with ['lemma']
-        :param ex2: dict with ['lemma']
-        :return: float and bracktracking {}
+            :param ex1: dict with ['lemma']
+            :param ex2: dict with ['lemma']
+            :return: float and bracktracking {}
 
-        '''
+            '''
         grammar1  = ex1["lemma"]
         grammar2  = ex2["lemma"]
         return -damerau_levenshtein_distance(grammar1, grammar2) / (len(ex1) + len(ex2)), {}
-
 
     @standard_range(-1, 0)
     def tag_sim (ex1, ex2):
         ''' Compares the tag tags. Levenstejn distance per total length of both expresiions
 
-        :param ex1: dict with ['tag']
-        :param ex2: dict with ['tag']
-        :return: float and bracktracking {}
+            :param ex1: dict with ['tag']
+            :param ex2: dict with ['tag']
+            :return: float and bracktracking {}
 
-        '''
+            '''
         grammar1  = ex1["tag"]
         grammar2  = ex2["tag"]
         return -damerau_levenshtein_distance(grammar1, grammar2) / (len(ex1) + len(ex2)) , {}
 
-
-    @standard_range(-1, 0)
+    @standard_range(-1.5, 0)
     def fuzzystr_sim (ex1, ex2):
         ''' Compares the text tags. Levenstejn distance per total length of both expresiions
 
-        :param ex1: dict with ['text']
-        :param ex2: dict with ['text']
-        :return: float and bracktracking {}
+            :param ex1: dict with ['text']
+            :param ex2: dict with ['text']
+            :return: float and bracktracking {}
 
-        '''
+            '''
         str1  = ex1["text"]
         str2  = ex2["text"]
         res = -damerau_levenshtein_distance(str1, str2) / (len(ex1) + len(ex2))
@@ -637,15 +680,16 @@ class Simmix:
         beam[ex1['id']][ex2['id']].reason = res
         return res, beam
 
+    @lru_cache(maxsize=None)
     @standard_range(-1, 0)
     def fuzzytext_sim (ex1, ex2):
         ''' Compares the text tags. Levenstejn distance per total length of both expresiions
 
-        :param ex1: dict with ['text']
-        :param ex2: dict with ['text']
-        :return: float and bracktracking {}
+            :param ex1: dict with ['text']
+            :param ex2: dict with ['text']
+            :return: float and bracktracking {}
 
-        '''
+            '''
         str1  = " ".join (ex1["text"])
         str2  = " ".join (ex2["text"])
         res = -damerau_levenshtein_distance(str1, str2) / max (len(ex1),len(ex2))
@@ -653,11 +697,14 @@ class Simmix:
         beam[ex1['id']][ex2['id']].reason = res
         return res, beam
 
+
     def common_words_sim(invert = False):
         if not invert:
             factor = 1
         else:
             factor = -1
+
+        @lru_cache(maxsize=None)
         @Simmix.standard_range(0, 20)
         def common_words_sim_generated (ex1, ex2):
             ''' This function gives weighted score for common words and negative weighted score for words, that appear only
@@ -673,7 +720,7 @@ class Simmix:
                 :param ex2: dict with 'importance' and 'lemma'
                 :return: c and backtracking beam {}
 
-            '''
+                '''
             # A bit something else than this: https://en.wikipedia.org/wiki/Overlap_coefficient
             str1  = ex1["lemma"]
             str2  = ex2["lemma"]
@@ -690,34 +737,14 @@ class Simmix:
             return res, beam
         return common_words_sim_generated
 
-
-    @standard_range(-1, 0)
-    def head_dep_sim (ex1, ex2):
-        ''' Compares the dep tags. Levenstejn distance per total length of both expresions
-
-        :parcommon_wordam ex1: dict with ['full_ex', head, dep, tag, pos]
-        :param ex2: dict with ['dep']
-        :return: float and bracktracking {}
-
-        '''
-        grammar1  = [x.head.dep for x in ex1["full_ex"]]
-        grammar2  = [x.head.dep for x in ex2["full_ex"]]
-        grammar1 += [x.head.tag for x in ex1["full_ex"]]
-        grammar2 += [x.head.tag for x in ex2["full_ex"]]
-        grammar1 += [x.head.pos for x in ex1["full_ex"]]
-        grammar2 += [x.head.pos for x in ex2["full_ex"]]
-
-        return head_is_root #-damerau_levenshtein_distance(grammar1, grammar2) / (len(ex1) + len(ex2)) , {}
-
-
     def convolve_sim(layer=None):
         ''' Compares embeddings with a convolution
 
-        :param ex1: dict with ['elmo_embeddings_full']
-        :param ex2: dict with ['elmo_embeddings_full']
-        :return: float and bracktracking {}
+            :param ex1: dict with ['elmo_embeddings_full']
+            :param ex2: dict with ['elmo_embeddings_full']
+            :return: float and bracktracking {}
 
-        '''
+            '''
         import scipy.signal as sg
         if not layer:
             raise ValueError('layers must be set!')
@@ -729,43 +756,27 @@ class Simmix:
 
         return _convolve_sim
 
-
-    @standard_range(-1000, 1000)
-    def vecs_sim (gensim_model):
-        def vecs_sim_(ex1,ex2):
-            lemmata1  = [x.lemma_ for x in ex1 if x.lemma_ in gensim_model.wv.vocab]
-            lemmata2 =  [x.lemma_ for x in ex2  if x.lemma_ in gensim_model.wv.vocab]
-            if lemmata1 and lemmata2:
-                return gensim_model.wv.n_similarity(lemmata1, lemmata2) * 10000
-            else:
-                nlemmata1 = [x.lemma_ for x in ex1 if x.lemma_ not in gensim_model.wv.vocab]
-                nlemmata2 = [x.lemma_ for x in ex2 if x.lemma_ not in gensim_model.wv.vocab]
-                logger = logging.getLogger(__name__)
-                logger.error ("gensim meager, words are missing: " + str(nlemmata1) + str(nlemmata2) )
-                return 0
-        return vecs_sim_
-
-
     def elmo_sim():
         ''' Compares the expressions by their elmo embeddings, all three layers are taken into account.
 
-        There is a problem with comparing a really long expression with a short one, then the similarity is normaly
-        higher than with shorter expressions. You can imagine this, if you put different vectors  together by summing
-        them up, you get statistically a vector, that goes in every direction and is more like a snowball, all snowballs
-        look equal, but not totally the same.
-        If you have just around 5, then its quite more directed. So I decided to divide it with a the natural logarithm
-        of the biggstes lengths of both. Maybe I can't back up that scientificially, ok.
+            There is a problem with comparing a really long expression with a short one, then the similarity is normaly
+            higher than with shorter expressions. You can imagine this, if you put different vectors  together by summing
+            them up, you get statistically a vector, that goes in every direction and is more like a snowball, all snowballs
+            look equal, but not totally the same.
+            If you have just around 5, then its quite more directed. So I decided to divide it with a the natural logarithm
+            of the biggstes lengths of both. Maybe I can't back up that scientificially, ok.
 
-        ..math::
+            ..math::
 
-            c = \ln (\dfrac{\text(max)}{2e}) * (      \text{cosine distance}(\overrightarrow{x_{1,0}}, \overrightarrow{x_{2,0}}) +       \text{cosine distance}(\overrightarrow{x_{1,1}}, \overrightarrow{x_{2,1}}) +       \text{cosine distance}(\overrightarrow{x_{1,2}}, \overrightarrow{x_{2,2}})
-        :param ex1: dict with ['elmo_embeddings', 'full_ex']
-        :param ex2: dict with ['elmo_embeddings', 'full_ex]
-        :return: float and bracktracking {}
+                c = \ln (\dfrac{\text(max)}{2e}) * (      \text{cosine distance}(\overrightarrow{x_{1,0}}, \overrightarrow{x_{2,0}}) +       \text{cosine distance}(\overrightarrow{x_{1,1}}, \overrightarrow{x_{2,1}}) +       \text{cosine distance}(\overrightarrow{x_{1,2}}, \overrightarrow{x_{2,2}})
+            :param ex1: dict with ['elmo_embeddings', 'full_ex']
+            :param ex2: dict with ['elmo_embeddings', 'full_ex]
+            :return: float and bracktracking {}
 
-        TODO Parentheses bug!
+            TODO Parentheses bug!
 
-        '''
+            '''
+        #@lru_cache(maxsize=None)
         @Simmix.standard_range(-6, 0.5)
         def elmo_sim_generated (ex1,ex2):
             vectors1 = ex1["elmo_embeddings"]
@@ -781,7 +792,7 @@ class Simmix:
             return res, beam
         return elmo_sim_generated
 
-
+    @lru_cache(maxsize=None)
     def elmo_multi_sim(n=3):
         @Simmix.standard_range(-6*n, 0.5*n)
         def elmo_sim_generated (exs1,exs2):
@@ -800,7 +811,6 @@ class Simmix:
             return sim, {}
         return elmo_sim_generated
 
-
     def elmo_layer_sim(layer = [0,1,2]):
         @Simmix.standard_range(-10/len(layer), 0.5/len(layer))
         def elmo_sim_generated (ex1,ex2):
@@ -817,7 +827,7 @@ class Simmix:
                 raise IndexError
         return elmo_sim_generated
 
-
+    @lru_cache(maxsize=None)
     @standard_range(-20, 20)
     def elmo_weighted_sim():
         ''' Use a tf-idf-importance weighted, length-normalized measure based on the most semantical layer of elmo-
@@ -846,6 +856,7 @@ class Simmix:
             except IndexError:
                 raise IndexError
         return elmo_sim_generated
+
     @standard_range(0, 1)
     def boolean_same_sim (ex1, ex2):
         ''' Is the text the same in the other?
@@ -876,7 +887,7 @@ class Simmix:
         beam[ex1['id']][ex2['id']].reason = res
         return res, beam
 
-
+    @lru_cache(maxsize=None)
     @standard_range(0, 1)
     def sub_i (ex1, ex2):
         ''' Are the one tokens a subset of the other tokens?
@@ -961,7 +972,7 @@ class Simmix:
         is2 = set(ex2["i"])
         return abs (len (is1)-len(is2)), {}
 
-
+    @lru_cache(maxsize=None)
     def multi_cross2tup_sim(fun, n=2):
         ''' This wrapper turns a functions, that evaluate pairs of expression, into functions, that work with tuples (!)
         of expressions, to evaluate these tuples in a crossing over way. So with (1,2) and (3,4) you gonna compare 1
@@ -999,6 +1010,8 @@ class Simmix:
         '''
         n **= 2
         beam = Dict()
+
+        @Simmix.multi_fun_doc(fun)
         @Simmix.standard_range(fun.min*n,fun.max*n)  # n depends on fun!
         def multi_cross2tup_sim (exs1,exs2):
             b = copy(beam)
@@ -1057,6 +1070,8 @@ class Simmix:
         '''
         n **= 2
         beam = Dict()
+
+        @Simmix.multi_fun_doc(fun)
         @Simmix.standard_range(fun.min*n,fun.max*n)  # n depends on fun!
         def multi_paral2tup_sim (exs1,exs2):
             b = copy(beam)
@@ -1117,17 +1132,26 @@ class Simmix:
 
                 try:
                     res, d = fun(ex1, ex2)
+                except:
+                    pass
+
+                try:
+                    res, d = fun(ex1, ex2)
                 except TypeError:
                     raise NotImplementedError("return beam from the distance measure! %s" % str(fun))
+                except ValueError:
+                    raise
+
                 if not d:
                     raise NotImplementedError("beam empty! %s" % str(fun))
+
 
                 sim += res / number
                 b.update(d)
             return sim, b
         return multi_paral_tup_generated
 
-
+    @lru_cache(maxsize=None)
     def multi_sim(fun, n=2):
         ''' This wrapper turns functions, that evaluate pairs of expression, into functions, that work with tuples (!)
         of expressions. This is done by comparing each value in these list with each value in the other list.
@@ -1156,6 +1180,7 @@ class Simmix:
         '''
         n **= 2
         beam = Dict()
+        @Simmix.multi_fun_doc(fun)
         @Simmix.standard_range(fun.min*n,fun.max*n)  # depends on fun!
         def multi_generated (exs1,exs2):
             b = copy(beam)
@@ -1255,16 +1280,14 @@ class Simmix:
         """ The defined pair of values mustn't occur in one of the statements at once and in the other. """
         if not attrib_dict:
             raise ValueError("Dictionary of atrributes and values can't be " + str(attrib_dict))
-
-        def match(needle, stack):
-            val = (needle in stack or
-                   (isinstance(needle, tuple) and check_for_tuple_in_list(stack, needle)))
-            return val
+        #attrib_dict = {k: collections.OrderedDict({kk: vv for kk, vv in v.items()}) for k, v in
+        #               attrib_dict.items()}
+        #attrib_dict = collections.OrderedDict(attrib_dict)
 
         @Simmix.standard_range(0, 4)
         def excluding_pair_boolean_sim_generated(ex1, ex2):
             cost = 0
-            antonym_pair = []
+            antonym_pairs = []
             beam = Dict()  # addict Dict for nested dict
 
             fex1 = ex1["full_ex"]
@@ -1276,44 +1299,34 @@ class Simmix:
                 for key, item in single_attrib_dict.items():
                     if (match(key, comp_elements1)):
                             comp_elements2 = [getattr(x,attr) for x in fex2]
-                            that_key_cost =  int(item in comp_elements2)
-                            if isinstance(item,list):
-                                for it in item:
-                                    if (match(it,comp_elements2)
-                                       and not  match(it,  comp_elements1)    # decisive point, that the antonympair should not itself appear in the one or other phrase
-                                       and not  match(key, comp_elements2)
-                                       ):
-                                        actual_cost = int(it in comp_elements2
-                                                             or
-                                                             isinstance(it, tuple) and check_for_tuple_in_list(
-                                                             comp_elements2, it))
-                                        that_key_cost += actual_cost
-                                        if actual_cost:
-                                            antonym_pair.append((key, it))
-                                            logging.info('pair of antonyms found -- "%s" and "%s"' % (key, it))
-                            cost += that_key_cost
-            beam[ex1['id']][ex2['id']].reason = antonym_pair
+                            c, ap = match_comp_els(item, key, comp_elements1, comp_elements2)
+                            cost += c
+                            antonym_pairs.append(ap)
+            beam[ex1['id']][ex2['id']].reason = [a for a in antonym_pairs if a]
             return cost, beam
         return excluding_pair_boolean_sim_generated
 
 
+
+
     def formula_prooves(fit_mix):
+        @lru_cache(maxsize=None)
         @Simmix.standard_range(0, 4)
         def formula_prooves_generated(ex1, ex2):
             """
-            :param ex1:
-            :param ex2:
-                    pyproover formulas with "pyproover." prefix for proposition "A"
+                :param ex1:
+                :param ex2:
+                        pyproover formulas with "pyproover." prefix for proposition "A"
 
-            :return:
-                    1 True for both, 0.7 for one direction of contradicting, 0 for nothing
-            """
+                :return:
+                        1 True for both, 0.7 for one direction of contradicting, 0 for nothing
+                """
             f1 = ex1["wff_comp_and"][:]
             f2 = ex2["wff_comp_and"][:]
             keys1 = list(ex1["wff_dict"].values())
             keys2 = list(ex2["wff_dict"].values())
 
-            key_to_key = fit_mix.choose((keys1, keys2), out="ex", layout="1:1")
+            key_to_key = fit_mix.choose((eL(keys1), eL(keys2)), out="ex", layout="1:1")
 
             if None in flatten(key_to_key[:]) or not key_to_key:
                 logging.debug("No antonyms found!")
@@ -1337,7 +1350,6 @@ class Simmix:
 
             beam = Dict()
             if cost:
-                logging.info("contradiction by antonyms")
                 reasons = set(flatten([d['reason'] for t in triggers for d in t.trigger]))
                 beam[ex1['id']][ex2['id']].trigger = triggers
                 beam[ex1['id']][ex2['id']].reason  = reasons
@@ -1347,6 +1359,7 @@ class Simmix:
 
     def formula_contradicts (fit_mix, symmetric=False):
         fit_keys = fit_mix
+        @lru_cache(maxsize=None)
         @Simmix.standard_range(0, 4)
         def formula_contradicts_generated (ex1,ex2):
             """
@@ -1368,7 +1381,10 @@ class Simmix:
             keys1 = list(ex1["wff_dict"].values())
             keys2 = list(ex2["wff_dict"].values())
 
-            key_to_key = fit_keys.choose((keys1, keys2), out="ex", layout="1:1")
+            key_to_key1 = fit_keys.choose((eL(keys1), eL(keys2)), out="ex", layout="1:1")
+            key_to_key2 = fit_keys.choose((eL(keys2), eL(keys1)), out="ex", layout="1:1")
+
+            key_to_key = key_to_key1 + key_to_key2
 
             if None in flatten(key_to_key[:]) or not key_to_key:
                 logging.debug("empty negation result?")
@@ -1386,16 +1402,14 @@ class Simmix:
                     key_rel = {k1[0]['key']: k2[0]['key']}
                 )
                 if new_cost:
-                    t.reason = 'neg' #set(flatten([d['reason'] for d in t.trigger]))
+                    t.reason = 'neg'
                     triggers.append(t)
                 cost += new_cost
 
             beam = Dict()
             if cost :
-                logging.info("contradiction by negation")
-                reasons = set(flatten([d['reason'] for t in triggers for d in t.trigger]))
                 beam[ex1['id']][ex2['id']].trigger = triggers
-                beam[ex1['id']][ex2['id']].reason  = 'neg'
+                beam[ex1['id']][ex2['id']].reason  = ['negation']
                 beam[ex1['id']][ex2['id']].key_to_key = key_char_to_key_char
             return cost, beam
         return formula_contradicts_generated
@@ -1513,10 +1527,11 @@ class Simmix:
                          type_spec(lr1_edge),
                          type_spec(lr2_edge)))
 
-    @standard_range(-100, 100)
+    #@lru_cache(maxsize=None)
+    @standard_range(0, 1000)
     def subj_asp_sim (ex1, ex2):
         beam = Dict()
-        res = (ex1['subj_score'] + ex2['aspe_score']) - ex1['aspe_score'] - ex2['subj_score']
+        res = (ex1['subj_score']/ex2['subj_score']) + (ex2['aspe_score']/ex1['aspe_score'])
         beam[ex1['id']][ex2['id']].reason = res
         return res, beam
 

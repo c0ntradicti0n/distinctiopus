@@ -395,7 +395,7 @@
 
 
 
-<div class="viewcode-block" id="Predication.collect_predicates"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication.collect_predicates">[docs]</a>    <span class="k">def</span> <span class="nf">collect_predicates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root_token</span><span class="p">,</span> <span class="n">arg_markers</span><span class="p">,</span> <span class="n">too_deep_markers</span><span class="p">,</span> <span class="n">ellipsis_resolution</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<div class="viewcode-block" id="Predication.collect_grammatical_predicates"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication.collect_grammatical_predicates">[docs]</a>    <span class="k">def</span> <span class="nf">collect_grammatical_predicates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root_token</span><span class="p">,</span> <span class="n">arg_markers</span><span class="p">,</span> <span class="n">too_deep_markers</span><span class="p">,</span> <span class="n">ellipsis_resolution</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                            <span class="n">no_zero_args</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mother</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">attributive_ordering</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Extract the predicative structure arising from a special triggering word, that can be handled like in</span>
 <span class="sd">            predicate logic.</span>
@@ -512,7 +512,7 @@
         <span class="n">p</span><span class="p">[</span><span class="s1">&#39;negation_particle&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;full_ex&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">text</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">negation_list</span><span class="p">]</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="Predication.attribute_negation_sentence_predicates"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication.attribute_negation_sentence_predicates">[docs]</a>    <span class="k">def</span> <span class="nf">attribute_negation_sentence_predicates</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ps</span><span class="p">):</span>
+<div class="viewcode-block" id="Predication.organize_negations"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication.organize_negations">[docs]</a>    <span class="k">def</span> <span class="nf">organize_negations</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ps</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">ps</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">s</span><span class="p">[</span><span class="s1">&#39;part_predications&#39;</span><span class="p">]:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">attribute_negation_particle</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
@@ -564,7 +564,7 @@
         <span class="k">return</span> <span class="n">ps</span></div>
 
 
-<div class="viewcode-block" id="Predication.attribute_contained_predicates"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication.attribute_contained_predicates">[docs]</a>    <span class="k">def</span> <span class="nf">attribute_contained_predicates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ps</span><span class="p">):</span>
+<div class="viewcode-block" id="Predication.organize_subpredicates"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication.organize_subpredicates">[docs]</a>    <span class="k">def</span> <span class="nf">organize_subpredicates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ps</span><span class="p">):</span>
         <span class="n">ps</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">ps</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;i_s&#39;</span><span class="p">]))</span>
 
         <span class="n">Sub_sim</span> <span class="o">=</span> <span class="n">Simmix</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">sub_i</span><span class="p">,</span>  <span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
@@ -603,14 +603,14 @@
                  <span class="n">p_new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ps</span><span class="p">[</span><span class="n">r</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">p_new</span></div>
 
-<div class="viewcode-block" id="Predication.collect_all_simple_predicates"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication.collect_all_simple_predicates">[docs]</a>    <span class="k">def</span> <span class="nf">collect_all_simple_predicates</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ex</span><span class="p">):</span>
+<div class="viewcode-block" id="Predication.collect_verbal_attributive_grammatical_predicates"><a class="viewcode-back" href="../predicatrix2.html#predicatrix2.Predication.collect_verbal_attributive_grammatical_predicates">[docs]</a>    <span class="k">def</span> <span class="nf">collect_verbal_attributive_grammatical_predicates</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ex</span><span class="p">):</span>
         <span class="n">a_roots</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_attributive_roots</span><span class="p">(</span><span class="n">ex</span><span class="p">))</span>
         <span class="n">v_roots</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_verbal_roots</span><span class="p">(</span><span class="n">ex</span><span class="p">))</span>
         <span class="n">m_roots</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_sentence_roots</span><span class="p">(</span><span class="n">ex</span><span class="p">))</span>
 
         <span class="n">a_ps</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">a_roots</span><span class="p">:</span>
-            <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collect_predicates</span><span class="p">(</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collect_grammatical_predicates</span><span class="p">(</span>
                     <span class="n">x</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">attributive_arg_markers</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">attributive_too_deep_markers</span><span class="p">,</span>
@@ -620,7 +620,7 @@
 
         <span class="n">v_ps</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">v_roots</span><span class="p">:</span>
-            <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collect_predicates</span><span class="p">(</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collect_grammatical_predicates</span><span class="p">(</span>
                     <span class="n">x</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">verbal_arg_markers</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">verbal_too_deep_markers</span><span class="p">,</span>
@@ -631,7 +631,7 @@
 
         <span class="n">m_ps</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">m_roots</span><span class="p">:</span>
-            <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collect_predicates</span><span class="p">(</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collect_grammatical_predicates</span><span class="p">(</span>
                         <span class="n">x</span><span class="p">,</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">verbal_arg_markers</span><span class="p">,</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">verbal_too_deep_markers</span><span class="p">,</span>
@@ -688,7 +688,7 @@
             <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No td-idf information was precomputed for this expression, filling it up with 0&quot;</span><span class="p">)</span>
             <span class="n">importance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tdfidf</span><span class="o">.</span><span class="n">half_importance</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">lemma_</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ex</span><span class="p">])</span>
 
-        <span class="n">ps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collect_all_simple_predicates</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+        <span class="n">ps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collect_verbal_attributive_grammatical_predicates</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">ps</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;no predicates found for </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">))</span>
@@ -719,8 +719,8 @@
                                          <span class="n">importance</span><span class="p">,</span>
                                          <span class="n">s_id</span><span class="p">)</span>
 
-        <span class="n">ps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attribute_contained_predicates</span><span class="p">(</span><span class="n">ps</span><span class="p">)</span>
-        <span class="n">ps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attribute_negation_sentence_predicates</span><span class="p">(</span><span class="n">ps</span><span class="p">)</span>
+        <span class="n">ps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">organize_subpredicates</span><span class="p">(</span><span class="n">ps</span><span class="p">)</span>
+        <span class="n">ps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">organize_negations</span><span class="p">(</span><span class="n">ps</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ps</span><span class="p">:</span>
             <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">formalize</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">elmo_embeddings</span><span class="p">,</span> <span class="n">importance</span><span class="p">)</span>

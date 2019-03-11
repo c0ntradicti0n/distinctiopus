@@ -54,7 +54,12 @@ class T(tuple):
         if isinstance(args, types.GeneratorType):
             args = tuple(args)
         if len(args) == 1 and hasattr(args[0], '__iter__'):
-            tuple.__new__(self, args[0])
+            try:
+                tuple.__new__(self, args[0])
+            except TypeError:
+                print (self, args[0])
+                raise
+
         else:
             try:
                 tuple.__new__(type(args), args)
@@ -66,3 +71,5 @@ class T(tuple):
     def __call__(self, **kwargs):
         self.__dict__.update(kwargs)
         return self
+
+

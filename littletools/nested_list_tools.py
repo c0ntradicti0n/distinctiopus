@@ -1,3 +1,5 @@
+import itertools
+
 from more_itertools import replace
 import collections
 import functools
@@ -27,6 +29,18 @@ def flatten_reduce(iterable):
         raise ValueError("Value empty")
     except KeyError:
         raise ValueError("Value is a dict, list expected!")
+    except ValueError:
+        raise
+    except TypeError:
+        raise
+
+def collapse(lst):
+    for x in lst:
+        if isinstance(x, collections.Iterable) and not isinstance(x, str):
+            for y in flatten(x):
+                yield y
+        else:
+            yield x
 
 def flatten_list(l):
     for el in l:
@@ -117,6 +131,91 @@ def recursive_map (func, seq, d=0, x_max_d=5, other_criterium=None):
 
     else:
         return seq
+
+def ret (seq):
+    yield seq
+
+
+def flat_on_level(it, d=-1, level=None):
+    """
+
+    >>> list(flat_on_level([[[['a']]]], level=3))
+    ['a']
+
+    """
+    if isinstance(it, dict):
+        y = it.values()
+    else:
+        y = it
+    if not isinstance(y, collections.Iterable):
+        yield y
+    else:
+        for x in y:
+            if d == level:
+                yield x
+            else:
+                yield from flat_on_level(x, d=d + 1, level=level)
+
+
+def flatt_on_level(it, d=-1, level=None):
+    """
+    >>> list(flatt_on_level([[[['a']]]], level=3))
+    [['a']]
+
+    """
+    if d == -1:
+        return list(flatt_on_level(it, d=d + 1, level=level))
+
+    if d == level:
+        return (i for i in [it])
+
+    res = []
+    for x in it:
+        res.extend( flatt_on_level(x, d=d+1, level=level))
+    return res
+
+
+
+def a (l, level, d):
+    """
+    >>> flat2l([[[['a']]]], 2, 0)
+
+    :param l:
+    :param level:
+    :param d:
+    :return:
+    """
+    if d==level:
+        return d
+    for x in flat2l(l, level=level, d=d+1):
+        yield x
+
+
+def a(x):
+    """
+    >>> list(a([[[1],[0]]]))
+    [[[1, 1, 2]]]
+
+    :param x:
+    :return:
+    """
+    for r in x:
+        yield from b(r)
+
+def b(x):
+    """
+    >>> list(b([1,1,2]))
+    [1, 1, 3]
+
+    :param x:
+    :return:
+    """
+    for r in x:
+        yield from c(r)
+
+def c(x):
+    return (z for z in [x])
+
 
 
 
@@ -351,6 +450,11 @@ def type_spec(obj, depth = 0, max_depth=maximal_depth):
     }.get(t, lambda o: type(o).__name__)
     return res if type(res) is str else res(obj)
 
+
+def partition(items, predicate=bool):
+    a, b = tee((predicate(item), item) for item in items)
+    return ((item for pred, item in a if not pred),
+            (item for pred, item in b if pred))
 
 ########################################
 

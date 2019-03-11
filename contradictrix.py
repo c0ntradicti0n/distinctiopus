@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from hardcore_annotated_expression import eL
 from littletools.corutine_utils import coroutine
 from littletools.generator_tools import count_up
 from predicatrix import Predication
@@ -10,6 +11,9 @@ import networkx as nx
 import textwrap
 
 import logging
+
+from time_tools import timeit_context
+
 logging.captureWarnings(True)
 logging.getLogger().setLevel(logging.INFO)
 
@@ -37,7 +41,8 @@ class Contradiction:
             >>> ps = flatten_reduce (corpus.sentence_df.apply(P.analyse_predications, axis=1, result_type="reduce").values.tolist())
 
             >>> C = Contradiction()
-            >>> C.find_contradictive(ps,ps)
+            >>> p = C.find_contradictive(ps,ps)
+            >>> print (p)
             [([0], [1, 2, 3]), ([1], [0, 2, 3]), ([2], [0, 1, 3]), ([3], [0, 1, 2])]
 
             This means, the sentence no 0 contradicts sentences 1,2,3 and so on
@@ -46,7 +51,7 @@ class Contradiction:
 
         '''
         fit_mix_neg = \
-             Simmix ( [(1,Simmix.elmo_sim(), 0.35,1),
+             Simmix ( [(1,Simmix.elmo_sim(), 0.65,1),
                        #(4, Simmix.common_words_sim(), 0.15,1),
                         ],
                       n=None)
@@ -56,7 +61,7 @@ class Contradiction:
                     ], n=30)
 
         fit_mix_ant = \
-             Simmix ( [(1,Simmix.elmo_sim(), 0.35, 1),
+             Simmix ( [(1,Simmix.elmo_sim(), 0.45, 1),
                        (1, Simmix.excluding_pair_boolean_sim(word_definitions.antonym_dict), 0.1, 1)
                        ], n=None)
         self.Contra_Anto = \
@@ -66,12 +71,12 @@ class Contradiction:
         self.contra_counter = count_up()
 
 
-    def find_contradictive (self, predicates1, predicates2, graph_coro=None, paint_graph=True, **kwargs):
+    def find_contradictive (self, predicates1, predicates2, graph_coro=None, paint_graph=False, **kwargs):
         ''' Tbis function  searches in two lists of predicate-dict for contradictions, that are caused by antonym- and
             negation.
 
             These Pred have a special distribution of negation particles.
-            See :func:`~predcicatrix.Predication.attribute_negation_sentence_predicates`
+            See :func:`~predcicatrix.Predication.organize_negations`
 
             Antonyms come from nltk.WordNet and there is a list in `word_definitions`.
             See :data:`~word_definitions.antonym_dict`
@@ -94,10 +99,11 @@ class Contradiction:
             put_into_nx = self.put_into_nx(general_kind='contradiction', G=G)
             graph_coro = [graph_coro, put_into_nx ]
 
-        negation_contradictions = self.Contra_Neg.choose ((predicates1, predicates2), type='negation', layout='n', out='i', graph_coro=graph_coro, **kwargs)
-        antonym_contradictions  = self.Contra_Anto.choose((predicates1, predicates2), type='antonym',  layout='n', out='i', graph_coro=graph_coro, **kwargs)
-        logging.info("contradictions by antonym : %s" % str (antonym_contradictions))
-        logging.info("contradictions by negation: %s" % str (negation_contradictions))
+        with timeit_context('contrast finding neg'):
+            negation_contradictions = self.Contra_Neg.choose ((eL(predicates1), eL(predicates2)), type='negation', layout='n', out='i', graph_coro=graph_coro, **kwargs)
+        with timeit_context('contrast finding anto'):
+            antonym_contradictions  = self.Contra_Anto.choose((eL(predicates1), eL(predicates2)), type='antonym',  layout='n', out='i', graph_coro=graph_coro, **kwargs)
+        logging.info("antonym : %s" % str (antonym_contradictions) + " negation: %s" % str (negation_contradictions))
 
         if paint_graph:
             for p in predicates1 + predicates2:

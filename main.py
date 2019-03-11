@@ -3,6 +3,7 @@
 
 from corpus_reader import CorpusReader
 from CursorilyLogician import DataframeCursorilyLogician
+from time_tools import timeit_context
 from webanno_parser import Webanno_Parser
 
 import logging
@@ -20,8 +21,8 @@ args = parser.parse_args()
 
 def logging_setup():
     logging.basicConfig(
-        format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
-        datefmt='%m-%d %H:%M',
+        format='%(asctime)s %(levelname)-8s %(message)s',
+        datefmt='%H:%M',
         filename='CursorilyLogician.log',
         filemode='w',
         level=logging.DEBUG)
@@ -46,23 +47,20 @@ def main():
     if args.webanno_tsv:
         parse_webanno()
 
-    corpus = CorpusReader(corpus_path=args.conll, only=eval(args.only))
-
-    Logician = DataframeCursorilyLogician(corpus)
-    Logician.annotate_horizon(horizon=3)
-    Logician.annotate_predicates()
-    Logician.annotate_contradictions()
-    Logician.annotate_correlations()
-
-    Logician.cluster_distinctions()
-
-    Logician.annotate_subjects_and_aspects()
-
-    Logician.draw_distinctions()
+    with timeit_context('doing everything'):
+        corpus = CorpusReader(corpus_path=args.conll, only=eval(args.only))
+        Logician = DataframeCursorilyLogician(corpus)
+        Logician.annotate_horizon(horizon=3)
+        Logician.annotate_predicates()
+        Logician.annotate_contrasts()
+        Logician.annotate_correlations()
+        Logician.cluster_distinctions()
+        Logician.annotate_subjects_and_aspects()
+        Logician.collapse_self_containing()
+        Logician.draw_distinctions()
     return 0
 
 if __name__ == '__main__':
-
     import cProfile
     import pstats
     import io

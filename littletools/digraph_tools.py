@@ -59,9 +59,6 @@ def source_sink_generator (DiG):
                 yield(path)
 
 
-
-
-
 def rs2graph(rs, G=None):
     """ Materialze the records of pyneo in networkx
 
@@ -74,14 +71,14 @@ def rs2graph(rs, G=None):
         G = nx.MultiDiGraph()
 
     def add_nodes_and_edge(tup):
-        (n1, n2, r) = tup
+        (n1, n1_labels, n1_id, n2, n2_labels, n2_id, r) = tup.values()
 
-        G.add_node(n1.identity, kind=list(n1.labels), **n1)
-        G.add_node(n2.identity, kind=list(n1.labels), **n2)
-        G.add_edge(n1.identity, n2.identity, kind=r)
+        G.add_node(n1_id, kind=list(n1_labels), **n1)
+        G.add_node(n2_id, kind=list(n1_labels), **n2)
+        G.add_edge(n1_id, n2_id, kind=r)
 
     result_tups = list(tuple(r) for r in rs)
-    for tup in result_tups:
+    for tup in rs:
         add_nodes_and_edge(tup)
     return G
 
@@ -108,16 +105,24 @@ def neo4j2nx_root (pyneo4j, markers):
     ''' Write a subgraph in neo4j, where a certain attribute is set, to nx
 
         :param pyneo4j: pyneo instance to call `run`
-        :param subgraph_marker: the marker, that is set in the graph, just the property name
+        :param markers: list of string or tuples of strings. Tuples say, that different kind of nodes have to be
+            collected at the same layer of the DiGraph
         :return: nx.MultiDiGraph
 
     '''
+    def join_or_str(x, var):
+        if isinstance(x, tuple):
+            return "(" + var + ":"+(" or "+ var+":").join(x) + ")"
+        else:
+            return var+":"+x
+
     G = nx.MultiDiGraph()
     for head, child in pairwise(markers):
         query = r"""
-        MATCH(a:{head})-[r]->(b:{child})
-        RETURN a, b, type(r)
-        """.format(head=head, child=child)
+        MATCH(a)-[r]->(b)
+        WHERE {label_head} and {label_child}
+        RETURN a, labels(a), ID(a), b, labels(b), ID(b), type(r)
+        """.format(label_head=join_or_str(head, 'a'), label_child=join_or_str(child, 'b'))
         record =  pyneo4j.run (query)
         G = rs2graph(record, G)
     return G

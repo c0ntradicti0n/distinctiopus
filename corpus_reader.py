@@ -139,7 +139,10 @@ class CorpusReader:
 
     invisible_node = re.compile(r"\d+(?:\.\d+)?")
     def parse_invisible_node(self, s_id, node):
-        return self.invisible_translation_dict [s_id][node]
+        try:
+            return self.invisible_translation_dict [s_id][node]
+        except:
+            raise
 
 
     def parse_coref_dict(self, d):
@@ -151,10 +154,14 @@ class CorpusReader:
         '''
         if d['s_id_r']:
             s_id = d['s_id_r']
-            m_start = self.parse_invisible_node(s_id, d['m_start'])
-            m_end = self.parse_invisible_node(s_id, d['m_end'])
-            return {'s_id'   : int(s_id),
-                    'i_list' : list(range (m_start, m_end))}
+            try:
+                m_start = self.parse_invisible_node(s_id, d['m_start'])
+                m_end = self.parse_invisible_node(s_id, d['m_end'])
+                return {'s_id'   : int(s_id),
+                        'i_list' : list(range (m_start, m_end))}
+            except KeyError:
+                logging.warning('Coreference out of read text window. Ignoring this. ')
+                return {}
         elif d['s_id_i']:
             s_id = d['s_id_i']
             nodes = self.invisible_node.finditer(d['i_list'])

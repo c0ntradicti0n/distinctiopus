@@ -1,30 +1,27 @@
+from expression_views import *
+
+
 from typing import Iterable
 from itertools import combinations
-
 from addict import Dict
 
-from littletools.generator_tools import generate_new_string
 from littletools.list_and_dict_type import L, T
 import cytoolz
 
 import logging
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
-
-# addict after possible bugfix
 from littletools.nested_list_tools import recursive_map, curry, flatten_reduce, flatten
 
-variable_generator = generate_new_string()
 
+import collections
 
-
-
-class eD (dict):
+class eD (collections.OrderedDict, forward_mapping_neo4j_view):
     ''' expression dictionary
 
     '''
     def __init__ (self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(eD, self).__init__(*args, **kwargs)
 
 
     def __str__(self):
@@ -43,69 +40,11 @@ class eD (dict):
         else:
             return hash(self.__str__(self))
 
-
     def set_property(self, prop, val):
         self.__setattr__(prop, val)
         return self
 
 
-    def neo4j_write(self):
-        global variable_generator
-        self.neo4j_name=next(variable_generator)
-        return \
-            """MERGE ({my_name}:{node_type} {{s_id:{s_id1}, text:'{text1}'}})\n""" \
-            """ON CREATE SET {my_name}.id={id1}""".format(
-                my_name=self.neo4j_name,
-                node_type=':'.join(self.node_type),
-                id1   = self['id'],
-                s_id1 = self['s_id'],
-                i_s1  = self['i_s'],
-                text1 = " ".join(self['text']).replace("'", "")
-                )
-
-
-
-class iterable_neo4j_view:
-    def __init__(self):
-        pass
-
-    def neo4j_write(self):
-        global variable_generator
-        self.neo4j_name = next(variable_generator)
-        childrens_births = list(flatten([n.neo4j_write() for n in self]))
-        names = [n.neo4j_name for n in self]
-
-        if hasattr(self, 'type'):
-            type = self.type
-        else:
-            type = 'unknown'
-        if hasattr(self, 'reason'):
-            reason = self.reason
-        else:
-            reason = 'unknown'
-
-        create_me = """MERGE ({my_name}:{node_type}:{utype} {{AbcName:'{my_name}'}})""".format(
-            my_name=self.neo4j_name,
-            node_type=':'.join(self.node_type),
-            utype=type.upper())
-
-        return \
-           childrens_births + \
-           [create_me] + \
-           ["""MERGE ({my_name})-[:NAMELY {{SpecialKind:'{type}', Reason:'{reason}'}}]->({x})""".format(
-                my_name=self.neo4j_name,
-                x=x, type=type,
-                utype=type.upper(),
-                reason=reason)
-           for x in names] + \
-           ["""MERGE ({y})-[:GROUP {{SpecialKind:'{type}', Reason:'{reason}', group:'{my_name}'}}]->({x})""".format(
-               my_name=self.neo4j_name,
-               x=x,
-               y=y,
-               type=type,
-               utype=type.upper(),
-               reason=reason)
-           for x, y in  combinations(names, 2)]
 class eT (T, iterable_neo4j_view):
     ''' expression tuple
 
@@ -113,22 +52,19 @@ class eT (T, iterable_neo4j_view):
     def __new__(self, t, **kwargs):
         return super(eT, self).__new__(self, t, **kwargs)
 
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
 
     def __str__(self):
         return "(" +', '.join([str(e) for e in self]) + ')'
 
+    def __hash__(self):
+        return id(self)
 
     def unique (self):
-        try:
-            return eL(set(self), **self.__dict__)
-        except ValueError:
-            logging.error ("eT, set bug, set throws {ValueError}The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()")
-            return self
-
+        seen = set()
+        res = eT(tuple([seen.add(hash(obj)) or obj for obj in self if hash(obj) not in seen]),  **self.__dict__)
+        return res
 
     def set_property(self, prop, val):
         self.__setattr__(prop, val)
@@ -142,29 +78,26 @@ class eL (L, iterable_neo4j_view):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-
     def __str__(self):
         return "[" +'\n, '.join([str(e) for e in self]) + ']'
-
 
     def __hash__(self):
         return id(self)
 
-
     def unique (self):
+        seen = set()
         try:
-            return eL(set(self), **self.__dict__)
-        except ValueError:
-            logging.error ("eL, set bug, set throws {ValueError}The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()")
-            return self
-
+            res =  eL([seen.add(hash(obj)) or obj for obj in self if hash(obj) not in seen],  **self.__dict__)
+        except:
+            raise
+        return res
 
     def set_property(self, prop, val):
         self.__setattr__(prop, val)
         return self
 
 
-def ltd_ify (nltd, d=0, node_type=['NLP']):
+def ltd_ify (nltd, d=0, node_type=['NLP'], stack_types=[], d_max = 6):
     ''' Parse all list, tuple, dict types in nested expressions to these special list, tuple, dicts defined here
 
     Eample
@@ -177,28 +110,50 @@ def ltd_ify (nltd, d=0, node_type=['NLP']):
     :return: typed nltd
 
     '''
-    if d>6:
+    rest = []
+    if len(stack_types)>1:
+        stack_type, *rest = stack_types
+        stack_type = [stack_type]
+    else:
+        stack_type=stack_types
+
+    if d>d_max:
         return nltd
 
-    if isinstance(nltd, tuple):
-        res = eT(ltd_ify(x, d=d + 1, node_type=node_type) if isinstance(x, Iterable) else x for x in nltd)
-        res.set_property('node_type', node_type)
+    if isinstance(nltd, tuple) or isinstance(nltd, list):
+        if isinstance(nltd, tuple):
+            if rest and isinstance(rest[0], tuple):
+                tup, *rest_of_rest = rest
+                res = eT(ltd_ify(x, d=d + 1, node_type=node_type, stack_types= [st] + rest_of_rest, d_max=d_max) if isinstance(x, Iterable) else x for x, st in zip(nltd, tup))
+            else:
+                res = eT(ltd_ify(x, d=d + 1, node_type=node_type, stack_types=rest, d_max=d_max) if isinstance(x, Iterable) else x for x in nltd)
+
+        if  isinstance(nltd, list):
+            if rest and isinstance(rest[0], tuple):
+                try:
+                    tup, *rest_of_rest = rest
+                    res = eL(ltd_ify(x, d=d + 1, node_type=node_type, stack_types=[st] + rest_of_rest, d_max=d_max) if isinstance(x, Iterable) else x
+                             for x, st in zip(nltd, tup))
+                except:
+                    raise
+            else:
+                res = eL(
+                    ltd_ify(x, d=d + 1, node_type=node_type, stack_types=rest, d_max=d_max) if isinstance(x, Iterable) else x for x
+                    in nltd)
+
+        res.set_property('node_type', node_type + stack_type)
         return res
 
-    elif isinstance(nltd, list):
-        res = eL(ltd_ify(x, d=d + 1, node_type=node_type) if isinstance(x, Iterable) else x for x in nltd)
-        res.set_property('node_type', node_type)
+    elif isinstance(nltd, dict):
+        res = (eD if not isinstance(nltd, eD) else type(nltd)) ({k:ltd_ify(x, d=d + 1, node_type=node_type, stack_types=rest, d_max=d_max) if isinstance(x, Iterable) else x for k, x in nltd.items()})
+        if (hasattr(nltd, 'set_property')):
+            res.set_property('node_type', node_type + stack_type)
         return res
 
-    elif isinstance(nltd, dict) and not isinstance(nltd, eD):
-        res = eD({k:ltd_ify(x, d=d + 1, node_type=node_type) if isinstance(x, Iterable) else x for k, x in nltd.items()})
-        res.set_property('node_type', node_type)
-        return res
-
-    elif isinstance(nltd, eD):
-        res = nltd
-        res.set_property('node_type', node_type)
-        return res
+    #elif isinstance(nltd, eD):
+    #    res = nltd
+    #    res.set_property('node_type', node_type + stack_type)
+    #    return res
 
     return nltd
 
@@ -252,9 +207,10 @@ def apply_fun_to_nested(fun=None, attribute=None, other_criterium=None, data=Non
 
 
 
-class PredMom(eD):
+class PredMom(eD, pred_neo4j_view):
     def __init__ (self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.node_type = ['PREDICATE']
 
 
     def __str__(self):
@@ -268,14 +224,16 @@ class PredMom(eD):
             return super.__str__(self)
 
 
-class Pred(eD):
+class Pred(pred_neo4j_view, eD):
     def __init__ (self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.node_type = ['PREDICATE']
 
 
-class Argu (eD):
+class Argu (argu_neo4j_view, eD):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.node_type = ['ARGUMENT']
 
     def __str__(self):
         return "{a} > sc={sc}, as={ac}".format(

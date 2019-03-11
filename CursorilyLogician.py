@@ -3,23 +3,21 @@
 
 import itertools
 import time
-from _signal import pause
-from os import wait
+from functools import lru_cache
 
+import neo4j
 import networkx as nx
 import textwrap
 
-from hardcore_annotated_expression import eL, eT, apply_fun_to_attribute_of_ex, ltd_ify, apply_fun_to_nested
-from littletools.corutine_utils import coroutine
-import pandas as pd
-
 import matplotlib
-
-from littletools.digraph_tools import neo4j2nx_root
-from littletools.nested_list_tools import flatten_reduce, recursive_map, curry
-
 matplotlib.use('TkAgg')
 
+from time_tools import timeit_context
+
+from hardcore_annotated_expression import eL, eT, apply_fun_to_nested
+from littletools.corutine_utils import coroutine
+from littletools.digraph_tools import neo4j2nx_root
+from littletools.nested_list_tools import flatten_reduce
 from contradictrix import Contradiction
 from predicatrix import Predication
 from correlatrix import Correlation
@@ -28,10 +26,9 @@ from subj_and_aspectrix import Subjects_and_Aspects
 import logging
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
-import py2neo
 
 class DataframeCursorilyLogician:
-    ''' This module handles all the databases for the operations on the text and does some transactions in between.
+    """ This module handles all the databases for the operations on the text and does some transactions in between.
 
         * a DataFrame in the corpus, representing the grammatical information read from the input files, one
         line per word.
@@ -41,15 +38,14 @@ class DataframeCursorilyLogician:
         * a GraphDatabase (neo4j) for storing the results of the operations on the text as well as for querying for
         certain connections of such superficial rhetorical relations in the text
 
-    '''
+        """
     def __init__(self, corpus):
-        ''' Set up all the textsuntactical models and the graph database
+        """ Set up all the textsuntactical models and the graph database
 
             :param corpus: corpus instance with loaded conlls
 
-        '''
+            """
         self.cleanup_debug_img()
-
         self.corpus = corpus
         self.sentence_df = self.corpus.sentence_df
 
@@ -58,17 +54,16 @@ class DataframeCursorilyLogician:
         self.Correlatrix    = Correlation()
         self.Subj_Aspectrix = Subjects_and_Aspects(corpus)
 
-        self.graph = py2neo.Graph("bolt://localhost:7687", auth=("s0krates", "password"))
+        self.graph = neo4j.Connector('http://localhost:7474', ("s0krates", "password"))
         self.graph.run("MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r")
         self.graph.run("CREATE INDEX ON :Nlp(s_id, i_s)")
 
-
     def annotate_horizon (self, horizon=3):
-        ''' writes in a column 'horizon' a list of ids of the following n sentences
+        """ writes in a column 'horizon' a list of ids of the following n sentences
 
         :param horizon: nomber of sentences to look forward
 
-        '''
+            """
         def horizon_from_row(x):
             return list(self.sentence_df.loc[x.name:x.name + horizon + 1].index)
         self.sentence_df['horizon'] = self.sentence_df.apply(
@@ -78,73 +73,71 @@ class DataframeCursorilyLogician:
 
 
     def collect_predicates_from_rows(self, sentence_df_row):
-        ''' Collect predicates from the df in the horizon and put them in the row of the predicate
+        """ Collect predicates from the df in the horizon and put them in the row of the predicate
 
-        :param sentence_df_row: df with 'horizon'
-        :return: the predicates in the horizon
+            :param sentence_df_row: df with 'horizon'
+            :return: the predicates in the horizon
 
-        '''
+            """
         if sentence_df_row['horizon']:
             return list(itertools.chain.from_iterable(list(self.sentence_df.loc[sentence_df_row['horizon']]['predication'])))
         else:
             return None
 
     def annotate_predicates (self):
-        ''' Call the function to annotate the predicates for each sentence and puts them into a column 'predication'
+        """ Call the function to annotate the predicates for each sentence and puts them into a column 'predication'
 
-        '''
+            """
+        logging.info("ANNOTATE PREDICATES")
+        with timeit_context('predicate annotating'):
+            self.sentence_df['predication'] = self.sentence_df.apply(
+                                                       self.Predicatrix.analyse_predications,
+                                                       result_type="reduce",
+                                                       axis=1)
 
-        self.sentence_df['predication'] = self.sentence_df.apply(
-                                                   self.Predicatrix.analyse_predications,
-                                                   result_type="reduce",
-                                                   axis=1)
-
-        self.sentence_df['predications_in_range'] = self.sentence_df.apply(
-                                                   self.collect_predicates_from_rows,
-                                                   result_type="reduce",
-                                                   axis=1)
+            self.sentence_df['predications_in_range'] = self.sentence_df.apply(
+                                                       self.collect_predicates_from_rows,
+                                                       result_type="reduce",
+                                                       axis=1)
 
     def get_predicates_in_horizon(self, s_id):
-        ''' Collects the predicates, that are in the annotatet range, befor and after the sentence, where to look for
+        """ Collects the predicates, that are in the annotatet range, befor and after the sentence, where to look for
             intresting expressions
 
             :param s_id: id of the sentence
             :return: list of super-predicates, means they all have the property of having 'part_predications' under it
 
-        '''
+            """
         return self.sentence_df.query('s_id==@s_id')['predications_in_range'].values[0]
 
-
     def get_part_predication(self, pred):
-        ''' Collect all particular predications in that sentence. It also looks, if there were more blocks of predicates
+        """ Collect all particular predications in that sentence. It also looks, if there were more blocks of predicates
             found.
 
             :param s_id: id of the sentense
             :return: list of predicate dicts.
 
-        '''
+            """
         return [pp
                 for pred_in_s in self.sentence_df.query('s_id==@s_id')['predication'].values.tolist()
                 for x in pred_in_s
                 for pp in x['part_predications']]
-
 
     def get_part_predication(self, s_id):
-        ''' Collect all particular predications in that sentence. It also looks, if there were more blocks of predicates
+        """ Collect all particular predications in that sentence. It also looks, if there were more blocks of predicates
             found.
 
             :param s_id: id of the sentense
             :return: list of predicate dicts.
 
-        '''
+            """
         return [pp
                 for pred_in_s in self.sentence_df.query('s_id==@s_id')['predication'].values.tolist()
                 for x in pred_in_s
                 for pp in x['part_predications']]
 
-
     def get_marked_predication(self, s_id, horizon=2):
-        ''' Collect all predicates, that have a certain marker in them.
+        """ Collect all predicates, that have a certain marker in them.
 
             It's  usefull, if you want to look for sentences with certain phrases like 'for example', 'in contrast',
             'except'. I searches for the the string, that makes the mark.
@@ -153,7 +146,7 @@ class DataframeCursorilyLogician:
             :param horizon: how many sentences to look forward
             :return: list of predicate dicts.
 
-        '''
+            """
         horizon = list(range(int(s_id) + 1, int(s_id) + horizon + 1))
         markers_pos = 'thus_ADV'
         markers_text = 'for instance'
@@ -168,30 +161,32 @@ class DataframeCursorilyLogician:
             x = 1
         return predicates
 
-
-    def annotate_contradictions(self):
-        ''' Looks first for pairs of phrases with negations and antonyms in an horizon
+    def annotate_contrasts(self):
+        """ Looks first for pairs of phrases with negations and antonyms in an horizon
             and second it evaluates the similarity of these phrases, what would be the fitting counterpart for that one
 
-        '''
+            """
+
+        logging.info ('ANNOTATE CONTRASTS')
         put_contradiction_into_gdb = self.put_into_gdb("connotation", "contradiction")
 
-        for index, x in self.sentence_df.iterrows():
-            self.Contradictrix.find_contradictive(
-                x['predication'],
-                x['predications_in_range'],
-                graph_coro=put_contradiction_into_gdb)
+        with timeit_context('annotating contradictions'):
+            for index, x in self.sentence_df.iterrows():
+                self.Contradictrix.find_contradictive(
+                    x['predication'],
+                    x['predications_in_range'],
+                    graph_coro=put_contradiction_into_gdb)
 
-
+    @lru_cache(maxsize=None)
     def get_correllation_preds(self, pred):
-        '''  Collect the predicates, that can be modifyers to the predicate.
+        """  Collect the predicates, that can be modifyers to the predicate.
 
             These are either in the same sentence or the coreferenced predicates or in the sentence after
 
             :param pred: the predicate
             :return: list of predicate_tuples
 
-        '''
+            """
         if pred == []:
             raise ValueError ('got empty predicate')
         pred = pred[0]
@@ -201,14 +196,13 @@ class DataframeCursorilyLogician:
         marked_preds           = self.get_marked_predication (s_id)     # predicates with examples or meaning explanations ('e.g.', 'by saying that I mean')
         return eL(predicates_in_sentence + coref_preds + marked_preds)
 
-
     def get_coreferenced_preds (self, pred):
-        ''' Get the predicates, that are coreferenced by the coreference tags of another preducate.
+        """ Get the predicates, that are coreferenced by the coreference tags of another preducate.
 
             :param pred: predication tuple
             :return: list oft predicate dicts or [] if not found
 
-        '''
+            """
         if any(pred['coref']):
             corefs_list = [x for x in pred['coref'] if x]
             preds = [p for corefs in corefs_list for coref in corefs for p in self.Predicatrix.get_addressed_coref(coref)]
@@ -216,9 +210,8 @@ class DataframeCursorilyLogician:
         else:
             return []
 
-
     def annotate_correlations(self):
-        ''' Look for pairs of hypotactical and paratactical and anaphorical expressions with similar semantics and
+        """ Look for pairs of hypotactical and paratactical and anaphorical expressions with similar semantics and
             modalities
 
             That means expressions, that both talk about examples or that both give reasons or are a modifyer to the
@@ -227,80 +220,70 @@ class DataframeCursorilyLogician:
             These routines reclassify some of the contradictions, because also talking about examples can seem to be
             anithetical, if the explanation of the instanciated concept is repeated.
 
-        '''
+            """
+        logging.info ('ANNOTATE CORRELATIONS')
         # Lookup what contradicitons were found
-        contradictions           = self.get_from_gdb('contradiction')
+        with timeit_context('retrieve contradiction clusters'):
+            contradictions           = self.get_from_gdb('contradiction')
 
         # Coroutine for writing the simmix ressults into the gdb
         put_correlation_into_gdb = self.put_into_gdb("Connotation", "correlation")
 
-        for contra1, contra2 in contradictions:
-            poss_correl_l = self.get_correllation_preds(contra1)
-            poss_correl_r = self.get_correllation_preds(contra2)
+        with timeit_context('iterate through contradicting pairs'):
+            for contra1, contra2 in contradictions:
+                with timeit_context('get possible preds'):
+                    poss_correl_l = self.get_correllation_preds(contra1)
+                    poss_correl_r = self.get_correllation_preds(contra2)
 
-            self.Correlatrix.annotate_correlations(
-                contradiction= eT((contra1, contra2)),
-                possible_to_correlate=eT((poss_correl_l, poss_correl_r)),
-                graph_coro=put_correlation_into_gdb)
+                with timeit_context('compare constrast pairs'):
+                    self.Correlatrix.annotate_correlations(
+                        contradiction= eT((contra1, contra2)),
+                        possible_to_correlate=eT((poss_correl_l, poss_correl_r)),
+                        graph_coro=put_correlation_into_gdb)
 
 
     def get_clusters (self):
-        ''' Returns the pattern, that gave a contradiction-opposition-pair
+        """ Returns the pattern, that gave a contradiction-opposition-pair
 
             :return: 2tuple-2tuple-list-predicate-dict
 
-        '''
+            """
         query = \
-            """ MATCH (conno:CONNOTATION)--(side:SIDE)--(nucleus:REAL_CORE)
-                WITH 
-                    nucleus, 
-                    { 
-                        side : side.side, 
-                        predicate_id : COLLECT(conno.id)
+            """ MATCH (connotation:CONNOTATION)--(side:SIDE)--(cl:CORE)--(rc:REAL_CORE)
+                WITH cl, rc, 
+                    {   side : side.side, 
+                        predicate_id : COLLECT(connotation.id)
                     } AS sides
-                WITH 
-                    { 
-                        nucleus : nucleus.origin, 
-                        sides : COLLECT(sides)
-                    } AS nucleus
-                RETURN nucleus
+                WITH {  core_cluster : cl.Reason,
+                        deep_core    : rc.origin, 
+                        sides        : COLLECT(sides)
+                    } AS core_clusters
+                RETURN core_clusters
               """
 
-        logging.info("query neo4j for reading by this:\n%s" % query)
-        records = self.graph.run(query).data()
-        time.sleep(0.2)
-
-
+        records = self.graph.run(query)
         predicates = apply_fun_to_nested(fun=self.Predicatrix.get_predication, attribute='predicate_id', data=records)
-
         return predicates
 
-
     def annotate_subjects_and_aspects(self):
-        ''' Look for common arguments of the contradicting and correlating predications.
+        """ Look for common arguments of the contradicting and correlating predications.
 
             These are evaluated to be more the subject of the sentences, that the distinction is applied to, or to be
             the aspects, that are some tokens for addressing the perspective which feature of the subject is focussed
-            by the other expressions, that correlate to the expressions with the subject"""
+            by the other expressions, that correlate to the expressions with the subject
 
-        '''
-        clusters   = self.get_clusters()
-
-        put_arg_into_gdb     = self.put_into_gdb('denotation', 'argument')
-        put_deno_into_gdb    = self.put_into_gdb('denotation', 'subjects_aspects')
-
+            """
+        logging.info ('ANNOTATE SUBJECTS ASPECTS')
+        clusters = self.get_clusters()
         self.Subj_Aspectrix.annotate(
-            clusters= clusters,
-            graph_coro_subj_asp=self.just_write_to_gdb,
-            graph_coro_arg_binding=self.just_write_to_gdb
-            )
+                clusters= clusters,
+                graph_fun=self.graph.run,
+                )
 
-
-    ''' Colors for the final graph'''
+    """ Colors for the final graph """
     kind_color_map = {
             'subject'           : '#5B6C5D',
             'aspect': '#5B6C5D',
-
             'predicate'         : '#9FFFF5',
             'example'           : '#59C9A5',
             'explanation'       : '#56E39F',
@@ -311,30 +294,30 @@ class DataframeCursorilyLogician:
         }
 
 
-    '''Edge labels for the final picture'''
+    """ Edge labels for the final picture """
     edge_label_map = {
         'D'    : 'originates from',
         'D_IN' : 'distinguished in',
         'D_TO' : 'this side',
-        'SUBJECT': 'thema',
-        'SUBJECTS': 'themas',
-        'ASPECT': 'rhema',
-        'ASPECTS': 'rhemas',
-        'SUBJECTS_ASPECTS': 'del',
-        'COMPARED':'really comparated',
-        'ARGUMENT':'del',
-        'what?': '???'
+        'X': 'metechei',
     }
 
+    """ Node labels for final picture """
+    node_label_map = {
+        'SUBJECTS': 'SUBJECT',
+        'ASPECTS': 'ASPECT',
+        'REAL_CORE':'LETS\'S DISTINGUISH',
+        'SIDE':'IN',
+    }
 
     def draw(self, G, path):
-        ''' Make a nice materialized graph from the distinction query
+        """ Make a nice materialized graph from the distinction query
 
             :param G: nx.Multidigraph
             :param path: Where to put the file
             :return: None
 
-        '''
+            """
         path = path + 'distinction.svg'
 
         from networkx.drawing.nx_agraph import graphviz_layout
@@ -346,14 +329,20 @@ class DataframeCursorilyLogician:
         def wrap (strs):
             return textwrap.fill(strs, 20)
 
-        #wrapped_node_labels = {n: {'label':wrap(d)} for n, d in G.nodes(data='text') if d}
-        wrapped_node_labels = {n: {'label': wrap(d)} for n, d in G.nodes(data='text') if d}
+        wrappedtext_node_labels = {n: {'label': wrap(d)} for n, d in G.nodes(data='text') if d}
+        mapped_node_labels = {n: {'label': " ".join([self.node_label_map[dd] for dd in d['kind'] if dd in self.node_label_map])} for n, d in G.nodes(data=True) if not 'text' in d}
+        node_labels = {}
+        node_labels.update(wrappedtext_node_labels)
+        node_labels.update(mapped_node_labels)
 
-        edge_labels = {(u,v,1): {'xlabel': self.edge_label_map[d]} for u,v, d in G.edges(data='kind', default='what?')}
+        try:
+            edge_labels = {(u,v,1): {'xlabel': self.edge_label_map[d]} for u,v, d in G.edges(data='kind', default='what?')}
+        except:
+            raise KeyError ("%s " % str({(u, v, 1): {'xlabel': (d, d in self.edge_label_map)} for u, v, d in G.edges(data='kind', default='what?')}))
         node_colors =  {n: {'style':'filled', 'fillcolor':self.kind_color_map[d]} for n, d in G.nodes(data='SpecialKind') if d}
 
         nx.set_edge_attributes(G, edge_labels)
-        nx.set_node_attributes(G, wrapped_node_labels)
+        nx.set_node_attributes(G, node_labels)
         nx.set_node_attributes(G, node_colors)
 
         G.graph['graph'] = {'rankdir': 'LR',
@@ -376,7 +365,7 @@ class DataframeCursorilyLogician:
 
         nx.draw_networkx(G,
                          pos=pos,
-                         labels=wrapped_node_labels,
+                         labels=node_labels,
                          with_labels=True,
                          font_size=10,
                          **options)
@@ -391,17 +380,48 @@ class DataframeCursorilyLogician:
         A.layout('dot')
         A.draw(path = "found_distinction.svg")
 
+        query = \
+            """ MATCH (p:)(a:ARGUMENT)--(connotation:CONNOTATION)--(side:SIDE)--(cl:CORE)--(rc:REAL_CORE)
+                WITH cl, rc, 
+                    {   side : side.side, 
+                        predicate_id : COLLECT(connotation.id)
+                    } AS sides
+                WITH {  core_cluster : cl.Reason,
+                        deep_core    : rc.origin, 
+                        sides        : COLLECT(sides)
+                    } AS core_clusters
+                RETURN core_clusters
+              """
+
+        records = self.graph.run(query)
+        predicates = apply_fun_to_nested(fun=self.Predicatrix.get_predication, attribute='predicate_id', data=records)
+        return predicates
+
+    def collapse_self_containing(self):
+        cls = self.get_clusters_with_same_subj_asp()
+        with timeit_context('collect arguments'):
+            predicate_clusters = eL(
+                [eT(tuple(
+                    eL(flatten_reduce([sd['predicate_id'] for sd in cl['core_clusters']['sides']])).unique()))
+                    for cl in cls]).unique()
+        # Maximal distinct pairs in clusters, that are parallelized in the sides, with same subjects or aspects
+        # computes per cluster
+        # * retrieve predicates with the same subjects or aspects
+        # * spectral clusters from semantical similarity with the tuples of the sides
+
+
+
+
 
     def add_determined_expression (self, label, general_kind, special_kind, n1, n2, reason):
-        ''' Throws node data into neo4j by expanding data as dictionary.
+        """ Throws node data into neo4j by expanding data as dictionary.
 
             :param general_kind: some string property of all members, that are added by this function
             :param special_kind: some string property of all members, that is special for the new members each
             :param n1: predicate dict 1
-            :param n2: predicate dict
-            :return: None
+            :param n2: predicate dict 2
 
-        '''
+            """
         if  isinstance(n1, list) and  isinstance(n2, list):
             for a,b in zip(n1,n2):
                 self.add_determined_expression(label, general_kind, special_kind, a,b, reason)
@@ -414,10 +434,10 @@ class DataframeCursorilyLogician:
             logging.warning ('unqual list balance')
 
         query = \
-r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}'}}) 
+r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}', arg_ids:{argument_ids1}}}) 
                 ON CREATE SET a.label='{label}', a.id={id1}
                 //ON MATCH SET a.id=a.id+[{id1}]   
-                MERGE (b:Nlp {{s_id:{s_id2}, text:'{text2}'}}) 
+                MERGE (b:Nlp {{s_id:{s_id2}, text:'{text2}', arg_ids:{argument_ids2}}}) 
                 ON CREATE SET b.label='{label}', b.id={id2}
                 //ON MATCH SET b.id=b.id+[{id2}]
                 MERGE (a)-[:{special_kind_u} {{SpecialKind:'{special_kind}', Reason:{reason}}}]-(b)
@@ -428,22 +448,21 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}'}})
                 special_kind_u=special_kind.upper(),
                 reason=sorted(list(reason)),
 
-                id1=n1['id'],      s_id1=n1['s_id'],       i_s1=n1['i_s'],      text1=" ".join(n1['text']).replace("'", ""),
-                id2=n2['id'],      s_id2=n2['s_id'],       i_s2=n2['i_s'],      text2=" ".join(n2['text']).replace("'", ""),
+                id1=n1['id'],      s_id1=n1['s_id'],       i_s1=n1['i_s'],      text1=" ".join(n1['text']).replace("'", ""), argument_ids1=[int(i['id']) for i in n1['arguments']],
+                id2=n2['id'],      s_id2=n2['s_id'],       i_s2=n2['i_s'],      text2=" ".join(n2['text']).replace("'", ""), argument_ids2=[int(i['id']) for i in n2['arguments']]
                 )
-        logging.info ("querying neo4j for %s" % general_kind)
         self.graph.run(query)
         time.sleep(0.02)
 
 
     @coroutine
     def put_into_gdb (self, label, general_kind):
-        ''' This returns a subgraph of the graph, selected by the 'general_kind' param.
+        """ This returns a subgraph of the graph, selected by the 'general_kind' param.
 
             :param general_kind: some string property of all members, that are added by this function
             :return: list of Pred-dict-2tuples
 
-        '''
+            """
         while True:
             data = (yield)
             if isinstance(data, tuple) and len(data) == 2:
@@ -453,7 +472,6 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}'}})
                 if hasattr(data, 'reason'):
                     reason = data.reason
                 else:
-                    logging.error('no \'reason\' keyword in data!')
                     reason = []
 
                 self.add_determined_expression(label, general_kind, special_kind, n1, n2, reason)
@@ -462,29 +480,22 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}'}})
                 raise ValueError('Value could not be set because I don\'t know how to deal with the type')
         return None
 
-
-    def just_write_to_gdb (self, query):
-        ''' This function just calls the run command to get in touch with neo4j'''
-        return self.graph.run(query)
-
-
     def get_from_gdb (self, kind):
         """ Returns pairs of in certain way connected nodes from neo4j
 
             :param kind: this certain kind of connection; its a property of the graph edges
             :return: tuples of contradicting predicates
 
-        """
+            """
         query = (
             r"""MATCH path = (a)-[:%s]->(b) 
                 WHERE ID(a) < ID(b)
                 RETURN a,b """ % kind.upper()
         )
         logging.info("query neo4j for %s" % kind)
-        records = self.graph.run(query).data()
+        records = self.graph.run(query)
         time.sleep(0.2)
 
-        
         records = eL([
             eT((self.Predicatrix.get_predication(pair['a']['id']),
                 self.Predicatrix.get_predication(pair['b']['id'])))
@@ -494,20 +505,18 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}'}})
         assert all (all (pair) for pair in records)
         return records
 
-
     def move_labels (self):
-        ''' Calls a neo4j apoc function to give labels to the node from a property named 'label'
+        """ Calls a neo4j apoc function to give labels to the node from a property named 'label'
 
             :return: None
 
-        '''
+            """
         query = """MATCH (n:Nlp)
         CALL apoc.create.addLabels( id(n), [ n.label ] ) YIELD node
         RETURN node
         """
         res = self.graph.run(query)
         time.sleep(0.2)
-
 
     def cluster_distinctions (self):
         """ Makes the query for the distinctions in neo4j.
@@ -517,7 +526,7 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}'}})
 
             :return: None
 
-        """
+            """
         logging.info ("query neo4j for distinctions")
 
         self.move_labels()
@@ -531,7 +540,7 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}'}})
             YIELD nodes"""
 
         query_side_clusters = \
-            r"""// group all the correlated hcains by an id
+            r"""// group all the correlated chains by an id
             CALL algo.unionFind('CONNOTATION', 'CORRELATED', {write:true, partitionProperty:"side"})
             YIELD nodes"""
 
@@ -564,9 +573,10 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}'}})
               {graph:'cypher',write:true, partitionProperty:'origin'}
             )
             Yield nodes
-            MATCH (s1:SIDE)<-[f1:D_IN]-(:CORE)-[f2:D_IN]->(s2:SIDE)
+            MATCH (s1:SIDE)<-[f1:D_IN]-(c:CORE)-[f2:D_IN]->(s2:SIDE)
             WHERE s1.origin = s2.origin
             MERGE (x:REAL_CORE {origin: s1.origin})
+            MERGE (x)-[:D_APART]->(c)
             MERGE (x)-[:D]->(s1)
             MERGE (x)-[:D]->(s2)
             //return s1, s2, x"""
@@ -586,21 +596,16 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}'}})
         time.sleep(0.2)
 
 
-
-
-
-    def draw_distinctions(self):
-        G = neo4j2nx_root (self.graph, markers=['REAL_CORE', 'SIDE', 'CONNOTATION', 'DENOTATION'])
-        self.draw(G,'img/')
+    def draw_distinctions(self, path='img/'):
+        """ Retrieve the final distinction graph, forward it to networkx and dump to a picture """
+        G = neo4j2nx_root (self.graph, markers=['CORE', 'SIDE', 'CONNOTATION', ('SUBJECTS', 'ASPECTS'),  ('SUBJECTS', 'ASPECTS')])
+        self.draw(G, path)
 
 
     def cleanup_debug_img(self):
-        ''' Deletes the content of the './img' folder, that only new pictures are there.
-        These pictures are usefull for debugging.
+        """ Deletes the content of the './img' folder, that only new pictures are there.
+        These pictures are usefull for debugging. """
 
-            :return: None
-
-        '''
         import os
         folder = './img'
         for the_file in os.listdir(folder):

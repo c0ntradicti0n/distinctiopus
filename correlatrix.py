@@ -17,7 +17,7 @@ class Correlation(Pairix):
                     (1, Simmix.dep_sim, 0.25, 1),
                     (1, Simmix.pos_sim, 0.25, 1),
                     (1, Simmix.elmo_sim(), 0.45,1),
-                    (1,Simmix.fuzzystr_sim, 0.33,1),
+                    (1, Simmix.fuzzystr_sim, 0.33,1),
                     (-1000, Simmix.boolean_subsame_sim, 0, 0.1)
                     ],
                    )
@@ -41,7 +41,7 @@ class Correlation(Pairix):
         return None
 
 
-    def annotate_correlations(self, *, contradiction=None, possible_to_correlate=None, graph_coro=None, save_graph=True):
+    def annotate_correlations(self, *, contradiction=None, possible_to_correlate=None, graph_coro=None, save_graph=False):
         ''' Annotates the correlations, that means expressions that are similar to each other and are distinct from the
             pair, that was found as excluding each other. For instance 'from the one side' and 'from the other side'.
 
