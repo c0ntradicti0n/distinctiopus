@@ -1,3 +1,5 @@
+import itertools
+
 from hardcore_annotated_expression import eT, apply_fun_to_nested, eL, eD, ltd_ify, Argu
 from littletools.generator_tools import count_up
 from pairix import Pairix
@@ -42,36 +44,50 @@ class Subjects_and_Aspects(Pairix):
             :param graph_fun: neo4j driver
 
         '''
-        arguments_for_sides = apply_fun_to_nested (fun=self.get_arguments, attribute='predicate_id', data=clusters )
+        def argument_tuples(predicate):
+            args = self.get_arguments(predicate)
+            return list(itertools.permutations(args, r=2))
 
-        with timeit_context('collect arguments'):
-            to_correlate = eL(
-                [eT(tuple(
-                    eL(flatten_reduce([sd['predicate_id'] for sd in cl['core_clusters']['sides']])).unique()))
-                    for cl in arguments_for_sides]).unique()
+        with timeit_context('retrieve and generate pairs of arguments for each side'):
+            argument_tuples_in_sides = apply_fun_to_nested (
+                fun=argument_tuples,
+                attribute='predicate_id',
+                data=clusters)
 
-
-
-        with timeit_context('computing correlates'):
-            correlated = eL(
+        # now in three steps:
+        # 1. the 1rst and 2nd element of the pairs must be similar to pairs of other sides --> hdbscan on tuple parallel
+        # semantical similarity
+        with timeit_context('computing sameness for the words within these pairs and the subject-'):
+            def correllate(x,y) eL(
                 [self.similar.choose(data=(to_corr.unique(),
                                            to_corr.unique()),
                                      layout='hdbscan',
                                      n=100)
                  for to_corr in to_correlate])
 
-        with timeit_context('pairs'):
-            self.neo4j_push(correlated, graph_fun )
+            argument_tuples_in_sides = apply_fun_to_nested (
+                fun=argument_tuples,
+                attribute='predicate_id',
+                data=clusters)
 
-        with timeit_context('computing subjects and aspects from correlates'):
+        # 2. these tuples have a distance between these two words within, like name ~> thing in multiple sentences
+        # they have a grammatical and semantical distance within. We compute this as a feature of these tuples and
+        # feed them again into Simmix and again hdbscan. So they must be converted to dicts
+
+        # 3. look for the maximum distance with at least two tuples in these grouped tuples.
+
+
+        # (things, things. things), (name answering to definition, name coresponding with the name) (name, name, name, name)
+
+        with timeit_context('compute pairs of similar distance'):
             subjects_aspects = eL(
                 [self.subjects_aspects.choose(
                 (corr, corr),
-                n=int(len(corr)/3),
+                n=100,
                 minimize=False,
                 layout='n',
                 out='ex')
-                 for corr in correlated])                   # Put it in the graph
+                 for corr in correlated])
 
         with timeit_context('writing everything'):
             self.neo4j_write(graph_fun, subjects_aspects, clusters)
