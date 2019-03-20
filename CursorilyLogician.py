@@ -404,7 +404,7 @@ class DataframeCursorilyLogician:
                 [eT(tuple(
                     eL(flatten_reduce([sd['predicate_id'] for sd in cl['core_clusters']['sides']])).unique()))
                     for cl in cls]).unique()
-        # Maximal distinct pairs in clusters, that are parallelized in the sides, with same subjects or aspects
+        # Maximal DistinctFilter pairs in clusters, that are parallelized in the sides, with same subjects or aspects
         # computes per cluster
         # * retrieve predicates with the same subjects or aspects
         # * spectral clusters from semantical similarity with the tuples of the sides

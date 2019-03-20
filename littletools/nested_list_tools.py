@@ -50,6 +50,15 @@ def flatten_list(l):
             yield el
 
 
+def collect_gen (it, key):
+    for i in (it):
+        yield i[key]
+
+
+def collect (it, key):
+    return set(list(collect_gen(it, key)))
+
+
 from itertools import tee
 
 def pairwise(iterable):

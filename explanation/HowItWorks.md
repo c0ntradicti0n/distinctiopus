@@ -84,7 +84,7 @@ This happens in the module [`Predication`](../predicatrix.py).
 
 ## Finding Contrasts
 
-These chunks are paired by the similarity of the words that appear in them and by embeddings. For such pairing, that this programm does really often there is specific module [`Simmix`](../simmix.py), that gets two lists of annotated expressions and pairs them according to feature metrics, that can be adjusted in each case. 
+These chunks are paired by the similarity of the words that appear in them and by embeddings. For such pairing, that this programm does really often there is specific module [`Simmix`](../similaritymixer.py), that gets two lists of annotated expressions and pairs them according to feature metrics, that can be adjusted in each case. 
 
 By adjusting these feature metrices one can achieve both:
  
@@ -102,7 +102,7 @@ This happens in the module [`Contradiction`](../contradictrix.py)
 
 ## Find correlative pairs to the contrasting pairs
 
-With a quite similar process and using the same functionality of  [`Simmix`](../simmix.py) there are pairs of correlated predicates found.
+With a quite similar process and using the same functionality of  [`Simmix`](../similaritymixer.py) there are pairs of correlated predicates found.
 
 With `correlated` I mean a pair of expressions in `distinctions, that, explains, what holds the two sides of disctinctions apart from another.
 
@@ -127,7 +127,7 @@ And these criteria are the things the algorithm uses. In [`correlatrix`](../corr
                         (1, Simmix.pos_sim, 0.65, 1),
                         (1, Simmix.elmo_sim(), 0.35,1),
                         (1,Simmix.fuzzystr_sim, 0.3,1),
-                        (-1000, Simmix.boolean_subsame_sim, 0, 0.1)
+                        (-1000, Simmix.same_expression_sim, 0, 0.1)
                         ],
                        )
     

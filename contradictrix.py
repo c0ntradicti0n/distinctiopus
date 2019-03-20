@@ -5,7 +5,7 @@ from littletools.corutine_utils import coroutine
 from littletools.generator_tools import count_up
 from predicatrix import Predication
 import word_definitions
-from simmix import Simmix
+from similaritymixer import SimilarityMixer
 
 import networkx as nx
 import textwrap
@@ -51,22 +51,23 @@ class Contradiction:
 
         '''
         fit_mix_neg = \
-             Simmix ( [(1,Simmix.elmo_sim(), 0.65,1),
-                       #(4, Simmix.common_words_sim(), 0.15,1),
-                        ],
-                      n=None)
-        self.Contra_Neg  = \
-            Simmix([(1, Simmix.formula_contradicts(fit_mix_neg), 0.1, 1),
-                    (1, Simmix.sub_i,0,0.1)
-                    ], n=30)
+             SimilarityMixer ([(1, SimilarityMixer.elmo_sim(), 0.65, 1),
+                               #(4, SimilarityMixer.common_words_sim(), 0.15,1),
+                               ],
+                              n=None)
+        self.Negation_Contradiction_Filter  = \
+            SimilarityMixer([(1, SimilarityMixer.formula_excludes(fit_mix_neg), 0.1, 1),
+                             (1, SimilarityMixer.sub_i, 0, 0.1)
+                             ], n=30)
 
-        fit_mix_ant = \
-             Simmix ( [(1,Simmix.elmo_sim(), 0.45, 1),
-                       (1, Simmix.excluding_pair_boolean_sim(word_definitions.antonym_dict), 0.1, 1)
-                       ], n=None)
-        self.Contra_Anto = \
-            Simmix([(1, Simmix.formula_prooves(fit_mix_ant), 0.1, 1)
-                    ], n=30)
+        antonym_filter = \
+             SimilarityMixer ([(1, SimilarityMixer.elmo_sim(), 0.45, 1),
+                               (1, SimilarityMixer.detect_pair(word_definitions.antonym_dict), 0.1, 1)
+                               ], n=None)
+
+        self.Antonym_Contradiction_Filter = \
+            SimilarityMixer([(1, SimilarityMixer.formula_concludes(antonym_filter), 0.1, 1)
+                             ], n=30)
 
         self.contra_counter = count_up()
 
@@ -85,7 +86,7 @@ class Contradiction:
             :param predicates1: list of predicate-dicts
             :param predicates2: list of predicate-dicts
             :param paint_graph: If a picture should be saved
-            :param kwargs: keyword-args are propagated to :func:`~simmix.Simmix.choose`
+            :param kwargs: keyword-args are propagated to :func:`~simmix.SimilarityMixer.choose`
 
             :return: Combined list of predicate-tuples
 
@@ -100,9 +101,9 @@ class Contradiction:
             graph_coro = [graph_coro, put_into_nx ]
 
         with timeit_context('contrast finding neg'):
-            negation_contradictions = self.Contra_Neg.choose ((eL(predicates1), eL(predicates2)), type='negation', layout='n', out='i', graph_coro=graph_coro, **kwargs)
+            negation_contradictions = self.Negation_Contradiction_Filter.choose ((eL(predicates1), eL(predicates2)), type='negation', layout='n', out='i', graph_coro=graph_coro, **kwargs)
         with timeit_context('contrast finding anto'):
-            antonym_contradictions  = self.Contra_Anto.choose((eL(predicates1), eL(predicates2)), type='antonym',  layout='n', out='i', graph_coro=graph_coro, **kwargs)
+            antonym_contradictions  = self.Antonym_Contradiction_Filter.choose((eL(predicates1), eL(predicates2)), type='antonym', layout='n', out='i', graph_coro=graph_coro, **kwargs)
         logging.info("antonym : %s" % str (antonym_contradictions) + " negation: %s" % str (negation_contradictions))
 
         if paint_graph:

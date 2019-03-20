@@ -9,7 +9,9 @@ To see, [how it works](./explanation/HowItWorks.md)
 
 The output are subgraphs, that represent distinctions. To have a picture for better imagination:
 
-![Image](./distinctions.svg)
+![Image](./logo.png){:height="50%" width="50%"}
+<img src="./logo.png" width="100" height="100">
+
 
 
 

@@ -18,7 +18,7 @@ logging.getLogger(__name__).addHandler(logging.NullHandler())
 from littletools.nested_list_tools import *
 from littletools.digraph_tools import *
 from littletools.dict_tools import *
-from simmix import Simmix
+from similaritymixer import SimilarityMixer
 import word_definitions
 from littletools import tdfidf_tool
 from littletools.generator_tools import count_up
@@ -100,11 +100,11 @@ class Predication():
             raise ValueError("give negation list")
 
 
-        self.Counterpart =  Simmix(
-            [   (1, Simmix.dep_sim,  0, 1),
-                (1, Simmix.tag_sim,  0, 1),
-                (1, Simmix.left_sim, 0, 1),
-                (1, Simmix.fuzzystr_sim, 0, 1)
+        self.Counterpart =  SimilarityMixer(
+            [   (1, SimilarityMixer.dep_sim, 0, 1),
+                (1, SimilarityMixer.tag_sim, 0, 1),
+                (1, SimilarityMixer.left_sim, 0, 1),
+                (1, SimilarityMixer.fuzzystr_sim, 0, 1)
             ],
             n=1
         )
@@ -239,19 +239,6 @@ class Predication():
                      "text"         : [str(x.text) for x in full_ex][:],
                      "key"          : str(next(self.pred_key_gen))
                           })
-
-        """
-        predicate.predicate   = predicate_ex
-        predicate.predicate_i = predicate_i,
-        predicate.arguments   = arguments_ex
-        predicate.arguments_i = arguments_i
-        predicate.full_ex     = full_ex
-        predicate.i_s         = full_ex_i
-        predicate.doc         = doc
-        predicate.text        = [str(x.text) for x in full_ex][:]
-        predicate.key         = str(next(self.pred_key_gen))
-        """
-
         return predicate
 
     def post_process_arguments (self, arguments_i,doc):
@@ -471,9 +458,9 @@ class Predication():
     def organize_subpredicates(self, ps):
         ps = sorted(ps, key=lambda x:-len(x['i_s']))
 
-        Sub_sim = Simmix([(1, Simmix.sub_i,  0.1, 1),
-                          (-1, Simmix.boolean_same_sim, 0,0.1)],
-                          n = None)
+        Sub_sim = SimilarityMixer([(1, SimilarityMixer.sub_i, 0.1, 1),
+                                   (-1, SimilarityMixer.boolean_same_sim, 0, 0.1)],
+                                  n = None)
 
         if not ps:
             logging.error ("empty expression_list can't contain any predicate.")
@@ -498,12 +485,15 @@ class Predication():
 
         p_new = []
         for r in source_nodes:
-                 sub_predicates                 = [ps[r]] + [ps[x] for x in nx.algorithms.descendants(containment_structure, r)]
-                 ps[r]['part_predications']     = eL(sorted(sub_predicates, key=lambda x:len(x['i_s'])))
-                 ps[r]['containment_structure'] = containment_structure
-                 #if len(sub_predicates) != len(containment_structure.nodes) - 1:
-                 #    logging.error("graph bigger than predicates! %d - %d" % ( len(sub_predicates),len(containment_structure.nodes)-1))
+                 mother_node = ps[r]
+                 descendants = nx.algorithms.descendants(containment_structure, r)
+                 descendants.update({r})
+                 sub_predicates                 = [ps[x] for x in descendants]  # the node itself and its descendants
+                 mother_node['part_predications']     = eL(sorted(sub_predicates, key=lambda x:len(x['i_s'])))
+                 nx.set_node_attributes(containment_structure, {n:{"__subgraph__": mother_node['id']} for n in descendants})
+                 mother_node['containment_structure'] = containment_structure
                  p_new.append(ps[r])
+
         return p_new
 
 
@@ -646,9 +636,9 @@ class Predication():
             logging.error("No predication found in expression: '%s'." % text )
             return []
 
-        #with timeit_context('draw'):
-        #    if paint_graph:
-        #        self.draw_predicate_structure(ps,"./img/predicate" + ps[0]['key']+".svg")
+        with timeit_context('draw'):
+            if paint_graph:
+                self.draw_predicate_structure(ps,"./img/predicate" + ps[0]['key']+".svg")
 
         with timeit_context('push to dataframes'):
             self.organize_dfs(ps)
@@ -946,7 +936,6 @@ class Predication():
         pred["wff_comp_and"]  = now_wff_and
         pred["wff_comp_or"]   = now_wff_or
 
-        pred ["id"]           = str(next(self.id_generator))
         pred ["label"]        = " ".join(pred['text'])
         return pred
 
@@ -985,43 +974,82 @@ class Predication():
 
     def draw_predicate_structure(self, ps, path):
         import textwrap
-        import matplotlib as plt
-        from networkx.drawing.nx_agraph import graphviz_layout
-        import pylab
 
+        G = ps[0]['containment_structure']
 
-        G = nx.algorithms.operators.all.compose_all(p['containment_structure'] for p in ps)
-        title = " ".join(" ".join(p['text']) for p in ps)
-        wff_nice = " ".join(p['wff_nice_and'] for p in ps)
-        wff_ugly = " ".join(p['wff_comp_and'] for p in ps)
-
-        fig = plt.pyplot.gcf()
-        fig.set_size_inches(15, 10)
-
-        def wrap (strs, width = 30):
+        def wrap(strs, width=40):
             return textwrap.fill(strs, width)
-        def dict_to_nice (dic, width = 20):
-            res = "/n".join(["%s: %s" % (str(atrr), wrap(str(val))) for atrr, val in dic.items() if val])
+
+        def dict_to_nice(dic, width=20):
+            res = "/n".join(["%s: %s" % (str(atrr), wrap(str(", ".join([x.text for x in val])))) for atrr, val in dic.items() if val])
             return res
 
+        nx.set_edge_attributes(G, {(u, v): dict_to_nice(attrs) for (u, v, attrs) in G.edges(data=True)}, 'label')
+        nx.set_node_attributes(G, {n: wrap(attrs['label']) for (n, attrs) in G.nodes(data=True)}, 'label')
+
+        G.graph['graph'] = {
+            'rankdir': 'TB',
+            'splines': 'line',
+            'fontname':'helvetica'
+            }
+
+        G.graph['node'] = {
+            'fontname': 'helvetica'
+        }
+
+        G.graph['edge'] = {
+            'fontname':'helvetica'
+        }
+
+        A = nx.drawing.nx_agraph.to_agraph(G)
+
+        # different mother predicates in one
+        sub_graphs_ids = collect(ps, 'id')
+        for sub_pred_id, p in zip(sub_graphs_ids, ps):
+
+            sentence = " ".join(p['text'])
+            wff_nice = p['wff_nice_and']
+            wff_ugly = p['wff_comp_and']
+            title = "\n".join([sentence, wff_ugly, wff_nice])
+
+            nbunch_cr = [n for n, d in G.nodes(data='__subgraph__') if d == sub_pred_id]
+            A.add_subgraph(nbunch=nbunch_cr,
+                           name="cluster%s" % sub_pred_id,
+                           node="[style=filled]",
+                           color='blue',
+                           labeldistance='300',
+                           label=title)
+
+        A.layout('dot')
+        A.draw(path)
+
+        return
+        fig = plt.pyplot.gcf()
+        fig.set_size_inches(5, 5, )
+
+
         node_labels = dict((n,d['label']) for n, d in G.nodes(data=True))
-        edge_labels = {(u,v): dict_to_nice(attrs) for (u,v,attrs) in G.edges(data=True)}
 
         node_labels = {k: wrap(str(v)) for k,v in node_labels.items()}
         edge_labels = {k: wrap(str(v)) for k,v in edge_labels.items()}
 
+        nx.set_edge_attributes(G, 10, 'weight')
+
         sprectral  =  nx.spectral_layout(G)
         spring     =  nx.spring_layout(G)
-        dot_layout = graphviz_layout(G, prog='dot')
+        dot_layout = nx.spectral_layout(G, scale=6.1, center=(5, 5))
         pos = dot_layout
+
+        #pos = nx.nx_agraph.graphviz_layout(H)
 
         options = {
             'node_color': 'blue',
-            'node_size': 100,
-            'width': 3,
-            'arrowstyle': '-|>',
-            'arrowsize': 12,
+            'node_size': 20000,
+            'width': 5,
+            'arrowstyle': '-|>'
         }
+
+        pos = {k:v*0.5 for k,v in pos.items()}
 
         nx.draw_networkx(G,
                          pos=pos,
@@ -1031,9 +1059,14 @@ class Predication():
                          **options)
         nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, rotate=False)
 
+
+
+
         pylab.title("\n".join([wrap(x,90) for x in [title,wff_nice,wff_ugly]]), pad=20)
         pylab.axis('off')
-        pylab.savefig (path, dpi=200)
+        pylab.subplots_adjust(left=1, bottom=1, right=2, top=2, wspace=2, hspace=2)
+        pylab.tight_layout(pad=0.5)
+        pylab.savefig (path, dpi=200, bbox_inches='tight', transparent=True)
         pylab.clf()
         return None
 
@@ -1088,7 +1121,7 @@ class TestPredicates(unittest.TestCase):
             ps = self.P.collect_all_predicates(ex)
             self.P.print_predicates(ps)
             self.assertTrue(len(ps)==1)
-            self.P.draw_predicate_structure(ps, "predicate chunks %d.svg" % i)
+            self.P.draw_predicate_structure(ps, "predicate chunks %d.png" % i)
 
     def test_attribute_predicate_before_behind(self):
         ex = self.P.nlp(

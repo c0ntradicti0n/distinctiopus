@@ -4,7 +4,7 @@ from hardcore_annotated_expression import eT, apply_fun_to_nested, eL, eD, ltd_i
 from littletools.generator_tools import count_up
 from pairix import Pairix
 from littletools.nested_list_tools import flatten_reduce, collapse
-from simmix import Simmix
+from similaritymixer import SimilarityMixer
 from time_tools import timeit_context
 
 import logging
@@ -18,14 +18,14 @@ class Subjects_and_Aspects(Pairix):
     '''
     def __init__(self, corpus):
         self.similar = \
-            Simmix([(2, Simmix.elmo_sim(), 0.4,1)])
+            SimilarityMixer([(2, SimilarityMixer.elmo_sim(), 0.4, 1)])
 
         self.subjects_aspects = \
-             Simmix ([(1, Simmix.multi_paral_tup_sim(Simmix.subj_asp_sim, n=4), 0, 1),
-                     (-1000, Simmix.multi_sim(Simmix.boolean_subsame_sim, n=100), 0, 0.001)])
+             SimilarityMixer ([(1, SimilarityMixer.multi_paral_tup_sim(SimilarityMixer.subj_asp_sim, n=4), 0, 1),
+                               (-1000, SimilarityMixer.multi_sim(SimilarityMixer.same_expression_sim, n=100), 0, 0.001)])
 
     def annotate(self, clusters=None, graph_fun=None):
-        ''' Annotates the correlations, that means expressions that are similar to each other and are distinct from the
+        ''' Annotates the correlations, that means expressions that are similar to each other and are DistinctFilter from the
             pair, that was found as excluding each other. For instance 'from the one side' and 'from the other side'.
 
             In part the graph is cleaned, because also exmaples can be marked as seemingly contradictions.
@@ -58,7 +58,8 @@ class Subjects_and_Aspects(Pairix):
         # 1. the 1rst and 2nd element of the pairs must be similar to pairs of other sides --> hdbscan on tuple parallel
         # semantical similarity
         with timeit_context('computing sameness for the words within these pairs and the subject-'):
-            def correllate(x,y) eL(
+            def correllate(x,y):
+                eL(
                 [self.similar.choose(data=(to_corr.unique(),
                                            to_corr.unique()),
                                      layout='hdbscan',
@@ -72,7 +73,7 @@ class Subjects_and_Aspects(Pairix):
 
         # 2. these tuples have a distance between these two words within, like name ~> thing in multiple sentences
         # they have a grammatical and semantical distance within. We compute this as a feature of these tuples and
-        # feed them again into Simmix and again hdbscan. So they must be converted to dicts
+        # feed them again into SimilarityMixer and again hdbscan. So they must be converted to dicts
 
         # 3. look for the maximum distance with at least two tuples in these grouped tuples.
 

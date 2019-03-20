@@ -9,7 +9,7 @@ class Pairix:
 
     @abstractmethod
     def annotate(self, *, original_pair=None, predicates_in_horizon=None, graph_coro=None, ):
-        '''Annotates the pair, that means expressions that are similar to each other and are distinct from the
+        '''Annotates the pair, that means expressions that are similar to each other and are DistinctFilter from the
            pair, that was found as excluding each other.
 
         '''

@@ -1,7 +1,7 @@
 import networkx as nx
 
 from pairix import Pairix
-from simmix import Simmix
+from similaritymixer import SimilarityMixer
 
 from hardcore_annotated_expression import eL, eT
 
@@ -12,28 +12,28 @@ class Correlation(Pairix):
         # https://en.wikipedia.org/wiki/Grammatical_modifier
 
         # This looks for relativly similar phrases to get some pairs that are possible modifiers to the contradiction
-        self.correlative = \
-            Simmix([#(3, Simmix.common_words_sim (invert=False), 0.25, 1),
-                    (1, Simmix.dep_sim, 0.25, 1),
-                    (1, Simmix.pos_sim, 0.25, 1),
-                    (1, Simmix.elmo_sim(), 0.45,1),
-                    (1, Simmix.fuzzystr_sim, 0.33,1),
-                    (-1000, Simmix.boolean_subsame_sim, 0, 0.1)
+        self.CorrelationFilter = \
+            SimilarityMixer([
+                    (1, SimilarityMixer.dep_sim, 0.25, 1),
+                    (1, SimilarityMixer.pos_sim, 0.25, 1),
+                    (1, SimilarityMixer.elmo_sim(), 0.45, 1),
+                    (1, SimilarityMixer.fuzzystr_sim, 0.33, 1),
+                    (-1000, SimilarityMixer.same_expression_sim, 0, 0.1)
                     ],
                    )
 
         # That's a distinctive criterium, predicates cant be correlated with a part of itself on the opposite direction at all
-        self.distinct_from_the_opposite = \
-            Simmix([(1, Simmix.multi_cross2tup_sim(fun=Simmix.boolean_subsame_sim,n=2), 0, 0.1)
-                    ],
-                   n=None)
+        self.DistinctFromCrossOppositeFilter = \
+            SimilarityMixer([(1, SimilarityMixer.multi_cross2tup_sim(fun=SimilarityMixer.same_expression_sim, n=2), 0, 0.1)
+                             ],
+                            n=None)
 
-        # That's a distinctive criterium, that the correlative keys can't be too similar to the contradicting pair
-        self.distinct = \
-            Simmix([#(1, Simmix.multi_sim(fun=Simmix.common_words_sim(), n=7), 0, 0.95),
-                    (1, Simmix.multi_sim(fun=Simmix.elmo_sim(), n=7), 0, 0.95),
-                    (1, Simmix.multi_sim(fun=Simmix.dep_sim, n=7), 0.0, 1),
-                    (1, Simmix.multi_sim(fun=Simmix.pos_sim,n=7), 0.0, 1)
+        # That's a distinctive criterium, that the CorrelationFilter keys can't be too similar to the contradicting pair
+        self.DistinctFilter = \
+            SimilarityMixer([#(1, SimilarityMixer.multi_sim(fun=SimilarityMixer.common_words_sim(), n=7), 0, 0.95),
+                    (1, SimilarityMixer.multi_sim(fun=SimilarityMixer.elmo_sim(), n=7), 0, 0.95),
+                    (1, SimilarityMixer.multi_sim(fun=SimilarityMixer.dep_sim, n=7), 0.0, 1),
+                    (1, SimilarityMixer.multi_sim(fun=SimilarityMixer.pos_sim, n=7), 0.0, 1)
                     ],
                    n=None)
 
@@ -42,7 +42,7 @@ class Correlation(Pairix):
 
 
     def annotate_correlations(self, *, contradiction=None, possible_to_correlate=None, graph_coro=None, save_graph=False):
-        ''' Annotates the correlations, that means expressions that are similar to each other and are distinct from the
+        ''' Annotates the correlations, that means expressions that are similar to each other and are DistinctFilter from the
             pair, that was found as excluding each other. For instance 'from the one side' and 'from the other side'.
 
             In part the graph is cleaned, because also exmaples can be marked as seemingly contradictions.
@@ -50,23 +50,23 @@ class Correlation(Pairix):
             coreferential relations
 
             :param contradiction: pair of predicates
-            :param possible_to_correlate: list of predicate pairs, that should be evaluated for being as distinct as possible
+            :param possible_to_correlate: list of predicate pairs, that should be evaluated for being as DistinctFilter as possible
             :param graph_coro: coroutine for graph wirting
             :param save_graph: set to True, if results should be written to the graph db
             :return correlating-correlated predicate pair list
 
         '''
-        poss_correlations = self.correlative.choose(           # What correlates
+        possible_correlations = self.CorrelationFilter.choose(           # What correlates
             possible_to_correlate,
             layout='1:1')
 
-        if not poss_correlations:
+        if not possible_correlations:
             return []
 
-        poss_correlations_no_opps = self.distinct_from_the_opposite.choose(                    # not too much
+        poss_correlations_no_opps = self.DistinctFromCrossOppositeFilter.choose(                    # not too much
             eT((eL([contradiction]),
-                poss_correlations)),
-            n=len(poss_correlations),
+                possible_correlations)),
+            n=len(possible_correlations),
             minimize=True,
             layout='n',
             out='ex')
@@ -74,7 +74,7 @@ class Correlation(Pairix):
         if not poss_correlations_no_opps:
             return []
 
-        correlation = self.distinct.choose(                    # not too much
+        correlation = self.DistinctFilter.choose(                    # not too much
             poss_correlations_no_opps[0],
             n=int(1),
             minimize=True,
@@ -84,7 +84,7 @@ class Correlation(Pairix):
             graph_coro=graph_coro)                             # Put it in the graph
 
         if save_graph:
-            G = self.correl_to_nxdigraph(contradiction, poss_correlations, correlation)
+            G = self.correl_to_nxdigraph(contradiction, possible_correlations, correlation)
             self.draw_correlations(G=G, source=contradiction[0][0]['id'], target=contradiction[1][0]['id'])
 
         return correlation
@@ -139,8 +139,6 @@ class Correlation(Pairix):
 
 
     def draw_correlations (self, G, source, target):
-        import pylab as P
-
         path = './img/correlation'+ source +" -- "+ target +".svg"
 
         G.graph['graph'] = {'rankdir': 'LR', 'splines':'line'}
@@ -157,14 +155,11 @@ class Correlation(Pairix):
                         label='Found Contradictions')
 
         # Add correlations to graph as cluster
-        nbunch_pn =[n for n, d in G.nodes(data='kind') if d == 'poss_new']
+        nbunch_pn = [n for n, d in G.nodes(data='kind') if d == 'poss_new']
         A.add_subgraph(nbunch=nbunch_pn,
                         name="cluster2",
                         style='filled',
                         color='lightgrey',
                         label='Possible New Correlations')
-
         A.layout('dot')
-
         A.draw(path)
-        P.clf()

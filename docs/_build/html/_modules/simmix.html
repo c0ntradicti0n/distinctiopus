@@ -866,8 +866,8 @@
         <span class="k">return</span> <span class="n">text2</span> <span class="o">==</span> <span class="n">text1</span><span class="p">,</span> <span class="p">{}</span></div>
 
 
-<div class="viewcode-block" id="Simmix.boolean_subsame_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.boolean_subsame_sim">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">boolean_subsame_sim</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
+<div class="viewcode-block" id="Simmix.same_expression_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.same_expression_sim">[docs]</a>    <span class="nd">@standard_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">same_expression_sim</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Is the text of the one contained in the other?</span>
 
 <span class="sd">        :param ex1: dict with &#39;text&#39;</span>
@@ -1078,7 +1078,7 @@
         <span class="k">return</span> <span class="n">boolean_sim_</span></div>
 
 
-<div class="viewcode-block" id="Simmix.excluding_pair_boolean_sim"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.excluding_pair_boolean_sim">[docs]</a>    <span class="k">def</span> <span class="nf">excluding_pair_boolean_sim</span> <span class="p">(</span><span class="n">attrib_dict</span><span class="p">):</span>
+<div class="viewcode-block" id="Simmix.detect_pair"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.detect_pair">[docs]</a>    <span class="k">def</span> <span class="nf">detect_pair</span> <span class="p">(</span><span class="n">attrib_dict</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; The defined pair of values mustn&#39;t occur in one of the statements at once and in the other. &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">attrib_dict</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Dictionary of atrributes and values can&#39;t be &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">attrib_dict</span><span class="p">))</span>
@@ -1119,7 +1119,7 @@
 
             <span class="k">return</span> <span class="n">cost</span><span class="p">,</span> <span class="p">{}</span>
         <span class="k">return</span> <span class="n">excluding_pair_boolean_sim_generated</span></div>
-<div class="viewcode-block" id="Simmix.formula_prooves"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.formula_prooves">[docs]</a>    <span class="k">def</span> <span class="nf">formula_prooves</span><span class="p">(</span><span class="n">fit_mix</span><span class="p">):</span>
+<div class="viewcode-block" id="Simmix.formula_concludes"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.formula_concludes">[docs]</a>    <span class="k">def</span> <span class="nf">formula_concludes</span><span class="p">(</span><span class="n">fit_mix</span><span class="p">):</span>
         <span class="nd">@Simmix</span><span class="o">.</span><span class="n">standard_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
         <span class="k">def</span> <span class="nf">formula_prooves_generated</span><span class="p">(</span><span class="n">ex1</span><span class="p">,</span> <span class="n">ex2</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
@@ -1168,7 +1168,7 @@
             <span class="k">return</span> <span class="n">cost</span><span class="p">,</span> <span class="n">beam</span>
         <span class="k">return</span> <span class="n">formula_prooves_generated</span></div>
 
-<div class="viewcode-block" id="Simmix.formula_contradicts"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.formula_contradicts">[docs]</a>    <span class="k">def</span> <span class="nf">formula_contradicts</span> <span class="p">(</span><span class="n">fit_mix</span><span class="p">,</span> <span class="n">symmetric</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Simmix.formula_excludes"><a class="viewcode-back" href="../simmix.html#simmix.Simmix.formula_excludes">[docs]</a>    <span class="k">def</span> <span class="nf">formula_excludes</span> <span class="p">(</span><span class="n">fit_mix</span><span class="p">,</span> <span class="n">symmetric</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="n">fit_keys</span> <span class="o">=</span> <span class="n">fit_mix</span>
         <span class="nd">@Simmix</span><span class="o">.</span><span class="n">standard_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
         <span class="k">def</span> <span class="nf">formula_contradicts_generated</span> <span class="p">(</span><span class="n">ex1</span><span class="p">,</span><span class="n">ex2</span><span class="p">):</span>
@@ -1403,8 +1403,8 @@
 
         <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;differ&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s1">&#39;differ&#39;</span><span class="p">,</span> <span class="s1">&#39;in&#39;</span><span class="p">),</span> <span class="s1">&#39;differ&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;have&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;in&#39;</span><span class="p">,</span> <span class="s1">&#39;common&#39;</span><span class="p">)]}</span>
         <span class="n">d</span> <span class="o">=</span>  <span class="n">balance_complex_tuple_dict</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-        <span class="c1">#fun = Simmix.excluding_pair_boolean_sim({&#39;lemma_&#39;:d})</span>
-        <span class="n">fun</span> <span class="o">=</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">excluding_pair_boolean_sim</span><span class="p">(</span><span class="n">word_definitions</span><span class="o">.</span><span class="n">antonym_dict</span><span class="p">)</span>
+        <span class="c1">#fun = Simmix.detect_pair({&#39;lemma_&#39;:d})</span>
+        <span class="n">fun</span> <span class="o">=</span> <span class="n">Simmix</span><span class="o">.</span><span class="n">detect_pair</span><span class="p">(</span><span class="n">word_definitions</span><span class="o">.</span><span class="n">antonym_dict</span><span class="p">)</span>
 
         <span class="nb">print</span> <span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="n">p2</span><span class="p">,</span> <span class="p">)</span>
         <span class="nb">print</span> <span class="p">(</span><span class="n">fun</span><span class="p">(</span><span class="n">p2</span><span class="p">,</span><span class="n">p1</span><span class="p">))</span>

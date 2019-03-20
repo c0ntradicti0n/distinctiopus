@@ -81,7 +81,7 @@ antonym_dict = {'lemma_': {'part': ['wholly'],  'equivocally': ['unambiguously']
 'blackness': ['white'], 'up': ['downwards'], 'let': ['prevent'], 'continuous': ['discontinuous'], 'relative':
 ['absolute'], 'surface': ['subsurface', 'overhead'], 'solid': ['hollow', 'liquid', 'gaseous'], 'join': ['disjoin'],
 'separate': ['unite', 'joint'], 'generalize': ['specify'], 'ever': ['never'], 'possible': ['impossible'], 'always':
-['never'], 'long': ['short'], 'vocal': ['instrumental'], 'distinct': ['indistinct'], 'rest': ['move'], 'past':
+['never'], 'long': ['short'], 'vocal': ['instrumental'], 'DistinctFilter': ['indistinct'], 'rest': ['move'], 'past':
 ['present', 'future'], 'future': ['present', 'past'], 'bear': ['bull'], 'show': ['disprove', 'hide'], 'well':
 ['sick', 'ill'], 'order': ['disorder', 'deregulate', 'disorderliness'], 'naturally': ['artificially',
 'unnaturally'], 'right': ['wrong'], 'intrinsic': ['extrinsic'], 'obvious': ['unobvious'], 'act': ['refrain'],
@@ -184,7 +184,7 @@ antonym_dict = {'lemma_': {'part': ['wholly'],  'equivocally': ['unambiguously']
 'absolute': ['relative'], 'subsurface': ['surface'], 'overhead': ['surface'], 'hollow': ['solid'], 'liquid':
 ['solid'], 'gaseous': ['solid'], 'disjoin': ['join'], 'unite': ['separate', 'divide'], 'joint': ['separate'],
 'specify': ['generalize'], 'unretentive': ['long', 'retentive'], 'instrumental': ['vocal'], 'indistinct':
-['distinct'], 'be_active': ['rest'], 'bull': ['bear'], 'hide': ['show'], 'badly': ['well'], 'disorder': ['order'],
+['DistinctFilter'], 'be_active': ['rest'], 'bull': ['bear'], 'hide': ['show'], 'badly': ['well'], 'disorder': ['order'],
 'deregulate': ['order'], 'disorderliness': ['order'], 'artificially': ['naturally'], 'unnaturally': ['naturally',
 'course'], 'falsify': ['right', 'correct'], 'incorrect': ['right', 'correct'], 'incorrectly': ['right',
 'correctly'], 'left': ['right'], 'center': ['right'], 'extrinsic': ['intrinsic'], 'unobvious': ['obvious'],

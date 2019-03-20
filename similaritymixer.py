@@ -31,15 +31,15 @@
    choose, which perspective to use for that comparison, maybe by weight, by volume, color, shape or whatsoever.
 
    Here we define, that we want to compare this time the text of the expressions with string-fuzzy logic.
-   We instantiate the Simmix-module and give it this list of tuple:
+   We instantiate the SimilarityMixer-module and give it this list of tuple:
 
    >>> function_tuples = [
-   ...             (1, Simmix.fuzzystr_sim, 0.72, 2.01), # fuzzy-string-comparison
-   ...             (1, Simmix.dep_sim, 0.4, 1)           # levensthein distance of the dependency measures
+   ...             (1, SimilarityMixer.fuzzystr_sim, 0.72, 2.01), # fuzzy-string-comparison
+   ...             (1, SimilarityMixer.dep_sim, 0.4, 1)           # levensthein distance of the dependency measures
    ...             ]
 
 
-   And then the Simmix module can be initialized with that:
+   And then the SimilarityMixer module can be initialized with that:
 
    These 4-tuples consist in
 
@@ -55,7 +55,7 @@
    And to apply that to the defined predicates:
 
    >>> superficial_sim  = \
-   ...    Simmix(function_tuples)
+   ...    SimilarityMixer(function_tuples)
    >>> superficial_sim.choose(([p1],[p2,p2]))
 
 '''
@@ -136,7 +136,7 @@ def cartesian_product_itertools(arrays):
     return np.array(list(itertools.product(*arrays)))
 
 
-class Simmix:
+class SimilarityMixer:
     def __init__ (self, similarity_composition, n=1):
         r''' Setup, which functions are taken to compute a similarity matrix to choose from some natural language expressions, that are already analysed in the manner of :mod:`~predicatrix.Predication`.
 
@@ -173,11 +173,11 @@ class Simmix:
             Last but not least there are different possibilities, how to get back the results.
 
             * the expressions pairs, that are the chosen
-                - :func:`~simmix.Simmix.expressions_list`
+                - :func:`~simmix.SimilarityMixer.expressions_list`
             * just the indices of the input expressions or just of the left resp. right expression list.
-                - :func:`~simmix.Simmix.expressions.i_list`
+                - :func:`~simmix.SimilarityMixer.expressions.i_list`
             * write it into a graph, if you present a routinr for writing in a graph (a coroutine, to receive the result with `data=(yield) and send with `corou.send(data...)` send).
-                - :func:`~simmix.Simmix.write_to_graph`
+                - :func:`~simmix.SimilarityMixer.write_to_graph`
 
             :param similarity_composition:
                 list of tuples (
@@ -334,14 +334,14 @@ class Simmix:
             for combo in itertools.combinations(data, 2):
                 my_args['data'] = combo
                 my_args['n'] = 100
-                results.append(Simmix.choose(**my_args))
+                results.append(SimilarityMixer.choose(**my_args))
             return results
 
         elif isinstance(data, list) or isinstance(data, types.GeneratorType):
             tuples = []
             for tup in data:
                 my_args['data'] = tup
-                tuples += Simmix.choose(**my_args)
+                tuples += SimilarityMixer.choose(**my_args)
             return tuples
 
         elif isinstance(data, tuple) and len(data) == 2:
@@ -497,7 +497,7 @@ class Simmix:
                     str([x['text'] for x in exs2])))
 
             mask = is_within_thresholds
-            left_value, right_values = Simmix.one_to_one(weighted_res, exs1, exs2, mask)
+            left_value, right_values = SimilarityMixer.one_to_one(weighted_res, exs1, exs2, mask)
 
         elif layout == 'n':
             ''' compute choordinates within in the cube by divmod, that means, try to divide through the length of the rows (=y)
@@ -526,14 +526,14 @@ class Simmix:
             return self.i_list(left_value, right_values)
         elif out == 'r':
             i_s = self.i_list(left_value, right_values)
-            return Simmix.reduce_i_s_right_values(i_s)
+            return SimilarityMixer.reduce_i_s_right_values(i_s)
         elif out == 'lx':
             return [exs1[i] for i in left_value]
         elif out == 'rx':
             return [exs1[i] for r in right_values for i in r]
         elif out == '2t':
             i_s = self.i_list(left_value, right_values)
-            return Simmix.reduce_i_s_pair_tuples(i_s)
+            return SimilarityMixer.reduce_i_s_pair_tuples(i_s)
         elif out == 'nx':
             if graph_coro == None:
                 raise ValueError("parameter graph_coro is required for use with a Graph!")
@@ -705,7 +705,7 @@ class Simmix:
             factor = -1
 
         @lru_cache(maxsize=None)
-        @Simmix.standard_range(0, 20)
+        @SimilarityMixer.standard_range(0, 20)
         def common_words_sim_generated (ex1, ex2):
             ''' This function gives weighted score for common words and negative weighted score for words, that appear only
                 in one expressions.
@@ -748,7 +748,7 @@ class Simmix:
         import scipy.signal as sg
         if not layer:
             raise ValueError('layers must be set!')
-        @Simmix.standard_range(-5, 5)
+        @SimilarityMixer.standard_range(-5, 5)
         def _convolve_sim (ex1, ex2):
             vectors1 = ex1["elmo_embeddings_full"]
             vectors2 = ex2["elmo_embeddings_full"]
@@ -777,7 +777,7 @@ class Simmix:
 
             '''
         #@lru_cache(maxsize=None)
-        @Simmix.standard_range(-6, 0.5)
+        @SimilarityMixer.standard_range(-6, 0.5)
         def elmo_sim_generated (ex1,ex2):
             vectors1 = ex1["elmo_embeddings"]
             vectors2 = ex2["elmo_embeddings"]
@@ -794,7 +794,7 @@ class Simmix:
 
     @lru_cache(maxsize=None)
     def elmo_multi_sim(n=3):
-        @Simmix.standard_range(-6*n, 0.5*n)
+        @SimilarityMixer.standard_range(-6 * n, 0.5 * n)
         def elmo_sim_generated (exs1,exs2):
             sim = 0
             for ex1, ex2 in itertools.product(flatten_reduce(exs1), flatten_reduce(exs2)):
@@ -812,7 +812,7 @@ class Simmix:
         return elmo_sim_generated
 
     def elmo_layer_sim(layer = [0,1,2]):
-        @Simmix.standard_range(-10/len(layer), 0.5/len(layer))
+        @SimilarityMixer.standard_range(-10 / len(layer), 0.5 / len(layer))
         def elmo_sim_generated (ex1,ex2):
             vectors1 = ex1["elmo_embeddings"]
             vectors2 = ex2["elmo_embeddings"]
@@ -872,7 +872,7 @@ class Simmix:
 
 
     @standard_range(0, 1)
-    def boolean_subsame_sim (ex1, ex2):
+    def same_expression_sim (ex1, ex2):
         ''' Is the text of the one contained in the other?
 
         :param ex1: dict with 'text'
@@ -983,7 +983,7 @@ class Simmix:
         With input like this, every value value in a pair is compared to the cross over value of the other pair
 
         >>> data = ([{'id': '1','text': ['I', 'am', 'here']}],[{'id': '2', 'text': ['I', 'am', 'there']}]), ([{'id': '3', 'text': ['I', 'was', 'here']}],[{'id': '4','text': ['I', 'was', 'there']}])
-        >>> Simmix.multi_cross2tup_sim(Simmix.fuzzystr_sim, n=2)(*data)
+        >>> SimilarityMixer.multi_cross2tup_sim(SimilarityMixer.fuzzystr_sim, n=2)(*data)
         (-1.0, {'1': {'4': {'reason': -0.5}}, '2': {'3': {'reason': -0.5}}})
 
         So, with a result of 2*-.5, you get -1 for this fuzzy logic cross over comparison of these two tuples in data.
@@ -993,11 +993,11 @@ class Simmix:
         >>> data2 = ([{'id': '1','text': ['I', 'am', 'here']}],[{'id': '2', 'text': ['I', 'am', 'there']}]), ([{'id': '3', 'text': ['I', 'am']}],[{'id': '4','text': ['I', 'was', 'there', 'not']}])
         >>> data3 = ([{'id': '1','text': ['I', 'am', 'here']}],[{'id': '2', 'text': ['I', 'am', 'there']}]), ([{'id': '3', 'text': ['I', 'am']}],[{'id': '4','text': ['am','here']}])
 
-        >>> Simmix.multi_cross2tup_sim(Simmix.boolean_subsame_sim, n=2)(*data1)
+        >>> SimilarityMixer.multi_cross2tup_sim(SimilarityMixer.same_expression_sim, n=2)(*data1)
         (0, {'1': {'4': {'reason': 0}}, '2': {'3': {'reason': 0}}})
-        >>> Simmix.multi_cross2tup_sim(Simmix.boolean_subsame_sim, n=2)(*data2)
+        >>> SimilarityMixer.multi_cross2tup_sim(SimilarityMixer.same_expression_sim, n=2)(*data2)
         (1, {'1': {'4': {'reason': 0}}, '2': {'3': {'reason': 1}}})
-        >>> Simmix.multi_cross2tup_sim(Simmix.boolean_subsame_sim, n=2)(*data3)
+        >>> SimilarityMixer.multi_cross2tup_sim(SimilarityMixer.same_expression_sim, n=2)(*data3)
         (2, {'1': {'4': {'reason': 1}}, '2': {'3': {'reason': 1}}})
 
         If you want to know, if one of the expressions is contained in the opposite position, do this
@@ -1011,8 +1011,8 @@ class Simmix:
         n **= 2
         beam = Dict()
 
-        @Simmix.multi_fun_doc(fun)
-        @Simmix.standard_range(fun.min*n,fun.max*n)  # n depends on fun!
+        @SimilarityMixer.multi_fun_doc(fun)
+        @SimilarityMixer.standard_range(fun.min * n, fun.max * n)  # n depends on fun!
         def multi_cross2tup_sim (exs1,exs2):
             b = copy(beam)
             sim = 0
@@ -1043,7 +1043,7 @@ class Simmix:
         With input like this, every value value in a pair is compared to the cross over value of the other pair
 
         >>> data = ([{'id': '1','text': ['I', 'am', 'here']}],[{'id': '2', 'text': ['I', 'am', 'there']}]), ([{'id': '3', 'text': ['I', 'was', 'here']}],[{'id': '4','text': ['I', 'was', 'there']}])
-        >>> Simmix.multi_paral2tup_sim(Simmix.fuzzystr_sim, n=2)(*data)
+        >>> SimilarityMixer.multi_paral2tup_sim(SimilarityMixer.fuzzystr_sim, n=2)(*data)
         (-1.0, {'1': {'4': {'reason': -0.5}}, '2': {'3': {'reason': -0.5}}})
 
         So, with a result of 2*-.5, you get -1 for this fuzzy logic cross over comparison of these two tuples in data.
@@ -1053,11 +1053,11 @@ class Simmix:
         >>> data2 = ([{'id': '1','text': ['I', 'am', 'here']}],[{'id': '2', 'text': ['I', 'am', 'there']}]), ([{'id': '3', 'text': ['I', 'am']}],[{'id': '4','text': ['I', 'was', 'there', 'not']}])
         >>> data3 = ([{'id': '1','text': ['I', 'am', 'here']}],[{'id': '2', 'text': ['I', 'am', 'there']}]), ([{'id': '3', 'text': ['I', 'am']}],[{'id': '4','text': ['am','here']}])
 
-        >>> Simmix.multi_paral2tup_sim(Simmix.boolean_subsame_sim, n=2)(*data1)
+        >>> SimilarityMixer.multi_paral2tup_sim(SimilarityMixer.same_expression_sim, n=2)(*data1)
         (0, {'1': {'4': {'reason': 0}}, '2': {'3': {'reason': 0}}})
-        >>> Simmix.multi_paral2tup_sim(Simmix.boolean_subsame_sim, n=2)(*data2)
+        >>> SimilarityMixer.multi_paral2tup_sim(SimilarityMixer.same_expression_sim, n=2)(*data2)
         (1, {'1': {'4': {'reason': 0}}, '2': {'3': {'reason': 1}}})
-        >>> Simmix.multi_paral2tup_sim(Simmix.boolean_subsame_sim, n=2)(*data3)
+        >>> SimilarityMixer.multi_paral2tup_sim(SimilarityMixer.same_expression_sim, n=2)(*data3)
         (2, {'1': {'4': {'reason': 1}}, '2': {'3': {'reason': 1}}})
 
         If you want to know, if one of the expressions is contained in the opposite position, do this
@@ -1071,8 +1071,8 @@ class Simmix:
         n **= 2
         beam = Dict()
 
-        @Simmix.multi_fun_doc(fun)
-        @Simmix.standard_range(fun.min*n,fun.max*n)  # n depends on fun!
+        @SimilarityMixer.multi_fun_doc(fun)
+        @SimilarityMixer.standard_range(fun.min * n, fun.max * n)  # n depends on fun!
         def multi_paral2tup_sim (exs1,exs2):
             b = copy(beam)
             sim = 0
@@ -1099,8 +1099,8 @@ class Simmix:
         -------
         define the function like this
 
-        >>> sx = Simmix (
-               [(1, Simmix.multi_sim(Simmix.fuzzystr_sim, n=7), 0.5, 1)]
+        >>> sx = SimilarityMixer (
+               [(1, SimilarityMixer.multi_sim(SimilarityMixer.fuzzystr_sim, n=7), 0.5, 1)]
                )
 
         and work with data that are a tuple lists of tuples of tuples lists of predicate-dicts
@@ -1120,7 +1120,7 @@ class Simmix:
         n **= 2
         beam = Dict()
 
-        @Simmix.standard_range(fun.min * n, fun.max * n)  # depends on fun!
+        @SimilarityMixer.standard_range(fun.min * n, fun.max * n)  # depends on fun!
         def multi_paral_tup_generated(exs1, exs2):
             b = copy(beam)
             sim = 0
@@ -1160,8 +1160,8 @@ class Simmix:
         -------
         define the function like this
 
-        >>> sx = Simmix (
-               [(1, Simmix.multi_sim(Simmix.fuzzystr_sim, n=7), 0.5, 1)]
+        >>> sx = SimilarityMixer (
+               [(1, SimilarityMixer.multi_sim(SimilarityMixer.fuzzystr_sim, n=7), 0.5, 1)]
                )
 
         and work with data that are a tuple lists of tuples of tuples lists of predicate-dicts
@@ -1180,8 +1180,8 @@ class Simmix:
         '''
         n **= 2
         beam = Dict()
-        @Simmix.multi_fun_doc(fun)
-        @Simmix.standard_range(fun.min*n,fun.max*n)  # depends on fun!
+        @SimilarityMixer.multi_fun_doc(fun)
+        @SimilarityMixer.standard_range(fun.min * n, fun.max * n)  # depends on fun!
         def multi_generated (exs1,exs2):
             b = copy(beam)
             sim = 0
@@ -1252,7 +1252,7 @@ class Simmix:
             >>> p2 = {'text':  ['All', 'your', 'life'],
             ...       'lemma': ['all', 'your', 'life'],
             ...       'dep_' : ['det', 'poss', 'subj']}
-            >>> f = Simmix.boolean_sim (d)
+            >>> f = SimilarityMixer.boolean_sim (d)
             >>> f (p1,p2)
             (2, {})
 
@@ -1261,7 +1261,7 @@ class Simmix:
         :return: number of matched conditions and {}, the beam to follow the computation in some cases
 
         '''
-        @Simmix.standard_range(0, 10)
+        @SimilarityMixer.standard_range(0, 10)
         def boolean_sim_(ex1,ex2):
             cost = 0
             for attr, single_attrib_dict in attrib_dict.items():
@@ -1276,7 +1276,7 @@ class Simmix:
         return boolean_sim_
 
 
-    def excluding_pair_boolean_sim (attrib_dict):
+    def detect_pair (attrib_dict):
         """ The defined pair of values mustn't occur in one of the statements at once and in the other. """
         if not attrib_dict:
             raise ValueError("Dictionary of atrributes and values can't be " + str(attrib_dict))
@@ -1284,7 +1284,7 @@ class Simmix:
         #               attrib_dict.items()}
         #attrib_dict = collections.OrderedDict(attrib_dict)
 
-        @Simmix.standard_range(0, 4)
+        @SimilarityMixer.standard_range(0, 4)
         def excluding_pair_boolean_sim_generated(ex1, ex2):
             cost = 0
             antonym_pairs = []
@@ -1309,9 +1309,9 @@ class Simmix:
 
 
 
-    def formula_prooves(fit_mix):
+    def formula_concludes(fit_mix):
         @lru_cache(maxsize=None)
-        @Simmix.standard_range(0, 4)
+        @SimilarityMixer.standard_range(0, 4)
         def formula_prooves_generated(ex1, ex2):
             """
                 :param ex1:
@@ -1339,7 +1339,7 @@ class Simmix:
 
             for t in key_to_key:
                 k1, k2 = t
-                new_cost = Simmix.do_logic(
+                new_cost = SimilarityMixer.do_logic(
                     formulas = (f1, f2),
                     key_rel = {k1[0]['key']: k2[0]['key']},
                     negate_one=True)
@@ -1357,10 +1357,10 @@ class Simmix:
             return cost, beam
         return formula_prooves_generated
 
-    def formula_contradicts (fit_mix, symmetric=False):
+    def formula_excludes (fit_mix, symmetric=False):
         fit_keys = fit_mix
         @lru_cache(maxsize=None)
-        @Simmix.standard_range(0, 4)
+        @SimilarityMixer.standard_range(0, 4)
         def formula_contradicts_generated (ex1,ex2):
             """
                 :param ex1:
@@ -1397,7 +1397,7 @@ class Simmix:
 
             for t in key_to_key:
                 k1, k2 = t
-                new_cost = Simmix.do_logic(
+                new_cost = SimilarityMixer.do_logic(
                     formulas = (f1, f2),
                     key_rel = {k1[0]['key']: k2[0]['key']}
                 )
@@ -1434,8 +1434,8 @@ class Simmix:
         '''
         f1, f2 =  formulas
 
-        k_in_1 = re.findall(Simmix.key_regex, f1)
-        k_in_2 = re.findall(Simmix.key_regex, f2)
+        k_in_1 = re.findall(SimilarityMixer.key_regex, f1)
+        k_in_2 = re.findall(SimilarityMixer.key_regex, f2)
 
         k_to_correlate_1 = list(key_rel.keys())
         k_to_correlate_2 = list(key_rel.values())
@@ -1491,8 +1491,8 @@ class Simmix:
                     self.write_to_graph(gc, type, exs1, exs2, left_value, right_values)
             return
 
-        l_s = Simmix.expressions_list(self, left_value, right_values, exs1, exs2)
-        t_s = Simmix.reduce_i_s_pair_tuples(l_s)
+        l_s = SimilarityMixer.expressions_list(self, left_value, right_values, exs1, exs2)
+        t_s = SimilarityMixer.reduce_i_s_pair_tuples(l_s)
 
         if isinstance(exs1[0], dict) and isinstance(exs2[0], dict):
             all_triggers = flatten_list([self.beam[ex1['id']][ex2['id']]['trigger'] for ex1, ex2 in t_s])
@@ -1543,13 +1543,13 @@ class TestSimmix(unittest.TestCase):
         exs1 = [1]
         weighted_res = np.array([[0.], [0.], [0.2]])
 
-        print(Simmix.one_to_one(weighted_res, exs1, exs2))
-        print(Simmix.one_to_one(weighted_res.T, exs2, exs1))
+        print(SimilarityMixer.one_to_one(weighted_res, exs1, exs2))
+        print(SimilarityMixer.one_to_one(weighted_res.T, exs2, exs1))
 
         self.assertTrue (
-                set(nested_list_tools.flatten(Simmix.one_to_one(weighted_res, exs1, exs2))) \
+                set(nested_list_tools.flatten(SimilarityMixer.one_to_one(weighted_res, exs1, exs2))) \
                 == \
-                set(nested_list_tools.flatten(Simmix.one_to_one(weighted_res.T, exs2, exs1))))
+                set(nested_list_tools.flatten(SimilarityMixer.one_to_one(weighted_res.T, exs2, exs1))))
 
 
     def test_one_to_one_complex (self):
@@ -1563,8 +1563,8 @@ class TestSimmix(unittest.TestCase):
         exs1 = [0,1,2,3,4,5,6,7,8]
         exs2 = [0,1,2,3,4,5]
 
-        print(Simmix.one_to_one(weighted_res, exs1, exs2))
-        print(Simmix.one_to_one(weighted_res.T, exs2, exs1))
+        print(SimilarityMixer.one_to_one(weighted_res, exs1, exs2))
+        print(SimilarityMixer.one_to_one(weighted_res.T, exs2, exs1))
 
 
     def test_excluding_pair (self):
@@ -1581,8 +1581,8 @@ class TestSimmix(unittest.TestCase):
 
         d = {'differ': [('differ', 'in'), 'differ', ('have', '*', 'in', 'common')]}
         d =  balance_complex_tuple_dict(d)
-        #fun = Simmix.excluding_pair_boolean_sim({'lemma_':d})
-        fun = Simmix.excluding_pair_boolean_sim(word_definitions.antonym_dict)
+        #fun = SimilarityMixer.detect_pair({'lemma_':d})
+        fun = SimilarityMixer.detect_pair(word_definitions.antonym_dict)
 
         print (p1,p2, )
         print (fun(p2,p1))
