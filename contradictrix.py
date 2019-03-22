@@ -18,7 +18,7 @@ logging.captureWarnings(True)
 logging.getLogger().setLevel(logging.INFO)
 
 
-class Contradiction:
+class Contrast:
     def __init__(self):
         ''' This module lets you find the contradictions between the predicates.
 
@@ -40,7 +40,7 @@ class Contradiction:
             >>> from littletools.nested_list_tools import type_spec, flatten_reduce
             >>> ps = flatten_reduce (corpus.sentence_df.apply(P.analyse_predications, axis=1, result_type="reduce").values.tolist())
 
-            >>> C = Contradiction()
+            >>> C = Contrast()
             >>> p = C.find_contradictive(ps,ps)
             >>> print (p)
             [([0], [1, 2, 3]), ([1], [0, 2, 3]), ([2], [0, 1, 3]), ([3], [0, 1, 2])]
@@ -72,7 +72,7 @@ class Contradiction:
         self.contra_counter = count_up()
 
 
-    def find_contradictive (self, predicates1, predicates2, graph_coro=None, paint_graph=False, **kwargs):
+    def find_contradictive (self, predicates1, predicates2, graph_coro=None, paint_graph=True, **kwargs):
         ''' Tbis function  searches in two lists of predicate-dict for contradictions, that are caused by antonym- and
             negation.
 
@@ -92,7 +92,7 @@ class Contradiction:
 
         '''
         if not predicates1 or not predicates2:
-            logging.error("no predicate found as noticed")
+            logging.error("give predicates if you want contrasts")
             return []
 
         if paint_graph:
@@ -107,8 +107,8 @@ class Contradiction:
         logging.info("antonym : %s" % str (antonym_contradictions) + " negation: %s" % str (negation_contradictions))
 
         if paint_graph:
-            for p in predicates1 + predicates2:
-                put_into_nx.send(p)
+            #for p in predicates1 + predicates2:
+            #    put_into_nx.send(p)
             put_into_nx.send('draw')
 
         try:
@@ -170,6 +170,9 @@ class Contradiction:
             logging.warning("node data is list... taking first")
             n2 = n2[0]
 
+        self.added_cluster1.append(n1['id'])
+        self.added_cluster2.append(n2['id'])
+
         self.add_nx_node(G,n1)
         self.add_nx_node(G,n2)
         self.add_nx_edge(G,n1,n2, general_kind, special_kind)
@@ -196,12 +199,16 @@ class Contradiction:
         :return: list of Pred-dict-2tuples
 
         '''
+        self.added_cluster1 = []
+        self.added_cluster2 = []
+
         while True:
             data = (yield)
             if isinstance(data, tuple) and len(data) == 2:
                 n1, n2 = data
                 special_kind = data.type
                 self.add_determined_expression_nx(G, general_kind, special_kind, n1, n2)
+
             elif isinstance(data, dict):
                 self.add_nx_node(G, data)
             elif isinstance(data, str) and data=='draw':
@@ -225,6 +232,21 @@ class Contradiction:
         G.graph['edges'] = {'arrowsize': '4.0'}
 
         A = nx.drawing.nx_agraph.to_agraph(G)
+
+        A.add_subgraph(nbunch=self.added_cluster1,
+                       name="cluster1",
+                       node="[style=filled]",
+                       color='blue',
+                       labeldistance='300',
+                       label="Contrasts for:")
+
+        A.add_subgraph(nbunch=self.added_cluster2,
+                       name="cluster2",
+                       node="[style=filled]",
+                       color='blue',
+                       labeldistance='300',
+                       label="Contrasts are:")
+
         A.layout('dot')
         A.draw(path)
         plt.clf()
@@ -237,7 +259,7 @@ from corpus_reader import CorpusReader
 class TestContradictrix(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(TestContradictrix, self).__init__(*args, **kwargs)
-        self.default_C = Contradiction()
+        self.default_C = Contrast()
         corpus = CorpusReader(corpus_path='./corpora/aristotle_categories/import_conll', only=[7,8,9])
         self.P = self.P =  Predication(corpus)
 

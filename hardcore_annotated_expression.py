@@ -38,7 +38,7 @@ class eD (collections.OrderedDict, forward_mapping_neo4j_view):
         if 's_id' in self and 'i_s' in self:
             return hash(self['s_id']+str(self['i_s']))
         else:
-            return hash(self.__str__(self))
+            return hash(str(self))
 
     def set_property(self, prop, val):
         self.__setattr__(prop, val)

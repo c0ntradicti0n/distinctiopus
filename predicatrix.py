@@ -1,9 +1,9 @@
 import math
+from collections import OrderedDict
 from functools import lru_cache
 
-import pandas
+import pandas as pd
 import pyprover
-import itertools
 import string
 import pprint
 from allennlp.commands.elmo import ElmoEmbedder
@@ -24,7 +24,7 @@ from littletools import tdfidf_tool
 from littletools.generator_tools import count_up
 
 
-from hardcore_annotated_expression import PredMom, Pred, eL, Argu
+from hardcore_annotated_expression import PredMom, Pred, eL, Argu, eD
 
 
 class Predication():
@@ -120,8 +120,9 @@ class Predication():
              'text': Predication.spacy_text,
              'i': Predication.spacy_i}
 
-        self.predicate_df = pandas.DataFrame()
-        self.argument_df = pandas.DataFrame()
+        self.predicate_df = pd.DataFrame()
+        self.argument_df = pd.DataFrame()
+        self.already_added_args = OrderedDict()
 
 
     def analyse_predications(self, sentence_df_row):
@@ -558,7 +559,7 @@ class Predication():
         return ps
 
 
-    def collect_all_predicates(self,ex, coref=None, s_id=None,  paint_graph=True):
+    def collect_all_predicates(self,ex, coref=None, s_id=None,  paint_graph=False):
         ''' Extracts a multitude of properties from a natural language expression, including grammar
             imformation, word2vec, some importance weight in the document, some kind of cursorily logical
             formula with a dictionary, to what expressions the constants in the formula belong to.
@@ -640,17 +641,23 @@ class Predication():
             if paint_graph:
                 self.draw_predicate_structure(ps,"./img/predicate" + ps[0]['key']+".svg")
 
-        with timeit_context('push to dataframes'):
+        with timeit_context('databasing'):
             self.organize_dfs(ps)
         return ps
 
     def organize_dfs(self, ps):
-            with timeit_context('type and to database'):
-                ps = eL([PredMom(p) for p in ps])
-            with timeit_context('type and to database'):
-                self.append_to_predicate_df(ps)
-            with timeit_context('type and to database'):
-                self.append_to_argument_df(ps)
+        ps = eL([PredMom(p) for p in ps])
+        self.append_to_predicate_df(ps)
+
+
+        arguments_mother = flatten_reduce(list(map(lambda x: flatten_reduce([x['arguments']]), ps)))
+        arguments_parts = flatten_reduce(list(map(
+            lambda x: flatten_reduce([part_pred['arguments']
+                                      for part_pred in x['part_predications']]),
+            ps)))
+        arguments = eL(arguments_mother + arguments_parts)
+
+        self.append_to_argument_df(arguments)
 
 
 
@@ -669,7 +676,7 @@ class Predication():
             :param ps: list of predicates
 
         '''
-        #self.predicate_df = pandas.DataFrame.from_records(ps)
+        #self.predicate_df = pd.DataFrame.from_records(ps)
         self.predicate_df = self.predicate_df.append(ps)
         self.predicate_df = self.predicate_df.append([part_p for p in ps for part_p in p['part_predications']])
 
@@ -719,35 +726,30 @@ class Predication():
 
 
 
-    def append_to_argument_df (self, ps):
+    def append_to_argument_df (self, arguments):
         ''' There is a DataFrame with all the argumentes found to look up coreferences and ids, if an expression is
             addressed by coref or some external database, to what we don't want to tell everything
 
             :param ps: list of arguments
 
         '''
-        arguments_mother = flatten_reduce( list( map (lambda x: flatten_reduce( [x['arguments']]), ps) ))
-        arguments_parts  = flatten_reduce( list( map(
-            lambda x: flatten_reduce( [part_pred['arguments']
-                                       for part_pred in x['part_predications']]),
-            ps)))
-        arguments = eL(arguments_mother + arguments_parts)
+        new_arguments = []
 
         for arg in arguments:
-            if self.argument_df.empty:
-               self.argument_df = self.argument_df.append([arg])
-
-            mask = (self.argument_df["i_s"].apply(lambda x: set(arg['i_s'])==set(x)) & (self.argument_df['s_id']==arg['s_id']))
-            if not mask.any():
-                self.argument_df = self.argument_df.append([arg])
+            pos = (arg['s_id'], tuple(arg['i_s']))
+            # If that arg is not in the df, append it
+            if not (arg['s_id'], tuple(arg['i_s'])) in self.already_added_args:
+                new_arguments.append(arg)
+                self.already_added_args.update({pos:arg['id']})
+                continue
+        # Else take the 'id' from the stored ids and override it
             else:
-                already_in_df = self.argument_df['id'][mask].values
-                try:
-                    assert len(already_in_df) == 1
-                except:
-                    raise ValueError ("Multiple equal elements in the arugments_df")
-                arg['id'] = already_in_df[0]
+                arg['id'] = self.already_added_args[pos]
 
+        with timeit_context('append'):
+
+            df = pd.DataFrame(new_arguments)
+            self.argument_df = pd.concat([self.argument_df,df])
 
     def get_coreferenced_arguments(self, corefs):
         if not corefs:
@@ -756,8 +758,12 @@ class Predication():
             arguments = eL([x for x in flatten_reduce(list(map(self.get_coreferenced_argument, corefs))) if x])
             return arguments
 
-
     def get_coreferenced_argument(self, coref):
+        return self.get_coreferenced_argument_cacheble (eD(coref))
+
+
+    @lru_cache (maxsize=100)
+    def get_coreferenced_argument_cacheble(self, coref):
         ''' We get the coreferenced arguments from the arguments-dataframe, that was build while constructing all
         predicate or we reconstruct it.
 
@@ -774,21 +780,24 @@ class Predication():
         '''
         s_id  = str(coref['s_id'])
         i_list = coref['i_list']
+        print (i_list)
+
         mask = self.argument_df.query("s_id==@s_id").apply(
                 lambda ex: all (m in ex['i_s'] for m in i_list) and ('NOUN' in ex['pos_']),
             axis=1)
 
-        referenced = self.argument_df.query("s_id==@s_id")[mask].nsmallest(n=1, columns='len').to_dict(orient='records')
-
-        # If not found, construct it
-        if referenced:
+        if mask.any():
+            # If there is something in the df, return it
+            referenced = self.argument_df.query("s_id==@s_id")[mask].nsmallest(n=1, columns='len').to_dict(orient='records')
             return [Argu(x) for x in referenced]
         else:
+            # If it's not found before (e.g. contructed from multiple parts of the sentence). construct it
             doc, elmo_embeddings, importance, dep_tree = self.argument_df.query("s_id==@s_id")[['doc', 'elmo_embeddings_full', 'importance_full', 'dep_tree']].values[0]
             arg_tokens = self.collect_substancial_argument(i_list, doc, out='t')
             if arg_tokens == []:
                 return []
             arg = Argu(self.sp_imp_elmo_dictize_ex(ex=arg_tokens, coref=[[]]*len(doc), elmo_embeddings=elmo_embeddings, importance=importance, s_id=s_id, dep_tree=dep_tree))
+            self.append_to_argument_df([arg])
             return [arg]
 
 
@@ -1022,53 +1031,7 @@ class Predication():
 
         A.layout('dot')
         A.draw(path)
-
         return
-        fig = plt.pyplot.gcf()
-        fig.set_size_inches(5, 5, )
-
-
-        node_labels = dict((n,d['label']) for n, d in G.nodes(data=True))
-
-        node_labels = {k: wrap(str(v)) for k,v in node_labels.items()}
-        edge_labels = {k: wrap(str(v)) for k,v in edge_labels.items()}
-
-        nx.set_edge_attributes(G, 10, 'weight')
-
-        sprectral  =  nx.spectral_layout(G)
-        spring     =  nx.spring_layout(G)
-        dot_layout = nx.spectral_layout(G, scale=6.1, center=(5, 5))
-        pos = dot_layout
-
-        #pos = nx.nx_agraph.graphviz_layout(H)
-
-        options = {
-            'node_color': 'blue',
-            'node_size': 20000,
-            'width': 5,
-            'arrowstyle': '-|>'
-        }
-
-        pos = {k:v*0.5 for k,v in pos.items()}
-
-        nx.draw_networkx(G,
-                         pos=pos,
-                         labels=node_labels,
-                         with_labels=True,
-                         font_size=10,
-                         **options)
-        nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, rotate=False)
-
-
-
-
-        pylab.title("\n".join([wrap(x,90) for x in [title,wff_nice,wff_ugly]]), pad=20)
-        pylab.axis('off')
-        pylab.subplots_adjust(left=1, bottom=1, right=2, top=2, wspace=2, hspace=2)
-        pylab.tight_layout(pad=0.5)
-        pylab.savefig (path, dpi=200, bbox_inches='tight', transparent=True)
-        pylab.clf()
-        return None
 
 
 class TestPredicates(unittest.TestCase):
@@ -1140,7 +1103,8 @@ class TestPredicates(unittest.TestCase):
 
         ps = self.P.collect_all_predicates(ex)
         self.P.print_predicates(ps)
-        self.P.draw_predicate_structure(ps, "predicate.png")
+
+        #self.P.draw_predicate_structure(ps, "predicate.png")
 
         """
         exs = [

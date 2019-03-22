@@ -18,7 +18,7 @@ from hardcore_annotated_expression import eL, eT, apply_fun_to_nested
 from littletools.corutine_utils import coroutine
 from littletools.digraph_tools import neo4j2nx_root
 from littletools.nested_list_tools import flatten_reduce
-from contradictrix import Contradiction
+from contradictrix import Contrast
 from predicatrix import Predication
 from correlatrix import Correlation
 from subj_and_aspectrix import Subjects_and_Aspects
@@ -50,7 +50,7 @@ class DataframeCursorilyLogician:
         self.sentence_df = self.corpus.sentence_df
 
         self.Predicatrix    = Predication(corpus)
-        self.Contradictrix  = Contradiction ()
+        self.Contradictrix  = Contrast ()
         self.Correlatrix    = Correlation()
         self.Subj_Aspectrix = Subjects_and_Aspects(corpus)
 
