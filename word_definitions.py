@@ -17,6 +17,7 @@ logic_dict = {
 #    'TE': existential_quantors
 }
 
+stop_words = ['by', 'some','in', 'themselves', 'of','again','other', 'a','the','and','either','or','but','though','.',',',';',':']
 counterpart_words = []
 
 def test_antonymdict():
@@ -37,7 +38,7 @@ def test_antonymdict():
     pass
 
 antonym_dict = {'lemma_': {'part': ['wholly'],  'equivocally': ['unambiguously'], 'have': ['lack'],
-'common': ['individual', 'single', 'derive'], 'correspond': ['disagree'], 'differ': ['common', 'derive'], 'real':    ['unreal',
+'common': ['individual', 'single'], 'correspond': ['disagree'], 'differ': ['common'], 'real':    ['unreal',
 'nominal', 'insubstantial'], 'man': ['civilian', 'woman','baby'], 'figure': ['ground'], 'can': ['hire'], 'lie': ['sitting',
 'sit', 'stand'], 'claim': ['forfeit', 'disclaim'], 'will': ['disinherit'], 'appropriate': ['inappropriate'], 'on':
 ['off'], 'other': ['same'], 'answer': ['question'], 'same': ['other', 'different'], 'identical': ['fraternal'],
@@ -229,7 +230,7 @@ antonym_dict = {'lemma_': {'part': ['wholly'],  'equivocally': ['unambiguously']
 'anterior': ['posterior'], 'dishonorable': ['honourable'], 'posteriority': ['priority'], 'dishonor': ['honour'],
 'hate': ['love'], 'multiply': ['divide'], 'competent': ['unqualified'], 'qualified': ['unqualified'], 'decrease':
 ['increase'], 'augmentation': ['diminution'], 'motionlessness': ['motion'], 'subtraction': ['addition'],
-'disassemble': ['piece'], 'undress': ['apparel'], 'derive':['differ'], 'open_chain': ['ring'], 'discontented': ['content'], 'discontent':
+'disassemble': ['piece'], 'undress': ['apparel'], 'open_chain': ['ring'], 'discontented': ['content'], 'discontent':
 ['content'], 'waste': ['husband'], 'close': ['remote'], 'dead': ['live'], 'recorded': ['live'], 'free':['wild']}}
 
 # additional lemmata as lists!
@@ -283,7 +284,7 @@ additional_antonyms = {'fight': ['embrace', 'wander'],
                        'stand': [('play', '*', 'soccer')],
                        ('coordinate'):[('subordinate')],
                        ('some', 'case'):[('generally')],
-                       ('have', '*', 'in', 'common'): [('differ', 'in'), 'differ', 'derive'],
+                       ('have', '*', 'in', 'common'): [('differ', 'in'), 'differ'],
                        ('produce'):[('consume')],
                        ('lowlevel'):[('highlevel')],
                        ('own'):[('other')]

@@ -33,7 +33,7 @@ def replace_matroshka (lists):
     lists = sorted(lists, key=lambda x: len(x))
     res = lists[0]
     for w in lists [1:]:
-        print (w)
+        #print (w)
         r = replacer(w, list(flatten(res[:])), [res])
         if not r:
             res.append(w)

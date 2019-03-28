@@ -56,7 +56,6 @@ def main():
         Logician.annotate_correlations()
         Logician.cluster_distinctions()
         Logician.annotate_subjects_and_aspects()
-        Logician.collapse_self_containing()
         Logician.draw_distinctions()
     return 0
 

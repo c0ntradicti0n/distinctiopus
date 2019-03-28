@@ -20,7 +20,7 @@
 20	with	with	ADP	IN	_	19	prep	0-20	_
 21	the	the	DET	DT	_	22	det	0-21	_
 22	name	name	NOUN	NN	_	20	pobj	0-22	_
-23	differs	differ	VERB	VBZ	_	6	oprd	0-23	_
+23	differs	differ	VERB	VBZ	_	6	advcl	0-23	_
 24	for	for	ADP	IN	_	23	prep	0-24	_
 25	each	each	DET	DT	_	24	pobj	0-25	_
 26	.	.	PUNCT	.	_	3	punct	0-26	_

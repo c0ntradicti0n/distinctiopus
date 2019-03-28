@@ -224,17 +224,17 @@ class SimilarityMixer:
         self.scaler = preprocessing.MinMaxScaler()
 
 
-    def standard_range (minim, maxim):
+    def standard_range (minimum, maximum):
         ''' Decorator for similarity computing functions, it is later used for normalisation
 
-        :param maxim: maximum value
+        :param maximum: maximum value
         :param maxim: minimum value
         :return: decorated function
 
         '''
         def wrapper(f):
-            f.min = minim
-            f.max = maxim
+            f.min = minimum
+            f.max = maximum
             return f
         return wrapper
 
@@ -266,10 +266,7 @@ class SimilarityMixer:
         fun = fee[2]
         ex1 = fee[0]
         ex2 = fee[1]
-        try:
-            fun(ex1, ex2)
-        except ValueError:
-            pass
+
         try:
             res, d = fun(ex1,ex2)
             dict_tools.update (self.beam, d)
@@ -346,6 +343,9 @@ class SimilarityMixer:
 
         elif isinstance(data, tuple) and len(data) == 2:
             exs1, exs2 = (data[0], data[1])
+
+        if exs1 == [] or exs2==[]:
+            raise ValueError("empty data expressions!")
 
         sim_cube = cartesian_product_itertools([
             exs1,
@@ -480,8 +480,8 @@ class SimilarityMixer:
             if (~np.isnan(self.thresholds_max)).all():
                 higher = trans_cube <= self.thresholds_max
 
-            # higher and lower are masks on the normalized 3-d matrix
-            # weighted_res is the summed up and weighted 2 d matrix
+            # higher and lower are masks on the normalized 3d matrix
+            # weighted_res is the summed up and weighted 2d matrix
 
             is_within_thresholds = (higher & lower).all(axis=1)
             is_within_thresholds = is_within_thresholds.reshape((len(exs1), len(exs2)))
@@ -497,7 +497,7 @@ class SimilarityMixer:
                     str([x['text'] for x in exs2])))
 
             mask = is_within_thresholds
-            left_value, right_values = SimilarityMixer.one_to_one(weighted_res, exs1, exs2, mask)
+            left_value, right_values = SimilarityMixer.one_to_one(weighted_res, mask, n=n)
 
         elif layout == 'n':
             ''' compute choordinates within in the cube by divmod, that means, try to divide through the length of the rows (=y)
@@ -544,7 +544,7 @@ class SimilarityMixer:
         else:
             raise NotImplementedError("What the else could out be returned? Wrong parameter for 'out'")
 
-    def one_to_one(weighted_res, exs1, exs2, mask):
+    def one_to_one(weighted_res, mask, n):
         ''' Compute combinations of input-lists with a solution connecting one to one expression.
             Solved with the hungarian method, filtered by the mask of acceptable solutions within the allowed range of values.
 
@@ -555,6 +555,11 @@ class SimilarityMixer:
 
         '''
         res = scipy.optimize.linear_sum_assignment(-weighted_res)
+        if n:  # if n, there have to go the minimal columns, that means we have to bind them by a maximal choice and sort them out later again
+            first_sol = len(res)
+        #    weighted_res += np.array([1000]*first_sol)
+
+
         res_mask = mask[res]
         l_values = res[0][res_mask].tolist()
         r_values = [[r] for r in res[1][res_mask].tolist()]
@@ -699,13 +704,11 @@ class SimilarityMixer:
 
 
     def common_words_sim(invert = False):
-        if not invert:
-            factor = 1
-        else:
-            factor = -1
+        import word_definitions
+        stop_words = word_definitions.negation_list + word_definitions.stop_words + word_definitions.conjunction_list + word_definitions.all_quantors
 
         @lru_cache(maxsize=None)
-        @SimilarityMixer.standard_range(0, 20)
+        @SimilarityMixer.standard_range(-1, 1)
         def common_words_sim_generated (ex1, ex2):
             ''' This function gives weighted score for common words and negative weighted score for words, that appear only
                 in one expressions.
@@ -721,17 +724,25 @@ class SimilarityMixer:
                 :return: c and backtracking beam {}
 
                 '''
-            # A bit something else than this: https://en.wikipedia.org/wiki/Overlap_coefficient
-            str1  = ex1["lemma"]
-            str2  = ex2["lemma"]
+            invert = factor = 2
+            str1  = ex1["lemma_"]
+            str2  = ex2["lemma_"]
+
             sum1  = sum(ex1['importance'][i]**factor for i,x in enumerate(str1))
             sum2  = sum(ex2['importance'][i]**factor for i,x in enumerate(str2))
-            res = ((sum([ex1['importance'][i]**factor for i,x in enumerate(str1) if x in str2]) +
-                   sum([ex2['importance'][i]**factor for i, x in enumerate(str2) if x in str1]) -
-                   sum([ex1['importance'][i]**factor for i, x in enumerate(str1) if x not in str2]) -
-                   sum([ex2['importance'][i]**factor for i, x in enumerate(str2) if x in str1])) + 3 )/(sum1 + sum2)
-            if res < 0:
-                res = 0
+
+            total_length = max(len(ex1["full_ex"]), len(ex2["full_ex"]))
+            len_dist = abs(len(ex1["full_ex"]) - len(ex2["full_ex"])) + 0.1
+
+            res = (sum([ex1['importance'][i]**factor for i,x in enumerate(str1) if x in str2 and x not in stop_words]) +
+                   sum([ex2['importance'][i]**factor for i, x in enumerate(str2) if x in str1 and x not in stop_words])
+                    -
+                   sum([ex1['importance'][i]**factor for i, x in enumerate(str1) if x not in str2 and x not in stop_words]) -
+                   sum([ex2['importance'][i]**factor for i, x in enumerate(str2) if x not in str1 and x not in stop_words]))  /(sum1 + sum2) -0.1 * len_dist
+
+            if res >1 : res =1
+            if res <-1: res = -1
+
             beam = Dict()
             beam[ex1['id']][ex2['id']].reason = res
             return res, beam
@@ -756,7 +767,7 @@ class SimilarityMixer:
 
         return _convolve_sim
 
-    def elmo_sim():
+    def elmo_complex_sim(key='elmo_embeddings'):
         ''' Compares the expressions by their elmo embeddings, all three layers are taken into account.
 
             There is a problem with comparing a really long expression with a short one, then the similarity is normaly
@@ -777,85 +788,49 @@ class SimilarityMixer:
 
             '''
         #@lru_cache(maxsize=None)
-        @SimilarityMixer.standard_range(-6, 0.5)
+        @SimilarityMixer.standard_range(-26, 0.5)
         def elmo_sim_generated (ex1,ex2):
-            vectors1 = ex1["elmo_embeddings"]
-            vectors2 = ex2["elmo_embeddings"]
+            vectors1 = ex1[key]
+            vectors2 = ex2[key]
             total_length = max(len(ex1["full_ex"]), len (ex2["full_ex"]))
-            res = (-(np.log( (total_length/np.e+np.e)) *
-                     scipy.spatial.distance.cosine(vectors1[0,:],vectors2[0,:])+
-                     scipy.spatial.distance.cosine(vectors1[1,:],vectors2[1,:])+
-                     scipy.spatial.distance.cosine(vectors1[2,:],vectors2[2,:])))
+            len_dist = abs(len(ex1["full_ex"]) - len (ex2["full_ex"])) + 0.1
 
+            res = - np.log(np.sqrt(total_length)) * (
+                   scipy.spatial.distance.cosine(vectors1[0,:],vectors2[0,:])       +
+                              scipy.spatial.distance.cosine(vectors1[1,:],vectors2[1,:]) +
+                              scipy.spatial.distance.cosine(vectors1[2,:],vectors2[2,:]) ) * np.sqrt(len_dist+1)
+
+            if np.isnan(res):
+                res = -25
             beam = Dict()
             beam[ex1['id']][ex2['id']].reason = res
+            if res > elmo_sim_generated.max or res < elmo_sim_generated.min:
+                print ("out of range")
             return res, beam
         return elmo_sim_generated
 
-    @lru_cache(maxsize=None)
-    def elmo_multi_sim(n=3):
-        @SimilarityMixer.standard_range(-6 * n, 0.5 * n)
-        def elmo_sim_generated (exs1,exs2):
-            sim = 0
-            for ex1, ex2 in itertools.product(flatten_reduce(exs1), flatten_reduce(exs2)):
-                vectors1 = ex1["elmo_embeddings"]
-                vectors2 = ex2["elmo_embeddings"]
-                total_length = max(len(ex1["full_ex"]), len (ex2["full_ex"]))
 
-                sim = sim + \
-                    -(np.log( (total_length/np.e+np.e)) *
-                      scipy.spatial.distance.cosine(vectors1[0,:],vectors2[0,:])+
-                      scipy.spatial.distance.cosine(vectors1[1,:],vectors2[1,:])+
-                      scipy.spatial.distance.cosine(vectors1[2,:],vectors2[2,:])
-                      )
-            return sim, {}
-        return elmo_sim_generated
+    def elmo_simple_sim(key='elmo_embeddings'):
+        ''' Compares the expressions by their elmo embeddings, all three layers are taken into account.
 
-    def elmo_layer_sim(layer = [0,1,2]):
-        @SimilarityMixer.standard_range(-10 / len(layer), 0.5 / len(layer))
+            The version for very short expressions.
+
+            '''
+        @SimilarityMixer.standard_range(-1, 0.16)
         def elmo_sim_generated (ex1,ex2):
-            vectors1 = ex1["elmo_embeddings"]
-            vectors2 = ex2["elmo_embeddings"]
-            total_length = max(len(ex1["full_ex"]), len (ex2["full_ex"]))
-            try:
-                return \
-                    -( np.log( (total_length/np.e+np.e))
-                       * sum(
-                          scipy.spatial.distance.cosine(vectors1[l,:],vectors2[l,:])
-                          for l in layer)), {}
-            except IndexError:
-                raise IndexError
+            vectors1 = ex1[key]
+            vectors2 = ex2[key]
+
+            res = -(scipy.spatial.distance.cosine(vectors1[0,:],vectors2[0,:])+
+                   scipy.spatial.distance.cosine(vectors1[1,:],vectors2[1,:])+
+                   scipy.spatial.distance.cosine(vectors1[2,:],vectors2[2,:]))/3
+
+            beam = Dict()
+            beam[ex1['id']][ex2['id']].reason = res
+
+            return res, beam
         return elmo_sim_generated
 
-    @lru_cache(maxsize=None)
-    @standard_range(-20, 20)
-    def elmo_weighted_sim():
-        ''' Use a tf-idf-importance weighted, length-normalized measure based on the most semantical layer of elmo-
-        embeddings
-
-        ..math::
-             c = \ln (\dfrac{\text(max)}{2e}) * (      \text{cosine distance}(\overrightarrow{x_{1,0}}, \overrightarrow{x_{2,0}}) +       \text{cosine distance}(\overrightarrow{x_{1,1}}, \overrightarrow{x_{2,1}}) +       \text{cosine distance}(\overrightarrow{x_{1,2}}, \overrightarrow{x_{2,2}})
-
-        :param ex1: dict with 'elmo_embeddings_per_word', 'importance'
-        :param ex2: dict with 'elmo_embeddings_per_word', 'importance'
-        :return: -20 to +20 , {}
-        '''
-        def elmo_sim_generated (ex1,ex2):
-            total_length = max(len(ex1["full_ex"]), len (ex2["full_ex"]))
-            vector1  = ex1["elmo_embeddings_per_word"]
-            weights1 = ex1["importance"]
-            vector2  = ex2["elmo_embeddings_per_word"]
-            weights2 = ex2["importance"]
-            try:
-                return \
-                    -(np.log( (total_length/np.e+np.e)) *
-                     (#scipy.spatial.distance.cosine( vector1[0,:,:].sum(axis=0), vector2[0,:,:].sum(axis=0))+
-                      #scipy.spatial.distance.cosine( vector1[1,:,:].sum(axis=0), vector2[1,:,:].sum(axis=0))+
-                      scipy.spatial.distance.cosine( weights1.dot(vector1[2,:,:]).sum(axis=0), weights2.dot(vector2[2,:,:]).sum(axis=0))
-                            )), {}
-            except IndexError:
-                raise IndexError
-        return elmo_sim_generated
 
     @standard_range(0, 1)
     def boolean_same_sim (ex1, ex2):
@@ -1082,7 +1057,7 @@ class SimilarityMixer:
             ex11, ex12 = exs1
             ex21, ex22 = exs2
 
-            res1, d1 = fun (ex11[0], ex12[0])
+            res1, d1 = fun (ex11[0], ex21[0])
             res2, d2 = fun (ex12[0], ex22[0])
             res = res1 + res2
 
@@ -1275,39 +1250,22 @@ class SimilarityMixer:
             return cost, {}
         return boolean_sim_
 
-
-    def detect_pair (attrib_dict):
-        """ The defined pair of values mustn't occur in one of the statements at once and in the other. """
-        if not attrib_dict:
-            raise ValueError("Dictionary of atrributes and values can't be " + str(attrib_dict))
-        #attrib_dict = {k: collections.OrderedDict({kk: vv for kk, vv in v.items()}) for k, v in
-        #               attrib_dict.items()}
-        #attrib_dict = collections.OrderedDict(attrib_dict)
-
-        @SimilarityMixer.standard_range(0, 4)
-        def excluding_pair_boolean_sim_generated(ex1, ex2):
-            cost = 0
-            antonym_pairs = []
-            beam = Dict()  # addict Dict for nested dict
-
-            fex1 = ex1["full_ex"]
-            fex2 = ex2["full_ex"]
-
-            for attr, single_attrib_dict in attrib_dict.items():
-                comp_elements1 = [getattr(x, attr) for x in fex1]
-
-                for key, item in single_attrib_dict.items():
-                    if (match(key, comp_elements1)):
-                            comp_elements2 = [getattr(x,attr) for x in fex2]
-                            c, ap = match_comp_els(item, key, comp_elements1, comp_elements2)
-                            cost += c
-                            antonym_pairs.append(ap)
-            beam[ex1['id']][ex2['id']].reason = [a for a in antonym_pairs if a]
-            return cost, beam
-        return excluding_pair_boolean_sim_generated
-
-
-
+    @standard_range(0, 4)
+    def detect_pair(ex1, ex2):
+        beam = Dict()  # addict Dict for nested dict
+        d1 = ex1['antonyms']
+        lemmas1 = ex1['lemma_']
+        lemmas2 = ex2['lemma_']
+        try:
+            for nym, ants in d1.items():
+                for ant in ants:
+                    if match(ant, lemmas2)   and not match(ant, lemmas1) and not match(nym, lemmas2):
+                        beam[ex1['id']][ex2['id']].reason = [(nym, ant)]
+                        return 1, beam
+        except AttributeError:
+            pass # empty antonym dict
+        beam[ex1['id']][ex2['id']].reason = 0
+        return 0, beam
 
     def formula_concludes(fit_mix):
         @lru_cache(maxsize=None)
@@ -1353,7 +1311,7 @@ class SimilarityMixer:
                 reasons = set(flatten([d['reason'] for t in triggers for d in t.trigger]))
                 beam[ex1['id']][ex2['id']].trigger = triggers
                 beam[ex1['id']][ex2['id']].reason  = reasons
-                beam[ex1['id']][ex2['id']].key_to_key = key_char_to_key_char
+                beam[ex1['id']][ex2['id']].key_to_key = key_to_key
             return cost, beam
         return formula_prooves_generated
 
@@ -1410,7 +1368,7 @@ class SimilarityMixer:
             if cost :
                 beam[ex1['id']][ex2['id']].trigger = triggers
                 beam[ex1['id']][ex2['id']].reason  = ['negation']
-                beam[ex1['id']][ex2['id']].key_to_key = key_char_to_key_char
+                beam[ex1['id']][ex2['id']].key_to_key = key_to_key
             return cost, beam
         return formula_contradicts_generated
 
@@ -1495,10 +1453,28 @@ class SimilarityMixer:
         t_s = SimilarityMixer.reduce_i_s_pair_tuples(l_s)
 
         if isinstance(exs1[0], dict) and isinstance(exs2[0], dict):
+
+            #key_pairs = flatten_list([self.beam[ex1['id']][ex2['id']]['key_to_key'] for ex1, ex2 in t_s if 'key_to_key' in self.beam[ex1['id']][ex2['id']]])
+            #for kp in key_pairs:
+            #    kp.type = 'selectable'
+            #    graph_coro.send(kp)
+
             all_triggers = flatten_list([self.beam[ex1['id']][ex2['id']]['trigger'] for ex1, ex2 in t_s])
             for trigger in all_triggers:
                 trigger.type = type
                 graph_coro.send(trigger)
+
+            #try:
+            #    for e in exs1:
+            #        e.type = 'first_group'
+            #        graph_coro.send(e)
+
+            #    for e in exs2:
+            #        e.type = 'second_group'
+            #        graph_coro.send(e)
+            #except:
+            #    logging.warning("graph coroutine doesn't accept single nodes")
+            #    pass
 
         elif isinstance(exs1[0], tuple):
             (type_l_pair, type_r_pair, type_between) = type
@@ -1528,92 +1504,9 @@ class SimilarityMixer:
                          type_spec(lr2_edge)))
 
     #@lru_cache(maxsize=None)
-    @standard_range(0, 1000)
+    @standard_range(0, 0.02)
     def subj_asp_sim (ex1, ex2):
         beam = Dict()
-        res = (ex1['subj_score']/ex2['subj_score']) + (ex2['aspe_score']/ex1['aspe_score'])
+        res = (ex2['aspe_score']+ex1['aspe_score'])/2 - (ex1['subj_score']+ex2['subj_score'])/2
         beam[ex1['id']][ex2['id']].reason = res
         return res, beam
-
-import unittest
-
-class TestSimmix(unittest.TestCase):
-    def test_one_to_one_simple(self):
-        exs2 = [1, 2, 3]
-        exs1 = [1]
-        weighted_res = np.array([[0.], [0.], [0.2]])
-
-        print(SimilarityMixer.one_to_one(weighted_res, exs1, exs2))
-        print(SimilarityMixer.one_to_one(weighted_res.T, exs2, exs1))
-
-        self.assertTrue (
-                set(nested_list_tools.flatten(SimilarityMixer.one_to_one(weighted_res, exs1, exs2))) \
-                == \
-                set(nested_list_tools.flatten(SimilarityMixer.one_to_one(weighted_res.T, exs2, exs1))))
-
-
-    def test_one_to_one_complex (self):
-        weighted_res =\
-             np.array( [[0.,0.,0.,0.97233996,   0.,0.,0.,0.,0.],
-                        [0.,0.,0.,0.,0.95478777,0.,0.,0.,0.],
-                        [0.,0.4,0.,0.,0.,0.,0.,0.,0.],
-                        [0.,0.,0.,0.3,0.,0., 0.,0.,0.],
-                        [0.,0.,0.,0.,0.,0.,0.,0.,0.],
-                        [0.,0.,0.,0.,0.,0., 0.,0.,0.]] )
-        exs1 = [0,1,2,3,4,5,6,7,8]
-        exs2 = [0,1,2,3,4,5]
-
-        print(SimilarityMixer.one_to_one(weighted_res, exs1, exs2))
-        print(SimilarityMixer.one_to_one(weighted_res.T, exs2, exs1))
-
-
-    def test_excluding_pair (self):
-        import spacy
-        nlp = spacy.load('en_core_web_sm')
-        from littletools.dict_tools import balance_complex_tuple_dict
-        import word_definitions
-
-        s1 = nlp("On the other hand things are said to be named Univocally, which have both the name the definition answering to the name in common")
-        s2 = nlp('Things are said to be named Equivocally when though they have a common name the definition corresponding with the name differs for each')
-        p1 = {"full_ex":s1[13:25]}
-        p2 = {"full_ex":s2[8:24]}
-
-
-        d = {'differ': [('differ', 'in'), 'differ', ('have', '*', 'in', 'common')]}
-        d =  balance_complex_tuple_dict(d)
-        #fun = SimilarityMixer.detect_pair({'lemma_':d})
-        fun = SimilarityMixer.detect_pair(word_definitions.antonym_dict)
-
-        print (p1,p2, )
-        print (fun(p2,p1))
-
-        print (fun(p1,p2))
-        self.assertTrue (fun(p2,p1)>0)
-        self.assertTrue (fun(p1,p2)>0)
-
-
-    def test_antonym_dict_for_symmetry(self):
-        import word_definitions
-        from littletools.dict_tools import dict_compare
-
-        d1 = dict_tools.invert_dict(word_definitions.antonym_dict['lemma_'])
-        d2 = word_definitions.antonym_dict['lemma_']
-
-        added, removed, modified, same=\
-            dict_compare(d1, d2, ignore_order=True)
-        self.assertTrue (not added and not removed and not modified)
-
-        if not  (not added and not removed and not modified):
-            print (dict_compare(d1,d2, ignore_order=True))
-
-    def test_antonym_dict_for_symmetry(self):
-        import word_definitions
-
-        def key_in_val(d):
-            print ([(k,v)  for k,v in d.items() if k in v])
-            return (any ([k in v  for k,v in d.items()]))
-        self.assertFalse (key_in_val(word_definitions.antonym_dict['lemma_']))
-
-
-if __name__ == '__main__':
-    unittest.main()

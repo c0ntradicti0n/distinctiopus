@@ -5,7 +5,6 @@ from functools import lru_cache
 import pandas as pd
 import pyprover
 import string
-import pprint
 from allennlp.commands.elmo import ElmoEmbedder
 import spacy
 
@@ -82,12 +81,14 @@ class Predication():
 
         self.attributive_arg_markers       = ['acl', 'prep', 'compound', 'appos']  # genitiv/dativ objects? amod?
         self.verbal_arg_markers            = ['nsubjpass', 'nsubj', 'obj', 'dobj', 'iobj', 'pobj', 'attr']
-        self.attributive_too_deep_markers  = ['punct', 'advcl', 'relcl']
-        self.verbal_too_deep_markers       = ['punct', 'advcl', 'relcl']
+        self.attributive_too_deep_markers  = ['punct', 'advcl', 'relcl', 'ccomp']
+        self.verbal_too_deep_markers       = ['punct', 'advcl', 'relcl', 'ccomp']
         self.ellipsis_too_deep_markers     = ['cc']
 
         self.uppercase_abc = list(string.ascii_uppercase)
         self.negation_list = word_definitions.logic_dict['~']
+        self.antonym_dict  = word_definitions.antonym_dict
+        self.stop_words    = word_definitions.stop_words
         self.logic_dict    = invert_dict(word_definitions.logic_dict)
         self.logic_dict    = {k: v[0] for (k, v) in self.logic_dict.items()}
 
@@ -180,7 +181,7 @@ class Predication():
         return ps
 
     def get_attributive_roots(self,ex):
-        return (e for e in ex if e.dep_ in ['nsubjpass', 'nsubj', 'obj', 'dobj', 'iobj', 'pobj'] and e.tag_ not in ['WDT', 'DET', 'PRON'])
+        return (e for e in ex if e.dep_ in ['nsubjpass', 'nsubj', 'obj', 'dobj', 'iobj', 'pobj', 'conj'] and e.tag_ not in ['WDT', 'DET', 'PRON'])
 
     def get_verbal_roots(self,ex):
         v_roots = list(e for e in ex if
@@ -251,12 +252,12 @@ class Predication():
 
         '''
         for arg in arguments_i:
-            arg = self.collect_substancial_argument(arg, doc)
+            arg = self.collect_any_argument(arg, doc)
             if arg:
                 yield arg
 
 
-    def collect_substancial_argument(self, arg_i, doc, out='i'):
+    def collect_any_argument(self, arg_i, doc, out='i'):
         ''' From an argument expression take the noun-core and not its dependents
 
             :param arg_i: indices of possible argument tokens in the sentence
@@ -271,7 +272,23 @@ class Predication():
                     arg.append(i) #+ [r.i for r in doc[i].rights if r.i not in too_deep_i]
                 if out == 't':
                     arg.append(doc[i])
+        return arg
 
+    def collect_substantial_argument(self, arg_i, doc, out='i'):
+        ''' From an argument expression take the noun-core and not its dependents
+
+            :param arg_i: indices of possible argument tokens in the sentence
+            :param doc: spacy document
+            :return: list of spacy tokens
+
+        '''
+        arg = []
+        for i in arg_i:
+            if doc[i].pos_ in ['NOUN'] and doc[i].dep_ in ['nsubjpass','nsubj', 'obj', 'pobj', 'dobj']:
+                if out == 'i':
+                    arg.append(i) #+ [r.i for r in doc[i].rights if r.i not in too_deep_i]
+                if out == 't':
+                    arg.append(doc[i])
         return arg
 
 
@@ -351,9 +368,7 @@ class Predication():
         predicate_i = list(set(predicate_i) - set(too_deep_i[:]))
 
         if root_token.dep_ == 'conj':
-            counterpart1 = set([s.i for s in root_token.head.rights]) - set (too_deep_i[:])
-
-            if root_token.head.dep_ == 'acomp':
+            if root_token.head.dep_ in ['acomp','dobj','pobj','aobj'] :
                 head = root_token.head.head
             else:
                 head = root_token.head
@@ -400,6 +415,8 @@ class Predication():
 
     def attribute_negation_particle (self, p):
         p['negation_particle'] = [x for x in p['full_ex'] if x.text in self.negation_list]
+        p['contained_antonyms']          = OrderedDict({x: self.antonym_dict['lemma_'][x] for x in p['lemma_'] if x in self.antonym_dict['lemma_']})
+        p['antonyms']                    = OrderedDict()
         return None
 
     def organize_negations (self, ps):
@@ -424,36 +441,50 @@ class Predication():
                 x = G.nodes[x_i]['predicate']
                 y = G.nodes[y_i]['predicate']
 
-                try:
-                    common_negation    = list([n1 for n1 in x['negation_particle'] for n2 in y['negation_particle']
-                                               if n1==n2])
-                except TypeError:
-                    pass
+                common_negation    = [n1 for n1 in x['negation_particle'] for n2 in y['negation_particle']
+                                              if n1==n2]
+
+                common_antonyms    = {n1:x['contained_antonyms'][n1] for n1 in x['contained_antonyms'] for n2 in y['contained_antonyms']
+                                               if n1==n2}
 
                 G.edges[edge]['shared_negations'] =  tuple(common_negation)
+                G.edges[edge]['antonym suspicious']  =  tuple(common_antonyms )
 
-            for path in source_sink_generator(s['containment_structure']):
-                rath = list(reversed(path))
-                for i, n in enumerate(rath[:-1]):
-                     edge = G.edges[(rath[i+1], rath[i])]
-                     if edge['shared_negations']:
-                         negation_containing_node = \
-                             rath[i]
-                         G.nodes[negation_containing_node]['predicate']['negation_count'] = len(edge['shared_negations'])
-                         break
+        try:
+            self.tree_distribute_marker_edges(G, key_of_edge_marker='shared_negations', key_to_write='negation_count')
+            self.tree_distribute_marker(G, key_of_marker='negation_particle', key_to_write='negation_count')
 
-            # lonly negations
-            for node, attrs in G.nodes(data=True):
-                 negations = attrs['predicate']['negation_particle']
-                 neighbors = G.neighbors(node)
-                 negations_of_neighbors = flatten([G.nodes[neighbor]['predicate']['negation_particle'] for neighbor in neighbors])
-                 try:
-                     if (n in flatten (negations_of_neighbors) for n in negations) or negations and not negations_of_neighbors:
-                         attrs['predicate']['negation_particle'] = len(list(neg not in negations_of_neighbors for neg in negations))
-                 except  TypeError:
-                     pass
-                     #logging.error ("negations is int? %s" % (str(negations)))
+            self.tree_distribute_marker_edges(G, key_of_edge_marker='antonym suspicious', key_to_write='antonyms', out='l')
+            self.tree_distribute_marker(G, key_of_marker='contained_antonyms', key_to_write='antonyms', out='l')
+        except UnboundLocalError:
+            logging.error("predicates empty")
+            pass
+
         return ps
+
+    def tree_distribute_marker_edges(self, G, key_of_edge_marker, key_to_write, out='n'):
+        # Negations that occur in other branch
+        for path in source_sink_generator(G):
+            rath = list(reversed(path))
+            for i, n in enumerate(rath[:-1]):
+                edge = G.edges[(rath[i + 1], rath[i])]
+                if edge[key_of_edge_marker]:
+                    negation_containing_node = rath[i]
+                    G.nodes[negation_containing_node]['predicate'][key_to_write] = len(edge[key_of_edge_marker]) if out == 'n' else edge[key_of_edge_marker]
+                    break
+
+    def tree_distribute_marker(self, G, key_of_marker, key_to_write, out='n'):
+        # Marker in single leaves
+        for node, attrs in G.nodes(data=True):
+            markers = attrs['predicate'][key_of_marker]
+            neighbors = G.neighbors(node)
+            markers_of_neighbors = list(
+                flatten([G.nodes[neighbor]['predicate'][key_of_marker] for neighbor in neighbors]))
+
+            if any([n not in flatten(markers_of_neighbors) for n in markers]):
+                just_these_markers = list(mak for mak in markers if mak not in markers_of_neighbors)
+                attrs['predicate'][key_of_marker] = just_these_markers
+                attrs['predicate'][key_to_write] = len(just_these_markers)  if out == 'n' else OrderedDict((n,markers[n]) for n in just_these_markers)
 
 
     def organize_subpredicates(self, ps):
@@ -486,14 +517,16 @@ class Predication():
 
         p_new = []
         for r in source_nodes:
-                 mother_node = ps[r]
+
+                 mother_node = eD(ps[r])
+                 mother_node['id'] =  next(self.id_generator)
                  descendants = nx.algorithms.descendants(containment_structure, r)
                  descendants.update({r})
                  sub_predicates                 = [ps[x] for x in descendants]  # the node itself and its descendants
                  mother_node['part_predications']     = eL(sorted(sub_predicates, key=lambda x:len(x['i_s'])))
                  nx.set_node_attributes(containment_structure, {n:{"__subgraph__": mother_node['id']} for n in descendants})
                  mother_node['containment_structure'] = containment_structure
-                 p_new.append(ps[r])
+                 p_new.append(mother_node)
 
         return p_new
 
@@ -559,7 +592,7 @@ class Predication():
         return ps
 
 
-    def collect_all_predicates(self,ex, coref=None, s_id=None,  paint_graph=False):
+    def collect_all_predicates(self, ex, coref=None, s_id=None,  paint_graph=True):
         ''' Extracts a multitude of properties from a natural language expression, including grammar
             imformation, word2vec, some importance weight in the document, some kind of cursorily logical
             formula with a dictionary, to what expressions the constants in the formula belong to.
@@ -572,10 +605,19 @@ class Predication():
         '''
         if not ex:
             return None
-        logging.info('predicates found for %s' % " ".join(x.text for x in ex))
+        try:
+            logging.info('sentence %s: predicates found for %s' % (s_id, " ".join(x.text for x in ex)))
+        except AttributeError:
+            logging.error('expression is no spacy doc? sentence %s %s' % (s_id, str(ex)))
+            return []
 
         with timeit_context('embed'):
             elmo_embeddings = self.elmo.embed_sentence([x.text for x in ex])
+
+            # Take out negations for semantics, they don't have good embeddings and disturb all other things
+            indices_of_negations = [i for i, x in enumerate(ex) if x.lemma_ in self.negation_list]
+            indices_of_stopwords = [i for i, x in enumerate(ex) if x.lemma_ in self.stop_words]
+            elmo_embeddings[:,[indices_of_negations + indices_of_stopwords]] = 0
 
         with timeit_context('weight'):
             try:
@@ -607,6 +649,7 @@ class Predication():
                 p["id"]                      = str(next(self.id_generator))
                 p['s_id']                    = s_id
                 p["elmo_embeddings"]         = elmo_embeddings[:,p['i_s']].sum(axis=1)
+                p["elmo_embeddings_pred"]    = elmo_embeddings[:,p['predicate_i']].sum(axis=1)
                 p["coref"]                   = [coref[i] for i in p['i_s']]
                 p["elmo_embeddings_per_word"]= elmo_embeddings[:,p['i_s']]
                 p["elmo_embeddings_full"]    = elmo_embeddings
@@ -622,24 +665,20 @@ class Predication():
                                              dep_tree))(node_type=['HAS_ARGMENTS'])
                 p = Pred(p)
 
-        with timeit_context('cotained'):
+        with timeit_context('contained'):
             ps = self.organize_subpredicates(ps)
 
-        with timeit_context('self_neg'):
+        with timeit_context('organize negations'):
             ps = self.organize_negations(ps)
 
         with timeit_context('formalize'):
             for p in ps:
-                p = self.formalize(p, elmo_embeddings, importance)
+                p = self.formalize(p)
 
         if not ps:
             text = " ".join([x.text for x in ex])
             logging.error("No predication found in expression: '%s'." % text )
             return []
-
-        with timeit_context('draw'):
-            if paint_graph:
-                self.draw_predicate_structure(ps,"./img/predicate" + ps[0]['key']+".svg")
 
         with timeit_context('databasing'):
             self.organize_dfs(ps)
@@ -673,12 +712,12 @@ class Predication():
         ''' There is a predicate df to look up coreferences and ids, if a predicate expression is addressed by coref or
             some external database, to what we don't want to tell everything
 
-            :param ps: list of predicates
+            :param ps: list of predicates with 'part_predications'
 
         '''
         #self.predicate_df = pd.DataFrame.from_records(ps)
-        self.predicate_df = self.predicate_df.append(ps)
-        self.predicate_df = self.predicate_df.append([part_p for p in ps for part_p in p['part_predications']])
+        #self.predicate_df = self.predicate_df.append(ps)
+        self.predicate_df = self.predicate_df.append(ps+[part_p for p in ps for part_p in p['part_predications']])
 
 
     def get_predication(self, id):
@@ -708,19 +747,18 @@ class Predication():
         s_id  = str(coref['s_id'])
         i_list = coref['i_list']
 
-        score = self.predicate_df.reset_index().query("s_id==@s_id")['i_s'].apply(lambda ex_i:
-                                                                                   (len ([m for m in i_list if m in ex_i])*2
-                                                                                  - len ([m for m in i_list if m not in ex_i]) )
-                                                                                  / len(ex_i)
-                                                                                 )
-        mask = score > 1
-        if not mask.any():
-            mask = score == score.max()
-        assert mask.any()
-        try:
-            rec = self.predicate_df.reset_index().query("s_id==@s_id")[mask].to_dict(orient='record')
-        except IndexError:
-            raise
+        df_part = self.predicate_df.reset_index().query("s_id==@s_id")
+
+        df_part['score'] = df_part['i_s'].apply(lambda ex_i:
+                                                           (len ([m for m in i_list if m in ex_i])
+                                                          - len ([m for m in i_list if m not in ex_i]) )
+                                                          / len(ex_i)
+                                                         )
+
+        n = 2
+        nhighest = df_part.nlargest(n=n, columns='score')
+        acceptable = nhighest[nhighest['score']>0]
+        rec = acceptable.to_dict(orient='record')
 
         return eL([Pred(r) for r in rec])
 
@@ -793,17 +831,62 @@ class Predication():
         else:
             # If it's not found before (e.g. contructed from multiple parts of the sentence). construct it
             doc, elmo_embeddings, importance, dep_tree = self.argument_df.query("s_id==@s_id")[['doc', 'elmo_embeddings_full', 'importance_full', 'dep_tree']].values[0]
-            arg_tokens = self.collect_substancial_argument(i_list, doc, out='t')
+            arg_tokens = self.collect_substantial_argument(i_list, doc, out='t')
             if arg_tokens == []:
                 return []
             arg = Argu(self.sp_imp_elmo_dictize_ex(ex=arg_tokens, coref=[[]]*len(doc), elmo_embeddings=elmo_embeddings, importance=importance, s_id=s_id, dep_tree=dep_tree))
             self.append_to_argument_df([arg])
             return [arg]
 
+    def post_processing(self, paint=False):
+        ''' resolves als coreferences and gives the option to draw all predicates
+
+        :param paint: True or False, print the file to the outputfolder
+        '''
+        def to_replace (tok):
+            return tok.pos in ['PRON']
+
+        def resolve_lemma(x, deep=False):
+            resolutions = []
+
+            for pos, crs in enumerate(x['coref']):
+                for cr in crs:
+                    if to_replace(x['full_ex'][pos]):
+                        poss_noun_arg = self.get_coreferenced_argument(cr)
+                        if poss_noun_arg :
+                            resolutions += [(cr,self.get_coreferenced_argument(cr), pos)]
+
+            for r in resolutions:
+                x['lemma_'] = [r[1][0]['lemma_'][0] if i == r[2] else w     for i, w in enumerate (x['lemma_']) ]
+                x['text']   = [r[1][0]['text'][0] if i == r[2] else w     for i, w in enumerate (x['text']) ]
+                x['full_ex']= [r[1][0]['full_ex'][0] if i == r[2] else w     for i, w in enumerate (x['full_ex']) ]
+                x["label"]  = x['text']
+
+            if 'part_predications' in x: # For part predicates this is nan
+                if isinstance(x['part_predications'], float):
+                    return x
+                for pp in x['part_predications']:
+                    if not deep:
+                        resolve_lemma(pp, deep=True)
+            return x
+
+        self.predicate_df = self.predicate_df.apply(resolve_lemma, result_type="reduce",
+                                                   axis=1)
+
+        ps = self.predicate_df.to_dict(orient='records')
+
+        if paint:
+            for p in ps:
+                if isinstance(p['part_predications'], float): # For part predicates this is nan
+                    continue
+                self.draw_predicate_structure([p], "./img/predicate_new" + p['key'] + ".svg")
+
+        return eL([PredMom(p)             for p in ps
+                if not isinstance(p['part_predications'], float)])
 
     def sp_imp_elmo_dictize_ex(self, ex, coref, elmo_embeddings, importance, s_id, dep_tree):
         if not ex:
-            logging.warning("empty expression for argument?")
+            logging.warning("No expression given for argument?")
             return {}
         if isinstance(ex, list) and not isinstance(ex[0], spacy.tokens.token.Token ):
             return list (self.sp_imp_elmo_dictize_ex(e, coref, elmo_embeddings, importance, s_id, dep_tree) for e in ex)
@@ -903,6 +986,7 @@ class Predication():
         if res <0: raise ValueError
 
         return res
+        return res
 
 
     def coreferenced_expressions (self, corefs):
@@ -915,24 +999,25 @@ class Predication():
         return self.Predicatrix.predicate_df.query("s_id==@s_id")[mask].to_dict(orient='records')
 
 
-    def formalize (self,pred, elmo_embeddings, importance):
+    def logical_subjunct_predicates (self, ps, coordinator):
+        almost_wff = \
+             ["%s pyprover.logic.Prop('%s')"
+              % ("".join(['~'] * p['negation_count']),
+                 p['key'] )
+              for p in ps]
+        wff = coordinator.join(almost_wff)
+        return  wff
+
+    def formalize (self,pred):
         if not "part_predications" in pred:
             logging.error("No 'part_predications'! for %s " % (str(pred['text'])))
 
         ps = pred["part_predications"]
         ascribed_keys = {p['key']: p for p in ps}
 
-        def logical_subjunct_predicates (ps, coordinator):
-            almost_wff = \
-                 ["%s pyprover.logic.Prop('%s')"
-                  % ("".join(['~'] * p['negation_count']),
-                     p['key'] )
-                  for p in ps]
-            wff = coordinator.join(almost_wff)
-            return  wff
 
-        now_wff_and    = logical_subjunct_predicates(ps, "&")
-        now_wff_or     = logical_subjunct_predicates(ps, "|")
+        now_wff_and    = self.logical_subjunct_predicates(ps, "&")
+        now_wff_or     = self.logical_subjunct_predicates(ps, "|")
 
         pred["wff_dict"]  = {key: val  for key,val in ascribed_keys.items()}
 
@@ -948,38 +1033,6 @@ class Predication():
         pred ["label"]        = " ".join(pred['text'])
         return pred
 
-    def print_predicates(self,predicates, debug = False):
-        for p in predicates:
-            self.print_predicate(p,debug=debug)
-        return None
-
-    def print_predicate(self,predicate, debug = False):
-        print("Pred: "+" ".join(predicate['text']))
-        pprint.pprint(str(predicate['wff_nice_and']))
-        pprint.pprint(str(predicate['wff_nice_or']))
-        self.pprint_key_dict(predicate)
-        if (debug):
-            pprint.pprint(str(predicate['wff_comp_and']))
-            pprint.pprint(str(predicate['wff_comp_or']))
-        return None
-
-    def pprint_key_dict (self,predicate):
-        pprint.pprint({k: val['full_ex'] for k, val in predicate['wff_dict'].items()})
-        return None
-
-    def ps_to_file(self,fp, ps):
-        for p in ps:
-            self.p_to_file(self,fp, p)
-        return None
-
-    def p_to_file(self,fp, predicate):
-        try:
-            fp.write(str(predicate['text'])+"\n")
-            fp.write(str(predicate['wff'])+"\n")
-            fp.write(str(({ str(k): str([x.text for x in val['full_ex']]) + "\n" for k, val in predicate['wff_dict'].items()}))+"\n")
-        except:
-            logging.error("Pred is a scalar? " + str(predicate))
-        return None
 
     def draw_predicate_structure(self, ps, path):
         import textwrap
@@ -989,12 +1042,22 @@ class Predication():
         def wrap(strs, width=40):
             return textwrap.fill(strs, width)
 
-        def dict_to_nice(dic, width=20):
-            res = "/n".join(["%s: %s" % (str(atrr), wrap(str(", ".join([x.text for x in val])))) for atrr, val in dic.items() if val])
+        def dict_to_nice(dic):
+            res = "<" + r"""<BR ALIGN="LEFT"/>""".join(
+                ["%s: %s" % (str(atrr), wrap(str(", ".join([x.text if hasattr(x, 'text') else str(x) for x in val])))) for atrr, val in dic.items() if val]) + ">"
             return res
 
+        def get_label (n, attrs):
+            keys = [p['key'] for p in ps[0]['part_predications']]
+            if attrs['predicate']['key'] in keys:
+                x = [" ".join(p['text']) for p in  ps[0]['part_predications'] if attrs['predicate']['key'] == p['key']]
+                return x[0]
+            else:
+                return wrap(attrs['label'])
+
+
         nx.set_edge_attributes(G, {(u, v): dict_to_nice(attrs) for (u, v, attrs) in G.edges(data=True)}, 'label')
-        nx.set_node_attributes(G, {n: wrap(attrs['label']) for (n, attrs) in G.nodes(data=True)}, 'label')
+        nx.set_node_attributes(G, {n: get_label(n, attrs) for (n, attrs) in G.nodes(data=True)}, 'label')
 
         G.graph['graph'] = {
             'rankdir': 'TB',
@@ -1032,121 +1095,3 @@ class Predication():
         A.layout('dot')
         A.draw(path)
         return
-
-
-class TestPredicates(unittest.TestCase):
-    def __init__(self, *args, **kwargs):
-        super(TestPredicates, self).__init__(*args, **kwargs)
-        self.gen_dummy_dependent_information()
-
-    def gen_dummy_dependent_information(self):
-        # initialized Predication Module
-        self.P = Predication()
-
-    def test_all_keys_in_formula(self):
-        ex = self.P.nlp("Thus Man is predicable of the individual man and is not never present in a subject")
-        #ex2 = self.P.nlp("Other things again are both predicable of a subject and present in a subject")
-        p = self.P.collect_all_predicates(ex)[0]
-        def count_upper_letters (string):
-            return sum(1 for c in string if c.isnumeric())
-        print ('\n',p['wff_nice_and'])
-        self.P.pprint_key_dict(p)
-        print (count_upper_letters(p['wff_nice_and']), len(p['wff_dict']))
-        self.assertTrue(count_upper_letters(p['wff_nice_and']) == len(p['wff_dict']))
-
-    def test_attribute_predicate(self):
-        ex = self.P.nlp("A coloured man standing behind a garage is wearing shirt .")
-        ps = self.P.collect_all_predicates(ex)
-        self.P.print_predicates(ps)
-        self.assertTrue(ps)
-
-    def test_coin(self):
-        standard_ex = self.P.nlp("The thing is round from the right side.")
-
-        #standard_ex = self.P.nlp(
-        #               "Things are named Derivatively which derive their name from some other name but differ from it in termination")
-
-        ps = self.P.collect_all_predicates(standard_ex)
-        self.P.print_predicates(ps)
-        self.assertTrue(ps)
-
-    def test_attribute_predicate_before_behind(self):
-        ex = self.P.nlp("A man in a blue shirt standing in front of a garage-like structure painted with geometric designs.")
-        ps = self.P.collect_all_predicates(ex)
-        self.P.print_predicates(ps)
-        self.assertTrue(ps)
-
-
-    def test_num_of_predicates(self):
-        exs = self.P.load_conll([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,16], './corpus/import_conll')
-        print (exs)
-        for i, ex in enumerate(exs):
-            ps = self.P.collect_all_predicates(ex)
-            self.P.print_predicates(ps)
-            self.assertTrue(len(ps)==1)
-            self.P.draw_predicate_structure(ps, "predicate chunks %d.png" % i)
-
-    def test_attribute_predicate_before_behind(self):
-        ex = self.P.nlp(
-            "Lying, Sitting, are terms indicating position, Shod, Armed, state, Tolance, Tocauterize, action, Tobelanced, Tobecauterized, affection.")
-        ps = self.P.collect_all_predicates([ex])
-        self.P.print_predicates(ps)
-
-        self.assertTrue(ps)
-
-    def test_negations(self):
-        ex = self.P.nlp("Of things themselves some are predicable of a subject, and are never present in a subject.")
-        ex = self.P.nlp("Some things, again, are present in a subject, but are never predicable of a subject.")
-        ex = self.P.nlp("There is, lastly, a class of things which are neither present in a subject nor predicable of a subject.")
-        ex = self.P.nlp("A body, being white, is said to be whiter at one time than it was before, or, being warm, is said to be warmer or less warm than at some other time.")
-
-
-        ps = self.P.collect_all_predicates(ex)
-        self.P.print_predicates(ps)
-
-        #self.P.draw_predicate_structure(ps, "predicate.png")
-
-        """
-        exs = [
-            nlp("Some things, again, are present in a subject, but are never predicable of a subject."),
-            nlp("Other things, again, are both predicable of a subject and present in a subject."),
-            nlp("There is, lastly, a class of things which are neither present in a subject nor predicable of a subject."),
-            
-            nlp(
-                "On the other hand things are said to be named Univocally, which have the name and the definition answering to the name in common"),
-            nlp("Things are named Derivatively which derive their name from some other name but differ from it in termination"),
-            nlp(
-                "SECTION 1 Part 1 Things are said to be named Equivocally when though they have a common name the definition corresponding with the name differs for each"),
-        ]
-        """
-
-    def test_negation(self):
-        ex = self.P.nlp(
-            "Of things themselves some are not predicable of a subject, and are never present in a subject.")
-
-        res_sub_predicates = ["Of things themselves some are not predicable of a subject",
-                              "Of things themselves some are never present in a subject",
-                              "Of things themselves some are not predicable of a subject and are never present in a subject."]
-
-
-
-
-        ps = self.P.collect_all_predicates(ex)
-        self.P.print_predicates(ps)
-
-
-        self.assertTrue(ps[0]['wff_comp_and'].count('~') == 2)
-        self.assertTrue(ps[0]['wff_comp_and'].count('pyprover') >= 3 )
-
-        res = []
-        for res_p in res_sub_predicates:
-            t_or_f = any (all(r in s['text'] for r in res_p.split()) for s in ps[0]['part_predications'])
-            print ("Checking for %s in sub_predicates --> %s" % (res_p, str(t_or_f)))
-            res.append(t_or_f)
-        assert(all(res))
-
-
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()

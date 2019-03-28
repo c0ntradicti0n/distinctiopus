@@ -14,11 +14,11 @@ matplotlib.use('TkAgg')
 
 from time_tools import timeit_context
 
-from hardcore_annotated_expression import eL, eT, apply_fun_to_nested
+from hardcore_annotated_expression import eL, eT, apply_fun_to_nested, ltd_ify
 from littletools.corutine_utils import coroutine
 from littletools.digraph_tools import neo4j2nx_root
 from littletools.nested_list_tools import flatten_reduce
-from contradictrix import Contrast
+from contrastrix import Contrast
 from predicatrix import Predication
 from correlatrix import Correlation
 from subj_and_aspectrix import Subjects_and_Aspects
@@ -100,6 +100,9 @@ class DataframeCursorilyLogician:
                                                        result_type="reduce",
                                                        axis=1)
 
+            self.Predicatrix.post_processing(paint=False)
+
+
     def get_predicates_in_horizon(self, s_id):
         """ Collects the predicates, that are in the annotatet range, befor and after the sentence, where to look for
             intresting expressions
@@ -172,7 +175,7 @@ class DataframeCursorilyLogician:
 
         with timeit_context('annotating contradictions'):
             for index, x in self.sentence_df.iterrows():
-                self.Contradictrix.find_contradictive(
+                self.Contradictrix.find_constrasts(
                     x['predication'],
                     x['predications_in_range'],
                     graph_coro=put_contradiction_into_gdb)
@@ -249,20 +252,18 @@ class DataframeCursorilyLogician:
 
             """
         query = \
-            """ MATCH (connotation:CONNOTATION)--(side:SIDE)--(cl:CORE)--(rc:REAL_CORE)
-                WITH cl, rc, 
-                    {   side : side.side, 
-                        predicate_id : COLLECT(connotation.id)
-                    } AS sides
-                WITH {  core_cluster : cl.Reason,
-                        deep_core    : rc.origin, 
-                        sides        : COLLECT(sides)
-                    } AS core_clusters
-                RETURN core_clusters
-              """
+            """MATCH (b1:CONNOTATION)-[:CORRELATED]-(a1:CONNOTATION)--(side1:SIDE)--(cl:CORE)--(side2:SIDE)--(a2:CONNOTATION)-[:CORRELATED]-(b2:CONNOTATION)
+               WHERE id(side1)>id(side2) and (a1)-[:CONTRADICTION]-(a2) and (b1)-[:OPPOSED]-(b2) WITH
+                    {   side1 : side1.side, 
+                        side2 : side2.side, 
+                        contrasts: [a1.id,a2.id],
+                        coinings:[b1.id,b2.id]
+                    } as D
+               RETURN D
+               """
 
         records = self.graph.run(query)
-        predicates = apply_fun_to_nested(fun=self.Predicatrix.get_predication, attribute='predicate_id', data=records)
+        predicates = apply_fun_to_nested(fun=self.Predicatrix.get_predication, attribute=['contrasts', 'coinings'], data=records)
         return predicates
 
     def annotate_subjects_and_aspects(self):
@@ -369,49 +370,12 @@ class DataframeCursorilyLogician:
                          with_labels=True,
                          font_size=10,
                          **options)
-        #nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, rotate=False)
-
-        #plt.title("\n".join([wrap(x, 90) for x in [title, wff_nice, wff_ugly]]), pad=20)
-        #pylab.axis('off')
 
         pylab.savefig(path, dpi=200)
         pylab.clf()
         A = nx.drawing.nx_agraph.to_agraph(G)
         A.layout('dot')
         A.draw(path = "found_distinction.svg")
-
-        query = \
-            """ MATCH (p:)(a:ARGUMENT)--(connotation:CONNOTATION)--(side:SIDE)--(cl:CORE)--(rc:REAL_CORE)
-                WITH cl, rc, 
-                    {   side : side.side, 
-                        predicate_id : COLLECT(connotation.id)
-                    } AS sides
-                WITH {  core_cluster : cl.Reason,
-                        deep_core    : rc.origin, 
-                        sides        : COLLECT(sides)
-                    } AS core_clusters
-                RETURN core_clusters
-              """
-
-        records = self.graph.run(query)
-        predicates = apply_fun_to_nested(fun=self.Predicatrix.get_predication, attribute='predicate_id', data=records)
-        return predicates
-
-    def collapse_self_containing(self):
-        cls = self.get_clusters_with_same_subj_asp()
-        with timeit_context('collect arguments'):
-            predicate_clusters = eL(
-                [eT(tuple(
-                    eL(flatten_reduce([sd['predicate_id'] for sd in cl['core_clusters']['sides']])).unique()))
-                    for cl in cls]).unique()
-        # Maximal DistinctFilter pairs in clusters, that are parallelized in the sides, with same subjects or aspects
-        # computes per cluster
-        # * retrieve predicates with the same subjects or aspects
-        # * spectral clusters from semantical similarity with the tuples of the sides
-
-
-
-
 
     def add_determined_expression (self, label, general_kind, special_kind, n1, n2, reason):
         """ Throws node data into neo4j by expanding data as dictionary.
@@ -477,7 +441,7 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}', arg_ids:{argument_i
                 self.add_determined_expression(label, general_kind, special_kind, n1, n2, reason)
             else:
                 logging.error('Value could not be set because I don\'t know how to deal with the type')
-                raise ValueError('Value could not be set because I don\'t know how to deal with the type')
+                pass
         return None
 
     def get_from_gdb (self, kind):
@@ -487,8 +451,10 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}', arg_ids:{argument_i
             :return: tuples of contradicting predicates
 
             """
+
+        time.sleep(1)
         query = (
-            r"""MATCH path = (a)-[:%s]->(b) 
+            r"""MATCH path = (a)-[:%s]-(b) 
                 WHERE ID(a) < ID(b)
                 RETURN a,b """ % kind.upper()
         )
@@ -548,8 +514,9 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}', arg_ids:{argument_i
             r"""// create the nodes first
             MATCH (a:CONNOTATION)-[c:CONTRADICTION]-(b:CONNOTATION)
             WHERE a.cluster=b.cluster or a.side = b.side
-            MERGE (x:CORE {Reason:c.Reason})
-            SET x.cluster=a.cluster, b.cluster = a.cluster, x.id = a.cluster
+            WITH a.cluster as d, b as b, a as a, c as c
+            MERGE (x:CORE {Reason:c.Reason, cluster:d})
+            SET b.cluster = a.cluster, x.id = a.cluster
             """
 
         query_connect_cores_sides = \

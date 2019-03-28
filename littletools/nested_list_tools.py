@@ -1,3 +1,4 @@
+import inspect
 import itertools
 
 from more_itertools import replace
@@ -48,6 +49,9 @@ def flatten_list(l):
             yield from flatten_list(el)
         else:
             yield el
+
+def flat_list_from (l):
+    return list(flatten_list(l))
 
 
 def collect_gen (it, key):
@@ -110,6 +114,8 @@ def on_each_level (lol, fun, out = []):
     return out
 
 
+
+
 from collections import Sequence
 
 def recursive_map (func, seq, d=0, x_max_d=5, other_criterium=None):
@@ -118,13 +124,13 @@ def recursive_map (func, seq, d=0, x_max_d=5, other_criterium=None):
 
     if other_criterium:
         if other_criterium(seq):
-            #seq = type(seq)((k, recursive_map(func, v, d=d+1, x_max_d=x_max_d, other_criterium=other_criterium)) for k, v in seq.items())
             res = func(seq)
             return res
 
     if isinstance(seq, dict) and not other_criterium:
-        seq = type(seq)((k, recursive_map(func, v, d=d+1, x_max_d=x_max_d, other_criterium=other_criterium)) for k, v in seq.items())
-        res = func(seq)
+        seq_gen = [(k, recursive_map(func, v, d=d+1, x_max_d=x_max_d, other_criterium=other_criterium))
+                   for k, v in seq.items()]
+        res = func(type(seq)(seq_gen))
         return res
 
     elif isinstance(seq, Sequence):
@@ -136,10 +142,15 @@ def recursive_map (func, seq, d=0, x_max_d=5, other_criterium=None):
                 res.append(recursive_map(func, item, d=d+1, x_max_d=x_max_d, other_criterium=other_criterium))
             else:
                 res.append(func(item))
-        return res
+        if hasattr(seq, '__dict__'):
+            res = type(seq)(res)
+            res.__dict__ = seq.__dict__.copy()
+            return res
+        else:
+            return type(seq)(res)
 
     else:
-        return seq
+        return type(seq)(seq)
 
 def ret (seq):
     yield seq

@@ -98,7 +98,7 @@ The following contradictions are found in the two sentences:
 
 ![Image](contradiction.svg)
 
-This happens in the module [`Contradiction`](../contradictrix.py)
+This happens in the module [`Contradiction`](../contrastrix.py)
 
 ## Find correlative pairs to the contrasting pairs
 
@@ -125,7 +125,7 @@ And these criteria are the things the algorithm uses. In [`correlatrix`](../corr
                 Simmix([(3, Simmix.common_words_sim, 0.35, 1),
                         (1, Simmix.dep_sim, 0.65, 1),
                         (1, Simmix.pos_sim, 0.65, 1),
-                        (1, Simmix.elmo_sim(), 0.35,1),
+                        (1, Simmix.elmo_complex_sim(), 0.35,1),
                         (1,Simmix.fuzzystr_sim, 0.3,1),
                         (-1000, Simmix.same_expression_sim, 0, 0.1)
                         ],
@@ -134,7 +134,7 @@ And these criteria are the things the algorithm uses. In [`correlatrix`](../corr
             # That's a distinctive criterium, that the correlative keys can't be too similar to the contradicting pair
             self.distinct = \
                 Simmix([(1, Simmix.multi_sim(fun=Simmix.common_words_sim, n=7), 0, 0.95),
-                        (1, Simmix.multi_sim(fun=Simmix.elmo_sim(), n=7), 0, 0.95),
+                        (1, Simmix.multi_sim(fun=Simmix.elmo_complex_sim(), n=7), 0, 0.95),
                         (1, Simmix.multi_sim(fun=Simmix.dep_sim, n=7), 0.0, 1),
                         (1, Simmix.multi_sim(fun=Simmix.pos_sim,n=7), 0.0, 1)
                         ],

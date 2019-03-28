@@ -3,7 +3,7 @@
 3	the	the	DET	DT	_	4	det	6-216	6->[6:7]
 4	grammarian	grammarian	NOUN	NN	_	5	nsubj	6-217	6->[6:7]
 5	derives	derive	VERB	VBZ	_	5	ROOT	6-218	_
-6	his	-PRON-	ADJ	PRP$	_	7	poss	6-219	6->[3:5]
+6	his	-PRON-	PRON	PRP$	_	7	poss	6-219	6->[3:5]
 7	name	name	NOUN	NN	_	5	dobj	6-220	_
 8	from	from	ADP	IN	_	5	prep	6-221	_
 9	the	the	DET	DT	_	10	det	6-222	_

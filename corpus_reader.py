@@ -102,12 +102,16 @@ class CorpusReader:
 
 
     def override_spacy (self, tldpth):
-        t = tldpth[-1]
-        t.lemma_ = tldpth [0]
-        t.dep_ = tldpth [1]
-        t.pos_ = tldpth[2]
-        t.tag_ =  tldpth[3]
-        t.head = t.doc[tldpth[4]]
+        try:
+            t = tldpth[-1]
+            t.lemma_ = tldpth [0]
+            t.dep_ = tldpth [1]
+            t.pos_ = tldpth[2]
+            t.tag_ =  tldpth[3]
+            t.head = t.doc[tldpth[4]]
+        except IndexError:
+            logging.error('trying to override spacy failed, %s' % (str(tldpth)))
+            return tldpth
         return t
 
 

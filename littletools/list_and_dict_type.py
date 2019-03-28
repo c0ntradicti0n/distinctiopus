@@ -53,11 +53,11 @@ class T(tuple):
     def __init__(self, args, **kwargs):
         if isinstance(args, types.GeneratorType):
             args = tuple(args)
-        if len(args) == 1 and hasattr(args[0], '__iter__'):
+        if False and len(args) == 1 and hasattr(args[0], '__iter__'):
             try:
                 tuple.__new__(self, args[0])
             except TypeError:
-                print (self, args[0])
+                #print (self, args[0])
                 raise
 
         else:

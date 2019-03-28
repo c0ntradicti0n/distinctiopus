@@ -20,10 +20,10 @@ logging.getLogger().setLevel(logging.INFO)
 
 class Contrast:
     def __init__(self):
-        ''' This module lets you find the contradictions between the predicates.
+        ''' This module lets you find the contrasts between the predicates.
 
             The constructor sets up the filters to find them.
-            Call then :func:`~contradix.Contradiction.find_contradictions` on predicates
+            Call then :func:`~contradix.Contradiction.find_contrasts` on predicates
 
             Example
             =======
@@ -31,49 +31,52 @@ class Contrast:
             Get some annotated text data...
 
             >>> from corpus_reader import CorpusReader
-            >>> corpus = CorpusReader(corpus_path='./corpora/aristotle_categories/import_conll', only=[9,12,14,16])
-            >>> from predicatrix import Predication
+            >>> corpus = CorpusReader(corpus_path='./corpora/aristotle_categories/import_conll', only=[9, 12, 14, 16]) # , 10, 11, 13, 15
 
             Extract some predicates
 
+            >>> from predicatrix import Predication
             >>> P = Predication(corpus)
             >>> from littletools.nested_list_tools import type_spec, flatten_reduce
-            >>> ps = flatten_reduce (corpus.sentence_df.apply(P.analyse_predications, axis=1, result_type="reduce").values.tolist())
+            >>> x = corpus.sentence_df.apply(P.analyse_predications, axis=1, result_type="reduce")
+            >>> ps = P.post_processing(paint=True)
+            >>> str(ps[1])[:111]
+            'Some things , again , are present in a subject , but are never predicable of a subject . ~ [text=Some things ag'
 
             >>> C = Contrast()
-            >>> p = C.find_contradictive(ps,ps)
+            >>> p = C.find_constrasts(ps,ps)
             >>> print (p)
             [([0], [1, 2, 3]), ([1], [0, 2, 3]), ([2], [0, 1, 3]), ([3], [0, 1, 2])]
 
-            This means, the sentence no 0 contradicts sentences 1,2,3 and so on
+            This means, the sentence no 0 contrasts sentences 1,2,3 and so on
             Problems with this arise from faulty grammar, missing antonym information, bad sentence splitting or maybe the
             phrase has a more complex paraphrasing structure of the contrasting phrase
 
         '''
         fit_mix_neg = \
-             SimilarityMixer ([(1, SimilarityMixer.elmo_sim(), 0.65, 1),
-                               #(4, SimilarityMixer.common_words_sim(), 0.15,1),
+             SimilarityMixer ([(1, SimilarityMixer.elmo_complex_sim(key='elmo_embeddings_pred'), 0.98, 1),
+                               #(1, SimilarityMixer.common_words_sim(), 0.5,0.99),
                                ],
                               n=None)
-        self.Negation_Contradiction_Filter  = \
+        self.NegationContrastFilter  = \
             SimilarityMixer([(1, SimilarityMixer.formula_excludes(fit_mix_neg), 0.1, 1),
                              (1, SimilarityMixer.sub_i, 0, 0.1)
                              ], n=30)
 
         antonym_filter = \
-             SimilarityMixer ([(1, SimilarityMixer.elmo_sim(), 0.45, 1),
-                               (1, SimilarityMixer.detect_pair(word_definitions.antonym_dict), 0.1, 1)
+             SimilarityMixer ([(1, SimilarityMixer.elmo_complex_sim(), 0.86, 1),
+                               (1, SimilarityMixer.detect_pair, 0.1, 1)
                                ], n=None)
 
-        self.Antonym_Contradiction_Filter = \
+        self.AntonymContrastFilter = \
             SimilarityMixer([(1, SimilarityMixer.formula_concludes(antonym_filter), 0.1, 1)
                              ], n=30)
 
         self.contra_counter = count_up()
 
 
-    def find_contradictive (self, predicates1, predicates2, graph_coro=None, paint_graph=True, **kwargs):
-        ''' Tbis function  searches in two lists of predicate-dict for contradictions, that are caused by antonym- and
+    def find_constrasts (self, predicates1, predicates2, graph_coro=None, paint_graph=False, **kwargs):
+        ''' Tbis function  searches in two lists of predicate-dict for contrasts, that are caused by antonym- and
             negation.
 
             These Pred have a special distribution of negation particles.
@@ -97,14 +100,22 @@ class Contrast:
 
         if paint_graph:
             G = nx.DiGraph()
-            put_into_nx = self.put_into_nx(general_kind='contradiction', G=G)
+            put_into_nx = self.put_into_nx(general_kind='constrast', G=G)
             graph_coro = [graph_coro, put_into_nx ]
 
         with timeit_context('contrast finding neg'):
-            negation_contradictions = self.Negation_Contradiction_Filter.choose ((eL(predicates1), eL(predicates2)), type='negation', layout='n', out='i', graph_coro=graph_coro, **kwargs)
+            negation_constrasts = self.NegationContrastFilter.choose ((eL(predicates1), eL(predicates2)),
+                                                                      type='negation',
+                                                                      layout='n',
+                                                                      out='i',
+                                                                      graph_coro=graph_coro, **kwargs)
         with timeit_context('contrast finding anto'):
-            antonym_contradictions  = self.Antonym_Contradiction_Filter.choose((eL(predicates1), eL(predicates2)), type='antonym', layout='n', out='i', graph_coro=graph_coro, **kwargs)
-        logging.info("antonym : %s" % str (antonym_contradictions) + " negation: %s" % str (negation_contradictions))
+            antonym_constrasts  = self.AntonymContrastFilter.choose((eL(predicates1), eL(predicates2)),
+                                                                      type='antonym',
+                                                                      layout='n',
+                                                                      out='i',
+                                                                      graph_coro=graph_coro, **kwargs)
+        logging.info("antonym : %s" % str (antonym_constrasts) + " negation: %s" % str (negation_constrasts))
 
         if paint_graph:
             #for p in predicates1 + predicates2:
@@ -112,10 +123,9 @@ class Contrast:
             put_into_nx.send('draw')
 
         try:
-            return  negation_contradictions + antonym_contradictions
+            return  negation_constrasts + antonym_constrasts
         except TypeError:
-            return (negation_contradictions, antonym_contradictions)
-
+            return (negation_constrasts, antonym_constrasts)
 
     def wrap (self, line):
         ''' wrap the line
@@ -125,9 +135,8 @@ class Contrast:
         '''
         return textwrap.fill(line, 50)
 
-
     def add_possible_contrasting_node (self, G, predicate_dict, kind=None):
-        ''' Add a node to networkx for debugging the contradiction
+        ''' Add a node to networkx for debugging the constrast
 
             :param G: networkx graph
             :param predicate_dict: dict with 'key' and 'text'
@@ -138,9 +147,8 @@ class Contrast:
         label = self.wrap(" ".join(predicate_dict['text']))
         G.add_node (key_co1, label=label, kind=kind)
 
-
     def add_correlation_edge (self, G, predicate_dict1, predicate_dict2, label=None, kind=None):
-        ''' Add an edge to networkx for debugging purposes on the contradictions
+        ''' Add an edge to networkx for debugging purposes on the constrast
 
             :param G: networkx graph
             :param predicate_dict1: predicate dict with 'key'
@@ -152,7 +160,6 @@ class Contrast:
         key_co1 = kind + predicate_dict1['key']
         key_co2 = kind + predicate_dict2['key']
         G.add_edge(key_co1, key_co2, label=label)
-
 
     def add_determined_expression_nx(self, G, general_kind, special_kind, n1, n2):
         ''' Throws node data into neo4j by expanding data as dictionary.
@@ -211,8 +218,10 @@ class Contrast:
 
             elif isinstance(data, dict):
                 self.add_nx_node(G, data)
+
             elif isinstance(data, str) and data=='draw':
                 self.draw_key_graphs(G)
+
             else:
                 logging.error('Value could not be set because I don\'t know how to deal with the type')
                 raise ValueError('Value could not be set because I don\'t know how to deal with the type')
@@ -226,7 +235,7 @@ class Contrast:
         :return:
         '''
         import pylab as plt
-        path = './img/contradiction' +  str(next(self.contra_counter)) + ".svg"
+        path = './img/contrast' +  str(next(self.contra_counter)) + ".svg"
 
         G.graph['graph'] = {'rankdir': 'LR','splines':'line'}
         G.graph['edges'] = {'arrowsize': '4.0'}
@@ -250,51 +259,3 @@ class Contrast:
         A.layout('dot')
         A.draw(path)
         plt.clf()
-
-
-import unittest
-from corpus_reader import CorpusReader
-
-
-class TestContradictrix(unittest.TestCase):
-    def __init__(self, *args, **kwargs):
-        super(TestContradictrix, self).__init__(*args, **kwargs)
-        self.default_C = Contrast()
-        corpus = CorpusReader(corpus_path='./corpora/aristotle_categories/import_conll', only=[7,8,9])
-        self.P = self.P =  Predication(corpus)
-
-
-    def test_contradiction_symmetry(self):
-        import networkx as nx
-        import itertools
-
-        import matplotlib as plt
-        plt.rcParams['interactive'] = True
-
-        # combinations, that must have symmetrical results
-        combis = itertools.combinations(exs[::-1], 2)
-
-        graphs = {}
-        for i, combo in enumerate(combis):
-            graphs[i] = {}
-            for  j,(ex1, ex2) in enumerate(itertools.permutations(combo,2)):
-                p1 = self.P.collect_all_predicates(ex1)
-                p2 = self.P.collect_all_predicates(ex2)
-
-                if (len (p1) >1) or (len (p2) > 1):
-                    self.P.print_predicates(p1)
-                    self.P.print_predicates(p2)
-                    raise RuntimeError ("More than one mother predicate for sentence.")
-                    break
-
-                G = nx.Graph()
-                self.default_C.find_contradictive(p1,p2, out = 'nx', G=G)
-
-                graphs[i].update({j:{"combo": (ex1,ex2), "graph":G, "nodes":list(G.nodes), "edges":str(G.edges)}})
-            print (graphs)
-            assert (nx.is_isomorphic(graphs[i][0]["graph"], graphs[i][1]["graph"]))
-
-if __name__ == '__main__':
-    unittest.main()
-
-

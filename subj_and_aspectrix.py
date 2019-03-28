@@ -3,7 +3,7 @@ import itertools
 from hardcore_annotated_expression import eT, apply_fun_to_nested, eL, eD, ltd_ify, Argu
 from littletools.generator_tools import count_up
 from pairix import Pairix
-from littletools.nested_list_tools import flatten_reduce, collapse
+from littletools.nested_list_tools import flatten_reduce, collapse, flatten, flat_list_from, curry
 from similaritymixer import SimilarityMixer
 from time_tools import timeit_context
 
@@ -18,10 +18,10 @@ class Subjects_and_Aspects(Pairix):
     '''
     def __init__(self, corpus):
         self.similar = \
-            SimilarityMixer([(2, SimilarityMixer.elmo_sim(), 0.4, 1)])
+            SimilarityMixer([(1, SimilarityMixer.elmo_simple_sim(), 0.1, 1)])
 
         self.subjects_aspects = \
-             SimilarityMixer ([(1, SimilarityMixer.multi_paral_tup_sim(SimilarityMixer.subj_asp_sim, n=4), 0, 1),
+             SimilarityMixer ([(1,     SimilarityMixer.multi_paral_tup_sim(SimilarityMixer.subj_asp_sim, n=4), 0, 1   ),
                                (-1000, SimilarityMixer.multi_sim(SimilarityMixer.same_expression_sim, n=100), 0, 0.001)])
 
     def annotate(self, clusters=None, graph_fun=None):
@@ -44,58 +44,65 @@ class Subjects_and_Aspects(Pairix):
             :param graph_fun: neo4j driver
 
         '''
-        def argument_tuples(predicate):
+        def get_arguments(predicate):
             args = self.get_arguments(predicate)
-            return list(itertools.permutations(args, r=2))
+            return args
 
-        with timeit_context('retrieve and generate pairs of arguments for each side'):
-            argument_tuples_in_sides = apply_fun_to_nested (
-                fun=argument_tuples,
-                attribute='predicate_id',
-                data=clusters)
 
-        # now in three steps:
-        # 1. the 1rst and 2nd element of the pairs must be similar to pairs of other sides --> hdbscan on tuple parallel
-        # semantical similarity
+
         with timeit_context('computing sameness for the words within these pairs and the subject-'):
-            def correllate(x,y):
-                eL(
-                [self.similar.choose(data=(to_corr.unique(),
-                                           to_corr.unique()),
-                                     layout='hdbscan',
-                                     n=100)
-                 for to_corr in to_correlate])
+            def correllate(preds_to_correlate):
+                arguments1 = get_arguments(preds_to_correlate[0])
+                arguments2 = get_arguments(preds_to_correlate[1])
+                if not arguments1 or not arguments2:
+                    return []
+
+                cluster =  self.similar.choose(data=(arguments1, arguments2),
+                                     layout='1:1')
+                return cluster
 
             argument_tuples_in_sides = apply_fun_to_nested (
-                fun=argument_tuples,
-                attribute='predicate_id',
+                fun=correllate,
+                attribute=['contrasts','coinings'], # If the attribute is a list, the function is applied to each single value in these lists
+                out_attribute=['entities', 'aspects'],
                 data=clusters)
 
         # 2. these tuples have a distance between these two words within, like name ~> thing in multiple sentences
         # they have a grammatical and semantical distance within. We compute this as a feature of these tuples and
-        # feed them again into SimilarityMixer and again hdbscan. So they must be converted to dicts
+        # feed them again into SimilarityMixer and use again hdbscan. So they must be converted to dicts
 
         # 3. look for the maximum distance with at least two tuples in these grouped tuples.
-
 
         # (things, things. things), (name answering to definition, name coresponding with the name) (name, name, name, name)
 
         with timeit_context('compute pairs of similar distance'):
-            subjects_aspects = eL(
-                [self.subjects_aspects.choose(
-                (corr, corr),
-                n=100,
-                minimize=False,
-                layout='n',
-                out='ex')
-                 for corr in correlated])
+            def distinct(constrast_coinages):
+                contrasts, coinages = constrast_coinages
+
+                if not contrasts or not coinages:
+                    return []
+                subject_aspect = self.subjects_aspects.choose(
+                    (flat_list_from(coinages), flat_list_from(contrasts)),
+                    n=1,
+                    layout='n',
+                    out='ex')
+                return subject_aspect
+
+            subjects_aspects_in_sides = apply_fun_to_nested (
+                fun=distinct,
+                attribute=('entities','aspects'), # If `attribute` is a tuple, the function is applied to pairs taken from this tuple
+                out_attribute=('entity','aspect'),
+                data=argument_tuples_in_sides)
 
         with timeit_context('writing everything'):
-            self.neo4j_write(graph_fun, subjects_aspects, clusters)
-        return subjects_aspects
+            self.neo4j_write(graph_fun, subjects_aspects_in_sides)
+        return subjects_aspects_in_sides
 
     def argument_or_reference_instead (self, arguments):
-        ''' This exchanges in the list of arguments the ones, that are referencing to other nouns, and keep the ones,
+        ''' This exchanges in the list of arguments the on
+
+        #with timeit_context('neo4j cleanup'):
+        #     self.merge_clean_up(graph_fun)es, that are referencing to other nouns, and keep the ones,
         that are fine.
 
         :param arguments: argument dicts
@@ -113,13 +120,13 @@ class Subjects_and_Aspects(Pairix):
         try:
             assert new_arguments and all (new_arguments)
         except AssertionError:
-            print (arguments)
-            raise
+            logging.warning('not good reference for arguments found')
+            new_arguments = arguments
+            pass
 
         assert all(isinstance(arg, Argu) for arg in new_arguments)
 
         return new_arguments
-
 
     def get_arguments(self, predicate_s):
         """ Gets the arguments of the predicate
@@ -130,17 +137,14 @@ class Subjects_and_Aspects(Pairix):
         """
         if isinstance(predicate_s, list):
             arguments = eL(flatten_reduce([self.get_arguments(pred) for pred in predicate_s]))
-            # if len (arguments.unique()) != len(arguments):
-            #    logging.warning("INDEED AN EFFECT!!! %d" % (len (arguments.unique())- len(arguments)))
             return arguments.unique()
 
         arguments = predicate_s['arguments']
-        try:
-            assert (arguments)
-        except:
-            raise
+
         arguments_ref = self.argument_or_reference_instead (arguments)
-        assert arguments_ref
+        if not arguments:
+            logging.warning('no referenced arguments found %s' % str(predicate_s))
+            arguments_ref = arguments
         return arguments_ref
 
     def get_correlated (self, pair):
@@ -155,7 +159,7 @@ class Subjects_and_Aspects(Pairix):
             raise ValueError ('no argument for predicate, that can be referenced?')
         return self.similar.choose(arguments, layout='n', n=100,  out='ex')
 
-    def neo4j_write (self, graph_fun, subjects_aspects, clusters):
+    def neo4j_write (self, graph_fun, subjects_aspects):
         ''' push subjects and aspects to neo4j with appropriate node_labels
 
         :param graph_fun: neo4j driver
@@ -164,31 +168,34 @@ class Subjects_and_Aspects(Pairix):
             subjects and aspects
 
         '''
-        with timeit_context('typing nested list for subject/aspect'):
-            subjects_aspects = \
-                ltd_ify(subjects_aspects,
-                        node_type=['DENOTATION'],
-                        stack_types=['SUBJECTS_ASPECTS_ALL', 'CLUSTER', 'A_S_TUPLES', ('SUBJECTS', 'ASPECTS'), 'GROUP', 'ARGUMENT'])
+
+        # what = ['contrasts', 'coinings', ('entity', 'aspect')
 
         with timeit_context('push results to neo4j'):
-            self.neo4j_push (subjects_aspects, graph_fun)
-
-        apply_fun_to_nested(fun=self.get_arguments, attribute='predicate_id', data=clusters)
+            apply_fun_to_nested(fun=curry(self.neo4j_push, graph_fun), attribute='D', data=subjects_aspects)
 
         with timeit_context('neo4j cleanup'):
              self.merge_clean_up(graph_fun)
 
     cnt = count_up()
 
-    def neo4j_push(self, x, graph_fun):
+    def neo4j_push(self, x, graph_fun, type=None):
         ''' push nested annotation structure to neo4j
 
         :param x: nested eL, eT, eD-structure
         :param graph_fun: neo4j driver
 
         '''
+        if not x['contrasts'] or not x['coinings'] or not x[('entity','aspect')]:
+            logging.info('no subjects/aspects for some expressions found')
+            return None
+        conno = eL(flat_list_from(x['contrasts'])+flat_list_from(x['coinings']))
+        for p in conno:
+            p.node_type =  ['CONNOTATION']
+        deno = ltd_ify(x[('entity','aspect')][0], node_type=['DENOTATION'], stack_types=['X',('SUBJECTS','ASPECTS'),'PAIR','X','ARGUMENT'], d_max=4)
+
         with timeit_context('generate query'):
-            query = "".join(list(collapse(x.neo4j_write() + ['\n'])))
+            query = "".join(list(collapse(conno.neo4j_write() + deno.neo4j_write()+ ['\n'])))
             with open("query %d.txt" % next(self.cnt), "w") as text_file:
                 text_file.write(query)
         with timeit_context('neo4j'):
@@ -200,15 +207,12 @@ class Subjects_and_Aspects(Pairix):
         :param graph_fun:
         :return:
         '''
-        query = """MATCH (n:CONNOTATION),(a:ARGUMENT)
-        WHERE a.id in n.arg_ids
-        MERGE (n)-[:X]->(a)
-        RETURN n,a"""
-        graph_fun(query)
-
-        query = """MATCH (n)-->(:GROUP)-->(s)
-        CALL apoc.create.addLabels( id(s), labels(n) )
-        YIELD node as n1
-        MERGE (n)<-[:X]-(s)
-        RETURN n"""
-        graph_fun(query)
+        collapse_helper_nodes_list = ['X','NLP', 'node_type_not_given', 'PAIR', ]
+        for nt in collapse_helper_nodes_list:
+            query = """
+                 MATCH (x)--(a:%s)--(y)
+                 MERGE (x)-[:X]-(y)
+                 DETACH DELETE a
+                 WITH 1 as one
+                 RETURN one""" % nt
+            graph_fun(query)
