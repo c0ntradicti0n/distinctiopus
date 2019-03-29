@@ -554,7 +554,10 @@ class SimilarityMixer:
             :return:      tuple of list of indices to the exs1 list and of indices of the exs2 list
 
         '''
-        res = scipy.optimize.linear_sum_assignment(-weighted_res)
+        try:
+            res = scipy.optimize.linear_sum_assignment(-weighted_res)
+        except ValueError:
+            logging.error('One to gone got NaN values')
         if n:  # if n, there have to go the minimal columns, that means we have to bind them by a maximal choice and sort them out later again
             first_sol = len(res)
         #    weighted_res += np.array([1000]*first_sol)
@@ -805,7 +808,8 @@ class SimilarityMixer:
             beam = Dict()
             beam[ex1['id']][ex2['id']].reason = res
             if res > elmo_sim_generated.max or res < elmo_sim_generated.min:
-                print ("out of range")
+
+                res = -25
             return res, beam
         return elmo_sim_generated
 
@@ -821,12 +825,15 @@ class SimilarityMixer:
             vectors1 = ex1[key]
             vectors2 = ex2[key]
 
-            res = -(scipy.spatial.distance.cosine(vectors1[0,:],vectors2[0,:])+
-                   scipy.spatial.distance.cosine(vectors1[1,:],vectors2[1,:])+
-                   scipy.spatial.distance.cosine(vectors1[2,:],vectors2[2,:]))/3
+            res = -(scipy.spatial.distance.cosine(vectors1[0,:],vectors2[0,:]) +
+                   scipy.spatial.distance.cosine(vectors1[1,:],vectors2[1,:])  +
+                   scipy.spatial.distance.cosine(vectors1[2,:],vectors2[2,:])) /3
 
             beam = Dict()
             beam[ex1['id']][ex2['id']].reason = res
+
+            if np.isnan(res):
+                res = -25
 
             return res, beam
         return elmo_sim_generated
@@ -1005,8 +1012,6 @@ class SimilarityMixer:
             b.update(d2)
             return res, b
         return multi_cross2tup_sim
-
-
 
     def multi_paral2tup_sim(fun, n=2):
         ''' This wrapper turns a functions, that evaluate pairs of expression, into functions, that work with tuples (!)
@@ -1507,6 +1512,6 @@ class SimilarityMixer:
     @standard_range(0, 0.02)
     def subj_asp_sim (ex1, ex2):
         beam = Dict()
-        res = (ex2['aspe_score']+ex1['aspe_score'])/2 - (ex1['subj_score']+ex2['subj_score'])/2
+        res = ex2['aspe_score'] - (ex1['subj_score'])
         beam[ex1['id']][ex2['id']].reason = res
         return res, beam

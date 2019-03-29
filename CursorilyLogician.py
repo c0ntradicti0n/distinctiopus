@@ -10,6 +10,9 @@ import networkx as nx
 import textwrap
 
 import matplotlib
+
+from littletools.dict_tools import invert_dict
+
 matplotlib.use('TkAgg')
 
 from time_tools import timeit_context
@@ -100,7 +103,7 @@ class DataframeCursorilyLogician:
                                                        result_type="reduce",
                                                        axis=1)
 
-            self.Predicatrix.post_processing(paint=False)
+            self.Predicatrix.post_processing(paint=True)
 
 
     def get_predicates_in_horizon(self, s_id):
@@ -171,14 +174,16 @@ class DataframeCursorilyLogician:
             """
 
         logging.info ('ANNOTATE CONTRASTS')
-        put_contradiction_into_gdb = self.put_into_gdb("connotation", "contradiction")
+        put_acontradiction_into_gdb = self.put_into_gdb("aconnotation", "acontradiction")
+        put_ncontradiction_into_gdb = self.put_into_gdb("nconnotation", "ncontradiction")
 
-        with timeit_context('annotating contradictions'):
+
+        with timeit_context('annotating contrasts'):
             for index, x in self.sentence_df.iterrows():
                 self.Contradictrix.find_constrasts(
                     x['predication'],
                     x['predications_in_range'],
-                    graph_coro=put_contradiction_into_gdb)
+                    graph_coro=(put_acontradiction_into_gdb, put_ncontradiction_into_gdb))
 
     @lru_cache(maxsize=None)
     def get_correllation_preds(self, pred):
@@ -226,14 +231,20 @@ class DataframeCursorilyLogician:
             """
         logging.info ('ANNOTATE CORRELATIONS')
         # Lookup what contradicitons were found
-        with timeit_context('retrieve contradiction clusters'):
-            contradictions           = self.get_from_gdb('contradiction')
+        with timeit_context('retrieve constrast clusters'):
+            acontradictions           = self.get_from_gdb('acontradiction')
+            ncontradictions           = self.get_from_gdb('ncontradiction')
+
 
         # Coroutine for writing the simmix ressults into the gdb
-        put_correlation_into_gdb = self.put_into_gdb("Connotation", "correlation")
+        put_acorrelation_into_gdb = self.put_into_gdb("aconnotation", "acorrelation")
+        put_ncorrelation_into_gdb = self.put_into_gdb("nconnotation", "ncorrelation")
+        types_anto = ("opposed", "opposed", "acorrelated")
+        types_nega = ("opposed", "opposed", "ncorrelated")
+
 
         with timeit_context('iterate through contradicting pairs'):
-            for contra1, contra2 in contradictions:
+            for contra1, contra2 in acontradictions:
                 with timeit_context('get possible preds'):
                     poss_correl_l = self.get_correllation_preds(contra1)
                     poss_correl_r = self.get_correllation_preds(contra2)
@@ -242,7 +253,22 @@ class DataframeCursorilyLogician:
                     self.Correlatrix.annotate_correlations(
                         contradiction= eT((contra1, contra2)),
                         possible_to_correlate=eT((poss_correl_l, poss_correl_r)),
-                        graph_coro=put_correlation_into_gdb)
+                        types=types_anto,
+                        graph_coro=put_acorrelation_into_gdb)
+
+            for contra1, contra2 in ncontradictions:
+                with timeit_context('get possible preds'):
+                    poss_correl_l = self.get_correllation_preds(contra1)
+                    poss_correl_r = self.get_correllation_preds(contra2)
+
+                with timeit_context('compare constrast pairs'):
+                    self.Correlatrix.annotate_correlations(
+                        contradiction= eT((contra1, contra2)),
+                        possible_to_correlate=eT((poss_correl_l, poss_correl_r)),
+                        types=types_nega,
+                        graph_coro=put_ncorrelation_into_gdb)
+
+
 
 
     def get_clusters (self):
@@ -252,17 +278,20 @@ class DataframeCursorilyLogician:
 
             """
         query = \
-            """MATCH (b1:CONNOTATION)-[:CORRELATED]-(a1:CONNOTATION)--(side1:SIDE)--(cl:CORE)--(side2:SIDE)--(a2:CONNOTATION)-[:CORRELATED]-(b2:CONNOTATION)
-               WHERE id(side1)>id(side2) and (a1)-[:CONTRADICTION]-(a2) and (b1)-[:OPPOSED]-(b2) WITH
-                    {   side1 : side1.side, 
-                        side2 : side2.side, 
-                        contrasts: [a1.id,a2.id],
-                        coinings:[b1.id,b2.id]
-                    } as D
+            """MATCH (b1:{CONNOTATION})-[:{correlated}]-(a1:{CONNOTATION})--({side}1:{SIDE})--(cl:{CORE})--({side}2:{SIDE})--(a2:{CONNOTATION})-[:{correlated}]-(b2:{CONNOTATION})
+               WHERE id({side}1)>id({side}2) and (a1)-[:{contradiction}]-(a2) and (b1)-[:OPPOSED]-(b2) WITH
+                    {{   {side}1 : {side}1.{side}, 
+                        {side}2 : {side}2.{side}, 
+                        contrasts: collect([a1.id,a2.id]),
+                        coinings:  collect([b1.id,b2.id])
+                    }} as D
                RETURN D
                """
 
-        records = self.graph.run(query)
+        records1 = self.graph.run(query.format(**self.antonym_names))
+        records2 = self.graph.run(query.format(**self.negation_names))
+
+        records = records1 + records2
         predicates = apply_fun_to_nested(fun=self.Predicatrix.get_predication, attribute=['contrasts', 'coinings'], data=records)
         return predicates
 
@@ -300,15 +329,30 @@ class DataframeCursorilyLogician:
         'D'    : 'originates from',
         'D_IN' : 'distinguished in',
         'D_TO' : 'this side',
-        'X': 'metechei',
+        'X':      'for',
+        'D_APART':'distinguished in',
+        'D_NPART': 'distinguished in',
+        'ACORRELATED':'modifying',
+        'NCORRELATED':'modifying',
+        'ACORRELATION':'modyfying',
+        'NCORRELATION': 'modyfying',
+        'OPPOSED':'opposed',
+        'ACONTRADICTION':'contrast',
+                         'NCONTRADICTION':'contrast',
+        'ANTONYM':'by antonym',
+                  'NEGATION':'by antonym'
+
     }
 
     """ Node labels for final picture """
     node_label_map = {
         'SUBJECTS': 'SUBJECT',
-        'ASPECTS': 'ASPECT',
-        'REAL_CORE':'LETS\'S DISTINGUISH',
-        'SIDE':'IN',
+        'ASPECTS':  'ASPECT',
+        'REAL_ACORE': 'LETS\'S DISTINGUISH',
+        'REAL_NCORE': 'LETS\'S DISTINGUISH',
+        'ASIDE':'IN',
+        'NSIDE': 'IN',
+
     }
 
     def draw(self, G, path):
@@ -319,8 +363,6 @@ class DataframeCursorilyLogician:
             :return: None
 
             """
-        path = path + 'distinction.svg'
-
         from networkx.drawing.nx_agraph import graphviz_layout
         import pylab as pylab
         import matplotlib as plt
@@ -337,7 +379,12 @@ class DataframeCursorilyLogician:
         node_labels.update(mapped_node_labels)
 
         try:
-            edge_labels = {(u,v,1): {'xlabel': self.edge_label_map[d]} for u,v, d in G.edges(data='kind', default='what?')}
+            edge_labels = {(u,v,1):
+                               {'xlabel': self.edge_label_map[d],
+                                'headport':'e',
+                                'tailport':'e',
+                                'splines':'curved'}
+                           for u,v, d in G.edges(data='kind', default='what?')}
         except:
             raise KeyError ("%s " % str({(u, v, 1): {'xlabel': (d, d in self.edge_label_map)} for u, v, d in G.edges(data='kind', default='what?')}))
         node_colors =  {n: {'style':'filled', 'fillcolor':self.kind_color_map[d]} for n, d in G.nodes(data='SpecialKind') if d}
@@ -346,15 +393,17 @@ class DataframeCursorilyLogician:
         nx.set_node_attributes(G, node_labels)
         nx.set_node_attributes(G, node_colors)
 
+
+
         G.graph['graph'] = {'rankdir': 'LR',
                             'style': 'filled',
                             'splines':'curved'}
-        kamada_kawai = nx.drawing.layout.kamada_kawai_layout(G)
+        #kamada_kawai = nx.drawing.layout.kamada_kawai_layout(G)
 
         #spectral = nx.spectral_layout(G)
-        spring = nx.spring_layout(G)
+        #spring = nx.spring_layout(G)
         dot_layout = graphviz_layout(G, prog='dot')
-        pos = spring
+        #pos = spring
 
         options = {
             'node_color': 'blue',
@@ -364,18 +413,51 @@ class DataframeCursorilyLogician:
             'arrowsize': 12,
         }
 
-        nx.draw_networkx(G,
-                         pos=pos,
-                         labels=node_labels,
-                         with_labels=True,
-                         font_size=10,
-                         **options)
+        #nx.draw_networkx(G,
+        #                 pos=pos,
+        #                 labels=node_labels,
+        #                 with_labels=True,
+        #                 font_size=10,
+        #                 **options)
 
-        pylab.savefig(path, dpi=200)
-        pylab.clf()
+        #pylab.savefig(path, dpi=200)
+        #pylab.clf()
+
+
+
         A = nx.drawing.nx_agraph.to_agraph(G)
+
+        all_nodes_rank = {n: [r] for n, r in G.nodes(data='rank')}
+        all_rank_nodes = invert_dict(all_nodes_rank)
+        for r, n_bunch in all_rank_nodes.items():
+            A.add_subgraph(n_bunch, rank='same')
+
+        """
+        all_nodes_abunch = {n: [r] for n, r in G.nodes(data='abunch')}
+        all_abunch_nodes = invert_dict(all_nodes_abunch)
+        for r, n_bunch in all_abunch_nodes.items():
+            if r != None:
+                A.add_subgraph(n_bunch,
+                               name="cluster%s" % str(r),
+                               node="[style=filled]",
+                               label='antonym'
+                               )
+
+
+        all_nodes_abunch = {n:[r] for n, r in G.nodes(data='nbunch')}
+        all_abunch_nodes = invert_dict(all_nodes_abunch)
+        for r, n_bunch in all_abunch_nodes.items():
+            if r!= None:
+                A.add_subgraph(n_bunch,
+                         name = "cluster%s"%str(r),
+                          node = "[style=filled]",
+                          label='negation'                )
+        """
+
+
+
         A.layout('dot')
-        A.draw(path = "found_distinction.svg")
+        A.draw(path = path)
 
     def add_determined_expression (self, label, general_kind, special_kind, n1, n2, reason):
         """ Throws node data into neo4j by expanding data as dictionary.
@@ -400,10 +482,10 @@ class DataframeCursorilyLogician:
         query = \
 r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}', arg_ids:{argument_ids1}}}) 
                 ON CREATE SET a.label='{label}', a.id={id1}
-                //ON MATCH SET a.id=a.id+[{id1}]   
+                ON MATCH SET  a:{label}  
                 MERGE (b:Nlp {{s_id:{s_id2}, text:'{text2}', arg_ids:{argument_ids2}}}) 
                 ON CREATE SET b.label='{label}', b.id={id2}
-                //ON MATCH SET b.id=b.id+[{id2}]
+                ON MATCH SET  b:{label}
                 MERGE (a)-[:{special_kind_u} {{SpecialKind:'{special_kind}', Reason:{reason}}}]-(b)
                 MERGE (a)-[:{general_kind} {{SpecialKind:'{special_kind}', Reason:{reason}}}]-(b)""".format(
                 label=label.upper(),
@@ -416,8 +498,7 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}', arg_ids:{argument_i
                 id2=n2['id'],      s_id2=n2['s_id'],       i_s2=n2['i_s'],      text2=" ".join(n2['text']).replace("'", ""), argument_ids2=[int(i['id']) for i in n2['arguments']]
                 )
         self.graph.run(query)
-        time.sleep(0.02)
-
+        self.graph.run(query)
 
     @coroutine
     def put_into_gdb (self, label, general_kind):
@@ -502,71 +583,112 @@ r"""            MERGE (a:Nlp {{s_id:{s_id1}, text:'{text1}', arg_ids:{argument_i
         query_contradiction_clusters = \
             r"""
             // group all contradictions by an id
-            CALL algo.unionFind('CONNOTATION', 'CONTRADICTION', {write:true, partitionProperty:"cluster"})
+            CALL algo.unionFind('{CONNOTATION}', '{contradiction}', {{write:true, partitionProperty:"{cluster}"}})
             YIELD nodes"""
 
         query_side_clusters = \
             r"""// group all the correlated chains by an id
-            CALL algo.unionFind('CONNOTATION', 'CORRELATED', {write:true, partitionProperty:"side"})
-            YIELD nodes"""
+            CALL algo.unionFind('{CONNOTATION}', '{correlated}', {{write:true, partitionProperty:"{side}"}})
+            YIELD nodes
+            """
 
         query_build_cores = \
             r"""// create the nodes first
-            MATCH (a:CONNOTATION)-[c:CONTRADICTION]-(b:CONNOTATION)
-            WHERE a.cluster=b.cluster or a.side = b.side
-            WITH a.cluster as d, b as b, a as a, c as c
-            MERGE (x:CORE {Reason:c.Reason, cluster:d})
-            SET b.cluster = a.cluster, x.id = a.cluster
+            MATCH (a:{CONNOTATION})-[c:{contradiction}]-(b:{CONNOTATION})
+            WHERE a.{cluster}=b.{cluster} or a.{side} = b.{side}
+            WITH a.{cluster} as d, b as b, a as a, c as c
+            MERGE (x:{CORE} {{Reason:c.Reason, {cluster}:d}})
+            SET b.{cluster} = a.{cluster}, x.id = a.{cluster}
             """
 
         query_connect_cores_sides = \
             r"""
-            // create the sides
-            MATCH (a:CONNOTATION)--(b:CONNOTATION), (x:CORE)
-            WHERE a.cluster = b.cluster and not a.side = b.side and x.cluster=a.cluster and x.cluster=b.cluster
-            MERGE (y:SIDE {side:a.side, id:a.side})
-            MERGE (z:SIDE {side:b.side, id:b.side})        
-            // connect CORE and sides
+            // create the {side}s
+            MATCH (a:{CONNOTATION})--(b:{CONNOTATION}), (x:{CORE})
+            WHERE a.{cluster} = b.{cluster} and not a.{side} = b.{side} and x.{cluster}=a.{cluster} and x.{cluster}=b.{cluster}
+            MERGE (y:{SIDE} {{{side}:a.{side}, id:a.{side}}})
+            MERGE (z:{SIDE} {{{side}:b.{side}, id:b.{side}}})        
+            // connect {CORE} and {side}s
             MERGE (x)-[:D_IN]->(y)
             MERGE (x)-[:D_IN]->(z)            
-            //RETURN x, y, z
             """
 
         query_super_cores = r"""            
-            CALL algo.unionFind(
-              'MATCH (c:SIDE) RETURN id(c) as id',
-              'MATCH (c1:SIDE)<-[f1:D_IN]-(:CORE)-[f2:D_IN]->(c2:SIDE)
-               RETURN id(c1) as source, id(c2) as target',
-              {graph:'cypher',write:true, partitionProperty:'origin'}
-            )
-            Yield nodes
-            MATCH (s1:SIDE)<-[f1:D_IN]-(c:CORE)-[f2:D_IN]->(s2:SIDE)
-            WHERE s1.origin = s2.origin
-            MERGE (x:REAL_CORE {origin: s1.origin})
-            MERGE (x)-[:D_APART]->(c)
-            MERGE (x)-[:D]->(s1)
-            MERGE (x)-[:D]->(s2)
-            //return s1, s2, x"""
+                    CALL algo.unionFind(
+                      'MATCH (c:{SIDE}) RETURN id(c) as id',
+                      'MATCH (c1:{SIDE})<-[f1:D_IN]-(:{CORE})-[f2:D_IN]->(c2:{SIDE})
+                       RETURN id(c1) as source, id(c2) as target',
+                      {{graph:'cypher',write:true, partitionProperty:'{origin}'}}
+                    )
+                    Yield nodes
+                    MATCH (s1:{SIDE})<-[f1:D_IN]-(c:{CORE})-[f2:D_IN]->(s2:{SIDE})
+                    WHERE s1.{origin} = s2.{origin}
+                    MERGE (x:REAL_{CORE} {{{origin}: s1.{origin}}})
+                    MERGE (x)-[:D_APART]->(c)
+                    MERGE (x)-[:D]->(s1)
+                    MERGE (x)-[:D]->(s2)
+                    """
 
         query_connect_connotation_sides = \
             r"""// connect
-            Match (s:SIDE), (n:CONNOTATION)
-            WHERE s.side = n.side
+            Match (s:{SIDE}), (n:{CONNOTATION})
+            WHERE s.{side} = n.{side}
             MERGE  (n)<-[: D_TO]-(s)
             return n,s
-        """
+            """
 
         all_queries = [query_contradiction_clusters, query_side_clusters, query_build_cores, query_connect_cores_sides, query_super_cores, query_connect_connotation_sides]
 
-        self.graph.run("\nWITH count(*) as dummy\n".join(all_queries))
+        self.negation_names = {
+            'contradiction':'NEGATION',
+            'correlated':'NCORRELATED',
+            'CONNOTATION': 'NCONNOTATION',
+            'cluster': 'ncluster',
+            'CORE':'NCORE',
+            'side': 'nside',
+            'SIDE':'NSIDE',
+            'origin': 'norigin'}
+
+        self.antonym_names = {
+            'contradiction':'ANTONYM',
+            'correlated': 'ACORRELATED',
+            'CONNOTATION': 'ACONNOTATION',
+            'cluster': 'acluster',
+            'CORE':'ACORE',
+            'side': 'aside',
+            'SIDE':'ASIDE',
+            'origin': 'aorigin'}
+
+        self.graph.run("\nWITH count(*) as dummy\n".join(all_queries).format(**self.antonym_names))
+        self.graph.run("\nWITH count(*) as dummy\n".join(all_queries).format(**self.negation_names))
 
         time.sleep(0.2)
 
-
     def draw_distinctions(self, path='img/'):
         """ Retrieve the final distinction graph, forward it to networkx and dump to a picture """
-        G = neo4j2nx_root (self.graph, markers=['CORE', 'SIDE', 'CONNOTATION', ('SUBJECTS', 'ASPECTS'),  ('SUBJECTS', 'ASPECTS')])
-        self.draw(G, path)
+        G = neo4j2nx_root (
+            self.graph,
+            markers=[('REAL_ACORE'), ('ASIDE'), ('ACONNOTATION'), 'DENOTATION',  ('SUBJECTS', 'ASPECTS'), ('SUBJECTS', 'ASPECTS')])
+
+        self.draw(G, path+'antonym_distinctions.svg')
+        G = neo4j2nx_root (
+            self.graph,
+            markers=[('REAL_NCORE'), ('NSIDE'), ('NCONNOTATION'), 'DENOTATION',  ('SUBJECTS', 'ASPECTS'), ('SUBJECTS', 'ASPECTS')])
+        self.draw(G, path+'negation_distinctions.svg')
+
+    def cleanup(self):
+        query = """MATCH (c)--(s)--(e)--(f)--(a)--(d)
+WHERE (c:REAL_ACORE or c:REAL_NCORE) and (s:ASIDE or s:NSIDE) and (e:ACONNOTATION or e:NCONNOTATION) and (f:ACONNOTATION or f:NCONNOTATION) and (a:DENOTATION) and (d:SUBJECTS or d:ASPECTS)
+with collect([a,s,d,e,c]) as result
+unwind result as x
+unwind x as y
+with collect(ID(y)) as all_good
+match (x)
+where not ID(x) in all_good
+detach delete x
+        """
+        res = self.graph.run(query)
+
 
 
     def cleanup_debug_img(self):

@@ -42,7 +42,7 @@ class Correlation(Pairix):
         return None
 
 
-    def annotate_correlations(self, *, contradiction=None, possible_to_correlate=None, graph_coro=None, save_graph=True):
+    def annotate_correlations(self, *, contradiction=None, possible_to_correlate=None, graph_coro=None, save_graph=False, types=None):
         ''' Annotates the correlations, that means expressions that are similar to each other and are DistinctFilter from the
             pair, that was found as excluding each other. For instance 'from the one side' and 'from the other side'.
 
@@ -85,10 +85,10 @@ class Correlation(Pairix):
 
         correlation = self.DistinctFilter.choose(                    # not too much
             poss_correlations_no_opps[0],
-            n=1,
+            n=2,
             layout='n',
             out='ex',
-            type=("opposed", "opposed", "correlated"),
+            type=types,
             graph_coro=graph_coro)                             # Put it in the graph
 
         if not correlation:

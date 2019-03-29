@@ -1,7 +1,10 @@
+from itertools import combinations
+
 import math
 from collections import OrderedDict
 from functools import lru_cache
 
+import numpy
 import pandas as pd
 import pyprover
 import string
@@ -124,6 +127,8 @@ class Predication():
         self.predicate_df = pd.DataFrame()
         self.argument_df = pd.DataFrame()
         self.already_added_args = OrderedDict()
+
+        self.elmo_zeros = numpy.zeros(256)
 
 
     def analyse_predications(self, sentence_df_row):
@@ -291,12 +296,13 @@ class Predication():
                     arg.append(doc[i])
         return arg
 
+    argument_deps = ['appos ', 'det', 'amod', 'det', 'prep', 'pobj', 'csubj', 'nsubj', 'npasssubj', 'obj', 'dobj']
 
     def arg_stop (self, s):
         arg = [s]
         for ch in s.children:
             if (
-               ch.dep_ in ['appos ', 'det', 'amod', 'det', 'prep', 'pobj', 'csubj', 'nsubj', 'npasssubj', 'obj', 'dobj']
+               ch.dep_ in self.argument_deps or ch.dep_ in ['conj'] and ch.head.dep in self.argument_deps
             and ch.text not in ['as', 'like']):
                 arg.extend(self.arg_stop(ch))
         return arg
@@ -351,14 +357,14 @@ class Predication():
 
             sl_is_counterpart = is_counterpart(subleaf)
 
-            if (root_token.i != subleaf.i) and (subleaf.dep_ in ['conj', 'cc'] and not sl_is_counterpart)   and not mother:
+            if (root_token.i != subleaf.i) and (subleaf.dep_ in ['conj', 'cc'] and not sl_is_counterpart)   and not mother and ellipsis_resolution:
                 if len ([s.i for s in subleaf.subtree]) >2 and subleaf.dep_ != 'cc':
                     lpar_toodeep_i += [s.i for s in subleaf.subtree] + [subleaf.i]
 
             if ((root_token.i != subleaf.i) and (subleaf.dep_ in too_deep_markers)
                 or (subleaf.dep_ in ['conj'] and not sl_is_counterpart and not subleaf == root_token)
                ) and not mother:
-                if (True or len ([s.i for s in subleaf.subtree]) >2) and subleaf.dep_ != 'cc':
+                if (True or len ([s.i for s in subleaf.subtree]) >2) and subleaf.dep_ != 'cc' and ellipsis_resolution:
                     counterpart = [s.i for s in subleaf.subtree]
                     conjunction = [c.i
                                    for c in subleaf.head.rights
@@ -382,7 +388,7 @@ class Predication():
         arguments_i    = []
         for j in predicate_i:
             subleaf = root_token.doc[j]
-            if subleaf.dep_ in arg_markers:
+            if subleaf.dep_ in arg_markers or (subleaf.dep_ in ['conj'] and subleaf.head.dep_ in arg_markers ) and subleaf!=root_token:
                 argument_i = [x.i for x in self.arg_stop(subleaf)]
                 arguments_i.append(argument_i)
 
@@ -409,6 +415,17 @@ class Predication():
         doc = root_token.doc
         arguments_i = list(self.post_process_arguments(arguments_i, doc))
         predicate = self.build_predicate(predicate_i,arguments_i,full_ex_i,doc)
+
+        if ellipsis_resolution:
+            non_elliptical_predicate = self.collect_grammatical_predicates(
+                root_token=root_token,
+                arg_markers=arg_markers,
+                too_deep_markers=too_deep_markers,
+                ellipsis_resolution=False,
+                no_zero_args=no_zero_args,
+                mother = mother,
+                attributive_ordering=attributive_ordering)
+            return [predicate, non_elliptical_predicate]
         return predicate
 
     p_counter = itertools.count()
@@ -570,11 +587,13 @@ class Predication():
 
         ps = v_ps + a_ps + m_ps
         ps = [x for x in ps if x]
+        ps = flat_list_from(ps)
 
         ps_new = []
         for p in ps:
-            if not any(set(p['i_s']) == set(p2['i_s']) for p2 in ps_new):
-                ps_new.append(p)
+            if p:
+                if not any(set(p['i_s']) == set(p2['i_s']) for p2 in ps_new):
+                    ps_new.append(p)
         ps = ps_new
 
         for predicate in ps:
@@ -617,7 +636,7 @@ class Predication():
             # Take out negations for semantics, they don't have good embeddings and disturb all other things
             indices_of_negations = [i for i, x in enumerate(ex) if x.lemma_ in self.negation_list]
             indices_of_stopwords = [i for i, x in enumerate(ex) if x.lemma_ in self.stop_words]
-            elmo_embeddings[:,[indices_of_negations + indices_of_stopwords]] = 0
+            elmo_embeddings[:,[indices_of_negations + indices_of_stopwords]] = self.elmo_zeros
 
         with timeit_context('weight'):
             try:
@@ -634,6 +653,7 @@ class Predication():
 
         if not ps:
             logging.error("no predicates found for %s" % str(ex))
+            return []
 
         if not coref:
             coref = [[]]*len (ex[0].doc)
@@ -662,8 +682,16 @@ class Predication():
                                              elmo_embeddings,
                                              importance,
                                              s_id,
-                                             dep_tree))(node_type=['HAS_ARGMENTS'])
+                                             dep_tree))(node_type=['HAS_ARGUMENTS'])
                 p = Pred(p)
+
+        ps_new = []
+        for p1, p2 in combinations(ps, r=2):
+            if not (set(p1['pos_']) - set(p2['pos_'])) in [{'PUNCT'}, {'PUNCT', 'CCONJ'}]:
+               ps_new.append(p1)
+        ps = ps_new
+
+        ps = eL(ps).unique()
 
         with timeit_context('contained'):
             ps = self.organize_subpredicates(ps)
@@ -756,7 +784,11 @@ class Predication():
                                                          )
 
         n = 2
-        nhighest = df_part.nlargest(n=n, columns='score')
+        try:
+            nhighest = df_part.nlargest(n=n, columns='score')
+        except TypeError:
+            logging.error('Score column is object')
+
         acceptable = nhighest[nhighest['score']>0]
         rec = acceptable.to_dict(orient='record')
 
@@ -838,7 +870,7 @@ class Predication():
             self.append_to_argument_df([arg])
             return [arg]
 
-    def post_processing(self, paint=False):
+    def post_processing(self, paint=True):
         ''' resolves als coreferences and gives the option to draw all predicates
 
         :param paint: True or False, print the file to the outputfolder
@@ -940,54 +972,40 @@ class Predication():
     def subjectness_word(self, token, dep_tree, s_id):
         ''' Give score for something being a theme of a certain token.
 
-        If an expression is a noun and is more connected to the ROOT, then its probably the subject.
+            If an expression is a noun and is more connected to the ROOT, then its probably the subject.
 
-        :param token:
-        :return: score
-
+            :param token:
+            :return: score
         '''
-
-        root_dep_dist = [nx.shortest_path_length(dep_tree, source=token.i, target=s.root.i) +50
+        root_dep_dist = [nx.shortest_path_length(dep_tree, source=token.i, target=s.root.i)
                      for s in token.doc.sents
                      if nx.has_path(dep_tree, token.i, s.root.i)]
-
         root_pos_dist = [token.i - s.root.i + 50
                          for s in token.doc.sents
                          if nx.has_path(dep_tree, token.i, s.root.i)]
-
-        s_id_score = 0 # int(s_id)
-
-        res = math.pow(1.0001, -100/(sum(root_dep_dist)+1) - sum(root_pos_dist) - (1000 * s_id_score))
-        if res <0:
-            raise ValueError
+        pos_dist = token.i
+        res = pos_dist + int(s_id) * 10 - sum(root_dep_dist) # sum(root_dep_dist) + sum(root_pos_dist) + int(s_id)*10 #  math.pow(1.0001, -100/(sum(root_dep_dist)+1) - sum(root_pos_dist) - (1000 * s_id_score))
         return res
-
 
     def aspectness_word(self, token, dep_tree, s_id):
         ''' Give score for something being a theme of a certain token.
 
-        If an expression is a noun and is more connected to the ROOT, then its probably the subject.
+            If an expression is a noun and is more connected to the ROOT, then its probably the subject.
 
-        :param token:
-        :return: score
+            :param token:
+            :return: score
 
         '''
-        root_dep_dist = [nx.shortest_path_length(dep_tree, source=token.i, target=s.root.i) + 50
+        root_dep_dist = [nx.shortest_path_length(dep_tree, source=token.i, target=s.root.i)
                      for s in token.doc.sents
                      if nx.has_path(dep_tree, token.i, s.root.i)]
-
         root_pos_dist = [token.i - s.root.i+50
                      for s in token.doc.sents
                      if nx.has_path(dep_tree, token.i, s.root.i)]
 
-        s_id_score = 0 # int(s_id)
-
-        res = math.pow(1.0001, sum(root_dep_dist) + sum(root_pos_dist)) + (1000 * s_id_score/10)
-        if res <0: raise ValueError
-
+        pos_dist = token.i
+        res =  pos_dist + int(s_id) * 10 - sum(root_dep_dist) # sum(root_dep_dist) + sum(root_pos_dist) + int(s_id)*10  #math.pow(1.0001, sum(root_dep_dist) + sum(root_pos_dist)) + (1000 * s_id_score/10)
         return res
-        return res
-
 
     def coreferenced_expressions (self, corefs):
         return list(map (self.coreferenced_expression, corefs))
@@ -1047,17 +1065,26 @@ class Predication():
                 ["%s: %s" % (str(atrr), wrap(str(", ".join([x.text if hasattr(x, 'text') else str(x) for x in val])))) for atrr, val in dic.items() if val]) + ">"
             return res
 
+        def color_argument(text, p):
+            arg_texts = [' '.join(a['text']) for a in p['arguments']]
+            for arg_text in arg_texts:
+                text = text.replace(arg_text + ' ', """<B>"""+arg_text+"""</B>  """)
+            return text
+
         def get_label (n, attrs):
             keys = [p['key'] for p in ps[0]['part_predications']]
             if attrs['predicate']['key'] in keys:
-                x = [" ".join(p['text']) for p in  ps[0]['part_predications'] if attrs['predicate']['key'] == p['key']]
-                return x[0]
+                x = [color_argument(" ".join(p['text']),p) for p in  ps[0]['part_predications'] if attrs['predicate']['key'] == p['key']]
+                return "<" + x[0] + '>'
             else:
-                return wrap(attrs['label'])
+                return color_argument(wrap(attrs['label']), attrs['predicate'])
 
-
-        nx.set_edge_attributes(G, {(u, v): dict_to_nice(attrs) for (u, v, attrs) in G.edges(data=True)}, 'label')
-        nx.set_node_attributes(G, {n: get_label(n, attrs) for (n, attrs) in G.nodes(data=True)}, 'label')
+        try:
+            nx.set_edge_attributes(G, {(u, v): dict_to_nice(attrs) for (u, v, attrs) in G.edges(data=True)}, 'label')
+            nx.set_node_attributes(G, {n: get_label(n, attrs) for (n, attrs) in G.nodes(data=True)}, 'label')
+        except AttributeError:
+            logging.error('graph bad for sentence %s' % ps[0]['s_id'])
+            return []
 
         G.graph['graph'] = {
             'rankdir': 'TB',

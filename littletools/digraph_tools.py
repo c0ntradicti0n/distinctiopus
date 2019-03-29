@@ -1,5 +1,6 @@
 import networkx as nx
 
+from littletools.generator_tools import count_up
 from littletools.nested_list_tools import pairwise
 
 
@@ -74,7 +75,7 @@ def rs2graph(rs, G=None):
         (n1, n1_labels, n1_id, n2, n2_labels, n2_id, r) = tup.values()
 
         G.add_node(n1_id, kind=list(n1_labels), **n1)
-        G.add_node(n2_id, kind=list(n1_labels), **n2)
+        G.add_node(n2_id, kind=list(n2_labels), **n2)
         G.add_edge(n1_id, n2_id, kind=r)
 
     result_tups = list(tuple(r) for r in rs)
@@ -116,14 +117,35 @@ def neo4j2nx_root (pyneo4j, markers):
         else:
             return var+":"+x
 
+    count =  count_up()
+
     G = nx.MultiDiGraph()
+
+    rank = 0
+    seen = []
     for head, child in pairwise(markers):
+        if head==child:
+            arrowed = '>'
+            rank = next(count)
+            r_diff = 0
+        else:
+            arrowed = ''
+            rank = next(count)
+            r_diff=1
+        if not seen:
+            in_nbunch = ''
+        else:
+            in_nbunch = 'and ID(a) in %s ' % str(seen)
+
         query = r"""
-        MATCH(a)-[r]->(b)
-        WHERE {label_head} and {label_child}
+        MATCH(a)-[r]-{arrowed}(b)
+        WHERE {label_head} and {label_child} {in_nbunch}
+        SET a.rank={rank}, b.rank={rank}+{r_diff}
         RETURN a, labels(a), ID(a), b, labels(b), ID(b), type(r)
-        """.format(label_head=join_or_str(head, 'a'), label_child=join_or_str(child, 'b'))
+        """.format(label_head=join_or_str(head, 'a'), label_child=join_or_str(child, 'b'), rank=rank, r_diff=r_diff, arrowed=arrowed, in_nbunch=in_nbunch)
         record =  pyneo4j.run (query)
+        seen += [r['ID(b)'] for r in record]
+
         G = rs2graph(record, G)
     return G
 

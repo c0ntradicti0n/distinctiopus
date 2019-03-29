@@ -18,7 +18,7 @@ class Subjects_and_Aspects(Pairix):
     '''
     def __init__(self, corpus):
         self.similar = \
-            SimilarityMixer([(1, SimilarityMixer.elmo_simple_sim(), 0.1, 1)])
+            SimilarityMixer([(1, SimilarityMixer.elmo_simple_sim(), 0.6, 1)])
 
         self.subjects_aspects = \
              SimilarityMixer ([(1,     SimilarityMixer.multi_paral_tup_sim(SimilarityMixer.subj_asp_sim, n=4), 0, 1   ),
@@ -51,15 +51,19 @@ class Subjects_and_Aspects(Pairix):
 
 
         with timeit_context('computing sameness for the words within these pairs and the subject-'):
-            def correllate(preds_to_correlate):
-                arguments1 = get_arguments(preds_to_correlate[0])
-                arguments2 = get_arguments(preds_to_correlate[1])
+            def correllate(pred_pairs_to_correlate):
+                try:
+                    arguments1 = (eL(flatten_reduce([get_arguments(preds_to_correlate[0]) for preds_to_correlate in pred_pairs_to_correlate]))).unique()
+                    arguments2 = (eL(flatten_reduce([get_arguments(preds_to_correlate[1]) for preds_to_correlate in pred_pairs_to_correlate]))).unique()
+                except IndexError:
+                    return []
                 if not arguments1 or not arguments2:
                     return []
+                print (len(arguments1), len(arguments2))
 
-                cluster =  self.similar.choose(data=(arguments1, arguments2),
+                entities_aspects =  self.similar.choose(data=(arguments1, arguments2),
                                      layout='1:1')
-                return cluster
+                return entities_aspects
 
             argument_tuples_in_sides = apply_fun_to_nested (
                 fun=correllate,
@@ -76,13 +80,13 @@ class Subjects_and_Aspects(Pairix):
         # (things, things. things), (name answering to definition, name coresponding with the name) (name, name, name, name)
 
         with timeit_context('compute pairs of similar distance'):
-            def distinct(constrast_coinages):
-                contrasts, coinages = constrast_coinages
+            def distinct(entities_aspects):
+                aspects, entities = entities_aspects
 
-                if not contrasts or not coinages:
+                if not aspects or not entities:
                     return []
                 subject_aspect = self.subjects_aspects.choose(
-                    (flat_list_from(coinages), flat_list_from(contrasts)),
+                    (flat_list_from(entities), flat_list_from(aspects)),
                     n=1,
                     layout='n',
                     out='ex')
@@ -189,15 +193,13 @@ class Subjects_and_Aspects(Pairix):
         if not x['contrasts'] or not x['coinings'] or not x[('entity','aspect')]:
             logging.info('no subjects/aspects for some expressions found')
             return None
-        conno = eL(flat_list_from(x['contrasts'])+flat_list_from(x['coinings']))
+        conno = eL(flat_list_from(x['contrasts'])+flat_list_from(x['coinings'])).unique()
         for p in conno:
-            p.node_type =  ['CONNOTATION']
+            p.node_type =  ['Nlp']
         deno = ltd_ify(x[('entity','aspect')][0], node_type=['DENOTATION'], stack_types=['X',('SUBJECTS','ASPECTS'),'PAIR','X','ARGUMENT'], d_max=4)
 
         with timeit_context('generate query'):
             query = "".join(list(collapse(conno.neo4j_write() + deno.neo4j_write()+ ['\n'])))
-            with open("query %d.txt" % next(self.cnt), "w") as text_file:
-                text_file.write(query)
         with timeit_context('neo4j'):
             graph_fun(query)
 
@@ -207,7 +209,7 @@ class Subjects_and_Aspects(Pairix):
         :param graph_fun:
         :return:
         '''
-        collapse_helper_nodes_list = ['X','NLP', 'node_type_not_given', 'PAIR', ]
+        collapse_helper_nodes_list = ['X','NLP', 'node_type_not_given', 'PAIR', 'HAS_ARGUMENTS' ]
         for nt in collapse_helper_nodes_list:
             query = """
                  MATCH (x)--(a:%s)--(y)
@@ -216,3 +218,72 @@ class Subjects_and_Aspects(Pairix):
                  WITH 1 as one
                  RETURN one""" % nt
             graph_fun(query)
+
+        query="""MATCH (x)-[r:X]-(y)-[r2:X]-(x)
+                 DETACH DELETE r
+                 WITH 1 as one
+                 RETURN one"""
+        graph_fun(query)
+
+        query="""MATCH (x)-[r:X]-(x)
+                 DETACH DELETE r
+                 WITH 1 as one
+                 RETURN one"""
+        graph_fun(query)
+
+        query = """MATCH (a1:ARGUMENT)--(r1:ASPECTS)--(r3:SUBJECTS)--(a2:ARGUMENT)--(r4:SUBJECTS)--(r2:ASPECTS)--(a1)
+CALL apoc.refactor.mergeNodes([r1,r2])  YIELD node as n1
+CALL apoc.refactor.mergeNodes([r3,r4])  YIELD node as n2
+RETURN n1"""
+        graph_fun(query)
+
+        query = """MATCH (A)-[r1:X]-(B)-[r2:X]-(A)
+WHERE ID(r1)>ID(r2)
+DELETE r2"""
+        graph_fun(query)
+
+
+        query = """MATCH(n:ARGUMENT)
+        WHERE
+        EXISTS(n.id)
+        WITH
+        n.id as id, collect(n) as nodes
+        WHERE
+        size(nodes) > 1
+        call
+        apoc.refactor.mergeNodes(nodes)
+        yield node
+        return count(*)"""
+        graph_fun(query)
+
+        query = """MATCH(: ACORE)--(:ASIDE)--(x:ACONNOTATION)--(:DENOTATION)-[s]-(:DENOTATION), (x)-[r]-(n)
+        WHERE
+        x: NCONNOTATION and not n:ACONNOTATION and not n: ARGUMENT and not n:ASIDE
+        DELETE        r"""
+        graph_fun(query)
+
+        query = """MATCH(a: ASIDE)--(b:ACONNOTATION)--(c:ARGUMENT)
+        SET
+        a.abunch = ID(a), b.abunch = ID(a), c.abunch = ID(a)
+        RETURN a, b, c"""
+        graph_fun(query)
+
+        query = """MATCH(a: NSIDE)--(b:NCONNOTATION) - -(c:ARGUMENT)
+                SET
+                a.nbunch = ID(a), b.nbunch = ID(a), c.nbunch = ID(a)
+                RETURN a, b, c"""
+        graph_fun(query)
+
+        query = """MATCH (x:ARGUMENT)-[r:X]-(y:ARGUMENT)
+                  DELETE r
+                 WITH 1 as one
+                 RETURN one"""
+        graph_fun(query)
+
+        query = """MATCH (x:ARGUMENT)-[r:X]-(y:Nlp)-[r2:X]-(x)
+                  DELETE r2
+                 WITH 1 as one
+                 RETURN one"""
+        graph_fun(query)
+
+

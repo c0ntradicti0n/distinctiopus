@@ -54,7 +54,7 @@ class Contrast:
 
         '''
         fit_mix_neg = \
-             SimilarityMixer ([(1, SimilarityMixer.elmo_complex_sim(key='elmo_embeddings_pred'), 0.98, 1),
+             SimilarityMixer ([(1, SimilarityMixer.elmo_complex_sim(key='elmo_embeddings_pred'), 0.90, 1),
                                #(1, SimilarityMixer.common_words_sim(), 0.5,0.99),
                                ],
                               n=None)
@@ -103,25 +103,26 @@ class Contrast:
             put_into_nx = self.put_into_nx(general_kind='constrast', G=G)
             graph_coro = [graph_coro, put_into_nx ]
 
-        with timeit_context('contrast finding neg'):
-            negation_constrasts = self.NegationContrastFilter.choose ((eL(predicates1), eL(predicates2)),
-                                                                      type='negation',
-                                                                      layout='n',
-                                                                      out='i',
-                                                                      graph_coro=graph_coro, **kwargs)
+        agraph_coro, ngraph_coro= graph_coro
+
+
         with timeit_context('contrast finding anto'):
             antonym_constrasts  = self.AntonymContrastFilter.choose((eL(predicates1), eL(predicates2)),
                                                                       type='antonym',
                                                                       layout='n',
                                                                       out='i',
-                                                                      graph_coro=graph_coro, **kwargs)
+                                                                      graph_coro=agraph_coro, **kwargs)
+        with timeit_context('contrast finding neg'):
+            negation_constrasts = self.NegationContrastFilter.choose ((eL(predicates1), eL(predicates2)),
+                                                                      type='negation',
+                                                                      layout='n',
+                                                                      out='i',
+                                                                      graph_coro=ngraph_coro, **kwargs)
+
         logging.info("antonym : %s" % str (antonym_constrasts) + " negation: %s" % str (negation_constrasts))
 
         if paint_graph:
-            #for p in predicates1 + predicates2:
-            #    put_into_nx.send(p)
             put_into_nx.send('draw')
-
         try:
             return  negation_constrasts + antonym_constrasts
         except TypeError:
