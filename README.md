@@ -1,4 +1,4 @@
-# S0krates
+# Distinctiopus
 
 A tool for mining distinctions based on textlinguistic and rhetoric features of a text.
 
@@ -26,7 +26,7 @@ You are going to need:
 * [Spacy](https://spacy.io)
 
 It is important, that you install the dependencies in a `virtualenv`, because of an incompatability with the version of 
-`spacy`. For the preprocessing with the Prepr0cessor, you need `spacy==2.0.12`, for S0krates you need 'spacy==2.1.0a4 '
+`spacy`. For the preprocessing with the Prepr0cessor, you need `spacy==2.0.12`, for Distinctiopus you need 'spacy==2.1.0a4 '
 (= `spacy-nightly`), that must be silently installed over `spacy 2.0.18`. because AllenAI again uses the sentence 
 segmentation of spacy, but checks for the installed version (this works, if you install `spacy-nightly` after `spacy==2.0.18`, to override it)
 
@@ -36,7 +36,7 @@ Use the model `en_coref_sm` in Prepr0cess0r.
  
    * [AllenAI's](https://allennlp.org) [Elmo Embedder](https://github.com/allenai/allennlp/blob/master/tutorials/how_to/elmo.md)
 
-For this you can fetch the models with `wget` from the S0krates's home directory:
+For this you can fetch the models with `wget` from the Distinctiopus's home directory:
 
     mkdir './others_models'
     cd ./others_models
@@ -88,7 +88,7 @@ Give an example
 
 To see the docs, go along here:
 
-* [Module Documentation](http://htmlpreview.github.com/?https://github.com/c0ntradicti0n/S0krates3/blob/master/docs/_build/html/index.html)
+* [Module Documentation](http://htmlpreview.github.com/?https://github.com/c0ntradicti0n/Distinctiopus/blob/master/docs/_build/html/index.html)
 
 ## Built With
 
