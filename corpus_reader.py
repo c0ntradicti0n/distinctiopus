@@ -1,7 +1,7 @@
 import re
 import os
 from itertools import count
-from littletools.nested_list_tools import flatten_reduce, curry
+from language.heuristic.littletools.nested_list_tools import flatten_reduce, curry
 import fnmatch
 
 import pandas as pd

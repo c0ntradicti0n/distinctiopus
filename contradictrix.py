@@ -1,18 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from hardcore_annotated_expression import eL
-from littletools.corutine_utils import coroutine
-from littletools.generator_tools import count_up
-from predicatrix import Predication
-import word_definitions
-from similaritymixer import SimilarityMixer
+from language.heuristic.hardcore_annotated_expression import eL
+from language.heuristic.littletools.corutine_utils import coroutine
+from language.heuristic.littletools.generator_tools import count_up
+from language.heuristic.predicatrix import Predication
+import language.heuristic.word_definitions
+from language.heuristic.similaritymixer import SimilarityMixer
 
 import networkx as nx
 import textwrap
 
 import logging
 
-from time_tools import timeit_context
+from helpers.time_tools import timeit_context
 
 logging.captureWarnings(True)
 logging.getLogger().setLevel(logging.INFO)
@@ -231,7 +231,7 @@ class Contradiction:
 
 
 import unittest
-from corpus_reader import CorpusReader
+from language.heuristic.corpus_reader import CorpusReader
 
 
 class TestContradictrix(unittest.TestCase):

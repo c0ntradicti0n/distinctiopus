@@ -1,6 +1,6 @@
 import networkx as nx
 
-from littletools.nested_list_tools import pairwise
+from language.heuristic.littletools.nested_list_tools import pairwise
 
 
 def transitive_reduction(G):

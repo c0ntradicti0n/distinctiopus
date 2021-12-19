@@ -11,20 +11,20 @@ import spacy
 
 import logging
 
-from time_tools import timeit_context
+from helpers.time_tools import timeit_context
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
-from littletools.nested_list_tools import *
-from littletools.digraph_tools import *
-from littletools.dict_tools import *
-from similaritymixer import SimilarityMixer
-import word_definitions
-from littletools import tdfidf_tool
-from littletools.generator_tools import count_up
+from language.heuristic.littletools.nested_list_tools import *
+from language.heuristic.littletools.digraph_tools import *
+from language.heuristic.littletools.dict_tools import *
+from language.heuristic.similaritymixer import SimilarityMixer
+import language.heuristic.word_definitions
+from language.heuristic.littletools import tdfidf_tool
+from language.heuristic.littletools.generator_tools import count_up
 
 
-from hardcore_annotated_expression import PredMom, Pred, eL, Argu
+from language.heuristic.hardcore_annotated_expression import PredMom, Pred, eL, Argu
 
 
 class Predication():

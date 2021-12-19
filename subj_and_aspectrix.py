@@ -1,11 +1,11 @@
 import itertools
 
-from hardcore_annotated_expression import eT, apply_fun_to_nested, eL, eD, ltd_ify, Argu
-from littletools.generator_tools import count_up
-from pairix import Pairix
-from littletools.nested_list_tools import flatten_reduce, collapse
-from similaritymixer import SimilarityMixer
-from time_tools import timeit_context
+from language.heuristic.hardcore_annotated_expression import eT, apply_fun_to_nested, eL, eD, ltd_ify, Argu
+from language.heuristic.littletools.generator_tools import count_up
+from language.heuristic.pairix import Pairix
+from language.heuristic.littletools.nested_list_tools import flatten_reduce, collapse
+from language.heuristic.similaritymixer import SimilarityMixer
+from helpers.time_tools import timeit_context
 
 import logging
 logging.captureWarnings(True)

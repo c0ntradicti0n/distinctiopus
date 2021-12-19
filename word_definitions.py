@@ -289,7 +289,7 @@ additional_antonyms = {'fight': ['embrace', 'wander'],
                        ('own'):[('other')]
                        }
 
-from littletools import dict_tools
+from language.heuristic.littletools import dict_tools
 
 antonym_dict['lemma_'].update(additional_antonyms)
 antonym_dict['lemma_'] = \

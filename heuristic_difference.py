@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from corpus_reader import CorpusReader
-from CursorilyLogician import DataframeCursorilyLogician
-from time_tools import timeit_context
-from webanno_parser import Webanno_Parser
-
+from language.heuristic.corpus_reader import CorpusReader
+from language.heuristic.CursorilyLogician import DataframeCursorilyLogician
+from helpers.time_tools import timeit_context
+from language.heuristic.webanno_parser import Webanno_Parser
+from core.pathant.Converter import converter
+from core.pathant.PathSpec import PathSpec
 import logging
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
@@ -41,24 +42,26 @@ def parse_webanno():
     grammarian.annotate(webanno_parsed)
     return None
 
+@converter("reading_order", "graph_of_text")
+class HeurisiticalLogician(PathSpec):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-def main():
-    logging_setup()
-    if args.webanno_tsv:
-        parse_webanno()
+    def __call__(self, paths, *args, **kwargs):
+        for path, meta in paths:
 
-    with timeit_context('doing everything'):
-        corpus = CorpusReader(corpus_path=args.conll, only=eval(args.only))
-        Logician = DataframeCursorilyLogician(corpus)
-        Logician.annotate_horizon(horizon=3)
-        Logician.annotate_predicates()
-        Logician.annotate_contrasts()
-        Logician.annotate_correlations()
-        Logician.cluster_distinctions()
-        Logician.annotate_subjects_and_aspects()
-        Logician.collapse_self_containing()
-        Logician.draw_distinctions()
-    return 0
+            with timeit_context('doing everything'):
+                corpus = CorpusReader(corpus_path=args.conll, only=eval(args.only))
+                Logician = DataframeCursorilyLogician(corpus)
+                Logician.annotate_horizon(horizon=3)
+                Logician.annotate_predicates()
+                Logician.annotate_contrasts()
+                Logician.annotate_correlations()
+                Logician.cluster_distinctions()
+                Logician.annotate_subjects_and_aspects()
+                Logician.collapse_self_containing()
+                Logician.draw_distinctions()
+            return 0
 
 if __name__ == '__main__':
     import cProfile

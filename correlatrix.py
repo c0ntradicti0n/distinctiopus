@@ -1,9 +1,9 @@
 import networkx as nx
 
-from pairix import Pairix
-from similaritymixer import SimilarityMixer
+from language.heuristic.pairix import Pairix
+from language.heuristic.similaritymixer import SimilarityMixer
 
-from hardcore_annotated_expression import eL, eT
+from language.heuristic.hardcore_annotated_expression import eL, eT
 
 class Correlation(Pairix):
     def __init__(self):

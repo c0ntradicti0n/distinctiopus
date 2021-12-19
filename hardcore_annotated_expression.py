@@ -1,22 +1,21 @@
-from expression_views import *
 
 
 from typing import Iterable
 from itertools import combinations
 from addict import Dict
 
-from littletools.list_and_dict_type import L, T
+from language.heuristic.littletools.list_and_dict_type import L, T
 import cytoolz
 
 import logging
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
-from littletools.nested_list_tools import recursive_map, curry, flatten_reduce, flatten
+from language.heuristic.littletools.nested_list_tools import recursive_map, curry, flatten_reduce, flatten
 
 
 import collections
 
-class eD (collections.OrderedDict, forward_mapping_neo4j_view):
+class eD (collections.OrderedDict):
     ''' expression dictionary
 
     '''
@@ -45,7 +44,7 @@ class eD (collections.OrderedDict, forward_mapping_neo4j_view):
         return self
 
 
-class eT (T, iterable_neo4j_view):
+class eT (T):
     ''' expression tuple
 
     '''
@@ -71,7 +70,7 @@ class eT (T, iterable_neo4j_view):
         return self
 
 
-class eL (L, iterable_neo4j_view):
+class eL (L):
     ''' expression list
 
     '''
@@ -207,7 +206,7 @@ def apply_fun_to_nested(fun=None, attribute=None, other_criterium=None, data=Non
 
 
 
-class PredMom(eD, pred_neo4j_view):
+class PredMom(eD):
     def __init__ (self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.node_type = ['PREDICATE']
@@ -224,13 +223,13 @@ class PredMom(eD, pred_neo4j_view):
             return super.__str__(self)
 
 
-class Pred(pred_neo4j_view, eD):
+class Pred(eD):
     def __init__ (self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.node_type = ['PREDICATE']
 
 
-class Argu (argu_neo4j_view, eD):
+class Argu (eD):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.node_type = ['ARGUMENT']

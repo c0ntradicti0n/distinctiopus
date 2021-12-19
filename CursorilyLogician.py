@@ -10,18 +10,16 @@ import networkx as nx
 import textwrap
 
 import matplotlib
-matplotlib.use('TkAgg')
 
-from time_tools import timeit_context
-
-from hardcore_annotated_expression import eL, eT, apply_fun_to_nested
-from littletools.corutine_utils import coroutine
-from littletools.digraph_tools import neo4j2nx_root
-from littletools.nested_list_tools import flatten_reduce
-from contradictrix import Contradiction
-from predicatrix import Predication
-from correlatrix import Correlation
-from subj_and_aspectrix import Subjects_and_Aspects
+from helpers.time_tools import timeit_context
+from language.heuristic.hardcore_annotated_expression import eL, eT, apply_fun_to_nested
+from language.heuristic.littletools.corutine_utils import coroutine
+from language.heuristic.littletools.digraph_tools import neo4j2nx_root
+from language.heuristic.littletools.nested_list_tools import flatten_reduce
+from language.heuristic.contradictrix import Contradiction
+from language.heuristic.predicatrix import Predication
+from language.heuristic.correlatrix import Correlation
+from language.heuristic.subj_and_aspectrix import Subjects_and_Aspects
 
 import logging
 logging.getLogger(__name__).addHandler(logging.NullHandler())

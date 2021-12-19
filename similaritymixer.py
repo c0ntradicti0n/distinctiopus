@@ -76,11 +76,11 @@ import string
 import re
 from pyxdameraulevenshtein import damerau_levenshtein_distance
 import logging
-from littletools.nested_list_tools import check_for_tuple_in_list, flatten, flatten_reduce, flatten_list, type_spec, \
+from language.heuristic.littletools.nested_list_tools import check_for_tuple_in_list, flatten, flatten_reduce, flatten_list, type_spec, \
     existent, collapse
-from littletools import dict_tools, nested_list_tools
+from language.heuristic.littletools import dict_tools, nested_list_tools
 
-from hardcore_annotated_expression import eT, eL, ltd_ify
+from language.heuristic.hardcore_annotated_expression import eT, eL, ltd_ify
 
 uppercase_abc = list(string.ascii_uppercase)
 uppercase_bca = list(string.ascii_uppercase)[::-1]
