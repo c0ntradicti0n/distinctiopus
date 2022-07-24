@@ -69,7 +69,7 @@ import numpy as np
 import numpy_indexed as npi
 from cytoolz.dicttoolz import copy
 from sklearn import preprocessing
-import hdbscan
+#import hdbscan
 import itertools
 import pyprover
 import string
